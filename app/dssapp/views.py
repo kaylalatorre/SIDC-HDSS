@@ -1296,7 +1296,7 @@ def getAxRMort(score, mortThresh, areaFarms):
         if len(farm.missingActs) != 0:
             aXr['analysis_activities'].append("- Farm {id:03} has not done the following activities in the past week: [{activities}]".format(id=farm.id, activities=', '.join(farm.missingActs)))
         if farm.activeCases != 0 or farm.pendingCases != 0 or farm.ogDCases != 0:
-            aXr['analysis_cases'].append("- Farm {id:03} has {aCase} active cases, {pCase} pending cases, and {oCase} on going cases".format(id=farm.id, aCase=farm.activeCases, pCase=farm.pendingCases, oCase=farm.ogDCases))
+            aXr['analysis_cases'].append("- Farm {id:03} has {aCase} active incident cases, and {pCase} pending incident cases. \n It also has {oCase} on-going disease cases.".format(id=farm.id, aCase=farm.activeCases, pCase=farm.pendingCases, oCase=farm.ogDCases))
     if score == 0:
         needInspect = []
         for farm in areaFarms:
