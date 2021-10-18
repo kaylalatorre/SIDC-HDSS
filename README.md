@@ -90,7 +90,7 @@ conda create -p ~/SIDC-Hogs-Disease-Surveillance/venv uWSGI Python Django django
 >Can also use:
 >
 >```bash
->conda create --name <env> --file venv.txt
+>conda create -p ~/SIDC-Hogs-Disease-Surveillance/venv --file venv.txt
 >```
 
 Step 4. BASH > activate project environment
