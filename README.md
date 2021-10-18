@@ -105,7 +105,7 @@ conda activate /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/venv
 >conda activate ./venv inside the project directory
 >```
 
-Step 5. BASH > export project environment package list
+Step 5. BASH > export project environment package list [OPTIONAL]
 
 ```bash
 conda list --explicit > venv.txt
