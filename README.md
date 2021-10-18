@@ -1,2 +1,2 @@
 # SIDC-Hogs-Disease-Surveillance
-# Kurt was here
+# Backend Setup Instructions
