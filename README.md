@@ -71,7 +71,7 @@ bash /location/of/Miniconda3-latest-Linux-x86_64.sh
 ```
 
 > Download Miniconda from <https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh>
-
+>
 >Anaconda can also be used but Miniconda is smaller
 
 Step 2. BASH > Add Conda Forge to channels
