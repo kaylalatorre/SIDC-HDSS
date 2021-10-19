@@ -50,17 +50,17 @@ git config --global user.name "Your Name"
 git config --global user.email "yourEmail@example.com"
 ```
 
-Step 3. BASH > Open VS Code and make sure Github extension is installed
+Step 3. BASH > Open VS Code to make sure extensions are installed
 
 ```bash
 code .
 ```
+> GitHub Pull Requests and Issues https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github
+>
+> Remote - WSL https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl
 
 Step 4. CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-Hogs-Disease-Surveillance.git>
-
-```text
-Ctrl + Shift + P
-```
+> Ctrl + Shift + P > Search Git: Clone > Clone from Github > Enter Repository URL
 
 ## Setup Conda Virtual Environment
 
@@ -72,7 +72,13 @@ bash /location/of/Miniconda3-latest-Linux-x86_64.sh
 
 > Download Miniconda from <https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh>
 >
->Anaconda can also be used but Miniconda is smaller
+> Anaconda can also be used but Miniconda is smaller
+>
+> If conda is not activated:
+> 
+> ```bash
+> eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"
+> ```
 
 Step 2. BASH > Add Conda Forge to channels
 
@@ -102,7 +108,7 @@ conda activate /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/venv
 >Can also be activated by running
 >
 >```bash
->conda activate ./venv inside the project directory
+>conda activate ./venv # inside the project directory
 >```
 
 Step 5. BASH > export project environment package list [OPTIONAL]
@@ -172,14 +178,14 @@ Step 5: BASH > copy uwsgi_params to project folder
 cp /etc/nginx/uwsgi_params /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/
 ```
 
-Step 6: FILE > create src_nginx.conf in ./backend/
+Step 6: FILE > create src_nginx.conf in /backend
 
 ```bash
 # src_nginx.conf
 
 # the upstream component nginx needs to connect to
 upstream django {
-    server unix:///home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/mysite.sock; # for a file socket
+    server unix:///home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/src.sock; # for a file socket
     # server 127.0.0.1:8001; # for a web port socket
 }
 
@@ -211,27 +217,7 @@ server {
 }
 ```
 
-Step 7: BASH > symlink 'src_nginx.conf' to '/etc/nginx/sites-available/' and '/etc/nginx/sites-enabled/'
-
-```bash
-sudo ln -s /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/src_nginx.conf /etc/nginx/sites-available/
-sudo ln -s /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/src_nginx.conf /etc/nginx/sites-enabled/
-```
-
-> verify symlink
-
-```bash
-cat /etc/nginx/sites-available/src_nginx.conf
-cat /etc/nginx/sites-enabled/src_nginx.conf
-```
-
-Step 8: BASH > Verify if Django + uWSGI + nginx is running
-
-```bash
-uwsgi --socket mysite.sock --module mysite.wsgi --chmod-socket=664
-```
-
-Step 9: FILE > create src_uwsgi.ini
+Step 7: FILE > create src_uwsgi.ini
 
 ```bash
 # src_uwsgi.ini file
@@ -251,12 +237,35 @@ master          = true
 # maximum number of worker processes
 processes       = 10
 # the socket (use the full path to be safe
-socket          = /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/mysite.sock
+socket          = /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/src.sock
 # ... with appropriate permissions - may be needed
 chmod-socket    = 664
 # clear environment on exit
 vacuum          = true
 ```
+
+
+Step 8: BASH > symlink 'src_nginx.conf' to '/etc/nginx/sites-available/' and '/etc/nginx/sites-enabled/'
+
+```bash
+sudo ln -s /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/src_nginx.conf /etc/nginx/sites-available/
+sudo ln -s /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/src_nginx.conf /etc/nginx/sites-enabled/
+```
+
+> verify symlink
+
+```bash
+cat /etc/nginx/sites-available/src_nginx.conf
+cat /etc/nginx/sites-enabled/src_nginx.conf
+```
+
+
+Step 9: BASH > Verify if Django + uWSGI + nginx is running
+
+```bash
+uwsgi --socket src.sock --module src.wsgi --chmod-socket=664
+```
+
 
 Step 10: BASH > run application through src_uwsgi.ini
 
