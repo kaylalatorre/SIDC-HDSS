@@ -1,6 +1,7 @@
 # SIDC-Hogs-Disease-Surveillance
 
 Backend Setup Instructions
+Linux username: tsongzzz
 
 ## Setup Linux Environment
 
@@ -140,6 +141,7 @@ sudo /etc/init.d/nginx restart
 ```
 
 ## Setup Django
+Skip to step 8 if pulled files in this repository
 
 Step 1: BASH > create a new Django project
 
