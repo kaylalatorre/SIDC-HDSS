@@ -149,7 +149,7 @@ Step 2: BASH > apply initial migrations
 python manage.py migrate
 ```
 
-Step 3: BASH > test if Django is running properly with uWSGI http://localhost:8000
+Step 3: BASH > test if Django is running properly with uWSGI <http://localhost:8000>
 
 ```bash
 uwsgi --http :8000 --module src.wsgi
@@ -258,8 +258,10 @@ chmod-socket    = 664
 vacuum          = true
 ```
 
-Step 9: BASH > run application through src_uwsgi.ini
+Step 10: BASH > run application through src_uwsgi.ini
 
 ```bash
 uwsgi --ini src_uwsgi.ini
 ```
+
+Step 11: Go to <http://localhost:8000> to test if working
