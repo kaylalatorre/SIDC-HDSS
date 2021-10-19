@@ -261,18 +261,22 @@ cat /etc/nginx/sites-available/src_nginx.conf
 cat /etc/nginx/sites-enabled/src_nginx.conf
 ```
 
+Step 9: BASH > restart nginx
 
-Step 9: BASH > Verify if Django + uWSGI + nginx is running
+```bash
+sudo /etc/init.d/nginx restart
+```
+
+Step 10: BASH > Verify if Django + uWSGI + nginx is running
 
 ```bash
 uwsgi --socket src.sock --module src.wsgi --chmod-socket=664
 ```
 
-
-Step 10: BASH > run application through src_uwsgi.ini
+Step 11: BASH > run application through src_uwsgi.ini
 
 ```bash
 uwsgi --ini src_uwsgi.ini
 ```
 
-Step 11: Go to <http://localhost:8000> to test if working
+Step 12: Go to <http://localhost:8000> to test if working
