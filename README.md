@@ -149,7 +149,7 @@ Step 2: BASH > apply initial migrations
 python manage.py migrate
 ```
 
-Step 3: BASH > test if Django is running properly with uWSGI
+Step 3: BASH > test if Django is running properly with uWSGI http://localhost:8000
 
 ```bash
 uwsgi --http :8000 --module src.wsgi
@@ -169,7 +169,7 @@ python manage.py collectstatic
 Step 5: BASH > copy uwsgi_params to project folder
 
 ```bash
-cp /etc/nginx/uwsgi_params /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/
+cp /etc/nginx/uwsgi_params /home/tsongzzz/SIDC-Hogs-Disease-Surveillance/backend/
 ```
 
 Step 6: FILE > create src_nginx.conf in ./backend/
