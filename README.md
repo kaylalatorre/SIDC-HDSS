@@ -1,9 +1,9 @@
 # SIDC-Hogs-Disease-Surveillance
 
 Backend Setup Instructions
-Linux username: tsongzzz
 
 ## Setup Linux Environment
+Linux username: tsongzzz
 
 Step 1. POWERSHELL >  initial wsl setup
 
