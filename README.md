@@ -60,7 +60,7 @@ code .
 >
 > Remote - WSL https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl
 
-Step 4. CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-Hogs-Disease-Surveillance.git>
+Step 4. CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-HDSS.git>
 > Ctrl + Shift + P > Search Git: Clone > Clone from Github > Enter Repository URL
 
 ## Setup Conda Virtual Environment
