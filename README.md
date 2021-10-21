@@ -193,7 +193,7 @@ Step 12: Go to <http://localhost:8000> to test if working
 3. Go to the app directory `cd app`
 4. Start nginx `sudo /etc/init.d/nginx start`
 5. Run the application `uwsgi --ini src_uwsgi.ini`
-6. Go to `http://localhost:8000/`
+6. Go to http://localhost:8000/
 
 ## Authors
 
