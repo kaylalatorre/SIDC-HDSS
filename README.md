@@ -149,7 +149,7 @@ Step 1: BASH > create a new Django project
 django-admin.py startproject src
 ```
 
-> rename to backend
+> rename to app
 
 Step 2: BASH > apply initial migrations
 
@@ -177,17 +177,17 @@ python manage.py collectstatic
 Step 5: BASH > copy uwsgi_params to project folder
 
 ```bash
-cp /etc/nginx/uwsgi_params /home/tsongzzz/SIDC-HDSS/backend/
+cp /etc/nginx/uwsgi_params /home/tsongzzz/SIDC-HDSS/app/
 ```
 
-Step 6: FILE > create src_nginx.conf in /backend
+Step 6: FILE > create src_nginx.conf in /app
 
 ```bash
 # src_nginx.conf
 
 # the upstream component nginx needs to connect to
 upstream django {
-    server unix:///home/tsongzzz/SIDC-HDSS/backend/src.sock; # for a file socket
+    server unix:///home/tsongzzz/SIDC-HDSS/app/src.sock; # for a file socket
     # server 127.0.0.1:8001; # for a web port socket
 }
 
@@ -204,17 +204,17 @@ server {
 
     # Django media
     location /media  {
-        alias /home/tsongzzz/SIDC-HDSS/backend/media;  # your Django project's media files - amend as required
+        alias /home/tsongzzz/SIDC-HDSS/app/media;  # your Django project's media files - amend as required
     }
 
     location /static {
-        alias /home/tsongzzz/SIDC-HDSS/backend/static; # your Django project's static files - amend as required
+        alias /home/tsongzzz/SIDC-HDSS/app/static; # your Django project's static files - amend as required
     }
 
     # Finally, send all non-media requests to the Django server.
     location / {
         uwsgi_pass  django;
-        include     /home/tsongzzz/SIDC-HDSS/backend/uwsgi_params; # the uwsgi_params file you installed
+        include     /home/tsongzzz/SIDC-HDSS/app/uwsgi_params; # the uwsgi_params file you installed
     }
 }
 ```
@@ -227,7 +227,7 @@ Step 7: FILE > create src_uwsgi.ini
 
 # Django-related settings
 # the base directory (full path)
-chdir           = /home/tsongzzz/SIDC-HDSS/backend
+chdir           = /home/tsongzzz/SIDC-HDSS/app
 # Django's wsgi file
 module          = src.wsgi
 # the virtualenv (full path)
@@ -239,7 +239,7 @@ master          = true
 # maximum number of worker processes
 processes       = 10
 # the socket (use the full path to be safe
-socket          = /home/tsongzzz/SIDC-HDSS/backend/src.sock
+socket          = /home/tsongzzz/SIDC-HDSS/app/src.sock
 # ... with appropriate permissions - may be needed
 chmod-socket    = 664
 # clear environment on exit
@@ -250,7 +250,7 @@ vacuum          = true
 Step 8.1: BASH > symlink 'src_nginx.conf' to '/etc/nginx/sites-enabled/'
 
 ```bash
-sudo ln -s /home/tsongzzz/SIDC-HDSS/backend/src_nginx.conf /etc/nginx/sites-enabled/
+sudo ln -s /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-enabled/
 ```
 
 > verify symlink
@@ -262,7 +262,7 @@ cat /etc/nginx/sites-enabled/src_nginx.conf
 [OPTIONAL] Step 8.2: BASH > copy 'src_nginx.conf' to '/etc/nginx/sites-available/'
 
 ```bash
-sudo cp /home/tsongzzz/SIDC-HDSS/backend/src_nginx.conf /etc/nginx/sites-available/
+sudo cp /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-available/
 ```
 
 > verify copy
