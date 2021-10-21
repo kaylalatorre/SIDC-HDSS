@@ -64,7 +64,7 @@ code .
 Step 4: CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-HDSS.git>
 > Ctrl + Shift + P > Search Git: Clone > Clone from Github > Enter Repository URL
 
-# Setup Conda Virtual Environment
+## Setup Conda Virtual Environment
 
 Step 1: BASH > Install Conda
 
