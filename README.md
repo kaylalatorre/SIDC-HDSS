@@ -196,6 +196,7 @@ Step 12: Go to <http://localhost:8000> to test if working
 6. Go to `http://localhost:8000/`
 
 ## Authors
+
 Catahan, Anna Kumiko
 Go, Kurt Patrick
 Latorre, Kayla Dwynett
