@@ -197,7 +197,8 @@ Step 12: Go to <http://localhost:8000> to test if working
 
 ## Authors
 
-Catahan, Anna Kumiko
-Go, Kurt Patrick
-Latorre, Kayla Dwynett
-Manzano, Ninna Robyn
+Catahan, Anna Kumiko 
+Go, Kurt Patrick 
+Latorre, Kayla Dwynett 
+Manzano, Ninna Robyn 
+ 
