@@ -1,8 +1,9 @@
 # SIDC-HDSS
+SIDC-HDSS is a web application with features to help the cooperative with farm biosecurity management, hogs health tracking, disease tracking, and decision support. 
 
-Backend Setup Instructions
+## Setting Up the Project Locally
 
-## Setup Linux Environment
+# Setup Linux Environment
 Linux username: tsongzzz
 
 Step 1: POWERSHELL >  initial wsl setup
@@ -36,7 +37,7 @@ Step 5: BASH > get python3.9
 sudo apt install python3.9 python3.9-venv python3.9-dev
 ```
 
-## Setup Github on VS Code
+# Setup Github on VS Code
 
 Step 1: BASH > check if Git is installed
 
@@ -63,7 +64,7 @@ code .
 Step 4: CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-HDSS.git>
 > Ctrl + Shift + P > Search Git: Clone > Clone from Github > Enter Repository URL
 
-## Setup Conda Virtual Environment
+# Setup Conda Virtual Environment
 
 Step 1: BASH > Install Conda
 
@@ -118,7 +119,7 @@ conda activate /home/tsongzzz/SIDC-HDSS/venv
 conda list --explicit > venv.txt
 ```
 
-## Setup Nginx
+# Setup Nginx
 
 Step 1: BASH > install then start nginx to make sure it works properly in <http://localhost:80>
 
@@ -140,7 +141,7 @@ Step 3: BASH > restart nginx
 sudo /etc/init.d/nginx restart
 ```
 
-## Setup Django
+# Setup Django
 Skip to step 8 if pulled files in this repository
 
 Step 1: BASH > create a new Django project
