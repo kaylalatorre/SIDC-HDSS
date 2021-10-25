@@ -189,6 +189,10 @@ Step 12: Go to <http://localhost:8000> to test if working
 
 ## Running the Project Locally
 1. Go to the project directory `cd ~/SIDC-HDSS/`
+ 
+*If conda is not activated:
+`eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"`
+
 2. Activate the conda environment `conda activate ./venv`
 3. Go to the app directory `cd app`
 4. Start nginx `sudo /etc/init.d/nginx start`
