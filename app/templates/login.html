@@ -11,9 +11,14 @@
     <img src="{% static 'img/sidc-logo.png' %}" class="center">
     <h5 style="color: #006633; text-align: center;">SIDC Hogs Disease Surveillance System</h5>
     <br>
-    <input type="email" placeholder="Email Address" class="form-control" id="user-email" aria-describedby="emailHelp">
-    <input type="password" placeholder="Password" class="form-control" id="user-pass">
-    <br>
-    <button class="primary-btn center" >Log In</button>
+    <form action="login" method="POST">
+        {% csrf_token %}
+        <input type="text" placeholder="uname" class="form-control" id="user-name" name="user-name">
+        <!-- <input type="email" placeholder="Email Address" class="form-control" id="user-email" name="user-email" aria-describedby="emailHelp"> -->
+        <input type="password" placeholder="Password" class="form-control" id="user-pass" name="user-pass">
+        <br>
+        <button class="primary-btn center" type="submit">Log In</button>
+    </form>
+
 </div>
 {% endblock %}
