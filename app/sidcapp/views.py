@@ -7,3 +7,6 @@ def login(request):
 
 def home(request):
     return render(request, 'home.html', {})
+
+def amfarms(request):
+    return render(request, 'am-farms.html', {})

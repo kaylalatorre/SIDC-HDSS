@@ -3,36 +3,52 @@
 
 body {
     background: #E9E9E9;
-    font-family: 'Roboto'; 
-    font-size: 14px;
-    line-height: 25px;
     margin: 0 auto;
     padding: 0;
 }
 
+* {
+    font-family: 'Roboto'; 
+    font-size: 14px;
+    line-height: 24px;
+    box-sizing: border-box;
+}
+
+/* Typography Styles */
 h1 { font-size: 56px; font-family: 'Public Sans'; font-weight: 600; }
 h2 { font-size: 48px; font-family: 'Public Sans'; font-weight: 600; }
 h3 { font-size: 40px; font-family: 'Public Sans'; font-weight: 600; }
-h4 { font-size: 32px; font-family: 'Public Sans'; font-weight: 600; }
+h4 { font-size: 36px; font-family: 'Public Sans'; font-weight: 600; }
 h5 { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
 h6 { font-size: 16px; font-family: 'Public Sans'; font-weight: 400; }
 p { font-size: 14px; font-family: 'Roboto'; }
 
-
+/* General Styles */
 .box-style {
     background: #FFF;
     box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
     border-radius: 4px;
     padding: 24px;
+    margin: 8px;
+    position: relative;
 }
 
 .center {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5%;
+    margin-top: 10%;
+    margin-top: 10%;
 }
 
+.home-section {
+    position: relative;
+    left: 264px;
+    width: calc(100% - 264px);
+    height: 100vh;
+}
+
+/* Button Styles */
 button {
     display: flex;
     flex-direction: row;
@@ -52,6 +68,6 @@ button {
 .form-control {
     margin-top: 16px;
     margin-bottom: 16px;
+    font-size: 14px;
+    font-family: 'Roboto';
 }
-
-

@@ -1,0 +1,35 @@
+.home-section .topbar {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background: #FAFAFA;
+    justify-content: space-between;
+    padding: 0px 24px;
+}
+
+.home-section .topbar .menu-text {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.home-section .topbar .bx-menu,
+.home-section .topbar .text,
+.home-section .topbar .notification {
+    color: #333;
+    font-size: 24px;
+}
+
+.home-section .topbar .text {
+    font-size: 14px;
+    padding-top: 2px;
+    font-weight: 500px;
+}
+
+.home-section .topbar .bx-menu {
+    margin-right: 24px;
+}
+
+.home-section .topbar .bx-menu:hover {
+    color: #006633;
+}

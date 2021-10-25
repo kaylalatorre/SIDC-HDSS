@@ -1,2 +1,11 @@
 <!DOCTYPE html>
-<p>home or sumn</p>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% include 'partials/am-sidebar.html' %}
+    <section class="home-section">
+        {% include 'partials/topbar.html' %}
+        <p>home or sumn</p>
+    </section>
+{% endblock content %}
