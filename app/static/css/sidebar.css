@@ -183,13 +183,13 @@ ul, li {
 }
 
 .sidebar.close .logo-details .logo-name {
-    opacity: 0;
+    display: none;
     pointer-events: none;
     transition-delay: 0s;
 }
 
 .sidebar.close .nav-links li a .link-name  {
-    opacity: 0;
+    display: none;
     transition-delay: 0s;
 }
 

@@ -1,0 +1,48 @@
+<!-- Technician Sidebar -->
+{% load static %}
+<div class="sidebar">
+    <div class="logo-details">
+        <img src="{% static 'img/sidc-logo.png' %}">
+        <span class="logo-name">
+            SIDC-HDSS
+        </span>
+    </div>
+    <ul class="nav-links">
+        <li>
+            <a href="#"> 
+                <i class='bx bxs-dashboard' ></i>
+                <span class="link-name">Farms</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bxs-home' ></i>
+                <span class="link-name">Biosecurity</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bxs-clinic' ></i>
+                <span class="link-name">Hogs Health and Symptoms</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bxs-megaphone' ></i>
+                <span class="link-name">Member Announcements</span>
+            </a>
+        </li>
+    </ul>
+    <li>
+        <div class="user-details">
+            <div class="user-content">
+                <i class='bx bxs-user-circle' id="user-default"></i>
+            </div>
+            <div class="name-position">
+                <div class="user-name"> Rico Libuit </div>
+                <div class="user-position"> Assistant Manager </div>
+            </div>
+            <i class='bx bx-log-out-circle' id="logout-btn"></i>
+        </div>
+    </li>
+</div>
