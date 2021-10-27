@@ -53,6 +53,11 @@ ul, li {
     justify-content: space-between;
 }
 
+.sidebar .nav-links li .icon-link i {
+    position: relative;
+    bottom: 5px;
+}
+
 .sidebar .nav-links li i,
 .sidebar .user-details i {
     height: 42px;
@@ -105,6 +110,7 @@ ul, li {
 
 .sidebar .nav-links li.showMenu i.arrow {
     transform: rotate(-180deg);
+    bottom: -5px;
 }
 
 /* User details */
@@ -168,6 +174,23 @@ ul, li {
 
 #logout-btn:hover {
     color: #006633;
+}
+
+/* Selected Nav */
+.sidebar .nav-links li.nav-current {
+    background-color: #006633;
+}
+
+.sidebar .nav-links li.nav-current a i {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li.nav-current a span {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li.nav-current .icon-link i {
+    color: #FAFAFA;
 }
 
 /* Closing the sidebar */
