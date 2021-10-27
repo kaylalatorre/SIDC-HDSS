@@ -1,3 +1,6 @@
 from django.shortcuts import render
 
-# Create your views here.
+# Farms Management Module Views
+
+def farms(request):
+    return render(request, 'farmstemp/farms.html', {})

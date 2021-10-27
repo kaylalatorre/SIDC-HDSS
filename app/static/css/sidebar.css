@@ -55,12 +55,14 @@ ul, li {
 
 .sidebar .nav-links li i,
 .sidebar .user-details i {
-    height: 48px;
+    height: 42px;
     min-width: 72px;
     text-align: center;
     line-height: 50px;
     color: #333;
     font-size: 20px;
+    position: relative;
+    bottom: 5px;
 }
 
 .sidebar .nav-links li a {
@@ -73,7 +75,6 @@ ul, li {
     font-size: 14px;
     font-weight: 400;
     color: #333;
-    vertical-align: middle;
 }
 
 .sidebar .nav-links .sidebar-header {
@@ -170,7 +171,7 @@ ul, li {
 }
 
 /* Closing the sidebar */
-.sidebar.close ~ .home-section {
+.sidebar.close ~ .content-section {
     left: 72px;
     width: calc(100% - 72px);
 }
