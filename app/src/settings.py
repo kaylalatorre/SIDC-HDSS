@@ -77,14 +77,21 @@ WSGI_APPLICATION = 'src.wsgi.application'
 # python manage.py makemigrations
 # django.contrib.gis.db.backends.postgis
 # django.db.backends.postgresql_psycopg2
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'NAME': 'sidc_hdss_db',
+#         'USER': 'tsongzzz',
+#         'PASSWORD': 'tsongzzz123',
+#         'HOST': '172.21.32.1',
+#         'PORT': '5432'
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'sidc_hdss_db',
-        'USER': 'tsongzzz',
-        'PASSWORD': 'tsongzzz123',
-        'HOST': '172.21.32.1',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
