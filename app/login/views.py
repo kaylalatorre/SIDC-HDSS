@@ -25,7 +25,7 @@ def login(request):
         return render(request, 'login.html', {})
 
 # LOGOUT function
-def logout(request):
+def logout_view(request):
     logout(request)
     # TEST
     print("TEST LOG: User signed out.")

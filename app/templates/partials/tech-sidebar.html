@@ -43,13 +43,14 @@
                 <div class="user-position"> Technician </div>
             </div>
 
+            <!-- LOGOUT btn -->
             <form action="logout" method="POST">
-                <!-- TODO: convert <i> tag to a button of sorts -->
-                <a onclick="logout">
+                {% csrf_token %}
+                <button style="border:none; background-color: transparent;" type="submit">
                     <i class='bx bx-log-out' id="logout-btn"></i>
-                </a>
+                </button>
             </form>
-            
+
         </div>
     </li>
 </div>
