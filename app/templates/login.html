@@ -7,9 +7,9 @@
 {% endblock page_title %}
 
 {% block content %}
-<div class="box-style center" style="max-width: 38vh;">
+<div class="box-style fit-content" style="max-width: 340px; padding: 24px">
     <img src="{% static 'img/sidc-logo.png' %}" class="center">
-    <h5 style="color: #006633; text-align: center;">SIDC Hogs Disease Surveillance System</h5>
+    <h2 style="color: #006633; text-align: center;">SIDC Hogs Disease Surveillance System</h2>
     <br>
     <form action="login" method="POST">
         {% csrf_token %}

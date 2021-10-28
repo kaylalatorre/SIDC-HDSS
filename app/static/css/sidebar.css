@@ -53,14 +53,21 @@ ul, li {
     justify-content: space-between;
 }
 
+.sidebar .nav-links li .icon-link i {
+    position: relative;
+    bottom: 5px;
+}
+
 .sidebar .nav-links li i,
 .sidebar .user-details i {
-    height: 48px;
+    height: 42px;
     min-width: 72px;
     text-align: center;
     line-height: 50px;
     color: #333;
     font-size: 20px;
+    position: relative;
+    bottom: 5px;
 }
 
 .sidebar .nav-links li a {
@@ -73,7 +80,6 @@ ul, li {
     font-size: 14px;
     font-weight: 400;
     color: #333;
-    vertical-align: middle;
 }
 
 .sidebar .nav-links .sidebar-header {
@@ -104,6 +110,7 @@ ul, li {
 
 .sidebar .nav-links li.showMenu i.arrow {
     transform: rotate(-180deg);
+    bottom: -5px;
 }
 
 /* User details */
@@ -169,8 +176,25 @@ ul, li {
     color: #006633;
 }
 
+/* Selected Nav */
+.sidebar .nav-links li.nav-current {
+    background-color: #006633;
+}
+
+.sidebar .nav-links li.nav-current a i {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li.nav-current a span {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li.nav-current .icon-link i {
+    color: #FAFAFA;
+}
+
 /* Closing the sidebar */
-.sidebar.close ~ .home-section {
+.sidebar.close ~ .content-section {
     left: 72px;
     width: calc(100% - 72px);
 }
