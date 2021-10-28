@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Add Checklist</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <h1 class="heading">Biosecurity > Add Checklist</h1>
+    <div class="flex subheading">
+        <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">001</p>
+        <div><button class="primary-btn">Save</button></div>
+    </div>
+    <h2>Farm Biosecurity Checklist</h2>
+    <div class="box-style">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width:80%">Did the farm:</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Disinfected farm premises?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Provided foot dip specifically for haulers/drivers/truck helpers?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Provided alcohol/soap for truck helper/driver for their hand sanitation?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Observed "no visitor/s" policy?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Disinfected veterinary supplies like antibiotics by misting or blotting with clothes soaked with disinfectant before storing?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Personnel diiped their footwear in the foot bath before entering each building?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Changed disinfectant in the wheel bath/foot dip every day?</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="btnradio1">Radio 1</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio2">Radio 2</label>
+                          
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                        </div>
+                    </td>
+                </tr>
+            </tr>
+            </tbody>
+        </table>
+        
+    </div>
+</div>
+{% endblock section %}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Biosecurity</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <h1 class="heading">Biosecurity</h1>
+    <p>Select a farm to check its biosecurity records.</p>
+    <div class="box-style">
+        <div class="input-group mb-3" style="width: 50%">
+            <label for="input-area" class="form-label" style="font-weight: 600;">Farm Code</label>
+            <select class="form-select" id="farm-code" style="margin-bottom: 0;">
+                <option value="001">001</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Selected Farm's Biosecurity Details -->
+        <!-- Will appear once a farm is selected -->
+    <div id="biosec-details">
+        <div class="flex subheading">
+            <p class="flex-item">Biosecurity Records.</p>
+            <div class="dropdown">
+                <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  + Add New
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li><a class="dropdown-item" href="/add-checklist">Biosecurity Checklist</a></li>
+                  <li><a class="dropdown-item" href="/add-activity">Activity Record</a></li>
+                </ul>
+            </div>
+        </div>
+    
+        <h2 class="heading">Biosecurity Measures</h2>
+        <!-- Disabled form -- result from adding new record -->
+        <section class="biosec-measures">
+            <div class="box-style">
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-birdproof" disabled>
+                    <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-fence" disabled>
+                    <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" disabled>
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-distance" disabled>
+                    <label class="form-check-label" for="cb-distance">500-meter Distance</label>
+                </div>
+                <div class="flex">
+                    <label for="input-trough" class="form-label">Waste Management:</label>
+                    <p style="font-weight: 600;">Septic Tank</p>
+                </div>
+            </div>
+        </section>
+        <h2 class="heading">Checklists</h2>
+        <section class="biosec-checklists">
+            <div class="box-style">
+                
+            </div>
+        </section>
+        <h2 class="heading">Activities</h2>
+        <section class="farm-activities">
+            <div class="box-style">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Trip Type</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Time</th>
+                            <th>Description</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data -->
+                        <tr>
+                            <td>01/01/21</td>
+                            <td style="width: 20%">Delivery of Medicine</td>
+                            <td>18:00</td>
+                            <td>18:00</td>
+                            <td style="width: 30%">Very good</td>
+                            <td style="width: 15%">N/A</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock section %}
