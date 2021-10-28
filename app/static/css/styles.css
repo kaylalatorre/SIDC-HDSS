@@ -23,18 +23,24 @@ body {
 }
 
 /* Typography Styles */
-h1 { font-size: 36px; font-family: 'Public Sans'; font-weight: 600; }
+h1, h1 a { font-size: 36px; font-family: 'Public Sans'; font-weight: 600; }
 h2 { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
 h3 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
 p { font-size: 14px; font-family: 'Roboto'; }
-label { font-weight: 600; padding-right: 8px;}
+label { font-weight: 400; padding-right: 8px;}
+a { text-decoration: none; color: #333;}
+a:hover { color: #006633}
 
 /* General Styles */
+.main-div {
+    margin: 24px;
+}
+
 .box-style {
     background: #FFF;
     box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
     border-radius: 4px;
-    padding: 8px 24px;
+    padding: 24px;
     position: relative;
 }
 
@@ -52,10 +58,13 @@ label { font-weight: 600; padding-right: 8px;}
 .flex {
     display: flex;
     min-width: 100%;
+    vertical-align: middle;
 }
 
 .flex-item {
     flex-grow: 1;
+    width: 50%;
+    padding-right: 16px;
 }
 
 .heading { 
@@ -78,6 +87,10 @@ label { font-weight: 600; padding-right: 8px;}
     height: 100vh;
 }
 
+section {
+    padding-bottom: 24px;
+}
+
 /* Button Styles */
 button, .button {
     display: flex;
@@ -86,7 +99,7 @@ button, .button {
     align-items: center;
     padding: 8px 16px;
     border-radius: 16px;
-    box-shadow: 0px 4px 8px rgba(51, 51, 51, 0.02);
+    box-shadow: 0px 4px 8px rgba(51, 51, 51, 0.04);
 }
 
 .button {
@@ -100,10 +113,19 @@ button, .button {
     color: #FFF;
 }
 
+.secondary-btn {
+    box-shadow: 0;
+    border: solid 0.5px;
+    background: none;
+    box-shadow: none;
+    color:#006633;
+}
+
 .text-btn {
     box-shadow: 0;
     border: none;
     background: none;
+    box-shadow: none;
     color:#006633;
 }
 
@@ -118,10 +140,20 @@ button span, .button span, button i, .button, i {
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
 
-/* Overwriting Bootstrap CCS */
-.form-control {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    font-size: 14px;
-    font-family: 'Roboto';
+
+/* Responsive Styles */
+@media (max-width: 848px) {
+    *, body { font-size: 14px; }
+    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
+    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
+    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 600; }
+    p, label { font-size: 14px; font-family: 'Roboto'; }
+}
+
+@media (max-width: 600px) {
+    *, body { font-size: 12px; }
+    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
+    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
+    h3 { font-size: 12px; font-family: 'Public Sans'; font-weight: 600; }
+    p, label { font-size: 12px; font-family: 'Roboto'; }
 }

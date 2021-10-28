@@ -1,0 +1,92 @@
+<!-- Regional Manager Sidebar -->
+{% load static %}
+<div class="sidebar">
+    <div class="logo-details">
+        <img src="{% static 'img/sidc-logo.png' %}">
+        <span class="logo-name">
+            SIDC-HDSS
+        </span>
+    </div>
+    <ul class="nav-links">
+        <ul class="sidebar-header">
+            <span class="header-name">Overview</span>
+            <li class="nav-item nav-current">
+                <a href="#"> 
+                    <i class='bx bxs-dashboard' ></i>
+                    <span class="link-name">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/farms">
+                    <i class='bx bxs-home' ></i>
+                    <span class="link-name">Farms</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#">
+                    <i class='bx bxs-clinic' ></i>
+                    <span class="link-name">Hogs Health</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="sidebar-header">
+            <span class="header-name">Management</span>
+            <li class="nav-item">
+                <a href="#">
+                    <i class='bx bxs-user-pin'></i>
+                    <span class="link-name">Technician Assignment</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#">
+                    <i class='bx bxs-megaphone' ></i>
+                    <span class="link-name">Member Announcements</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="sidebar-header">
+            <span class="header-name">Decision Support</span>
+            <li class="nav-item">
+                <div class="icon-link">
+                    <a href="#">
+                        <i class='bx bxs-report' ></i>
+                        <span class="link-name">Reports</span>
+                    </a>
+                    <i class='bx bx-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li class="nav-item"><a href="">Farms Assessment</a></li>
+                    <li class="nav-item"><a href="">Internal Biosecurity</a></li>
+                    <li class="nav-item"><a href="">External Biosecurity</a></li>
+                    <li class="nav-item"><a href="">Hogs Weight</a></li>
+                    <li class="nav-item"><a href="">Symptoms Reported</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <div class="icon-link">
+                    <a href="#">
+                        <i class='bx bx-analyse' ></i>
+                        <span class="link-name">Analytics</span>
+                    </a> 
+                    <i class='bx bx-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li class="nav-item"><a href="">Disease Monitoring</a></li>
+                    <li class="nav-item"><a href="">Action Recommendation</a></li>
+                </ul>
+            </li>
+        </ul>
+    </ul>
+    <li>
+        <div class="user-details">
+            <div class="user-content">
+                <i class='bx bxs-user-circle' id="user-default"></i>
+            </div>
+            <div class="name-position">
+                <div class="user-name"> Bill Gates </div>
+                <div class="user-position"> Manager </div>
+            </div>
+            <i class='bx bx-log-out' id="logout-btn"></i>
+        </div>
+    </li>
+</div>

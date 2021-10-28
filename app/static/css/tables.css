@@ -1,3 +1,4 @@
+/* Tables */
 table, thead {
     border-spacing: 16px;
     padding: 0;
@@ -55,7 +56,6 @@ td {
         justify-content: end;
     }
 
-
     .table td:before {
         content: attr(data-label);
         position: absolute;
@@ -66,3 +66,5 @@ td {
         font-weight: 600;
     }
 }
+
+/* Tables with Vertical Headers */
