@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Add Farm Record</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
+    <div class="flex subheading">
+        <p class="flex-item">Add a new farm record here. </p>
+        <div><button class="primary-btn">Send for Approval</button></div>
+    </div>
+    <div class="flex">
+        <section class="flex-item">
+            <h2>Farm Details</h2>
+            <div class="box-style">
+                <div class="mb-3">
+                    <label for="input-code" class="form-label">Code</label>
+                    <input type="number" class="form-control" id="input-code" placeholder="ex. 001">
+                </div>
+                <h3>Raiser</h3>
+                <div class="mb-3">
+                    <label for="input-name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="input-name" placeholder="ex. John Doe">
+                </div>
+                <div class="mb-3">
+                    <label for="input-contact" class="form-label">Contact No.</label>
+                    <input type="text" class="form-control" id="input-contact" placeholder="ex. 091512345678">
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-directly">
+                    <label class="form-check-label" for="cb-directly">Directly Managed</label>
+                </div>
+                <br>
+                <h3>Farm</h3>
+                <div class="mb-3">
+                    <label for="input-address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="input-address" placeholder="ex. John Doe">
+                </div>
+                <div class="mb-3">
+                    <label for="input-contact" class="form-label">Contact No.</label>
+                    <input type="text" class="form-control" id="input-contact" placeholder="ex. Batangas, 4200 Batangas">
+                </div>
+                <div class="mb-3">
+                    <label for="input-area" class="form-label">Area</label>
+                    <select class="form-select" id="input-area">
+                        <option value="TISISI">TISISI</option>
+                        <option value="West">West</option>
+                        <option value="East">East</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3 option-other">
+                    <label for="input-other" class="form-label">Indicate which area.</label>
+                    <input type="text" id="input-other"class="form-control" placeholder="Other Area">
+                </div>
+                <div class="mb-3">
+                    <label for="input-roof" class="form-label">Roof Height (in ft.)</label>
+                    <input type="number" class="form-control" id="input-roof" placeholder="ex. 100">
+                </div>
+                <div class="mb-3">
+                    <label for="input-wharea" class="form-label">Warehouse Area</label>
+                    <div class="input-group" id="input-wharea">
+                        <input type="number" aria-label="Length" class="form-control" id="wh-length" placeholder="Length">
+                        <input type="number" aria-label="Width" class="form-control"  id="wh-width" placeholder="Width">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="input-trough" class="form-label">Feeding Trough</label>
+                    <select class="form-select" id="input-trough">
+                        <option value="Semi-automatic">Semi-automatic</option>
+                        <option value="Trough">Trough</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="input-roof" class="form-label">Building Capacity</label>
+                    <input type="number" class="form-control" id="input-roof" placeholder="ex. 100">
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="flex">
+        <section class="flex-item">
+            <h2>Pig Pens</h2>
+            <div class="box-style">
+                <div class="flex subheading">
+                    <p class="flex-item">Add all pens and details here. </p>
+                    <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Pen</button> <!-- Adds another row --></div>
+                </div>
+                <br>
+                <div class="input-group" id="input-pen">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Length</th>
+                                <th>Width</th>
+                                <th>No. of Pigs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Length"><input type="number" aria-label="Length" class="form-control" placeholder="Length"></td>
+                                <td data-label="Width"><input type="number" aria-label="Width" class="form-control"  placeholder="Width"></td>
+                                <td data-label="No. of Pigs"><input type="number" aria-label="No. of Pigs" class="form-control"  placeholder="ex. 100"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex subheading">
+                    <label style="font-weight: 600;">Total No. of Pigs: </label>
+                    <p> 100 pigs </p>
+                </div>
+            </div>
+        </section>
+        <section class="flex-item">
+            <h2>Biosecurity Measures</h2>
+            <div class="box-style">
+                <p>Select all that apply.</p>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-isolation">
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-birdproof">
+                    <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-fence">
+                    <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-footdip">
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-distance">
+                    <label class="form-check-label" for="cb-distance">500-meter Distance</label>
+                </div>
+                <div class="mb-3">
+                    <label for="input-trough" class="form-label">Waste Management</label>
+                    <select class="form-select" id="input-trough">
+                        <option value="Semi-automatic">Septic Tank</option>
+                        <option value="Trough">Biogas</option>
+                        <option value="Trough">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3 option-other">
+                    <label for="input-other" class="form-label">Indicate waste management.</label>
+                    <input type="text" id="input-other"class="form-control" placeholder="Other Waste Management">
+                </div>
+            </div>
+        </section>
+    </div>
+    
+</div>
+{% endblock section %}

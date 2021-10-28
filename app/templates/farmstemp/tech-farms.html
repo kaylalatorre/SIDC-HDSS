@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Farms Assigned</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <h1 class="heading">Farms Assigned</h1>
+    <div class="flex subheading">
+        <label style="font-weight: 600;">Area Assigned:</label><p class="flex-item">West</p>
+        <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a></div>
+    </div>
+    <div class="box-style">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Farm Code</th>
+                    <th>Raiser</th>
+                    <th>Contact No.</th>
+                    <th>Address</th>
+                    <th>Last Update</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data -->
+                <tr>
+                    <td data-label="Farm Code">001</td>
+                    <td data-label="Raiser">JM Bartolome</td>
+                    <td data-label="Contact No.">09112346578</td>
+                    <td data-label="Address">Binictican Drive, Tanauan City 2200</td>
+                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="" class="td-btn">
+                        <button class="text-btn"><span class="material-icons md-18">visibility</span>View</button>
+                    </td>
+                </tr>
+                
+                <!-- When there are no assigned farms -->
+                <tr class="empty">
+                    <td colspan="6">No farms assigned.</td>
+                </tr>
+                
+            </tbody>            
+        </table>
+    </div>
+</div>
+{% endblock section %}
