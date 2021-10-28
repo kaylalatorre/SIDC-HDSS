@@ -17,6 +17,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             return redirect('home')
+
         else:
             messages.info(request, 'USER NOT FOUND')
             return redirect('login')
@@ -26,11 +27,22 @@ def login(request):
 # LOGOUT function
 def logout(request):
     logout(request)
+    # TEST
+    print("TEST LOG: User signed out.")
     return redirect('login')
 
 def home(request, *args, **kwargs):
-    # user_group = request.user.groups.all()[0].name
+
     context = {
         'user_group': request.user.groups.all()[0].name
     }
+
+    if request.user.groups.filter(name="technician").exists():
+        # TEST: for tracking group name of User
+        print("PRINT LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+        # ENDTEST
+        context = {
+            'user_group': request.user.groups.all()[0].name
+        }
+
     return render(request, 'home.html', context)

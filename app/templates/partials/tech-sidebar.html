@@ -42,7 +42,14 @@
                 <div class="user-name"> {{ user.get_username }} </div>
                 <div class="user-position"> Technician </div>
             </div>
-            <i class='bx bx-log-out' id="logout-btn"></i>
+
+            <form action="logout" method="POST">
+                <!-- TODO: convert <i> tag to a button of sorts -->
+                <a onclick="logout">
+                    <i class='bx bx-log-out' id="logout-btn"></i>
+                </a>
+            </form>
+            
         </div>
     </li>
 </div>
