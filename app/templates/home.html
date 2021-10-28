@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block section %}
+    <!-- IF Manager, Asst. Manager, ect: Dashboard -->
+    
+    <!-- IF Technician: Farms Assigned -->
+    {% include 'farmstemp/tech-farms.html' %}
+{% endblock section %}

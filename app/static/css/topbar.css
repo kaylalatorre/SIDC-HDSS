@@ -1,0 +1,35 @@
+.content-section .topbar {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background: #FAFAFA;
+    justify-content: space-between;
+    padding: 0px 24px;
+}
+
+.content-section .topbar .menu-text {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.content-section .topbar .bx-menu,
+.content-section .topbar .text,
+.content-section .topbar .notification {
+    color: #333;
+    font-size: 24px;
+}
+
+.content-section .topbar .text {
+    font-size: 14px;
+    padding-top: 2px;
+    font-weight: 500px;
+}
+
+.content-section .topbar .bx-menu {
+    margin-right: 24px;
+}
+
+.content-section .topbar .bx-menu:hover {
+    color: #006633;
+}

@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css?family=Public+Sans');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display:table;
+    background: #E9E9E9;
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+* {
+    font-family: 'Roboto'; 
+    font-size: 14px;
+    line-height: 24px;
+    box-sizing: border-box;
+}
+
+/* Typography Styles */
+h1 { font-size: 36px; font-family: 'Public Sans'; font-weight: 600; }
+h2 { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
+h3 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
+p { font-size: 14px; font-family: 'Roboto'; }
+label { font-weight: 600; padding-right: 8px;}
+
+/* General Styles */
+.box-style {
+    background: #FFF;
+    box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
+    border-radius: 4px;
+    padding: 8px 24px;
+    position: relative;
+}
+
+.fit-content {
+    display: table; /* shrinks to fit content */
+    margin: auto;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.flex {
+    display: flex;
+    min-width: 100%;
+}
+
+.flex-item {
+    flex-grow: 1;
+}
+
+.heading { 
+    margin-top: 24px; 
+}
+
+.subheading {
+    vertical-align: middle;
+    padding-bottom: 16px;
+}
+
+.empty {
+    display: none;
+}
+
+.content-section {
+    position: relative;
+    left: 264px;
+    width: calc(100% - 264px);
+    height: 100vh;
+}
+
+/* Button Styles */
+button, .button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 16px;
+    box-shadow: 0px 4px 8px rgba(51, 51, 51, 0.02);
+}
+
+.button {
+    display: table;
+    min-width: 120px;
+    text-decoration: none;
+}
+
+.primary-btn {
+    background: #006633;
+    color: #FFF;
+}
+
+.text-btn {
+    box-shadow: 0;
+    border: none;
+    background: none;
+    color:#006633;
+}
+
+button span, .button span, button i, .button, i {
+    padding-right: 4px;
+}
+
+.button:hover {
+    color:#FFF;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+
+/* Overwriting Bootstrap CCS */
+.form-control {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-family: 'Roboto';
+}

@@ -1,0 +1,224 @@
+ul, li {
+    padding: 0;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 264px;
+    background: #FFF;
+    box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
+    z-index: 100;
+}
+
+.sidebar .logo-details {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar .logo-details img {
+    height: 40px;
+    text-align: center;
+    line-height: 50px;
+    margin-left: 24px;
+    margin-right: 16px;
+}
+
+.sidebar .logo-details .logo-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #006633;
+}
+
+.sidebar .nav-links {
+    height: 100%;
+    overflow: auto;
+}
+
+.sidebar .nav-links::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar .nav-links li {
+    position: relative;
+    list-style: none;
+}
+
+.sidebar .nav-links li .icon-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar .nav-links li .icon-link i {
+    position: relative;
+    bottom: 5px;
+}
+
+.sidebar .nav-links li i,
+.sidebar .user-details i {
+    height: 42px;
+    min-width: 72px;
+    text-align: center;
+    line-height: 50px;
+    color: #333;
+    font-size: 20px;
+    position: relative;
+    bottom: 5px;
+}
+
+.sidebar .nav-links li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar .nav-links li a .link-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333;
+}
+
+.sidebar .nav-links .sidebar-header {
+    margin: 16px 0px;
+} 
+
+.sidebar .nav-links .header-name {
+    font-weight: 600;
+    margin: 24px;
+}
+ 
+/* Dropdown menus */
+.sidebar .nav-links li .sub-menu {
+    background: #FAFAFA;
+    display: none;
+}
+
+.sidebar .nav-links li .sub-menu a {
+    color: #333;
+    font-size: 14px;
+    padding: 8px 8px 8px 72px;
+    white-space: nowrap;
+}
+
+.sidebar .nav-links li.showMenu .sub-menu {
+    display: block;
+}
+
+.sidebar .nav-links li.showMenu i.arrow {
+    transform: rotate(-180deg);
+    bottom: -5px;
+}
+
+/* User details */
+.sidebar .user-details {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.sidebar .user-details .user-content {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar .user-details .user-name, 
+.sidebar .user-details .user-position {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    line-height: 16px;
+}
+
+.sidebar .user-details .user-position {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/* User profile isn't one of the features of the app.
+    for now, a default picture is used until no functionality is present. */
+#user-default {
+    font-size: 40px;
+    color: lightgray; 
+    align-items: center;
+    object-fit: cover;
+    margin: 0px;
+}
+
+/* On hover */
+.sidebar .nav-links li:hover {
+    background-color: #006633;
+}
+
+.sidebar .nav-links li:hover a i {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li:hover a span {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li:hover .icon-link i {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links .sub-menu a:hover {
+    color: #FAFAFA;
+}
+
+#logout-btn:hover {
+    color: #006633;
+}
+
+/* Selected Nav */
+.sidebar .nav-links li.nav-current {
+    background-color: #006633;
+}
+
+.sidebar .nav-links li.nav-current a i {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li.nav-current a span {
+    color: #FAFAFA;
+}
+
+.sidebar .nav-links li.nav-current .icon-link i {
+    color: #FAFAFA;
+}
+
+/* Closing the sidebar */
+.sidebar.close ~ .content-section {
+    left: 72px;
+    width: calc(100% - 72px);
+}
+
+.sidebar.close .header-name {
+    display: none;
+}
+.sidebar.close {
+    width: 72px;
+}
+
+.sidebar.close .logo-details .logo-name {
+    display: none;
+    pointer-events: none;
+    transition-delay: 0s;
+}
+
+.sidebar.close .nav-links li a .link-name  {
+    display: none;
+    transition-delay: 0s;
+}
+
+.sidebar.close .user-details .user-name, 
+.sidebar.close .user-details .user-position, 
+.sidebar.close #user-default {
+    display: none;
+}
