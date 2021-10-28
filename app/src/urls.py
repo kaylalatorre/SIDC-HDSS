@@ -19,12 +19,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('login.urls')),
-<<<<<<< HEAD
-    path('sendmail/', include('sendmail.urls')),
-    # path('', include('farmsapp.urls')),
-=======
+    # path('sendmail/', include('sendmail.urls')),
     path('', include('farmsapp.urls')),
->>>>>>> fcac6f08812a7cf37d5cad0e42d903fd8cd2f13a
     # path('', include('healthapp.urls')),
     # path('', include('dssapp.urls')),
 ]

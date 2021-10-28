@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.models import User, auth
+from django.contrib.auth.models import auth, User, Group
 from django.contrib.auth import logout
 
 
@@ -21,12 +21,16 @@ def login(request):
             messages.info(request, 'USER NOT FOUND')
             return redirect('login')
     else:
-        return redirect('login')
+        return render(request, 'login.html', {})
 
 # LOGOUT function
 def logout(request):
     logout(request)
     return redirect('login')
 
-def home(request):
-    return render(request, 'home.html', {})
+def home(request, *args, **kwargs):
+    # user_group = request.user.groups.all()[0].name
+    context = {
+        'user_group': request.user.groups.all()[0].name
+    }
+    return render(request, 'home.html', context)

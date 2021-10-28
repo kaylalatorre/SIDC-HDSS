@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 from django.shortcuts import render
 
 # Farms Management Module Views
@@ -12,4 +10,3 @@ def farms(request):
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
->>>>>>> fcac6f08812a7cf37d5cad0e42d903fd8cd2f13a
