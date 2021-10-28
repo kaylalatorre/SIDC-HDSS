@@ -10,8 +10,11 @@
     {% elif user_group == 'asst_manager' %}
         {% include 'partials/am-sidebar.html' %}
 
+    {% elif user_group == 'reg_manager' %}
+        {% include 'partials/rm-sidebar.html' %}
+
     {% else %}
-        {% include 'partials/am-sidebar.html' %}
+        {% include 'partials/sidebar.html' %}
 
     {% endif %}
 
