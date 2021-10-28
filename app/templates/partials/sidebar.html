@@ -1,0 +1,54 @@
+<!-- Extension Veterinarian, Livestock Operation Specialist, and Paiwi Management Staff Sidebar -->
+{% load static %}
+<div class="sidebar">
+    <div class="logo-details">
+        <img src="{% static 'img/sidc-logo.png' %}">
+        <span class="logo-name">
+            SIDC-HDSS
+        </span>
+    </div>
+    <ul class="nav-links">
+        <ul class="sidebar-header">
+            <span class="header-name">Overview</span>
+            <li class="nav-item nav-current">
+                <a href="#"> 
+                    <i class='bx bxs-dashboard' ></i>
+                    <span class="link-name">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/farms">
+                    <i class='bx bxs-home' ></i>
+                    <span class="link-name">Farms</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#">
+                    <i class='bx bxs-clinic' ></i>
+                    <span class="link-name">Hogs Health</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="sidebar-header">
+            <span class="header-name">Management</span>
+            <li class="nav-item">
+                <a href="#">
+                    <i class='bx bxs-notepad'></i>
+                    <span class="link-name">Forms Approval</span>
+                </a>
+            </li>
+        </ul>
+    </ul>
+    <li>
+        <div class="user-details">
+            <div class="user-content">
+                <i class='bx bxs-user-circle' id="user-default"></i>
+            </div>
+            <div class="name-position">
+                <div class="user-name"> Anna Manzano </div>
+                <div class="user-position"> Position </div>
+            </div>
+            <i class='bx bx-log-out' id="logout-btn"></i>
+        </div>
+    </li>
+</div>
