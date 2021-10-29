@@ -119,12 +119,28 @@ button, .button {
     color:#006633;
 }
 
+.secondary-btn-red {
+    box-shadow: 0;
+    border: solid 0.5px;
+    background: none;
+    box-shadow: none;
+    color:#ED1E40;
+}
+
 .text-btn {
     box-shadow: 0;
     border: none;
     background: none;
     box-shadow: none;
     color:#006633;
+}
+
+.text-btn-red {
+    box-shadow: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    color:#ED1E40;
 }
 
 button span, .button span, button i, .button, i {
