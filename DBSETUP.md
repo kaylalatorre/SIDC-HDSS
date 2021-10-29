@@ -131,3 +131,17 @@ sudo rm /etc/nginx/sites-enabled/default
 ```
 
 - Other possible workarounds are to setup pgAdmin4 with Nginx or to change the ports either Nginx or Apache is listening to.
+
+## Django settings.py
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '<name>',
+        'USER': '<user>',
+        'PASSWORD': '<password>',
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
+}
+```
