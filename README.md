@@ -197,6 +197,12 @@ Step 12: Go to <http://localhost:8000> to test if working
 5. Run the application `uwsgi --ini src_uwsgi.ini`
 6. Go to http://localhost:8000/
 
+## Running the PosgreSQL service
+`sudo service postgresql start`
+
+## Running Apache2 server (when using pgAdmin)
+`sudo service apache2 start`
+
 ## Authors
 
 Catahan, Anna Kumiko  
