@@ -44,9 +44,12 @@
             <div class="user-content">
                 <i class='bx bxs-user-circle' id="user-default"></i>
             </div>
+            
+            <!-- renders User full name, position -->
             <div class="name-position">
-                <div class="user-name"> Anna Manzano </div>
-                <div class="user-position"> Position </div>
+                {% load login_extras %}
+                <div class="user-name"> {{ user.first_name|addStr:user.last_name }} </div>
+                <div class="user-position"> {{ user_group }} </div>
             </div>
             
             <!-- LOGOUT btn -->

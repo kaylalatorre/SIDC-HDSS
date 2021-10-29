@@ -33,16 +33,13 @@ def logout_view(request):
 
 def home(request, *args, **kwargs):
 
-    context = {
-        'user_group': request.user.groups.all()[0].name
-    }
-
-    if request.user.groups.filter(name="technician").exists():
-        # TEST: for tracking group name of User
-        print("PRINT LOG: USERTYPE-- " + request.user.groups.all()[0].name)
-        # ENDTEST
-        context = {
-            'user_group': request.user.groups.all()[0].name
-        }
+    for g in Group.objects.filter():
+        if g.name == request.user.groups.all()[0].name:
+            # TEST: for tracking group name of User
+            print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+            # ENDTEST
+            context = {
+                'user_group': request.user.groups.all()[0].name
+            }
 
     return render(request, 'home.html', context)
