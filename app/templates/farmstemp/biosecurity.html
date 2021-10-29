@@ -11,8 +11,8 @@
     <h1 class="heading">Biosecurity</h1>
     <p>Select a farm to check its biosecurity records.</p>
     <div class="box-style">
-        <div class="input-group mb-3" style="width: 50%">
-            <label for="input-area" class="form-label" style="font-weight: 600;">Farm Code</label>
+        <div class="input-group mb-3" style="width: 40%">
+            <label class="form-label" style="font-weight: 600;">Farm Code</label>
             <select class="form-select" id="farm-code" style="margin-bottom: 0;">
                 <option value="001">001</option>
             </select>
@@ -68,7 +68,144 @@
         <h2 class="heading">Checklists</h2>
         <section class="biosec-checklists">
             <div class="box-style">
-                
+                <div class="input-group mb-3" style="width: 40%">
+                    <label class="form-label" style="font-weight: 600;">Date</label>
+                    <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                        <option value="01/01/21">01/01/21</option>
+                    </select>
+                </div>
+                <hr>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width:80%">Did the farm:</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Disinfected farm premises?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1">
+                                    <label class="btn btn-outline-primary" for="disinfect_prem_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio2" >
+                                    <label class="btn btn-outline-primary" for="disinfect_prem_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio3" >
+                                    <label class="btn btn-outline-primary" for="disinfect_prem_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Provided foot dip specifically for haulers/drivers/truck helpers?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1">
+                                    <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" >
+                                    <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" >
+                                    <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Provided alcohol/soap for truck helper/driver for their hand sanitation?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio1">
+                                    <label class="btn btn-outline-primary" for="prvdd_alco_soap_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio2">
+                                    <label class="btn btn-outline-primary" for="prvdd_alco_soap_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio3">
+                                    <label class="btn btn-outline-primary" for="prvdd_alco_soap_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Observed "no visitor/s" policy?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio1">
+                                    <label class="btn btn-outline-primary" for="obs_no_visitors_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio2">
+                                    <label class="btn btn-outline-primary" for="obs_no_visitors_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio3">
+                                    <label class="btn btn-outline-primary" for="obs_no_visitors_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Disinfected veterinary supplies like antibiotics by misting or blotting with clothes soaked with disinfectant before storing?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio1">
+                                    <label class="btn btn-outline-primary" for="disinfect_vet_supp_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio2">
+                                    <label class="btn btn-outline-primary" for="disinfect_vet_supp_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio3">
+                                    <label class="btn btn-outline-primary" for="disinfect_vet_supp_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Personnel dipped their footwear in the foot bath before entering each building?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio1">
+                                    <label class="btn btn-outline-primary" for="prsnl_dip_footwear_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio2">
+                                    <label class="btn btn-outline-primary" for="prsnl_dip_footwear_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio3">
+                                    <label class="btn btn-outline-primary" for="prsnl_dip_footwear_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Personnel sanitized their hands using alcohol or soap before entering each building?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio1">
+                                    <label class="btn btn-outline-primary" for="prsnl_sanit_hands_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio2">
+                                    <label class="btn btn-outline-primary" for="prsnl_sanit_hands_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio3">
+                                    <label class="btn btn-outline-primary" for="prsnl_sanit_hands_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Changed disinfectant in the wheel bath/foot dip every day?</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio1">
+                                    <label class="btn btn-outline-primary" for="cng_disinfect_daily_radio1">Yes</label>
+                                  
+                                    <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio2">
+                                    <label class="btn btn-outline-primary" for="cng_disinfect_daily_radio2">No</label>
+                                  
+                                    <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio3">
+                                    <label class="btn btn-outline-primary" for="cng_disinfect_daily_radio3">N/A</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
         <h2 class="heading">Activities</h2>

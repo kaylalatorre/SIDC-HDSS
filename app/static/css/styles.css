@@ -155,3 +155,24 @@ button span, .button span, button i, .button, i {
     h3 { font-size: 12px; font-family: 'Public Sans'; font-weight: 600; }
     p, label { font-size: 12px; font-family: 'Roboto'; }
 }
+
+/* Overriding Bootstrap Styles */
+.btn-outline-primary {
+    border-color: #333;
+    color: #333;
+}
+
+.btn-outline-primary:hover {
+    color: #FFF;
+    background:#006633;
+}
+
+.btn-check:active+.btn-outline-primary, .btn-check:checked+.btn-outline-primary, .btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show, .btn-outline-primary:active {
+    color: #FFF;
+    background: #006633!important;
+    border-color: #006633!important;
+}
+
+.dropdown-item:active {
+    background: #006633!important;
+}

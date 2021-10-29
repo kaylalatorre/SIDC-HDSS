@@ -30,6 +30,7 @@ td {
     vertical-align: middle;
 }
 
+/* Responsive Styles */
 @media (max-width: 848px) {
     .table thead {
         display: none;
