@@ -137,7 +137,7 @@ sudo rm /etc/nginx/sites-enabled/default
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': '<name>',
+        'NAME': '<database name>',
         'USER': '<user>',
         'PASSWORD': '<password>',
         'HOST': 'localhost',
