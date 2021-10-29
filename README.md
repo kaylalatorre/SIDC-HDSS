@@ -189,7 +189,7 @@ Step 12: Go to <http://localhost:8000> to test if working
 
 ## Running the Project Locally
 *If conda is not activated:
-`eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"`
+```eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"```
 1. Go to the project directory `cd ~/SIDC-HDSS/`
 2. Activate the conda environment `conda activate ./venv`
 3. Go to the app directory `cd app`
@@ -198,10 +198,10 @@ Step 12: Go to <http://localhost:8000> to test if working
 6. Go to http://localhost:8000/
 
 ## Running the PosgreSQL service
-`sudo service postgresql start`
+```sudo service postgresql start```
 
 ## Running Apache2 server (when using pgAdmin)
-`sudo service apache2 start`
+```sudo service apache2 start```
 
 ## Authors
 
