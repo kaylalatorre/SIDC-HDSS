@@ -197,7 +197,7 @@ _If conda is not activated:_ ```eval "$(/home/tsongzzz/miniconda3/bin/conda shel
 1. Go to the project directory `cd ~/SIDC-HDSS/`
 2. Activate the conda environment `conda activate ./venv`
 3. Go to the app directory `cd app`
-4. **In a new terminal:** Start the PosgreSQL service and Apache2 server (for pgAdmin)
+4. **In a separate terminal:** Start the PosgreSQL service and Apache2 server (for pgAdmin)
 ```
 sudo service postgresql start
 sudo service apache2 start
