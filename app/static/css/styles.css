@@ -41,6 +41,7 @@ a:hover { color: #006633}
     box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
     border-radius: 4px;
     padding: 24px;
+    margin-bottom: 24px;
     position: relative;
 }
 
@@ -66,11 +67,6 @@ a:hover { color: #006633}
     width: 50%;
     padding-right: 16px;
 }
-
-.heading { 
-    margin-top: 24px; 
-}
-
 .subheading {
     vertical-align: middle;
     padding-bottom: 16px;
@@ -88,8 +84,10 @@ a:hover { color: #006633}
 }
 
 section {
-    padding-bottom: 24px;
+    margin-bottom: 24px;
 }
+
+
 
 /* Button Styles */
 button, .button {
@@ -121,12 +119,28 @@ button, .button {
     color:#006633;
 }
 
+.secondary-btn-red {
+    box-shadow: 0;
+    border: solid 0.5px;
+    background: none;
+    box-shadow: none;
+    color:#ED1E40;
+}
+
 .text-btn {
     box-shadow: 0;
     border: none;
     background: none;
     box-shadow: none;
     color:#006633;
+}
+
+.text-btn-red {
+    box-shadow: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    color:#ED1E40;
 }
 
 button span, .button span, button i, .button, i {
@@ -156,4 +170,25 @@ button span, .button span, button i, .button, i {
     h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
     h3 { font-size: 12px; font-family: 'Public Sans'; font-weight: 600; }
     p, label { font-size: 12px; font-family: 'Roboto'; }
+}
+
+/* Overriding Bootstrap Styles */
+.btn-outline-primary {
+    border-color: #333;
+    color: #333;
+}
+
+.btn-outline-primary:hover {
+    color: #FFF;
+    background:#006633;
+}
+
+.btn-check:active+.btn-outline-primary, .btn-check:checked+.btn-outline-primary, .btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show, .btn-outline-primary:active {
+    color: #FFF;
+    background: #006633!important;
+    border-color: #006633!important;
+}
+
+.dropdown-item:active {
+    background: #006633!important;
 }
