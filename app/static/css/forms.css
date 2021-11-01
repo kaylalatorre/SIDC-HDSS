@@ -1,0 +1,54 @@
+.input-group-fix {
+    height: 34px;
+    margin-top: 16px;
+}
+
+.option-other {
+    display: none;
+}
+
+#biosec-details {
+    /* display: none; */
+}
+
+/* Displaying disabled forms */
+.form-check-input, .form-check-label {
+    opacity: 1!important;
+}
+
+/* Overwriting Bootstrap CCS */
+.form-select, .form-control, .form-check-input {
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-family: 'Roboto';
+}
+
+.form-check-input:checked {
+    background-color: #006633;
+    border-color: #006633;
+}
+
+.mb-3 {
+    margin-bottom: 0!important;
+}
+
+.form-check-label {
+    padding-left: 8px;
+}
+
+.table tbody tr td .form-control {
+    margin-bottom: 0;
+}
+
+.input-group {
+    vertical-align: middle;
+}
+
+/* Responsive Styles */
+@media (max-width: 848px) {
+    .flex, .flex-item {
+        display: inline-block;
+        min-width: 100%;
+        vertical-align: middle;
+    }
+}

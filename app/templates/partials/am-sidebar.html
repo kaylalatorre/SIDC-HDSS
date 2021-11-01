@@ -88,11 +88,22 @@
             <div class="user-content">
                 <i class='bx bxs-user-circle' id="user-default"></i>
             </div>
+
+            <!-- renders User full name, position -->
             <div class="name-position">
-                <div class="user-name"> Rico Libuit </div>
-                <div class="user-position"> Assistant Manager </div>
+                {% load login_extras %}
+                <div class="user-name"> {{ user.first_name|addStr:user.last_name }} </div>
+                <div class="user-position"> {{ user_group }} </div>
             </div>
-            <i class='bx bx-log-out' id="logout-btn"></i>
+            
+            <!-- LOGOUT btn -->
+            <form action="logout" method="POST">
+                {% csrf_token %}
+                <button style="border:none; background-color: transparent;" type="submit">
+                    <i class='bx bx-log-out' id="logout-btn"></i>
+                </button>
+            </form>
+
         </div>
     </li>
 </div>

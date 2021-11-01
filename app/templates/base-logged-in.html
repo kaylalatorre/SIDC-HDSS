@@ -4,9 +4,22 @@
 
 {% block content %}
     <!-- Sidebar of logged in user -->
-    {% include 'partials/tech-sidebar.html' %}
-    
+    {% if user_group == 'Field Technician' %}
+        {% include 'partials/tech-sidebar.html' %}
+
+    {% elif user_group == 'Assistant Manager' %}
+        {% include 'partials/am-sidebar.html' %}
+
+    {% elif user_group == 'Regional Manager' %}
+        {% include 'partials/rm-sidebar.html' %}
+
+    {% else %}
+        {% include 'partials/sidebar.html' %}
+
+    {% endif %}
+
     <section class="content-section">
+        
         {% include 'partials/topbar.html' %}
         
         <!-- Content -->
