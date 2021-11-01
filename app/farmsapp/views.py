@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from .forms import FarmForm
 
 # Farms Management Module Views
 
@@ -8,6 +9,9 @@ def farms(request):
 
 ## Add Farm Page
 def addFarm(request):
+    form = FarmForm()
+    context = {'form':form}
+    
     return render(request, 'farmstemp/add-farm.html', {})
 
 ## Save Farm Details
@@ -28,7 +32,6 @@ def saveFarm(request):
 
     # pig pens
     # biosec
-
 
     print("NEW FARM CODE: " + code)
     # print(directly_manage)

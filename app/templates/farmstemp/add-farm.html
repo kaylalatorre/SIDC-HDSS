@@ -8,6 +8,7 @@
 
 {% block section %}
 <div class="main-div">
+    {{ form}}
     <form action="save-farm" method="POST">
     {% csrf_token %}
 
