@@ -21,7 +21,7 @@ class Farm(models.Model):
     total_pigs = models.IntegerField()
     isolation_pen = models.BooleanField(default=False)
     roof_height = models.FloatField()
-    feed_through = models.BooleanField(default=False)
+    feed_trough = models.BooleanField(default=False)
     bldg_curtain = models.BooleanField(default=False)
     medic_tank = models.IntegerField()
     waste_mgt_septic = models.BooleanField(default=False)
