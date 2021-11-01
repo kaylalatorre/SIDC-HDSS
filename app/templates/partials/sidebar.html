@@ -49,7 +49,7 @@
             <div class="name-position">
                 {% load login_extras %}
                 <div class="user-name"> {{ user.first_name|addStr:user.last_name }} </div>
-                <div class="user-position"> {{ user_group }} </div>
+                <div class="user-position"> {{ user.groups.all.0.name }} </div>
             </div>
             
             <!-- LOGOUT btn -->
