@@ -14,6 +14,7 @@ class Farm(models.Model):
     # loc_lat = models.FloatField()
     
     user_id = models.IntegerField()
+    # user_id = models.ForeignKey(User, )
     num_headsApplied = models.IntegerField()
     bldg_cap = models.IntegerField()
     num_pens = models.IntegerField()
@@ -39,5 +40,8 @@ class Farm(models.Model):
 
     weight_record_ID = models.IntegerField()
     symptoms_record_ID = models.IntegerField()
+
+    # def __str__(self)
+    #     return self.farmer_code
 
 # USER Table
