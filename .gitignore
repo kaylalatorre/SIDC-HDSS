@@ -1,14 +1,2 @@
 # dependencies
 /venv
-
-#pycache
-app/farmsapp/__pycache__/__init__.cpython-39.pyc
-app/farmsapp/__pycache__/urls.cpython-39.pyc
-app/farmsapp/__pycache__/views.cpython-39.pyc
-app/login/__pycache__/__init__.cpython-39.pyc
-app/login/__pycache__/urls.cpython-39.pyc
-app/login/__pycache__/views.cpython-39.pyc
-app/src/__pycache__/__init__.cpython-39.pyc
-app/src/__pycache__/settings.cpython-39.pyc
-app/src/__pycache__/urls.cpython-39.pyc
-app/src/__pycache__/wsgi.cpython-39.pyc
