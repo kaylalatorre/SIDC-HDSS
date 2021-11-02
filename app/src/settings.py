@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     # 'django.core.mail',
 
     # custom-made
@@ -86,6 +87,19 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# python manage.py makemigrations
+# django.contrib.gis.db.backends.postgis
+# django.db.backends.postgresql_psycopg2
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'NAME': 'sidc_hdss_db',
+#         'USER': 'tsongzzz',
+#         'PASSWORD': 'tsongzzz123',
+#         'HOST': '172.21.32.1',
+#         'PORT': '5432'
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
