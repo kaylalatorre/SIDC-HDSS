@@ -1,9 +1,11 @@
 from typing_extensions import ParamSpec
 from django.db import models
+# for getting current Date and Time when table record is created
+from django.utils.timezone import now 
 
 # FARM Table
 class Farm(models.Model):
-    date_registered = models.DateField()
+    date_registered = models.DateField(default=now)
     date_filed = models.DateField()
     raiser_uname = models.CharField(max_length=50)
     raiser_lname = models.CharField(max_length=50)
@@ -41,68 +43,41 @@ class Farm(models.Model):
     weight_record_ID = models.IntegerField()
     symptoms_record_ID = models.IntegerField()
 
-    def __str__(self) -> str:
-        return '%s %s' % (self.raiser_uname, self.raiser_lname)
-   
-    @classmethod
-    def create(cls, date_registered, date_filed, raiser_uname, raiser_lname,
-        farmer_contact, farmer_address, farmer_code, area,
-        # loc_long, # loc_lat,
-        user_id, num_headsApplied, bldg_cap, num_pens,
-        directly_manage, total_pigs, isolation_pen, roof_height,
-        feed_through, bldg_curtain, medic_tank, waste_mgt_septic,
-        waste_mgt_biogas, waste_mgt_others, warehouse_length, warehouse_width,
-        road_access, internal_bio_ID, external_bio_ID, est_time_complete,
-        activity_ID, weight_record_ID, symptoms_record_ID,):
-        """
-        Create an instance of Farm
-
-        :param date_registered:     models.DateField()
-        :param date_filed:          models.DateField()
-        :param raiser_uname:        models.CharField(max_length=50)
-        :param raiser_lname:        models.CharField(max_length=50)
-        :param farmer_contact:      models.CharField(max_length=50)
-        :param farmer_address:      models.CharField(max_length=200)
-        :param farmer_code:         models.IntegerField()
-        :param area:                models.CharField(max_length=15)
-        :param loc_long:            models.FloatField()
-        :param loc_lat:             models.FloatField()
-        :param user_id:             models.IntegerField()
-        :param num_headsApplied:    models.IntegerField()
-        :param bldg_cap:            models.IntegerField()
-        :param num_pens:            models.IntegerField()
-        :param directly_manage:     models.BooleanField(default=False)
-        :param total_pigs:          models.IntegerField()
-        :param isolation_pen:       models.BooleanField(default=False)
-        :param roof_height:         models.FloatField()
-        :param feed_through:        models.BooleanField(default=False)
-        :param bldg_curtain:        models.BooleanField(default=False)
-        :param medic_tank:          models.IntegerField()
-        :param waste_mgt_septic:    models.BooleanField(default=False)
-        :param waste_mgt_biogas:    models.BooleanField(default=False)
-        :param waste_mgt_others:    models.BooleanField(default=False)
-        :param warehouse_length:    models.FloatField()
-        :param warehouse_width:     models.FloatField()
-        :param road_access:         models.BooleanField(default=False)
-        :param internal_bio_ID:     models.IntegerField(null=True)
-        :param external_bio_ID:     models.IntegerField(null=True)
-        :param est_time_complete:   models.DateField()
-        :param activity_ID:         models.IntegerField()
-        :param weight_record_ID:    models.IntegerField()
-        :param symptoms_record_ID:  models.IntegerField()
-        """
-        farm = cls(date_registered = date_registered, date_filed = date_filed, raiser_uname = raiser_uname,
-            raiser_lname = raiser_lname, farmer_contact = farmer_contact, farmer_address = farmer_address,
-            farmer_code = farmer_code, area = area,
-            # loc_long = loc_long, # loc_lat = loc_lat,
-            user_id = user_id, num_headsApplied = num_headsApplied, bldg_cap = bldg_cap,
-            num_pens = num_pens, directly_manage = directly_manage, total_pigs = total_pigs,
-            isolation_pen = isolation_pen, roof_height = roof_height, feed_through = feed_through,
-            bldg_curtain = bldg_curtain, medic_tank = medic_tank, waste_mgt_septic = waste_mgt_septic,
-            waste_mgt_biogas = waste_mgt_biogas, waste_mgt_others = waste_mgt_others, warehouse_length = warehouse_length,
-            warehouse_width = warehouse_width, road_access = road_access, internal_bio_ID = internal_bio_ID,
-            external_bio_ID = external_bio_ID, est_time_complete = est_time_complete, activity_ID = activity_ID,
-            weight_record_ID = weight_record_ID, symptoms_record_ID = symptoms_record_ID,)
-        return farm
-
 # USER Table
+# Create your models here.
+
+# TODO: internal, external biosec models
+class ExternalBiosec(models.Model):
+    # TODO: generate custom PK?
+    # id = models.CharField(max_length=100)
+    last_updated = models.DateTimeField(default=now, editable=False)
+
+    bird_proof          = models.IntegerField(null=True)
+    perim_fence         = models.IntegerField(null=True)
+    fiveh_m_dist        = models.IntegerField(null=True)
+
+    prvdd_foot_dip      = models.IntegerField(null=True)
+    prvdd_alco_soap     = models.IntegerField(null=True)
+    obs_no_visitors     = models.IntegerField(null=True)
+    prsnl_dip_footwear  = models.IntegerField(null=True)
+    prsnl_sanit_hands   = models.IntegerField(null=True)
+    chg_disinfect_daily = models.IntegerField(null=True)
+
+    # def __str__(self):
+    #     return self.id
+
+class InternalBiosec(models.Model):
+    # TODO: generate custom PK?
+    # id = models.CharField(max_length=100)
+    last_updated = models.DateTimeField(default=now, editable=False)
+
+    isol_pen            = models.IntegerField(null=True)
+    waste_mgt           = models.IntegerField(null=True)
+    foot_dip            = models.IntegerField(null=True)
+    
+    disinfect_prem      = models.IntegerField(null=True)
+    disinfect_vet_supp  = models.IntegerField(null=True)
+
+    # def __str__(self):
+    #     return self.id
+            
