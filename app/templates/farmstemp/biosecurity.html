@@ -77,7 +77,11 @@
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                                <option value="01/01/21">01/01/21</option>
+
+                                {% for bio in biosecInt %}
+                                <option value="{{ bio.last_updated }}">{{ bio.last_updated }}</option>
+                                {% endfor %}
+                                
                             </select>
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">

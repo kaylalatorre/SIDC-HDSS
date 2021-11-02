@@ -13,9 +13,24 @@ def farms(request):
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
-def biosecurity(request):
+def biosec_view(request):
     print("TEST LOG: in Biosec view/n")
-    return render(request, 'farmstemp/biosecurity.html', {})
+
+    # TODO: For this specific FARM, get all last_updated Dates and biosec checklist fields;
+    bioInt = InternalBiosec.objects.all()
+    bioExt = ExternalBiosec.objects.all()
+    
+    # TODO: How to select biosec checklist under that Farm only?
+
+    # FRONTEND: render Date in <select> tag, checklist fields in <table> tag encased in a <form> tag
+
+    print("bioInt len(): " + str(len(bioInt)))
+    print("bioExt len(): " + str(len(bioExt)))
+
+    print("TEST LOG: bioInt last_updated-- ")
+    print(bioInt[0].last_updated)
+
+    return render(request, 'farmstemp/biosecurity.html', {'biosecInt': bioInt, 'biosecExt': bioExt})
 
 def addChecklist(request):
     return render(request, 'farmstemp/add-checklist.html', {})
