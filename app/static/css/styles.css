@@ -147,7 +147,8 @@ button span, .button span, button i, .button, i {
     padding-right: 4px;
 }
 
-.button:hover {
+.button:hover, .primary-btn:hover {
+    background: #1F5019;
     color:#FFF;
 }
 
