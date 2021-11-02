@@ -1,4 +1,13 @@
+/* Error Page */
 #errorno {
     font-size: 72px;
     color: #ED1E40;
+}
+
+/* Error Messages */
+.error {
+    display: none;
+    color: #ED1E40;
+    font-size: 12px;
+    text-align: center;
 }
