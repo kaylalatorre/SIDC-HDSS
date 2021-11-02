@@ -2,3 +2,4 @@
 /venv
 *.pyc
 app/temp.txt
+migrations/
