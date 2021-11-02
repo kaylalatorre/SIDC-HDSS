@@ -87,4 +87,16 @@ class Farm(models.Model):
     # def __str__(self)
     #     return self.farmer_code
 
-# USER Table
+# ACTIVITY Table
+class Activity(models.Model):
+    date = models.DateField()
+    raiser_ID = models.IntegerField()
+    trip_description = models.CharField(max_length=500)
+    time_departure = models.DateTimeField()
+    time_arrival = models.DateTimeField()
+    description = models.CharField(max_length=500)
+    remarks = models.CharField(max_length=500)
+    technician_ID = models.IntegerField()
+
+    # def __str__(self)
+    #     return self.
