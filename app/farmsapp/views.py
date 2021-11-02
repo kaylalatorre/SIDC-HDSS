@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 
 # for Models
@@ -56,9 +56,9 @@ def post_addChecklist(request):
             intBio = InternalBiosec()
 
             # TODO: How will these be updated from Biosec Measures?
-            # bird_proof          = models.IntegerField()
-            # perim_fence         = models.IntegerField()
-            # fiveh_m_dist        = models.IntegerField()
+            # extBio.bird_proof          = 2 # value of 2 is equal to "N/A" in the checklist
+            # extBio.perim_fence         = 2
+            # extBio.fiveh_m_dist        = 2
             extBio.prvdd_foot_dip       = biosecArr[1]
             extBio.prvdd_alco_soap      = biosecArr[2]
             extBio.obs_no_visitors      = biosecArr[3]
@@ -67,18 +67,18 @@ def post_addChecklist(request):
             extBio.chg_disinfect_daily  = biosecArr[7]
             
             # TODO: How will these be updated from Biosec Measures?
-            # isol_pen            = models.IntegerField()
-            # waste_mgt           = models.IntegerField()
-            # foot_dip            = models.IntegerField()
+            # intBio.isol_pen            = 2
+            # intBio.waste_mgt           = 2
+            # intBio.foot_dip            = 2
             intBio.disinfect_prem      = biosecArr[0]
             intBio.disinfect_vet_supp  = biosecArr[4]
 
-            # TODO: insert data into the INTERNAL, EXTERNAL BIOSEC tables
-            # extBio.save()
-            # intBio.save()
+            # Insert data into the INTERNAL, EXTERNAL BIOSEC tables
+            extBio.save()
+            intBio.save()
 
-            # Go back to Biosec main page
-            return render(request, 'farmstemp/biosecurity.html', {})
+            # Properly redirect to Biosec main page
+            return redirect('/biosecurity')
         
     else:
         return render(request, 'farmstemp/biosecurity.html', {})
