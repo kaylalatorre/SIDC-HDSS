@@ -17,6 +17,9 @@ def biosecurity(request):
     print("TEST LOG: in Biosec view/n")
     return render(request, 'farmstemp/biosecurity.html', {})
 
+def formsApproval(request):
+    return render(request, 'farmstemp/forms-approval.html', {})
+
 def addChecklist(request):
     return render(request, 'farmstemp/add-checklist.html', {})
 
