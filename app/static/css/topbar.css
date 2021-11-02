@@ -6,6 +6,7 @@
     justify-content: space-between;
     padding: 0px 24px;
     margin-bottom: 24px;
+    z-index: 100;
 }
 
 .content-section .topbar .menu-text {
@@ -34,3 +35,9 @@
 .content-section .topbar .bx-menu:hover {
     color: #006633;
 }
+
+div.sticky {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+  }
