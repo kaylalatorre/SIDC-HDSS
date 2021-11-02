@@ -8,6 +8,52 @@
 
 {% block section %}
     <div>
-        <p>FARMS!!!</p>
+        <div class="table-container main-div">
+            <h1 class="heading">Farms</h1>
+            <!-- <div class="flex subheading">
+                <label style="font-weight: 600;">Area Assigned:</label><p class="flex-item">West</p>
+                <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a></div>
+            </div> -->
+            <div class="box-style">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Farm Code</th>
+                            <th>Raiser</th>
+                            <th>Contact No.</th>
+                            <th>Address</th>
+                            <th>Area</th>
+                            <th>No. of Pigs</th>
+                            <th>No. of Pens</th>
+                            <th>Last Update</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data -->
+                        {% for farm in farms %}
+                        <tr>
+                            <td data-label="Farm Code">{{farm.code}}</td>
+                            <td data-label="Raiser">{{farm.raiser}}</td>
+                            <td data-label="Contact No.">{{farm.contact}}</td>
+                            <td data-label="Address">{{farm.address}}</td>
+                            <td data-label="Area">{{farm.area}}</td>
+                            <td data-label="No. of Pigs">{{farm.pigs}}</td>
+                            <td data-label="No. of Pens">{{farm.pens}}</td>
+                            <td data-label="Last Update">{{farm.updated}}</td>
+                            <td data-label="" class="td-btn">
+                                <button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <!-- When there are no assigned farms -->
+                        <tr class="empty">
+                            <td colspan="6">No farms assigned.</td>
+                        </tr>
+                        
+                    </tbody>            
+                </table>
+            </div>
+        </div>
     </div>
 {% endblock section %}

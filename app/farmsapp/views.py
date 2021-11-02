@@ -8,10 +8,21 @@ import psycopg2
 # Farms Management Module Views
 
 def farms(request):
+    farmsData = []
     for f in Farm.objects.all().values_list():
-        print(f[0])
+        farmObject = {
+            "code":  str(f[0]),
+            "raiser": f[3] + " " + f[4],
+            "contact": f[5],
+            "address": f[6],
+            "area": str(f[8]),
+            "pigs": str(f[14]),
+            "pens": str(f[12]),
+            "updated": str(f[2])
+        }
+        farmsData.append(farmObject)
 
-    return render(request, 'farmstemp/farms.html', {}) ## Farms table for all users except Technicians
+    return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
