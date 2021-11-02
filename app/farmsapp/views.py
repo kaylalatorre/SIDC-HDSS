@@ -51,8 +51,8 @@ def saveFarm(request):
     # Transform address to longitude and latitude values
 
     # Insert farm record to db
-    cursor.execute('''INSERT INTO farmsapp_farm(farmer_code, raiser_uname, farmer_contact)
-    VALUES (farmer_code, raiser_name, farmer_contact)''')
+    cursor.execute("""INSERT INTO farmsapp_farm(farmer_code, raiser_uname, farmer_contact)
+                      VALUES ('911', 'Jack', '0917824')""")
    
     conn.commit()
     print("-- NEW FARM ADDED TO DB --")
