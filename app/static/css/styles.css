@@ -87,7 +87,10 @@ section {
     margin-bottom: 24px;
 }
 
-
+#notfound {
+    text-align: center;
+    align-items: center;
+}
 
 /* Button Styles */
 button, .button {
@@ -102,7 +105,7 @@ button, .button {
 
 .button {
     display: table;
-    min-width: 120px;
+    min-width: 124px;
     text-decoration: none;
 }
 

@@ -7,6 +7,7 @@ urlpatterns = [
     path('farms', views.farms, name="farms"),
     path('add-farm', views.addFarm, name="addFarm"),
     path('biosecurity', views.biosecurity, name="biosecurity"),
+    path('tech-selected-farm', views.techSelectedFarm, name="techSelectedFarm"),
     path('forms-approval', views.formsApproval, name="formsApproval"),
 
     path('add-checklist', views.addChecklist, name="addChecklist"),

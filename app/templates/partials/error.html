@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div id="notfound">
+	<div class="box-style fit-content">
+		<div class="center" style="width: 50%">
+			<h1 id="errorno">404</h1>
+		</div>
+		<h2>Oops! Nothing was found</h2>
+		<p id="errormsg">The page you are looking for might have been removed had its name changed or is temporarily unavailable.</p>
+        <br>
+        <a class="button secondary-btn center" href="/" style="padding-right: 16px;"><i class='bx bx-arrow-back'></i>Go to Home</a>
+	</div>
+</div>
+{% endblock content %}
