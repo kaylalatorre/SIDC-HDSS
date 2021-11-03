@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Technician Assignment</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <h1 class="heading">Technician Assignment</h1>
+    <p>Reassign technicians here.</p>
+    <div class="box-style" style="width: 50%;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>No. of Farms</th>
+                    <th>Technician Assigned</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data -->
+                <tr>
+                    <td>West</td>
+                    <td>100</td>
+                    <td>Marites Tes</td>
+                    <td>
+                        <div class="btn-group" style="justify-content: end; padding: 0;">
+                            <button class="secondary-btn"><span class="material-icons md-18">edit</span>Edit</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock section %}

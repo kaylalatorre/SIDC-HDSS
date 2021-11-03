@@ -20,6 +20,9 @@ def biosecurity(request):
 def techSelectedFarm(request):
     return render(request, 'farmstemp/tech-selected-farm.html', {})
 
+def techAssignment(request):
+    return render(request, 'farmstemp/assignment.html', {})
+
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
 
