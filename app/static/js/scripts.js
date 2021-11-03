@@ -36,3 +36,12 @@ function viewFarm() {
     };
 }
 
+function viewForm() {
+    // Note: This links to a temporary navigation to template
+        // not sure if this can be used with actual implementation? with data
+    let viewFarm = document.querySelector('#viewForm');
+    viewFarm.onclick = function () {
+        location.href = "/selected-form";
+    };
+}
+

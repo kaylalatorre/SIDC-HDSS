@@ -26,6 +26,9 @@ def techAssignment(request):
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
 
+def selectedForm(request):
+    return render(request, 'farmstemp/selected-form.html', {})
+
 def addChecklist(request):
     return render(request, 'farmstemp/add-checklist.html', {})
 
