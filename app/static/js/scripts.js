@@ -41,7 +41,7 @@ function viewFarm() {
         // not sure if this can be used with actual implementation? with data
     let viewFarm = document.querySelector('#viewFarm');
     viewFarm.onclick = function () {
-        location.href = "/tech-selected-farm";
+        location.href = "/selected-farm";
     };
 }
 
