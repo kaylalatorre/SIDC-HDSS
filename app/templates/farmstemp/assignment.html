@@ -10,7 +10,7 @@
 <div class="table-container main-div">
     <h1 class="heading">Technician Assignment</h1>
     <p>Reassign technicians here.</p>
-    <div class="box-style" style="width: 50%;">
+    <div class="box-style" style="width: 60%;">
         <table class="table">
             <thead>
                 <tr>
@@ -21,14 +21,22 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
+                <!-- Data (per area)-->
                 <tr>
                     <td>West</td>
                     <td>100</td>
-                    <td>Marites Tes</td>
+                    <td style="padding-bottom: 0; vertical-align: middle;">
+                        <div class="mb-3">
+                            <select aria-label="Technician Assigned" class="form-select" disabled>
+                                <option value="Technician 1">Technician 1</option>
+                                <option value="Technician 2">Technician 2</option>
+                            </select>
+                        </div>
+                    </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn"><span class="material-icons md-18">edit</span>Edit</button>
+                            <button class="secondary-btn assignEdit"><span class="material-icons md-18">edit</span>Edit</button>
+                            <button class="secondary-btn assignSave"><span class="material-icons md-18">save</span>Save</button>
                         </div>
                     </td>
                 </tr>
