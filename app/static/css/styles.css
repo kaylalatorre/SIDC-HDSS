@@ -28,6 +28,7 @@ h2 { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
 h3 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
 p { font-size: 14px; font-family: 'Roboto'; }
 label { font-weight: 400; padding-right: 8px;}
+.bold-lbl { font-weight: 600;}
 a { text-decoration: none; color: #333;}
 a:hover { color: #006633}
 
