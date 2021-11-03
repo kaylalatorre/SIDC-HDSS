@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Add New Activity</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <h1 class="heading"><a href="/biosecurity">Biosecurity</a> > Add Activity</h1>
+    <div class="flex subheading">
+        <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">001</p>
+        <div><button class="primary-btn">Send for Approval</button></div>
+    </div>
+    <h2>Daily Activities</h2>
+    <section id="daily-activities">
+        <div class="box-style">
+            <div class="flex subheading">
+                <p class="flex-item">Add all activity details here. </p>
+                <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
+            </div>
+            <br>
+            <div class="input-group" id="input-activity">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Trip Type</th>
+                            <th>Departure Time</th>
+                            <th>Arrival Time</th>
+                            <th>Description</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="Date"><input type="date" aria-label="Date" class="form-control" placeholder="ex. 01/01/2021"></td>
+                            <td data-label="Trip Type">
+                                <select class="form-select" id="act-trip-type" style="margin-bottom: 0;">
+                                    <option value="Delivery of Feeds">Delivery of Feeds</option>
+                                    <option value="Delivery of Medicine">Delivery of Medicine</option>
+                                    <option value="Delivery of Pigs">Delivery of Pigs</option>
+                                    <option value="Vaccinations">Vaccinations</option>
+                                    <option value="Inspection">Inspection</option>
+                                    <option value="Trucking">Trucking</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </td>
+                            <td data-label="Departure Time"><input type="time" aria-label="Departure Time" class="form-control"  placeholder="ex. 18:00"></td>
+                            <td data-label="Arrival Time"><input type="time" aria-label="Arrival Time" class="form-control"  placeholder="ex. 18:00"></td>
+                            <td data-label="Description"><input type="text" aria-label="Description" class="form-control"  placeholder="Description"></td>
+                            <td data-label="Remarks"><input type="text" aria-label="Remarks" class="form-control"  placeholder="Remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            <!-- Hidden depending on user -->
+            <div id="activity-approvals">
+                <h3> Checked by: </h3>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-los">
+                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-ext-vet">
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-am">
+                    <label class="form-check-label" for="cb-am">Assistant Manager for Swine Business Unit</label>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock section %}

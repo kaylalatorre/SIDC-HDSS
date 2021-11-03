@@ -4,13 +4,13 @@
 
 {% block content %}
     <!-- Sidebar of logged in user -->
-    {% if user_group == 'Field Technician' %}
+    {% if user.groups.all.0.name == 'Field Technician' %}
         {% include 'partials/tech-sidebar.html' %}
 
-    {% elif user_group == 'Assistant Manager' %}
+    {% elif user.groups.all.0.name == 'Assistant Manager' %}
         {% include 'partials/am-sidebar.html' %}
 
-    {% elif user_group == 'Regional Manager' %}
+    {% elif user.groups.all.0.name == 'Regional Manager' %}
         {% include 'partials/rm-sidebar.html' %}
 
     {% else %}

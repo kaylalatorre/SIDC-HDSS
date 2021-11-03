@@ -18,7 +18,7 @@
     </div>
 
     <div class="flex">
-        <section class="flex-item">
+        <section class="flex-item" id="farm-details">
             <h2>Farm Details</h2>
             <div class="box-style">
                 <div class="mb-3">
@@ -44,6 +44,7 @@
                 <h3>Farm</h3>
                 <div class="mb-3">
                     <label for="input-address" class="form-label">Address</label>
+<<<<<<< HEAD
                     <input type="text" class="form-control" id="input-address" name="input-address" placeholder="ex. Batangas, 4200 Batangas">
                 </div>
                 <!-- <div class="mb-3">
@@ -51,6 +52,10 @@
                     <input type="text" class="form-control" id="input-contact" placeholder="ex. 091512345678">
                 </div> -->
                 
+=======
+                    <input type="text" class="form-control" id="input-address" placeholder="ex. Batangas, 4200 Batangas">
+                </div>
+>>>>>>> origin/nena-backend
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
                     <select class="form-select" id="input-area">
@@ -94,7 +99,7 @@
     </div>
 
     <div class="flex">
-        <section class="flex-item">
+        <section class="flex-item" id="pig-pens">
             <h2>Pig Pens</h2>
             <div class="box-style">
                 <div class="flex subheading">
@@ -126,8 +131,12 @@
                 </div>
             </div>
         </section>
+<<<<<<< HEAD
 
         <section class="flex-item">
+=======
+        <section class="flex-item" id="biosec-measures">
+>>>>>>> origin/nena-backend
             <h2>Biosecurity Measures</h2>
             <div class="box-style">
                 <p>Select all that apply.</p>
@@ -166,7 +175,28 @@
             </div>
         </section>
     </div>
+<<<<<<< HEAD
             
     </form>
+=======
+    <div class="flex" >
+        <section class="flex-item">
+            <div class="box-style">
+                <!-- Hidden depending on user -->
+                <div id="farm-approvals">
+                    <h3> Checked by: </h3>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" id="cb-ext-vet">
+                        <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                    </div>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" id="cb-am">
+                        <label class="form-check-label" for="cb-am">Assistant Manager for Swine Business Unit</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+>>>>>>> origin/nena-backend
 </div>
 {% endblock section %}
