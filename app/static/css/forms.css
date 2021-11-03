@@ -7,11 +7,25 @@
     display: none;
 }
 
+#biosec-details {
+    /* display: none; */
+}
+
+/* Displaying disabled forms */
+.form-check-input, .form-check-label {
+    opacity: 1!important;
+}
+
 /* Overwriting Bootstrap CCS */
 .form-select, .form-control, .form-check-input {
     margin-bottom: 16px;
     font-size: 14px;
     font-family: 'Roboto';
+}
+
+.form-check-input:checked {
+    background-color: #006633;
+    border-color: #006633;
 }
 
 .mb-3 {
@@ -22,8 +36,12 @@
     padding-left: 8px;
 }
 
-.table tbody tr td .form-control{
+.table tbody tr td .form-control {
     margin-bottom: 0;
+}
+
+.input-group {
+    vertical-align: middle;
 }
 
 /* Responsive Styles */

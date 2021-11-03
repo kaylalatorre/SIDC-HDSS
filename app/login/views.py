@@ -37,9 +37,13 @@ def home(request, *args, **kwargs):
         if g.name == request.user.groups.all()[0].name:
             # TEST: for tracking group name of User
             print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
-            # ENDTEST
-            context = {
-                'user_group': request.user.groups.all()[0].name
-            }
 
-    return render(request, 'home.html', context)
+            print("TEST LOG: in Home view/n")
+            print(request.user.groups.all()[0].name)
+            # ENDTEST
+
+            # context = {
+            #     'user_group': request.user.groups.all()[0].name
+            # }
+
+    return render(request, 'home.html', {})
