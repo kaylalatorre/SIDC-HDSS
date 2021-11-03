@@ -27,6 +27,15 @@ for(var i = 0; i < save.length; i++) {
     })
 }
 
+function viewTechFarm() {
+    // Note: This links to a temporary navigation to template
+        // not sure if this can be used with actual implementation? with data
+    let viewFarm = document.querySelector('#viewTechFarm');
+    viewFarm.onclick = function () {
+        location.href = "/tech-selected-farm";
+    };
+}
+
 function viewFarm() {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data

@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     path('farms', views.farms, name="farms"),
+    path('selected-farm', views.selectedFarm, name="selectedFarm"),
     path('add-farm', views.addFarm, name="addFarm"),
     path('biosecurity', views.biosecurity, name="biosecurity"),
     path('tech-selected-farm', views.techSelectedFarm, name="techSelectedFarm"),

@@ -10,6 +10,9 @@ import psycopg2
 def farms(request):
     return render(request, 'farmstemp/farms.html', {}) ## Farms table for all users except Technicians
 
+def selectedFarm(request):
+    return render(request, 'farmstemp/selected-farm.html', {})
+
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
