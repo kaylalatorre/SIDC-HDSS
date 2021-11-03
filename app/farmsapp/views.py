@@ -30,6 +30,8 @@ def biosec_view(request):
     print("TEST LOG: bioInt last_updated-- ")
     print(bioInt[0].last_updated)
 
+    # TODO: compile biosec attributes for Checklist, pass in template
+
     return render(request, 'farmstemp/biosecurity.html', {'biosecInt': bioInt, 'biosecExt': bioExt})
 
 def addChecklist(request):
