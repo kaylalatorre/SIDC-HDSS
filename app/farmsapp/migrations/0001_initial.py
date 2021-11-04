@@ -90,7 +90,8 @@ class Migration(migrations.Migration):
                 ('farm_ID', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='farmsapp.farm')),
             ],
         ),
-        name='ExternalBiosec',
+        migrations.CreateModel(
+            name='ExternalBiosec',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('bird_proof', models.IntegerField()),

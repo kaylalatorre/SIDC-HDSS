@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 
 # for Models
-
 from .models import ExternalBiosec, InternalBiosec
 import psycopg2
 
