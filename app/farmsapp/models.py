@@ -3,6 +3,43 @@ from django.db import models
 # for getting current Date and Time when table record is created
 from django.utils.timezone import now 
 
+# Create your models here.
+
+# TODO: internal, external biosec models
+class ExternalBiosec(models.Model):
+    # TODO: generate custom PK?
+    # id = models.CharField(max_length=100)
+    # last_updated = models.DateTimeField('last_updated')
+
+    bird_proof          = models.IntegerField()
+    perim_fence         = models.IntegerField()
+    fiveh_m_dist        = models.IntegerField()
+
+    prvdd_foot_dip      = models.IntegerField()
+    prvdd_alco_soap     = models.IntegerField()
+    obs_no_visitors     = models.IntegerField()
+    prsnl_dip_footwear  = models.IntegerField()
+    prsnl_sanit_hands   = models.IntegerField()
+    chg_disinfect_daily = models.IntegerField()
+
+    # def __str__(self):
+    #     return self.id
+
+class InternalBiosec(models.Model):
+    # TODO: generate custom PK?
+    # id = models.CharField(max_length=100)
+    # last_updated = models.DateTimeField('last_updated')
+
+    isol_pen            = models.IntegerField()
+    waste_mgt           = models.IntegerField()
+    foot_dip            = models.IntegerField()
+    
+    disinfect_prem      = models.IntegerField()
+    disinfect_vet_supp  = models.IntegerField()
+
+    # def __str__(self):
+    #     return self.id
+            
 # FARM Table
 class Farm(models.Model):
     date_registered = models.DateField(default=now)
@@ -44,6 +81,7 @@ class Farm(models.Model):
     symptoms_record_ID = models.IntegerField()
 
 # USER Table
+<<<<<<< HEAD
 # Create your models here.
 
 # TODO: internal, external biosec models
@@ -81,3 +119,5 @@ class InternalBiosec(models.Model):
     # def __str__(self):
     #     return self.id
             
+=======
+>>>>>>> fd7ce18fcab9ded93771bdadc918b56c26d93a2f
