@@ -102,8 +102,8 @@ class Farm(models.Model):
     warehouse_width     = models.FloatField()
     road_access         = models.BooleanField(default=False)
     
-    # extbio_ID           = models.ForeignKey(ExternalBiosec, on_delete=models.CASCADE)
-    # intbio_ID           = models.ForeignKey(InternalBiosec, on_delete=models.CASCADE)
+    extbio_ID           = models.ForeignKey(ExternalBiosec, on_delete=models.CASCADE)
+    intbio_ID           = models.ForeignKey(InternalBiosec, on_delete=models.CASCADE)
 
     extbio_ID           = models.IntegerField()
     intbio_ID           = models.IntegerField()
@@ -149,6 +149,9 @@ class Delivery(models.Model):
     delivery_type       = models.CharField(max_length=30)
     qty                 = models.IntegerField()
 
+    # def __str__(self)
+    #     return self.
+
 # ACTIVITY Table
 class Activity(models.Model):
     farm_ID             = models.ForeignKey(Farm, on_delete=models.CASCADE)
@@ -177,4 +180,6 @@ class Mortality(models.Model):
     num_toDate          = models.IntegerField()
     source              = models.CharField(max_length=200)
     remarks             = models.CharField(max_length=500)
-
+    
+    # def __str__(self)
+    #     return self.
