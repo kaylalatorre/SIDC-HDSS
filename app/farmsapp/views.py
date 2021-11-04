@@ -7,6 +7,7 @@ import psycopg2
 
 # Farms Management Module Views
 
+## Farms table for all users except Technicians
 def farms(request):
     farmsData = []
     for f in Farm.objects.all().values_list():
@@ -43,6 +44,8 @@ def biosec_view(request):
 
     print("TEST LOG: bioInt last_updated-- ")
     print(bioInt[0].last_updated)
+
+    # TODO: compile biosec attributes for Checklist, pass in template
 
     return render(request, 'farmstemp/biosecurity.html', {'biosecInt': bioInt, 'biosecExt': bioExt})
 

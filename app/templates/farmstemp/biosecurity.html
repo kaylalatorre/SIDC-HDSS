@@ -70,6 +70,7 @@
             </div>
         </section>
         <h2 class="heading">Checklists</h2>
+        {% for bio in biosecInt %}
         <section id="biosec-checklists">
             <div class="box-style">
                 <div>
@@ -77,10 +78,8 @@
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-
-                                {% for bio in biosecInt %}
+                                
                                 <option value="{{ bio.last_updated }}">{{ bio.last_updated }}</option>
-                                {% endfor %}
                                 
                             </select>
                         </div>
@@ -100,12 +99,15 @@
                         </tr>
                     </thead>
                     <tbody>
+
                         <tr>
                             <td>Disinfected farm premises?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" disabled>
+                                    {% if bio.disinfect_prem == 0 %}
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" selected disabled>
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio1">Yes</label>
+                                    {% endif %}
                                   
                                     <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio2" disabled>
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio2">No</label>
@@ -225,6 +227,8 @@
                 </table>
             </div>
         </section>
+        {% endfor %}
+
         <h2 class="heading">Activities</h2>
         <section id="farm-activities">
             <div class="box-style">
