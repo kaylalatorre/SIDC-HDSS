@@ -70,17 +70,19 @@
             </div>
         </section>
         <h2 class="heading">Checklists</h2>
-        {% for bio in biosecInt %}
         <section id="biosec-checklists">
+            
             <div class="box-style">
                 <div>
-                    <div class="flex subheading">
+                    <div class="flex subheading">     
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                                
-                                <option value="{{ bio.last_updated }}">{{ bio.last_updated }}</option>
-                                
+                                {% for bio in bioCheck %}
+                                <option value="{{ bio.id }}" > 
+                                    {{ bio.last_updated }}
+                                </option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
@@ -98,13 +100,13 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
 
+                    <tbody>  
                         <tr>
                             <td>Disinfected farm premises?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                    {% if bio.disinfect_prem == 0 %}
+                                    {% if bioCheck.0.disinfect_prem == 0 %}
                                     <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" selected disabled>
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio1">Yes</label>
                                     {% endif %}
@@ -117,18 +119,32 @@
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Provided foot dip specifically for haulers/drivers/truck helpers?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" disabled>
+                                    {% if bioCheck.0.prvdd_foot_dip == 0 %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" checked="checked" disabled>                                    
+                                    {% else %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" disabled>                                    
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio1">Yes</label>
-                                  
+
+                                    {% if bioCheck.0.prvdd_foot_dip == 1 %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio2">No</label>
-                                  
+
+                                    {% if bioCheck.0.prvdd_foot_dip == 2 %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio3">N/A</label>
+
                                 </div>
                             </td>
                         </tr>
@@ -222,13 +238,13 @@
                                 </div>
                             </td>
                         </tr>
-                    </tr>
+                        </tr>
                     </tbody>
+                    
                 </table>
             </div>
-        </section>
-        {% endfor %}
 
+        </section>
         <h2 class="heading">Activities</h2>
         <section id="farm-activities">
             <div class="box-style">

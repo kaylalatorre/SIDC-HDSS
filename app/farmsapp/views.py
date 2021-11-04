@@ -13,34 +13,94 @@ def farms(request):
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
+# (GET) For searching a Biosec Checklist based on biosecID
+def search_bioChecklist(request, biosecID):
+
+    # Queryset: Get only relevant fields for biochecklist based on biosecID
+    """
+    SELECT id,<biochecklist fields>
+    FROM ExternalBiosec 
+    WHERE id=biosecID
+    """
+
+    querysetExt = ExternalBiosec.object.filter(id=biosecID).only(
+        'prvdd_foot_dip',      
+        'prvdd_alco_soap',     
+        'obs_no_visitors',     
+        'prsnl_dip_footwear',  
+        'prsnl_sanit_hands',   
+        'chg_disinfect_daily'
+    )
+
+    print("TEST LOG search_bioCheck(): Queryset--")
+    str(querysetExt.query)
+         
+    return render(request, 'farmstemp/biosecurity.html', {'resBiocheck': querysetExt})
+
+# # (GET) For updating a Biosec Checklist based on biosecID
+# def update_bioChecklist(request, id):
+    # return render(request, 'farmstemp/biosecurity.html', {})
+
+# For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
     print("TEST LOG: in Biosec view/n")
 
-    # TODO: For this specific FARM, get all last_updated Dates and biosec checklist fields;
+    # TODO: How to select biosec checklist under that Farm only? 
+    # --> FILTER Int and Ext objects w/ farm ID
+    """
+    SELECT biosec.id,<biochecklist fields>
+    FROM farm F
+    JOIN externalbiosec EXT
+    ON F.extbiosec_ID = EXT.id
+    JOIN internalbiosec INT
+    ON F.intbiosec_ID = INT.id
+    """
+
     bioInt = InternalBiosec.objects.all()
     bioExt = ExternalBiosec.objects.all()
     
-    # TODO: How to select biosec checklist under that Farm only?
-
-    # FRONTEND: render Date in <select> tag, checklist fields in <table> tag encased in a <form> tag
-
+    # TEST LOG checking
     print("bioInt len(): " + str(len(bioInt)))
     print("bioExt len(): " + str(len(bioExt)))
 
     print("TEST LOG: bioInt last_updated-- ")
     print(bioInt[0].last_updated)
 
-    # TODO: compile biosec attributes for Checklist, pass in template
+    # Compile biosec attributes for Checklist, to be passed in template
+    # https://stackoverflow.com/questions/58894056/django-create-custom-object-list-in-the-view-and-pass-it-to-template-to-loop-o
+    bcheckList = []
 
-    return render(request, 'farmstemp/biosecurity.html', {'biosecInt': bioInt, 'biosecExt': bioExt})
+    # Populate from External biosec list
+    for ext in bioExt:
+        bcheckList.append({
+            'last_updated': ext.last_updated, 
+            'prvdd_foot_dip': ext.prvdd_foot_dip,     
+            'prvdd_alco_soap': ext.prvdd_alco_soap,   
+            'obs_no_visitors': ext.obs_no_visitors,    
+            'prsnl_dip_footwear': ext.prsnl_dip_footwear,  
+            'prsnl_sanit_hands': ext.prsnl_sanit_hands,
+            'chg_disinfect_daily': ext.chg_disinfect_daily,
+        })
+
+    # Populate from Internal biosec list
+    for inter in bioInt:
+        bcheckList.append({
+            'disinfect_prem': inter.disinfect_prem,
+            'disinfect_vet_supp': inter.disinfect_vet_supp,
+        })
+    
+    print("TEST LOG bcheckList len(): " + str(len(bcheckList)))
+
+    return render(request, 'farmstemp/biosecurity.html', {'bioCheck': bcheckList})
 
 def addChecklist(request):
     return render(request, 'farmstemp/add-checklist.html', {})
 
-# POST req function for adding a Biosec Checklist
+# (POST) function for adding a Biosec Checklist
 def post_addChecklist(request):
     if request.method == "POST":
         
+        # If none selected in btn group, default value taken from btn tag is None
         biosecArr = [
             request.POST.get("disinfect_prem", None),
             request.POST.get("prvdd_foot_dip", None),
@@ -68,14 +128,11 @@ def post_addChecklist(request):
                 print(list((index, value)))
 
         if checkComplete:
-            # init class Models
+            # init Biosec Models
             extBio = ExternalBiosec()
             intBio = InternalBiosec()
 
-            # TODO: How will these be updated from Biosec Measures?
-            # extBio.bird_proof          = 2 # value of 2 is equal to "N/A" in the checklist
-            # extBio.perim_fence         = 2
-            # extBio.fiveh_m_dist        = 2
+            # Put biochecklist attributes into External model
             extBio.prvdd_foot_dip       = biosecArr[1]
             extBio.prvdd_alco_soap      = biosecArr[2]
             extBio.obs_no_visitors      = biosecArr[3]
@@ -83,14 +140,11 @@ def post_addChecklist(request):
             extBio.prsnl_sanit_hands    = biosecArr[6]
             extBio.chg_disinfect_daily  = biosecArr[7]
             
-            # TODO: How will these be updated from Biosec Measures?
-            # intBio.isol_pen            = 2
-            # intBio.waste_mgt           = 2
-            # intBio.foot_dip            = 2
+            # Put biochecklist attributes into Internal model
             intBio.disinfect_prem      = biosecArr[0]
             intBio.disinfect_vet_supp  = biosecArr[4]
 
-            # Insert data into the INTERNAL, EXTERNAL BIOSEC tables
+            # Insert data into the INTERNAL, EXTERNAL Biosec tables
             extBio.save()
             intBio.save()
 
