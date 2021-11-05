@@ -6,6 +6,13 @@
     <title>SIDC-HDSS | Biosecurity</title>
 {% endblock page_title %}
 
+<!-- to load backend-scripts.js -->
+{% block javascript %}
+    <script src="{% static 'js/backend-scripts' %}"></script> 
+{% endblock javascript %}
+
+
+
 {% block section %}
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
@@ -77,6 +84,10 @@
                     <div class="flex subheading">     
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
+                            
+                            <!-- to load jquery-AJAX script -->
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
                                 {% for bio in bioCheck %}
                                 <option value="{{ bio.id }}" > 
@@ -84,6 +95,7 @@
                                 </option>
                                 {% endfor %}
                             </select>
+
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
                             <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i>Edit</button>
