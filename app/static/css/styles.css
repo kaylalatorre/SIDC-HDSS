@@ -106,7 +106,7 @@ button, .button {
 
 .button {
     display: table;
-    min-width: 124px;
+    max-width: 160px;
     text-decoration: none;
 }
 
@@ -147,7 +147,7 @@ button, .button {
     color:#ED1E40;
 }
 
-button span, .button span, button i, .button, i {
+button span, .button span, button i, .button i {
     padding-right: 4px;
 }
 
