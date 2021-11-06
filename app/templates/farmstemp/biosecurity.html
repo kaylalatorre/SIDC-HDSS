@@ -6,17 +6,6 @@
     <title>SIDC-HDSS | Biosecurity</title>
 {% endblock page_title %}
 
-<!-- to load backend-scripts.js -->
-{% block javascript %}
-    <script src="{% static 'js/backend-scripts' %}"></script> 
-    
-{% endblock javascript %}
-
-<!-- to load jquery-AJAX script -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-
-
 {% block section %}
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
@@ -80,6 +69,7 @@
                 </div>
             </div>
         </section>
+
         <h2 class="heading">Checklists</h2>
         <section id="biosec-checklists">
             
@@ -88,11 +78,9 @@
                     <div class="flex subheading">     
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
                                 {% for bio in bioCheck %}
-                                <option value="{{ bio.id }}" > 
-                                    {{ bio.last_updated }}
+                                <option value="{{ bio.id }}"> {{ bio.last_updated }}
                                 </option>
                                 {% endfor %}
                             </select>
@@ -119,10 +107,8 @@
                             <td>Disinfected farm premises?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                    {% if bioCheck.0.disinfect_prem == 0 %}
-                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" selected disabled>
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" disabled>
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio1">Yes</label>
-                                    {% endif %}
                                   
                                     <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio2" disabled>
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio2">No</label>
@@ -295,4 +281,5 @@
         </section>
     </div>
 </div>
+
 {% endblock section %}

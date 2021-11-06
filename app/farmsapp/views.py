@@ -2,9 +2,19 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 from django.http import JsonResponse
 from django.core import serializers
+
+from django.views.decorators.csrf import csrf_exempt
+
+
 # for Models
 from .models import ExternalBiosec, InternalBiosec
 import psycopg2
+
+
+# class Biochecklist(){
+
+# }
+
 
 # Farms Management Module Views
 
@@ -14,7 +24,8 @@ def farms(request):
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
-# (GET) For searching a Biosec Checklist based on biosecID
+@csrf_exempt
+# (POST) For searching a Biosec Checklist based on biosecID
 def search_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
@@ -23,12 +34,18 @@ def search_bioChecklist(request):
     FROM ExternalBiosec 
     WHERE id=biosecID
     """
+    print("TEST LOG: in search_bioChecklist()")
 
-    # TODO: How to access biosecID passed from AJAX post request?
+    # access biosecID passed from AJAX post request
     bioID = request.POST.get("biosecID")
-    print("bioID: " + str(bioID))
 
-    querysetExt = ExternalBiosec.object.filter(id=bioID).only(
+    if None:
+        print("TEST LOG: no biosecID from AJAX req")
+    else:
+        print("bioID: " + str(bioID))
+
+
+    querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
         'prvdd_foot_dip',      
         'prvdd_alco_soap',     
         'obs_no_visitors',     
@@ -37,16 +54,16 @@ def search_bioChecklist(request):
         'chg_disinfect_daily'
     )
 
-    print("TEST LOG search_bioCheck(): Queryset--")
-    str(querysetExt.query)
+    print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
+    
+    # get first instance in query
+    bioObj = querysetExt.first()
 
     # serialize query object into JSON
-    ser_instance = serializers.serialize('json', [ querysetExt, ])
+    ser_instance = serializers.serialize('json', [ bioObj, ])
     # send to client side.
     return JsonResponse({"instance": ser_instance}, status=200)
     
-    # return render(request, 'farmstemp/biosecurity.html', {'resBiocheck': querysetExt})
-
 # # (GET) For updating a Biosec Checklist based on biosecID
 # def update_bioChecklist(request, id):
     # return render(request, 'farmstemp/biosecurity.html', {})
@@ -80,9 +97,11 @@ def biosec_view(request):
     # https://stackoverflow.com/questions/58894056/django-create-custom-object-list-in-the-view-and-pass-it-to-template-to-loop-o
     bcheckList = []
 
+    # TODO: How to select relevant fields only from EXTERNAL, INTERNAL models?
     # Populate from External biosec list
     for ext in bioExt:
         bcheckList.append({
+            'id': ext.id,
             'last_updated': ext.last_updated, 
             'prvdd_foot_dip': ext.prvdd_foot_dip,     
             'prvdd_alco_soap': ext.prvdd_alco_soap,   
