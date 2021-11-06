@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
+from .forms import FarmForm
 
 # for Models
 from .models import ExternalBiosec, InternalBiosec
@@ -7,42 +8,30 @@ from .models import ExternalBiosec, InternalBiosec
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
 
-def home(request, *args, **kwargs):
-
-    for g in Group.objects.filter():
-        if g.name == request.user.groups.all()[0].name:
-            # TEST: for tracking group name of User
-            print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
-
-            print("TEST LOG: in Home view/n")
-            print(request.user.groups.all()[0].name)
-            # ENDTEST
-
-            # context = {
-            #     'user_group': request.user.groups.all()[0].name
-            # }
-
-    return render(request, 'home.html', {})
-
-
 # Farms Management Module Views
 
 ## Farms table for all users except Technicians
 def farms(request):
     return render(request, 'farmstemp/farms.html', {}) 
 
-## Redirect to Add Farm Page
+## Redirect to Add Farm Page and render form
 def addFarm(request):
-    return render(request, 'farmstemp/add-farm.html', {})
+
+    if request.method == 'POST':
+        form = FarmForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['farm_address']
+            print(farm_address)
+
+    form = FarmForm()
+
+    return render(request, 'farmstemp/add-farm.html', {'form' : form})
 
 ## Save Farm Details
 def saveFarm(request):
     
-    return redirect('home')
-
-def addFarm(request):
-    return render(request, 'farmstemp/add-farm.html', {})
-
+    return render(request, 'farmstemp/farms.html', {}) 
+ 
 def biosec_view(request):
     print("TEST LOG: in Biosec view/n")
 

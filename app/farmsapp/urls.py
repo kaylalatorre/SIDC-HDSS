@@ -4,8 +4,6 @@ from . import views
 # Farms Management Module URLS
 
 urlpatterns = [
-    path('', views.home, name="home"),
-    path('home', views.home, name="home"),
     path('farms', views.farms, name="farms"),
     path('add-farm', views.addFarm, name="addFarm"),
     path('save-farm', views.saveFarm, name="saveFarm"),

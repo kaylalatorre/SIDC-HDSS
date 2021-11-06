@@ -79,6 +79,9 @@ class Farm_Symptoms(models.Model):
 # FARM Table
 class Farm(models.Model): 
     # farm_code = models.IntegerField()
+    # raiser_ID           = models.ForeignKey(Hog_Raiser, on_delete=models.CASCADE)
+    raiser_ID           = models.IntegerField()
+
     date_registered     = models.DateField()
 
     farm_address        = models.CharField(max_length=200)
@@ -102,36 +105,29 @@ class Farm(models.Model):
     warehouse_width     = models.FloatField()
     road_access         = models.BooleanField(default=False)
     
-    extbio_ID           = models.ForeignKey(ExternalBiosec, on_delete=models.CASCADE)
-    intbio_ID           = models.ForeignKey(InternalBiosec, on_delete=models.CASCADE)
-
     extbio_ID           = models.IntegerField()
     intbio_ID           = models.IntegerField()
 
     est_time_complete   = models.DateField()
 
-    weight_record_ID    = models.ForeignKey(Farm_Weight, on_delete=models.CASCADE)
-    symptoms_record_ID  = models.ForeignKey(Farm_Symptoms, on_delete=models.CASCADE)
+    weight_record_ID    = models.IntegerField()
+    symptoms_record_ID  = models.IntegerField()
 
     # def __str__(self)
     #     return self.farmer_code
 
 # HOG_RAISER Table
 class Hog_Raiser(models.Model):
-    farm_ID = models.ForeignKey(Farm, on_delete=models.CASCADE)
-
-    code                = models.IntegerField()
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=15)
-    address             = models.CharField(max_length=100)
 
     # def __str__(self)
     #     return self.
 
 # PIGPEN_MEASURES Table
 class Pigpen_Measures(models.Model):
-    farm_ID = models.ForeignKey(Farm, on_delete=models.CASCADE)
+    farm_ID = models.IntegerField()
 
     length              = models.FloatField()
     width               = models.FloatField()
@@ -154,8 +150,8 @@ class Delivery(models.Model):
 
 # ACTIVITY Table
 class Activity(models.Model):
-    farm_ID             = models.ForeignKey(Farm, on_delete=models.CASCADE)
-    delivery_ID         = models.ForeignKey(Delivery, on_delete=models.CASCADE)
+    farm_ID             = models.IntegerField()
+    delivery_ID         = models.IntegerField()
 
     date                = models.DateField()
     trip_desc           = models.CharField(max_length=500)
@@ -169,7 +165,7 @@ class Activity(models.Model):
 
 # MORTALITY Table
 class Mortality(models.Model):
-    farm_ID             = models.ForeignKey(Farm, on_delete=models.CASCADE)
+    farm_ID             = models.IntegerField()
         
     area                = models.CharField(max_length=15)
     series              = models.IntegerField()
