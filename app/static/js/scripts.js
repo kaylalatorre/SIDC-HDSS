@@ -27,6 +27,7 @@ for(var i = 0; i < save.length; i++) {
     })
 }
 
+// MGIHT BE BACKEND
 function viewTechFarm() {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
@@ -53,4 +54,3 @@ function viewForm() {
         location.href = "/selected-form";
     };
 }
-

@@ -70,7 +70,7 @@ a:hover { color: #006633}
 }
 .subheading {
     vertical-align: middle;
-    padding-bottom: 16px;
+    padding-bottom: 8px;
 }
 
 .empty {
@@ -101,7 +101,8 @@ button, .button {
     align-items: center;
     padding: 8px 16px;
     border-radius: 16px;
-    box-shadow: 0px 4px 8px rgba(51, 51, 51, 0.04);
+    border: 0.5px;
+    box-shadow: 0px 4px 8px rgba(51, 51, 51, 0.08);
 }
 
 .button {
@@ -147,14 +148,39 @@ button, .button {
     color:#ED1E40;
 }
 
+.logout-btn-style {
+    box-shadow: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
 button span, .button span, button i, .button i {
     padding-right: 4px;
 }
 
-.button:hover, .primary-btn:hover {
+button:hover, .button:hover, .primary-btn:hover{
     background: #1F5019;
     color:#FFF;
 }
+
+.secondary-btn:hover {
+    background: #006633;
+    color:#FFF;
+}
+
+.logout-btn-style:hover {
+    box-shadow: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
+.bx-refresh {
+    font-size: 20px !important; 
+    padding: 0;
+}
+
 
 .assignSave {
     display: none;

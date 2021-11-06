@@ -61,9 +61,9 @@
                     <i class='bx bx-chevron-down arrow' ></i>
                 </div>
                 <ul class="sub-menu">
-                    <li class="nav-item"><a href="">Farms Assessment</a></li>
-                    <li class="nav-item"><a href="">Internal Biosecurity</a></li>
-                    <li class="nav-item"><a href="">External Biosecurity</a></li>
+                    <li class="nav-item"><a href="/farms-assessment">Farms Assessment</a></li>
+                    <li class="nav-item"><a href="/int-biosecurity">Internal Biosecurity</a></li>
+                    <li class="nav-item"><a href="/ext-biosecurity">External Biosecurity</a></li>
                     <li class="nav-item"><a href="">Hogs Weight</a></li>
                     <li class="nav-item"><a href="">Symptoms Reported</a></li>
                 </ul>
@@ -99,7 +99,7 @@
             <!-- LOGOUT btn -->
             <form action="logout" method="POST">
                 {% csrf_token %}
-                <button style="border:none; background-color: transparent;" type="submit">
+                <button class="logout-btn-style" type="submit">
                     <i class='bx bx-log-out' id="logout-btn"></i>
                 </button>
             </form>

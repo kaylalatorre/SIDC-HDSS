@@ -101,3 +101,12 @@ def post_addChecklist(request):
 
 def addActivity(request):
     return render(request, 'farmstemp/add-activity.html', {})
+
+def farmsAssessment(request):
+    return render(request, 'farmstemp/rep-farms-assessment.html', {})
+
+def intBiosecurity(request):
+    return render(request, 'farmstemp/rep-int-biosec.html', {})
+
+def extBiosecurity(request):
+    return render(request, 'farmstemp/rep-ext-biosec.html', {})

@@ -17,4 +17,9 @@ urlpatterns = [
     path('post-addchecklist', views.post_addChecklist, name="post-addChecklist"),
 
     path('add-activity', views.addActivity, name="addActivity"),
+    
+    # reports
+    path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),
+    path('int-biosecurity', views.intBiosecurity, name="intBiosecurity"),
+    path('ext-biosecurity', views.extBiosecurity, name="extBiosecurity"),
 ]
