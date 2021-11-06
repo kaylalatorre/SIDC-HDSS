@@ -45,6 +45,27 @@ $('#checklist-date').change(function() {
                 $('#obs_no_visitors_radio2').prop("checked", true);
             else
                 $('#obs_no_visitors_radio3').prop("checked", true);
+            
+            if (biofields["prsnl_dip_footwear"] == 0)
+                $('#prsnl_dip_footwear_radio1').prop("checked", true);
+            else if (biofields["prsnl_dip_footwear"] == 1)
+                $('#prsnl_dip_footwear_radio2').prop("checked", true);
+            else
+                $('#prsnl_dip_footwear_radio3').prop("checked", true);
+
+            if (biofields["prsnl_sanit_hands"] == 0)
+                $('#prsnl_sanit_hands_radio1').prop("checked", true);
+            else if (biofields["prsnl_sanit_hands"] == 1)
+                $('#prsnl_sanit_hands_radio2').prop("checked", true);
+            else
+                $('#prsnl_sanit_hands_radio3').prop("checked", true);
+
+            if (biofields["chg_disinfect_daily"] == 0)
+                $('#cng_disinfect_daily_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#cng_disinfect_daily_radio2').prop("checked", true);
+            else
+                $('#cng_disinfect_daily_radio3').prop("checked", true);
 
         },
         error: function (response){

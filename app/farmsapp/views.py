@@ -45,6 +45,8 @@ def search_bioChecklist(request):
         print("bioID: " + str(bioID))
 
 
+    # TODO: how to select fields from different tables? 
+    # --> might need Farm in order to join biosec tables
     querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
         'prvdd_foot_dip',      
         'prvdd_alco_soap',     
