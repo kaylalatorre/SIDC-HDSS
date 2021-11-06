@@ -10,7 +10,7 @@
     <ul class="nav-links">
         <ul class="sidebar-header">
             <span class="header-name">Overview</span>
-            <li class="nav-item nav-current">
+            <li class="nav-item">
                 <a href="/"> 
                     <i class='bx bxs-dashboard' ></i>
                     <span class="link-name">Dashboard</span>
@@ -99,7 +99,7 @@
             <!-- LOGOUT btn -->
             <form action="logout" method="POST">
                 {% csrf_token %}
-                <button class="logout-btn-style" type="submit">
+                <button class="text-btn" type="submit">
                     <i class='bx bx-log-out' id="logout-btn"></i>
                 </button>
             </form>

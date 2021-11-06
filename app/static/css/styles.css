@@ -148,13 +148,6 @@ button, .button {
     color:#ED1E40;
 }
 
-.logout-btn-style {
-    box-shadow: 0;
-    border: none;
-    background: none;
-    box-shadow: none;
-}
-
 button span, .button span, button i, .button i {
     padding-right: 4px;
 }
@@ -164,16 +157,17 @@ button:hover, .button:hover, .primary-btn:hover{
     color:#FFF;
 }
 
-.secondary-btn:hover {
-    background: #006633;
-    color:#FFF;
-}
-
-.logout-btn-style:hover {
+.text-btn:hover {
     box-shadow: 0;
     border: none;
     background: none;
     box-shadow: none;
+    color:#006633;
+}
+
+.secondary-btn:hover {
+    background: #006633;
+    color:#FFF;
 }
 
 .bx-refresh {

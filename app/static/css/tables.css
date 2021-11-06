@@ -7,10 +7,6 @@ table, thead {
 tr {
     vertical-align: middle;
     border-bottom-width: 0.5px;
-    border-color: #333;
-}
-
-td {
     border-color: #AAAAAA;
 }
 
@@ -28,6 +24,17 @@ td {
     display: inline-block;
     text-align: right;
     vertical-align: middle;
+}
+
+.table .table-total {
+    border-top: solid 2px; 
+    border-color: #333 !important;
+}
+
+.table .second-header {
+    border-bottom: solid 2px; 
+    border-color: #333 !important;
+    color: #006633;
 }
 
 /* Responsive Styles */
