@@ -16,14 +16,12 @@ def farms(request):
 
 ## Redirect to Add Farm Page and render form
 def addFarm(request):
+    form = FarmForm()
 
     if request.method == 'POST':
         form = FarmForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['farm_address']
-            print(farm_address)
-
-    form = FarmForm()
+            form.save() 
 
     return render(request, 'farmstemp/add-farm.html', {'form' : form})
 

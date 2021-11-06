@@ -113,8 +113,8 @@ class Farm(models.Model):
     weight_record_ID    = models.IntegerField()
     symptoms_record_ID  = models.IntegerField()
 
-    # def __str__(self)
-    #     return self.farmer_code
+    def __str__(self):
+        return self.raiser_ID
 
 # HOG_RAISER Table
 class Hog_Raiser(models.Model):
