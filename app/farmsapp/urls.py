@@ -8,7 +8,7 @@ urlpatterns = [
     path('add-farm', views.addFarm, name="addFarm"),
 
     path('biosecurity', views.biosec_view, name="biosecurity"),
-    path('biosecurity/<int:id>/', views.search_bioChecklist, name="search_biochecklist"),
+    path('biosecurity/getchecklist', views.search_bioChecklist, name="search_biochecklist"),
     path('add-checklist', views.addChecklist, name="addChecklist"),
     path('post-addchecklist', views.post_addChecklist, name="post-addChecklist"),
 

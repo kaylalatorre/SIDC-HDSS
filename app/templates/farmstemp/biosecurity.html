@@ -9,7 +9,11 @@
 <!-- to load backend-scripts.js -->
 {% block javascript %}
     <script src="{% static 'js/backend-scripts' %}"></script> 
+    
 {% endblock javascript %}
+
+<!-- to load jquery-AJAX script -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
 
@@ -84,9 +88,6 @@
                     <div class="flex subheading">     
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-                            
-                            <!-- to load jquery-AJAX script -->
-                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
                                 {% for bio in bioCheck %}

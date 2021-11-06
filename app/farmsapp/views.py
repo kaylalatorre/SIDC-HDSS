@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
-
+from django.http import JsonResponse
+from django.core import serializers
 # for Models
 from .models import ExternalBiosec, InternalBiosec
 import psycopg2
@@ -14,7 +15,7 @@ def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
 # (GET) For searching a Biosec Checklist based on biosecID
-def search_bioChecklist(request, biosecID):
+def search_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
     """
@@ -23,7 +24,11 @@ def search_bioChecklist(request, biosecID):
     WHERE id=biosecID
     """
 
-    querysetExt = ExternalBiosec.object.filter(id=biosecID).only(
+    # TODO: How to access biosecID passed from AJAX post request?
+    bioID = request.POST.get("biosecID")
+    print("bioID: " + str(bioID))
+
+    querysetExt = ExternalBiosec.object.filter(id=bioID).only(
         'prvdd_foot_dip',      
         'prvdd_alco_soap',     
         'obs_no_visitors',     
@@ -34,8 +39,13 @@ def search_bioChecklist(request, biosecID):
 
     print("TEST LOG search_bioCheck(): Queryset--")
     str(querysetExt.query)
-         
-    return render(request, 'farmstemp/biosecurity.html', {'resBiocheck': querysetExt})
+
+    # serialize query object into JSON
+    ser_instance = serializers.serialize('json', [ querysetExt, ])
+    # send to client side.
+    return JsonResponse({"instance": ser_instance}, status=200)
+    
+    # return render(request, 'farmstemp/biosecurity.html', {'resBiocheck': querysetExt})
 
 # # (GET) For updating a Biosec Checklist based on biosecID
 # def update_bioChecklist(request, id):
