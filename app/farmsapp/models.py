@@ -82,36 +82,36 @@ class Farm(models.Model):
     # raiser_ID           = models.ForeignKey(Hog_Raiser, on_delete=models.CASCADE)
     raiser_ID           = models.IntegerField()
 
-    date_registered     = models.DateField()
+    date_registered     = models.DateField(null=True)
 
     farm_address        = models.CharField(max_length=200)
     area                = models.CharField(max_length=15)
-    loc_long            = models.FloatField()
-    loc_lat             = models.FloatField()
+    loc_long            = models.FloatField(null=True)
+    loc_lat             = models.FloatField(null=True)
     
-    bldg_cap            = models.IntegerField()
-    num_pens            = models.IntegerField()
+    bldg_cap            = models.IntegerField(null=True)
+    num_pens            = models.IntegerField(null=True)
     directly_manage     = models.BooleanField(default=False)
-    total_pigs          = models.IntegerField()
+    total_pigs          = models.IntegerField(null=True)
     isolation_pen       = models.BooleanField(default=False)
-    roof_height         = models.FloatField()
+    roof_height         = models.FloatField(null=True)
     feed_trough         = models.BooleanField(default=False)
     bldg_curtain        = models.BooleanField(default=False)
-    medic_tank          = models.IntegerField()
+    medic_tank          = models.IntegerField(null=True)
     waste_mgt_septic    = models.BooleanField(default=False)
     waste_mgt_biogas    = models.BooleanField(default=False)
     waste_mgt_others    = models.BooleanField(default=False)
-    warehouse_length    = models.FloatField()
-    warehouse_width     = models.FloatField()
+    warehouse_length    = models.FloatField(null=True)
+    warehouse_width     = models.FloatField(null=True)
     road_access         = models.BooleanField(default=False)
     
-    extbio_ID           = models.IntegerField()
-    intbio_ID           = models.IntegerField()
+    extbio_ID           = models.IntegerField(null=True)
+    intbio_ID           = models.IntegerField(null=True)
 
-    est_time_complete   = models.DateField()
+    est_time_complete   = models.DateField(null=True)
 
-    weight_record_ID    = models.IntegerField()
-    symptoms_record_ID  = models.IntegerField()
+    weight_record_ID    = models.IntegerField(null=True)
+    symptoms_record_ID  = models.IntegerField(null=True)
 
     def __str__(self):
         return self.raiser_ID

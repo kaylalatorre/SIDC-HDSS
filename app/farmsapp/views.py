@@ -16,19 +16,29 @@ def farms(request):
 
 ## Redirect to Add Farm Page and render form
 def addFarm(request):
-    form = FarmForm()
+    print("TEST LOG: Add Farm view") 
 
+    form = FarmForm()
+    
     if request.method == 'POST':
         form = FarmForm(request.POST)
+        print("TEST LOG: Form has POST method") 
+
+
         if form.is_valid():
-            form.save() 
+            farm = form.save(commit=False)
+            farm.save()
+            print("TEST LOG: New Farm added to db") 
+            return render(request, 'home.html', {})         
+    else:
+        print("TEST LOG: Form is not a POST method")
 
     return render(request, 'farmstemp/add-farm.html', {'form' : form})
 
 ## Save Farm Details
 def saveFarm(request):
     
-    return render(request, 'farmstemp/farms.html', {}) 
+    return render(request, 'home.html', {}) 
  
 def biosec_view(request):
     print("TEST LOG: in Biosec view/n")

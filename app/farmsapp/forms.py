@@ -4,4 +4,4 @@ from .models import Farm
 class FarmForm(ModelForm):
     class Meta:
         model = Farm
-        fields = '__all__'
+        fields = ('raiser_ID',)
