@@ -72,6 +72,10 @@ class FarmForm(ModelForm):
             'name' : 'input-address',
             'placeholder' : 'ex. Batangas, 4200 Batangas'
         })
+        self.fields['area'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-area'
+        })
         self.fields['roof_height'].widget.attrs.update({
             'input type' : 'number', 
             'class' : 'form-control',

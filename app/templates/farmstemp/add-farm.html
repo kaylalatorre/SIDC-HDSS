@@ -8,13 +8,15 @@
 
 {% block section %}
 <div class="main-div">
+    <!-- <form action="save-farm" method="POST"> -->
     <form action="" method="POST">
+
     {% csrf_token %}
 
     <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
     <div class="flex subheading">
         <p class="flex-item">Add a new farm record here. </p>
-        <div><button class="primary-btn" type="submit">Send for Approval</button></div>
+        <div><button class="primary-btn" action="save-farm" type="submit">Send for Approval</button></div>
     </div>
 
     <div class="flex">
@@ -57,12 +59,13 @@
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
-                    <select class="form-select" id="input-area">
+                    <!-- <select class="form-select" id="input-area">
                         <option value="TISISI">TISISI</option>
                         <option value="West">West</option>
                         <option value="East">East</option>
                         <option value="Other">Other</option>
-                    </select>
+                    </select> -->
+                    {{farmForm.area}}
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate which area.</label>

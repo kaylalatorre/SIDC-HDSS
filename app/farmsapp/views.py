@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
+
+# for Forms
 from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm
 
 # for Models
-from .models import ExternalBiosec, InternalBiosec
+from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
@@ -17,29 +19,25 @@ def farms(request):
 ## Redirect to Add Farm Page and render form
 def addFarm(request):
     print("TEST LOG: Add Farm view") 
-
-    hogRaiserForm       = HogRaiserForm()
-    farmForm            = FarmForm()
-    pigpenMeasuresForm  = PigpenMeasuresForm()
-    externalBiosecForm  = ExternalBiosecForm()
-    internalBiosecForm  = InternalBiosecForm()
     
     if request.method == 'POST':
+        print("TEST LOG: Form has POST method") 
+        print(request.POST)
+
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
-        
-        print("TEST LOG: Form has POST method") 
+    
+        # print(pigpenMeasuresForm.errors)
 
-
-        if farmForm.is_valid():
+        if farmForm.is_valid() and hogRaiserForm.is_valid() and pigpenMeasuresForm.is_valid() and externalBiosecForm.is_valid() and internalBiosecForm.is_valid():
             hogRaiser      = hogRaiserForm.save(commit=False)
             farm           = farmForm.save(commit=False)
             pigpenMeasures  = pigpenMeasuresForm.save(commit=False)
             externalBiosec = externalBiosecForm.save(commit=False)
-            internalBiosec = internalBiosec.save(commit=False)
+            internalBiosec = internalBiosecForm.save(commit=False)
 
             hogRaiser.save()
             farm.save()
@@ -48,16 +46,23 @@ def addFarm(request):
             internalBiosec.save()
 
             print("TEST LOG: New Farm added to db") 
-
-            # context =   'hogRaiserForm' : hogRaiserForm,
-            #             'farmForm' : farmForm,
-            #             'pigpenMeasureForm' : pigpenMeasureForm,
-            #             'externalBiosecForm' : externalBiosecForm,
-            #             'internalBiosecForm' : internalBiosecForm
-
-            # return render(request, 'home.html', {})         
+        
+        else:
+            # hogRaiserForm       = HogRaiserForm()
+            # farmForm            = FarmForm()
+            # pigpenMeasuresForm  = PigpenMeasuresForm()
+            # externalBiosecForm  = ExternalBiosecForm()
+            # internalBiosecForm  = InternalBiosecForm()
+            print("TEST LOG: Form not valid")
+     
     else:
         print("TEST LOG: Form is not a POST method")
+        
+        hogRaiserForm       = HogRaiserForm()
+        farmForm            = FarmForm()
+        pigpenMeasuresForm  = PigpenMeasuresForm()
+        externalBiosecForm  = ExternalBiosecForm()
+        internalBiosecForm  = InternalBiosecForm()
 
     return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
@@ -67,6 +72,7 @@ def addFarm(request):
 
 ## Save Farm Details
 def saveFarm(request):
+    print("TEST LOG: New Farm added to db") 
     
     return render(request, 'home.html', {}) 
  
@@ -85,7 +91,7 @@ def biosec_view(request):
     print("bioExt len(): " + str(len(bioExt)))
 
     print("TEST LOG: bioInt last_updated-- ")
-    print(bioInt[0].last_updated)
+    # print(bioInt[0].last_updated)
 
     # TODO: compile biosec attributes for Checklist, pass in template
 

@@ -6,16 +6,16 @@ from django.utils.timezone import now
 class ExternalBiosec(models.Model):
     last_updated = models.DateTimeField(default=now, editable=False)
 
-    bird_proof          = models.IntegerField(null=True)
-    perim_fence         = models.IntegerField(null=True)
-    fiveh_m_dist        = models.IntegerField(null=True)
+    bird_proof          = models.IntegerField(null=True, blank=True)
+    perim_fence         = models.IntegerField(null=True, blank=True)
+    fiveh_m_dist        = models.IntegerField(null=True, blank=True)
 
-    prvdd_foot_dip      = models.IntegerField(null=True)
-    prvdd_alco_soap     = models.IntegerField(null=True)
-    obs_no_visitors     = models.IntegerField(null=True)
-    prsnl_dip_footwear  = models.IntegerField(null=True)
-    prsnl_sanit_hands   = models.IntegerField(null=True)
-    chg_disinfect_daily = models.IntegerField(null=True)
+    prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
+    prvdd_alco_soap     = models.IntegerField(null=True, blank=True)
+    obs_no_visitors     = models.IntegerField(null=True, blank=True)
+    prsnl_dip_footwear  = models.IntegerField(null=True, blank=True)
+    prsnl_sanit_hands   = models.IntegerField(null=True, blank=True)
+    chg_disinfect_daily = models.IntegerField(null=True, blank=True)
 
     # def __str__(self):
     #     return self.id
@@ -24,12 +24,12 @@ class ExternalBiosec(models.Model):
 class InternalBiosec(models.Model):
     last_updated        = models.DateTimeField(default=now, editable=False)
 
-    isol_pen            = models.IntegerField(null=True)
-    waste_mgt           = models.IntegerField(null=True)
-    foot_dip            = models.IntegerField(null=True)
+    isol_pen            = models.IntegerField(null=True, blank=True)
+    waste_mgt           = models.IntegerField(null=True, blank=True)
+    foot_dip            = models.IntegerField(null=True, blank=True)
     
-    disinfect_prem      = models.IntegerField(null=True)
-    disinfect_vet_supp  = models.IntegerField(null=True)
+    disinfect_prem      = models.IntegerField(null=True, blank=True)
+    disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 
     # def __str__(self):
     #     return self.id
@@ -80,38 +80,43 @@ class Farm_Symptoms(models.Model):
 class Farm(models.Model): 
     # farm_code = models.IntegerField()
     # raiser_ID           = models.ForeignKey(Hog_Raiser, on_delete=models.CASCADE)
-    raiser_ID           = models.IntegerField()
+    raiser_ID           = models.IntegerField(null=True, blank=True)
 
-    date_registered     = models.DateField(null=True)
+    date_registered     = models.DateField(null=True, blank=True, default=now)
+
+    AREA_CHOICES        = [('TISISI', 'TISISI'),
+                            ('West', 'West'),
+                            ('East', 'East'),
+                            ('Other', 'Other')]
 
     farm_address        = models.CharField(max_length=200)
-    area                = models.CharField(max_length=15)
-    loc_long            = models.FloatField(null=True)
-    loc_lat             = models.FloatField(null=True)
+    area                = models.CharField(max_length=15, choices=AREA_CHOICES, default='TISISI')
+    loc_long            = models.FloatField(null=True, blank=True)
+    loc_lat             = models.FloatField(null=True, blank=True)
     
-    bldg_cap            = models.IntegerField(null=True)
-    num_pens            = models.IntegerField(null=True)
+    bldg_cap            = models.IntegerField(null=True, blank=True)
+    num_pens            = models.IntegerField(null=True, blank=True)
     directly_manage     = models.BooleanField(default=False)
-    total_pigs          = models.IntegerField(null=True)
+    total_pigs          = models.IntegerField(null=True, blank=True)
     isolation_pen       = models.BooleanField(default=False)
-    roof_height         = models.FloatField(null=True)
+    roof_height         = models.FloatField(null=True, blank=True)
     feed_trough         = models.BooleanField(default=False)
     bldg_curtain        = models.BooleanField(default=False)
-    medic_tank          = models.IntegerField(null=True)
+    medic_tank          = models.IntegerField(null=True, blank=True)
     waste_mgt_septic    = models.BooleanField(default=False)
     waste_mgt_biogas    = models.BooleanField(default=False)
     waste_mgt_others    = models.BooleanField(default=False)
-    warehouse_length    = models.FloatField(null=True)
-    warehouse_width     = models.FloatField(null=True)
+    warehouse_length    = models.FloatField(null=True, blank=True)
+    warehouse_width     = models.FloatField(null=True, blank=True)
     road_access         = models.BooleanField(default=False)
     
-    extbio_ID           = models.IntegerField(null=True)
-    intbio_ID           = models.IntegerField(null=True)
+    extbio_ID           = models.IntegerField(null=True, blank=True)
+    intbio_ID           = models.IntegerField(null=True, blank=True)
 
-    est_time_complete   = models.DateField(null=True)
+    est_time_complete   = models.DateField(null=True, blank=True)
 
-    weight_record_ID    = models.IntegerField(null=True)
-    symptoms_record_ID  = models.IntegerField(null=True)
+    weight_record_ID    = models.IntegerField(null=True, blank=True)
+    symptoms_record_ID  = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.raiser_ID
@@ -127,7 +132,7 @@ class Hog_Raiser(models.Model):
 
 # PIGPEN_MEASURES Table
 class Pigpen_Measures(models.Model):
-    farm_ID = models.IntegerField()
+    farm_ID = models.IntegerField(null=True, blank=True)
 
     length              = models.FloatField()
     width               = models.FloatField()
