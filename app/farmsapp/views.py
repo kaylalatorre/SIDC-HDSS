@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
-from .forms import FarmForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm
 
 # for Models
 from .models import ExternalBiosec, InternalBiosec
@@ -18,22 +18,52 @@ def farms(request):
 def addFarm(request):
     print("TEST LOG: Add Farm view") 
 
-    form = FarmForm()
+    hogRaiserForm       = HogRaiserForm()
+    farmForm            = FarmForm()
+    pigpenMeasuresForm  = PigpenMeasuresForm()
+    externalBiosecForm  = ExternalBiosecForm()
+    internalBiosecForm  = InternalBiosecForm()
     
     if request.method == 'POST':
-        form = FarmForm(request.POST)
+        hogRaiserForm       = HogRaiserForm(request.POST)
+        farmForm            = FarmForm(request.POST)
+        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
+        externalBiosecForm  = ExternalBiosecForm(request.POST)
+        internalBiosecForm  = InternalBiosecForm(request.POST)
+        
         print("TEST LOG: Form has POST method") 
 
 
-        if form.is_valid():
-            farm = form.save(commit=False)
+        if farmForm.is_valid():
+            hogRaiser      = hogRaiserForm.save(commit=False)
+            farm           = farmForm.save(commit=False)
+            pigpenMeasures  = pigpenMeasuresForm.save(commit=False)
+            externalBiosec = externalBiosecForm.save(commit=False)
+            internalBiosec = internalBiosec.save(commit=False)
+
+            hogRaiser.save()
             farm.save()
+            pigpenMeasures.save()
+            externalBiosec.save()
+            internalBiosec.save()
+
             print("TEST LOG: New Farm added to db") 
-            return render(request, 'home.html', {})         
+
+            # context =   'hogRaiserForm' : hogRaiserForm,
+            #             'farmForm' : farmForm,
+            #             'pigpenMeasureForm' : pigpenMeasureForm,
+            #             'externalBiosecForm' : externalBiosecForm,
+            #             'internalBiosecForm' : internalBiosecForm
+
+            # return render(request, 'home.html', {})         
     else:
         print("TEST LOG: Form is not a POST method")
 
-    return render(request, 'farmstemp/add-farm.html', {'form' : form})
+    return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
+                                                        'farmForm' : farmForm,
+                                                        'pigpenMeasuresForm' : pigpenMeasuresForm,
+                                                        'externalBiosecForm' : externalBiosecForm,
+                                                        'internalBiosecForm' : internalBiosecForm})
 
 ## Save Farm Details
 def saveFarm(request):
