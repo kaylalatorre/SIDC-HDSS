@@ -31,6 +31,7 @@ label { font-weight: 400; padding-right: 8px;}
 .bold-lbl { font-weight: 600;}
 a { text-decoration: none; color: #333;}
 a:hover { color: #006633}
+ul, li { list-style: none;}
 
 /* General Styles */
 .main-div {
@@ -71,10 +72,6 @@ a:hover { color: #006633}
 .subheading {
     vertical-align: middle;
     padding-bottom: 8px;
-}
-
-.empty {
-    display: none;
 }
 
 .content-section {
@@ -175,7 +172,12 @@ button:hover, .button:hover, .primary-btn:hover{
     padding: 0;
 }
 
+.primary-btn:disabled {
+    background: #D3D3D3; 
+    color:#AAAAAA;
+}
 
+/* Save button for technician assignment */
 .assignSave {
     display: none;
 }
