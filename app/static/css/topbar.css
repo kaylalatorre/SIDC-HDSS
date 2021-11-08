@@ -76,6 +76,7 @@ div.sticky {
     position: absolute !important;
     top: 72px;
     right: 24px;
+    padding-bottom: 24px;
 
     /* Enable scrolling */
     overflow: hidden;
@@ -105,12 +106,20 @@ div.sticky {
 .notif-header {
     background: #FFF;
     margin: 0;
-    padding: 24px 24px 0 24px;
+    padding: 16px 24px;
     z-index: 1;
+    border-bottom: solid 1px;
+    border-color: #333;
 }
 
 .notif-item {
-    margin: 24px;
+    padding: 24px;
+    border-bottom: solid 1px;
+    border-color: #AAA;
+}
+
+.notif-item:hover {
+    background: #FAFAFA;
 }
 
 .notif-box .notif-label {
