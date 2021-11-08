@@ -4,7 +4,7 @@ from django.utils.timezone import now
 
 # EXTERNAL_BIOSEC Table
 class ExternalBiosec(models.Model):
-    last_updated = models.DateTimeField(default=now, editable=False)
+    last_updated        = models.DateTimeField(default=now, editable=False)
 
     bird_proof          = models.IntegerField(null=True, blank=True)
     perim_fence         = models.IntegerField(null=True, blank=True)
@@ -34,9 +34,9 @@ class InternalBiosec(models.Model):
     # def __str__(self):
     #     return self.id
 
-# FARM_WEIGHT Table
+# FARM_WEIGHT Table -- might remove
 class Farm_Weight(models.Model):
-    date_filed          = models.DateField()
+    date_filed          = models.DateField(default=now)
 
     is_starter          = models.BooleanField(default=False)
     ave_weight          = models.FloatField()
@@ -48,7 +48,7 @@ class Farm_Weight(models.Model):
 
 # FARM_SYMPTOMS Table
 class Farm_Symptoms(models.Model):
-    date_filed          = models.DateField()
+    date_filed          = models.DateField(default=now)
 
     high_fever          = models.BooleanField(default=False)
     loss_appetite       = models.BooleanField(default=False)
@@ -76,13 +76,21 @@ class Farm_Symptoms(models.Model):
     # def __str__(self):
     #     return self.id
 
-# FARM Table
-class Farm(models.Model): 
-    # farm_code = models.IntegerField()
-    # raiser_ID           = models.ForeignKey(Hog_Raiser, on_delete=models.CASCADE)
-    raiser_ID           = models.IntegerField(null=True, blank=True)
+# HOG_RAISER Table
+class Hog_Raiser(models.Model):
+    fname               = models.CharField(max_length=50)
+    lname               = models.CharField(max_length=50)
+    contact_no          = models.CharField(max_length=15)
 
-    date_registered     = models.DateField(null=True, blank=True, default=now)
+    # def __str__(self)
+    #     return self.
+
+# FARM Table -- might remove
+class Farm(models.Model): 
+    # farm_code           = models.IntegerField()
+    hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
+
+    date_registered     = models.DateField(default=now, null=True, blank=True)
 
     AREA_CHOICES        = [('TISISI', 'TISISI'),
                             ('West', 'West'),
@@ -93,14 +101,18 @@ class Farm(models.Model):
     area                = models.CharField(max_length=15, choices=AREA_CHOICES, default='TISISI')
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
-    
+
     bldg_cap            = models.IntegerField(null=True, blank=True)
-    num_pens            = models.IntegerField(null=True, blank=True)
+    num_pens            = models.IntegerField(null=True, blank=True, default=1)
     directly_manage     = models.BooleanField(default=False)
     total_pigs          = models.IntegerField(null=True, blank=True)
     isolation_pen       = models.BooleanField(default=False)
     roof_height         = models.FloatField(null=True, blank=True)
-    feed_trough         = models.BooleanField(default=False)
+    
+    FEED_CHOICES        = [('Semi-automatic', 'Semi-automatic'),
+                            ('Trough', 'Trough')]
+
+    feed_trough         = models.CharField(max_length=15, choices=FEED_CHOICES, default='Semi-automatic')
     bldg_curtain        = models.BooleanField(default=False)
     medic_tank          = models.IntegerField(null=True, blank=True)
     waste_mgt_septic    = models.BooleanField(default=False)
@@ -110,29 +122,23 @@ class Farm(models.Model):
     warehouse_width     = models.FloatField(null=True, blank=True)
     road_access         = models.BooleanField(default=False)
     
-    extbio_ID           = models.IntegerField(null=True, blank=True)
-    intbio_ID           = models.IntegerField(null=True, blank=True)
+    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
+    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
 
     est_time_complete   = models.DateField(null=True, blank=True)
 
-    weight_record_ID    = models.IntegerField(null=True, blank=True)
-    symptoms_record_ID  = models.IntegerField(null=True, blank=True)
+    # farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, default=0)
+    # farm_symptoms       = models.ForeignKey('Farm_Symptoms', on_delete=models.CASCADE, default=0)
 
-    def __str__(self):
-        return self.raiser_ID
+    farm_weight         = models.IntegerField(null=True, blank=True)
+    farm_symptoms       = models.IntegerField(null=True, blank=True)
 
-# HOG_RAISER Table
-class Hog_Raiser(models.Model):
-    fname               = models.CharField(max_length=50)
-    lname               = models.CharField(max_length=50)
-    contact_no          = models.CharField(max_length=15)
-
-    # def __str__(self)
-    #     return self.
+    # def __str__(self):
+    #     return self.raiser_ID
 
 # PIGPEN_MEASURES Table
 class Pigpen_Measures(models.Model):
-    farm_ID = models.IntegerField(null=True, blank=True)
+    farm                = models.ForeignKey('Farm', on_delete=models.CASCADE, null=True, blank=True)
 
     length              = models.FloatField()
     width               = models.FloatField()
@@ -143,7 +149,7 @@ class Pigpen_Measures(models.Model):
 
 # DELIVERY Table
 class Delivery(models.Model):
-    date_filed          = models.IntegerField()
+    date_filed          = models.DateField(default=now)
    
     seller_fname        = models.CharField(max_length=50)
     seller_lname        = models.CharField(max_length=50)
@@ -155,8 +161,8 @@ class Delivery(models.Model):
 
 # ACTIVITY Table
 class Activity(models.Model):
-    farm_ID             = models.IntegerField()
-    delivery_ID         = models.IntegerField()
+    farm                = models.ForeignKey('Farm', on_delete=models.CASCADE)
+    delivery            = models.ForeignKey('Delivery', on_delete=models.CASCADE)
 
     date                = models.DateField()
     trip_desc           = models.CharField(max_length=500)
@@ -170,7 +176,7 @@ class Activity(models.Model):
 
 # MORTALITY Table
 class Mortality(models.Model):
-    farm_ID             = models.IntegerField()
+    farm                = models.ForeignKey('Farm', on_delete=models.CASCADE)
         
     area                = models.CharField(max_length=15)
     series              = models.IntegerField()
@@ -184,3 +190,25 @@ class Mortality(models.Model):
     
     # def __str__(self)
     #     return self.
+
+# ACTIVITIES_FORM Table
+class Activities_Form(models.Model):
+    farm                = models.ForeignKey('Farm', on_delete=models.CASCADE)
+    
+    tech_ID             = models.IntegerField()
+    liveop_ID           = models.IntegerField()
+    is_checked          = models.BooleanField(default=False)
+    extvet_ID           = models.IntegerField()
+    is_reported         = models.BooleanField(default=False)
+    asm_ID              = models.IntegerField()
+    is_noted            = models.BooleanField(default=False)
+
+# PPE_FORM (Pigpen Evaluation) Table
+class PPE_Form(models.Model):
+    farm                = models.ForeignKey('Farm', on_delete=models.CASCADE)
+
+    tech_ID             = models.IntegerField()
+    extvet_ID           = models.IntegerField()
+    is_checked          = models.BooleanField(default=False)
+    approve_asm_ID      = models.IntegerField()
+    is_approved         = models.BooleanField(default=False)

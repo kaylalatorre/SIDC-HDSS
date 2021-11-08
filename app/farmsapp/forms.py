@@ -99,6 +99,10 @@ class FarmForm(ModelForm):
             'name' : 'wh-width',
             'placeholder' : 'Width'
         })
+        self.fields['feed_trough'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-trough'
+        })
         self.fields['bldg_cap'].widget.attrs.update({
             'input type' : 'number', 
             'class' : 'form-control',

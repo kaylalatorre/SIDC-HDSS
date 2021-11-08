@@ -30,30 +30,72 @@ def addFarm(request):
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
     
-        # print(pigpenMeasuresForm.errors)
-
-        if farmForm.is_valid() and hogRaiserForm.is_valid() and pigpenMeasuresForm.is_valid() and externalBiosecForm.is_valid() and internalBiosecForm.is_valid():
-            hogRaiser      = hogRaiserForm.save(commit=False)
-            farm           = farmForm.save(commit=False)
-            pigpenMeasures  = pigpenMeasuresForm.save(commit=False)
-            externalBiosec = externalBiosecForm.save(commit=False)
-            internalBiosec = internalBiosecForm.save(commit=False)
-
+        if hogRaiserForm.is_valid():
+            hogRaiser = hogRaiserForm.save(commit=False)
             hogRaiser.save()
-            farm.save()
-            pigpenMeasures.save()
-            externalBiosec.save()
-            internalBiosec.save()
 
-            print("TEST LOG: New Farm added to db") 
-        
+            # farmForm['hog_raiser'].value(hogRaiser.id)
+
+            print("TEST LOG: Added new raiser")
+
+            if externalBiosecForm.is_valid():
+                externalBiosec = externalBiosecForm.save(commit=False)
+                externalBiosec.save()
+
+                # farmForm['extbio'].value(externalBiosec.id)
+
+                print("TEST LOG: Added new external biosec")
+
+                if internalBiosecForm.is_valid():
+                    internalBiosec = internalBiosecForm.save(commit=False)
+                    internalBiosec.save()
+
+                    # farmForm['intbio'].value(internalBiosec.id)
+
+                    print("TEST LOG: Added new internal biosec")
+
+                    if farmForm.is_valid():
+                        farm = farmForm.save(commit=False)
+
+                        farm.hog_raiser_id = hogRaiser.id
+                        farm.extbio_id = externalBiosec.id
+                        farm.intbio_id = internalBiosec.id
+                        
+                        farm.save()
+                        
+                        # pigpenMeasuresForm['farm'].value(farm.id)
+
+                        print("TEST LOG: Added new farm")
+
+                        if pigpenMeasuresForm.is_valid():
+                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+
+                            pigpenMeasures.farm_id = farm.id
+
+                            pigpenMeasures.save()
+
+                            print("TEST LOG: Added new pigpen measure")
+                            return render(request, 'home.html', {})
+
+                        else:
+                            print("TEST LOG: Pigpen Measures Form not valid")
+                            print(pigpenMeasuresForm.errors)
+                    
+                    else:
+                        print("TEST LOG: Farm Form not valid")
+                        print(farmForm.errors)
+
+                else:
+                    print("TEST LOG: Internal Biosec Form not valid")
+                    print(internalBiosec.errors)
+
+            else:
+                print("TEST LOG: External Biosec Form not valid")
+                print(externalBiosec.errors)
+            
         else:
-            # hogRaiserForm       = HogRaiserForm()
-            # farmForm            = FarmForm()
-            # pigpenMeasuresForm  = PigpenMeasuresForm()
-            # externalBiosecForm  = ExternalBiosecForm()
-            # internalBiosecForm  = InternalBiosecForm()
-            print("TEST LOG: Form not valid")
+            print("TEST LOG: Hog Raiser Form not valid")
+            print(hogRaiserForm.errors)
      
     else:
         print("TEST LOG: Form is not a POST method")
