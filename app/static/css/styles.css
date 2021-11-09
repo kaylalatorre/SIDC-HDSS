@@ -70,6 +70,18 @@ ul, li { list-style: none;}
     width: 50%;
     padding-right: 16px;
 }
+
+.dd-flex-item-left {
+    flex-grow: 1;
+    width: 30%;
+    padding-right: 16px;
+}
+
+.dd-flex-item-right {
+    flex-grow: 2;
+    width: 70%;
+}
+
 .subheading {
     vertical-align: middle;
     padding-bottom: 8px;
@@ -203,23 +215,6 @@ button:hover, .button:hover, .primary-btn:hover{
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
 
-
-/* Responsive Styles */
-@media (max-width: 848px) {
-    *, body { font-size: 14px; }
-    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
-    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
-    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 600; }
-    p, label { font-size: 14px; font-family: 'Roboto'; }
-}
-
-@media (max-width: 600px) {
-    *, body { font-size: 12px; }
-    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
-    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
-    h3 { font-size: 12px; font-family: 'Public Sans'; font-weight: 600; }
-    p, label { font-size: 12px; font-family: 'Roboto'; }
-}
 
 /* Overriding Bootstrap Styles */
 .btn-outline-primary {
