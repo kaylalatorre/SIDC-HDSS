@@ -54,3 +54,13 @@ function viewForm() {
         location.href = "/selected-form";
     };
 }
+
+function viewAnnounce() {
+    // Note: This links to a temporary navigation to template
+        // not sure if this can be used with actual implementation? with data
+    let viewAnnounce = document.querySelector('#viewAnnounce');
+    viewAnnounce.onclick = function () {
+        location.href = "/view-announcement";
+    };
+}
+
