@@ -79,7 +79,7 @@
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                                {% for bio in bioCheck %}
+                                {% for bio in bioList %}
                                 <option value="{{ bio.id }}"> {{ bio.last_updated }}
                                 </option>
                                 {% endfor %}
@@ -123,21 +123,21 @@
                             <td>Provided foot dip specifically for haulers/drivers/truck helpers?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                    {% if bioCheck.0.prvdd_foot_dip == 0 %}
+                                    {% if currBio.extbio.prvdd_foot_dip == 0 %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" checked="checked" disabled>                                    
                                     {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" disabled>                                    
                                     {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio1">Yes</label>
 
-                                    {% if bioCheck.0.prvdd_foot_dip == 1 %}
+                                    {% if currBio.extbio.prvdd_foot_dip == 1 %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" checked="checked" disabled>
                                     {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" disabled>
                                     {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio2">No</label>
 
-                                    {% if bioCheck.0.prvdd_foot_dip == 2 %}
+                                    {% if currBio.extbio.prvdd_foot_dip == 2 %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" checked="checked" disabled>
                                     {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" disabled>

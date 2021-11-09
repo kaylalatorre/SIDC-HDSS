@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # for Models
-from .models import ExternalBiosec, InternalBiosec
+from .models import ExternalBiosec, InternalBiosec, Farm
 import psycopg2
 
 
@@ -25,13 +25,13 @@ def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
 @csrf_exempt
-# (POST) For searching a Biosec Checklist based on biosecID
+# (POST) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
     """
-    SELECT id,<biochecklist fields>
-    FROM ExternalBiosec 
+    SELECT id,<checklist fields from EXTERNAL>,<checklist fields from INTERNAL>
+    FROM ExternalBiosec, InternalBiosec 
     WHERE id=biosecID
     """
     print("TEST LOG: in search_bioChecklist()")
@@ -66,7 +66,7 @@ def search_bioChecklist(request):
     # send to client side.
     return JsonResponse({"instance": ser_instance}, status=200)
     
-# # (GET) For updating a Biosec Checklist based on biosecID
+# # (POST) For updating a Biosec Checklist based on biosecID
 # def update_bioChecklist(request, id):
     # return render(request, 'farmstemp/biosecurity.html', {})
 
@@ -74,55 +74,53 @@ def search_bioChecklist(request):
 def biosec_view(request):
     print("TEST LOG: in Biosec view/n")
 
-    # TODO: How to select biosec checklist under that Farm only? 
-    # --> FILTER Int and Ext objects w/ farm ID
     """
-    SELECT biosec.id,<biochecklist fields>
+    SELECT biosec.id,<biochecklist fields INTERNAL>, <biochecklist fields EXTERNAL>
     FROM farm F
     JOIN externalbiosec EXT
     ON F.extbiosec_ID = EXT.id
     JOIN internalbiosec INT
     ON F.intbiosec_ID = INT.id
+    ORDER BY DESC EXT.last_updated
     """
+    # TODO: get farmID from template (w/c template?)
+    # farmID = request.POST.<farmID_name_here>
 
-    bioInt = InternalBiosec.objects.all()
-    bioExt = ExternalBiosec.objects.all()
-    
-    # TEST LOG checking
-    print("bioInt len(): " + str(len(bioInt)))
-    print("bioExt len(): " + str(len(bioExt)))
+    bioID = 1
+    # select Biochecklist with latest date
+    # TODO: get Int or Ext biosec FK id from Farm (WHERE in template?)
+    currbioQuery = Farm.objects.filter(intbio_id=bioID).select_related('intbio').filter(extbio_id=bioID).select_related('extbio').all()
+    # TODO: sort by latest date
+    # NOT WORKING: currbioQuery.order_by('-farm.extbio.last_updated').first()
+    currbioObj = currbioQuery.first()
 
-    print("TEST LOG: bioInt last_updated-- ")
-    print(bioInt[0].last_updated)
+    print("TEST LOG biosec_view(): Queryset currObj-prvdd_foot_dip--: " + str(currbioObj.extbio.prvdd_foot_dip))
 
-    # Compile biosec attributes for Checklist, to be passed in template
-    # https://stackoverflow.com/questions/58894056/django-create-custom-object-list-in-the-view-and-pass-it-to-template-to-loop-o
-    bcheckList = []
+    print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
-    # TODO: How to select relevant fields only from EXTERNAL, INTERNAL models?
-    # Populate from External biosec list
-    for ext in bioExt:
-        bcheckList.append({
-            'id': ext.id,
-            'last_updated': ext.last_updated, 
-            'prvdd_foot_dip': ext.prvdd_foot_dip,     
-            'prvdd_alco_soap': ext.prvdd_alco_soap,   
-            'obs_no_visitors': ext.obs_no_visitors,    
-            'prsnl_dip_footwear': ext.prsnl_dip_footwear,  
-            'prsnl_sanit_hands': ext.prsnl_sanit_hands,
-            'chg_disinfect_daily': ext.chg_disinfect_daily,
+    farmID = 1
+    # select only biosecID, last_updated under a Farm
+    # TODO: get farm ID (WHERE in template?)
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+        'last_updated',
+    ).order_by('-last_updated')
+
+    print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
+
+    biocheckList = []
+    for ext in extQuery:
+        biocheckList.append({
+            'id':                   ext.id,
+            'last_updated':         ext.last_updated, 
         })
 
-    # Populate from Internal biosec list
-    for inter in bioInt:
-        bcheckList.append({
-            'disinfect_prem': inter.disinfect_prem,
-            'disinfect_vet_supp': inter.disinfect_vet_supp,
-        })
-    
-    print("TEST LOG bcheckList len(): " + str(len(bcheckList)))
+    print("TEST LOG biocheckList len(): " + str(len(biocheckList)))
+    print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
-    return render(request, 'farmstemp/biosecurity.html', {'bioCheck': bcheckList})
+    # pass (1) latest Checklist, (2) all biocheck id and dates within that Farm
+    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList}) 
+
+
 
 def addChecklist(request):
     return render(request, 'farmstemp/add-checklist.html', {})
