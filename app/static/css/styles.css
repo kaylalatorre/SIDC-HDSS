@@ -166,6 +166,11 @@ button:hover, .button:hover, .primary-btn:hover{
     color:#FFF;
 }
 
+.primary-btn-red:hover {
+    background: #BB0A1E;
+    color: #FFF;
+}
+
 .text-btn:hover {
     box-shadow: 0;
     border: none;

@@ -49,6 +49,10 @@ input[type="checkbox"]:checked {
     font-size: 1.5rem;
 }
 
+textarea {
+    height: 280px;
+}
+
 /* Responsive Styles */
 @media (max-width: 848px) {
     .flex, .flex-item {
