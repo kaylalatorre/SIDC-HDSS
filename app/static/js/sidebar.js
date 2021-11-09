@@ -17,11 +17,9 @@ sidebarBtn.addEventListener("click", ()=> {
 
 /* For currently selected nav -- not yet working */
 let navItems = document.querySelectorAll('.nav-item');
-console.log(navItems);
 for(var i =0; i < arrow.length; i++) {
     navItems[i].addEventListener("click", (e)=> {
         let current = e;
-        console.log(e);
         current.classList.toggle("nav-item nav-current");
     })
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+<title>SIDC-HDSS | Member Announcements</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <h1 class="heading flex"><a href="/member-announcements"><i class='bx bx-chevron-left'></i>Announcements</a></h1>
+    <hr>
+    <div class="box-style small-table" >
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Title</th>
+                    <td data-label="Title">Lorem, ipsum.</td>
+                </tr>
+                <tr>
+                    <th>Category</th>
+                    <td data-label="Title">Reminder</td>
+                </tr>
+                <tr>
+                    <th>Recipient</th>
+                    <td data-label="Title">All Raisers</td>
+                </tr>
+                <tr>
+                    <th>Message</th>
+                    <td data-label="Title">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate provident atque ipsum odit
+                        vero dolore eveniet perferendis iste, architecto, voluptatum, maiores ipsam quo commodi. Nisi
+                        totam distinctio possimus itaque, id, soluta quisquam optio tempora eius fugiat magni quod
+                        voluptatum iure, ratione fugit architecto vel eum sint ipsa dolorem. Excepturi, aliquid.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock section %}

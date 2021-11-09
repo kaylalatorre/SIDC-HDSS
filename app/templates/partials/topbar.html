@@ -1,7 +1,12 @@
-<div class="topbar">
+<div class="topbar sticky">
     <div class = "menu-text">
         <i class='bx bx-menu' ></i>
         <span class="text">SIDC | Hogs Disease Surveillance System</span>
     </div>
-    <i class='bx bx-bell notification' ></i>
+    <div class="notif-icon" onclick="toggleNotif()">
+       <i class='bx bx-bell notification'></i>
+       <span>10</span> 
+    </div>
+    <!-- Notif box -->
+    {% include 'partials/notifications.html' %}
 </div>

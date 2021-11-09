@@ -1,0 +1,108 @@
+/* All Responsive Styles */
+
+/* General, Typography, etc */
+@media (max-width: 848px) {
+    *, body {
+        font-family: 'Roboto'; 
+        font-size: 14px;
+        line-height: 16px;
+        box-sizing: border-box;
+    }
+
+    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
+    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
+    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 600; }
+    p, label { font-size: 14px; font-family: 'Roboto'; }
+
+    .flex-item {
+        padding: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    *, body {
+        font-family: 'Roboto'; 
+        font-size: 12px;
+        line-height: 14px;
+        box-sizing: border-box;
+    }
+
+    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
+    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
+    h3 { font-size: 12px; font-family: 'Public Sans'; font-weight: 600; }
+    p, label { font-size: 12px; font-family: 'Roboto'; }
+
+    .flex-item {
+        padding: 0;
+    }
+}
+
+/* Sidebar */
+@media (max-width: 360px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #FFF;
+        z-index: 101;
+    }
+}
+
+/* Topbar */
+
+/* Tables */
+@media (max-width: 848px) {
+    .table thead {
+        display: none;
+        border-bottom: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 16px;
+    }
+
+    .table tbody tr td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .table tbody tr .td-btn {
+        display: flex;
+        justify-content: end;
+    }
+
+    .table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 16px;
+        text-align: left;
+        font-weight: 600;
+    }
+}
+
+/* Buttons, icons */
+@media (max-width: 848px) {
+    button, .button {
+        font-size: 12px;
+    }
+
+    .bx {
+        font-size: 16px !important; 
+        padding-right: 4px;
+    }
+
+    .bx-printer {
+        font-size: 12px!important;
+        padding-right: 4px;
+    }
+}
