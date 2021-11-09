@@ -176,6 +176,39 @@ class DeliveryForm(ModelForm):
         fields = ('__all__')
 
 class ActivityForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date'].widget.attrs.update({
+            'type' : 'date', 
+            'aria-label' : 'Date',
+            'class' : 'form-control',
+            'placeholder' : '01/01/2021'
+        })
+        self.fields['time_departure'].widget.attrs.update({
+            'type' : 'time', 
+            'aria-label' : 'Departure Time',
+            'class' : 'form-control',
+            'placeholder' : '18:00'
+        })
+        self.fields['time_arrival'].widget.attrs.update({
+            'type' : 'time', 
+            'aria-label' : 'Arrival Time',
+            'class' : 'form-control',
+            'placeholder' : '18:00'
+        })
+        self.fields['description'].widget.attrs.update({
+            'input type' : 'text', 
+            'aria-label' : 'Description',
+            'class' : 'form-control',
+            'placeholder' : 'Description'
+        })
+        self.fields['remarks'].widget.attrs.update({
+            'input type' : 'text', 
+            'aria-label' : 'Remarks',
+            'class' : 'form-control',
+            'placeholder' : 'Remarks'
+        })
+
     class Meta:
         model = Activity
         fields = ('__all__')

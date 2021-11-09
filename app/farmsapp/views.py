@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm
 
 # for Models
 from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures
@@ -34,23 +34,17 @@ def addFarm(request):
             hogRaiser = hogRaiserForm.save(commit=False)
             hogRaiser.save()
 
-            # farmForm['hog_raiser'].value(hogRaiser.id)
-
             print("TEST LOG: Added new raiser")
 
             if externalBiosecForm.is_valid():
                 externalBiosec = externalBiosecForm.save(commit=False)
                 externalBiosec.save()
 
-                # farmForm['extbio'].value(externalBiosec.id)
-
                 print("TEST LOG: Added new external biosec")
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
                     internalBiosec.save()
-
-                    # farmForm['intbio'].value(internalBiosec.id)
 
                     print("TEST LOG: Added new internal biosec")
 
@@ -63,8 +57,6 @@ def addFarm(request):
                         
                         farm.save()
                         
-                        # pigpenMeasuresForm['farm'].value(farm.id)
-
                         print("TEST LOG: Added new farm")
 
                         if pigpenMeasuresForm.is_valid():
@@ -111,12 +103,6 @@ def addFarm(request):
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,
                                                         'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
-
-## Save Farm Details
-def saveFarm(request):
-    print("TEST LOG: New Farm added to db") 
-    
-    return render(request, 'home.html', {}) 
  
 def biosec_view(request):
     print("TEST LOG: in Biosec view/n")
@@ -207,4 +193,37 @@ def post_addChecklist(request):
         
 
 def addActivity(request):
-    return render(request, 'farmstemp/add-activity.html', {})
+    # print farm ID
+
+    if request.method == 'POST':
+        print("TEST LOG: Form has POST method") 
+        print(request.POST)
+
+        activityForm = ActivityForm(request.POST)
+        deliveryForm = DeliveryForm(request.POST)
+
+            
+        if deliveryForm.is_valid():
+            delivery = deliveryForm.save(commit=False)
+            delivery.save()
+
+            if activityForm.is_valid():
+                activty = activityForm.save(commit=False)
+                activity.save()
+            
+            else:
+                print("TEST LOG: activityForm is not valid")
+                print(activityForm.errors)
+
+        else:
+            print("TEST LOG: deliveryForm is not valid")
+            print(deliveryForm.errors)
+    
+    else:
+        print("TEST LOG: Form is not a POST method")
+
+        activityForm = ActivityForm()
+        deliveryForm = DeliveryForm()
+    
+    return render(request, 'farmstemp/add-activity.html', {'activityForm' : activityForm,
+                                                            'deliveryForm' : deliveryForm})

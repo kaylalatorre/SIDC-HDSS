@@ -4,6 +4,8 @@ from django.utils.timezone import now
 
 # EXTERNAL_BIOSEC Table
 class ExternalBiosec(models.Model):
+    # farm                = models.ForeignKey('Farm', on_delete=models.CASCADE, null=True, blank=True)
+
     last_updated        = models.DateTimeField(default=now, editable=False)
 
     bird_proof          = models.IntegerField(null=True, blank=True)
@@ -22,6 +24,8 @@ class ExternalBiosec(models.Model):
 
 # INTERNAL_BIOSEC Table
 class InternalBiosec(models.Model):
+    # farm                = models.ForeignKey('Farm', on_delete=models.CASCADE, null=True, blank=True)
+
     last_updated        = models.DateTimeField(default=now, editable=False)
 
     isol_pen            = models.IntegerField(null=True, blank=True)
