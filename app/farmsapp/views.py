@@ -102,6 +102,15 @@ def post_addChecklist(request):
 def addActivity(request):
     return render(request, 'farmstemp/add-activity.html', {})
 
+def memAnnouncements(request):
+    return render(request, 'farmstemp/mem-announce.html', {})
+
+def createAnnouncement(request):
+    return render(request, 'farmstemp/create-announcement.html', {})
+
+def viewAnnouncement(request):
+    return render(request, 'farmstemp/view-announcement.html', {})
+
 def farmsAssessment(request):
     return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
@@ -110,3 +119,4 @@ def intBiosecurity(request):
 
 def extBiosecurity(request):
     return render(request, 'farmstemp/rep-ext-biosec.html', {})
+
