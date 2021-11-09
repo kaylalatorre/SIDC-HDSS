@@ -45,8 +45,7 @@ def search_bioChecklist(request):
         print("bioID: " + str(bioID))
 
 
-    # TODO: how to select fields from different tables? 
-    # --> might need Farm in order to join biosec tables
+    # can be filtered by biosecID only, since bioIDs passed in dropdown is w/in Farm
     querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
         'prvdd_foot_dip',      
         'prvdd_alco_soap',     
@@ -58,8 +57,22 @@ def search_bioChecklist(request):
 
     print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
     
+
+    querysetInt = InternalBiosec.objects.filter(id=bioID).only(
+        'disinfect_prem',      
+        'disinfect_vet_supp',     
+    ).first()
+
     # get first instance in query
     bioObj = querysetExt.first()
+
+    # append Internal biosec fields
+    bioObj.disinfect_prem       = querysetInt.disinfect_prem
+    bioObj.disinfect_vet_supp   = querysetInt.disinfect_vet_supp
+
+    print("TEST LOG search_bioCheck(): querysetInt.disinfect_prem-- " + str(querysetInt.disinfect_prem))
+    print("TEST LOG search_bioCheck(): querysetInt.disinfect_vet_supp-- " + str(querysetInt.disinfect_vet_supp))
+
 
     # serialize query object into JSON
     ser_instance = serializers.serialize('json', [ bioObj, ])
@@ -89,7 +102,9 @@ def biosec_view(request):
     bioID = 1
     # select Biochecklist with latest date
     # TODO: get Int or Ext biosec FK id from Farm (WHERE in template?)
+    # TODO: might remove filter() in Query
     currbioQuery = Farm.objects.filter(intbio_id=bioID).select_related('intbio').filter(extbio_id=bioID).select_related('extbio').all()
+    
     # TODO: sort by latest date
     # NOT WORKING: currbioQuery.order_by('-farm.extbio.last_updated').first()
     currbioObj = currbioQuery.first()
@@ -121,14 +136,16 @@ def biosec_view(request):
     return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList}) 
 
 
-
-def addChecklist(request):
+def addChecklist_view(request):
     return render(request, 'farmstemp/add-checklist.html', {})
 
 # (POST) function for adding a Biosec Checklist
 def post_addChecklist(request):
     if request.method == "POST":
         
+        # TODO: get farmID from hidden input tag
+
+
         # If none selected in btn group, default value taken from btn tag is None
         biosecArr = [
             request.POST.get("disinfect_prem", None),
@@ -162,6 +179,7 @@ def post_addChecklist(request):
             intBio = InternalBiosec()
 
             # Put biochecklist attributes into External model
+            # TODO: put farmID to ref_farm_id field
             extBio.prvdd_foot_dip       = biosecArr[1]
             extBio.prvdd_alco_soap      = biosecArr[2]
             extBio.obs_no_visitors      = biosecArr[3]
@@ -170,12 +188,15 @@ def post_addChecklist(request):
             extBio.chg_disinfect_daily  = biosecArr[7]
             
             # Put biochecklist attributes into Internal model
+            # TODO: put farmID to ref_farm_id field
             intBio.disinfect_prem      = biosecArr[0]
             intBio.disinfect_vet_supp  = biosecArr[4]
 
             # Insert data into the INTERNAL, EXTERNAL Biosec tables
             extBio.save()
             intBio.save()
+
+            # TODO: update biosec FKs in Farm model
 
             # Properly redirect to Biosec main page
             return redirect('/biosecurity')

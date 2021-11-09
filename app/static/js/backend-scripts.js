@@ -25,6 +25,7 @@ $('#checklist-date').change(function() {
             alert("biofields[prvdd_alco_soap]: " + biofields["prvdd_alco_soap"]);
 
             // select btn in btn group based on db value
+            // EXTERNAL biosec fields
             if (biofields["prvdd_foot_dip"] == 0)
                 $('#prvdd_foot_dip_radio1').prop("checked", true);
             else if (biofields["prvdd_foot_dip"] == 1)
@@ -66,6 +67,22 @@ $('#checklist-date').change(function() {
                 $('#cng_disinfect_daily_radio2').prop("checked", true);
             else
                 $('#cng_disinfect_daily_radio3').prop("checked", true);
+
+            // INTERNAL biosec fields
+            if (biofields["disinfect_prem"] == 0)
+                $('#disinfect_prem_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#disinfect_prem_radio2').prop("checked", true);
+            else
+                $('#disinfect_prem_radio3').prop("checked", true);
+
+            if (biofields["disinfect_vet_supp"] == 0)
+                $('#disinfect_vet_supp_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#disinfect_vet_supp_radio2').prop("checked", true);
+            else
+                $('#disinfect_vet_supp_radio3').prop("checked", true);
+
 
         },
         error: function (response){
