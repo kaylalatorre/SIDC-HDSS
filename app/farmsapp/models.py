@@ -8,6 +8,10 @@ class Farm(models.Model):
     extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
     intbio              = models.ForeignKey('InternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
 
+@property
+def getFarmID(self):
+    return self.id
+
 class ExternalBiosec(models.Model):
     ref_farm = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 

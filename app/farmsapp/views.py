@@ -5,15 +5,9 @@ from django.core import serializers
 
 from django.views.decorators.csrf import csrf_exempt
 
-
-# for Models
+# for Model imports
 from .models import ExternalBiosec, InternalBiosec, Farm
 import psycopg2
-
-
-# class Biochecklist(){
-
-# }
 
 
 # Farms Management Module Views
@@ -78,7 +72,7 @@ def search_bioChecklist(request):
     ser_instance = serializers.serialize('json', [ bioObj, ])
     # send to client side.
     return JsonResponse({"instance": ser_instance}, status=200)
-    
+      
 # # (POST) For updating a Biosec Checklist based on biosecID
 # def update_bioChecklist(request, id):
     # return render(request, 'farmstemp/biosecurity.html', {})
@@ -94,28 +88,30 @@ def biosec_view(request):
     ON F.extbiosec_ID = EXT.id
     JOIN internalbiosec INT
     ON F.intbiosec_ID = INT.id
-    ORDER BY DESC EXT.last_updated
     """
-    # TODO: get farmID from template (w/c template?)
+    # TODO: get farmID, Int or Ext biosec FK id from template (w/c template?)
     # farmID = request.POST.<farmID_name_here>
-
-    bioID = 1
-    # select Biochecklist with latest date
-    # TODO: get Int or Ext biosec FK id from Farm (WHERE in template?)
-    # TODO: might remove filter() in Query
-    currbioQuery = Farm.objects.filter(intbio_id=bioID).select_related('intbio').filter(extbio_id=bioID).select_related('extbio').all()
+    # bioID = request.POST.<biosecID_name_here>
     
-    # TODO: sort by latest date
-    # NOT WORKING: currbioQuery.order_by('-farm.extbio.last_updated').first()
+    farmID = 1
+    bioID = 1 
+    # select Biochecklist with latest date
+    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    
+    # gets latest instance of Biochecklist
     currbioObj = currbioQuery.first()
 
-    print("TEST LOG biosec_view(): Queryset currObj-prvdd_foot_dip--: " + str(currbioObj.extbio.prvdd_foot_dip))
+    # print("TEST LOG biosec_view(): Queryset currObj-prvdd_foot_dip--: " + str(currbioObj.extbio.prvdd_foot_dip))
 
     print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
-    farmID = 1
+
     # select only biosecID, last_updated under a Farm
-    # TODO: get farm ID (WHERE in template?)
+    """
+    SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
+    FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
+    ORDER BY "farmsapp_externalbiosec"."last_updated" DESC
+    """
     extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
         'last_updated',
     ).order_by('-last_updated')
@@ -132,20 +128,36 @@ def biosec_view(request):
     print("TEST LOG biocheckList len(): " + str(len(biocheckList)))
     print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
-    # pass (1) latest Checklist, (2) all biocheck id and dates within that Farm
+    # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
+    request.session['farm_id'] = farmID 
+
+    # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
     return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList}) 
 
 
 def addChecklist_view(request):
-    return render(request, 'farmstemp/add-checklist.html', {})
+    # TODO: How to access farmID hidden input tag? through js?
+    # TODO: from Biosec page, pass farmID here
+
+    print("TEST LOG: in addChecklist_view/n")
+
+    # get 'farm_id' from the session
+    farm_id = request.session['farm_id']
+    print("TEST LOG: farm_id -- " + str(farm_id))
+
+    return render(request, 'farmstemp/add-checklist.html', {'farmID': farm_id})
 
 # (POST) function for adding a Biosec Checklist
 def post_addChecklist(request):
+    print("TEST LOG: in post_addChecklist/n")
+
     if request.method == "POST":
         
         # TODO: get farmID from hidden input tag
+        farmID = request.POST.get("farmID", None)
 
-
+        print("in POST biochecklist: farmID -- " + str(farmID))
+        
         # If none selected in btn group, default value taken from btn tag is None
         biosecArr = [
             request.POST.get("disinfect_prem", None),
@@ -177,9 +189,14 @@ def post_addChecklist(request):
             # init Biosec Models
             extBio = ExternalBiosec()
             intBio = InternalBiosec()
+            farm   = Farm()
 
             # Put biochecklist attributes into External model
+            # TODO: search for Farm object
+            farmQuery = Farm.objects.get(pk=farmID)
+
             # TODO: put farmID to ref_farm_id field
+            extBio.ref_farm = farmQuery
             extBio.prvdd_foot_dip       = biosecArr[1]
             extBio.prvdd_alco_soap      = biosecArr[2]
             extBio.obs_no_visitors      = biosecArr[3]
@@ -189,6 +206,7 @@ def post_addChecklist(request):
             
             # Put biochecklist attributes into Internal model
             # TODO: put farmID to ref_farm_id field
+            intBio.ref_farm = farmQuery
             intBio.disinfect_prem      = biosecArr[0]
             intBio.disinfect_vet_supp  = biosecArr[4]
 
@@ -197,6 +215,12 @@ def post_addChecklist(request):
             intBio.save()
 
             # TODO: update biosec FKs in Farm model
+            # select biosec FKs in Farm
+            farm = Farm.objects.filter(id=farmID).select_related("intbio").first()
+            farm.intbio = intBio
+            farm.extbio = extBio
+
+            farm.save()
 
             # Properly redirect to Biosec main page
             return redirect('/biosecurity')
