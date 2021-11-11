@@ -1,6 +1,9 @@
 from django.forms import ModelForm
 from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Farm_Symptoms, Delivery, Activity, Mortality
 
+class DateInput(ModelForm):
+    input_type = 'date'
+
 class ExternalBiosecForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -191,7 +194,7 @@ class ActivityForm(ModelForm):
             'placeholder' : '18:00'
         })
         self.fields['time_arrival'].widget.attrs.update({
-            'type' : 'time', 
+            'input type' : 'time', 
             'aria-label' : 'Arrival Time',
             'class' : 'form-control',
             'placeholder' : '18:00'
