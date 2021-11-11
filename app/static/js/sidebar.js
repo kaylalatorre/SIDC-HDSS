@@ -10,9 +10,17 @@ for(var i =0; i < arrow.length; i++) {
 /* Toggling sidebar */
 let sidebar = document.querySelector('.sidebar');
 let sidebarBtn = document.querySelector('.bx-menu');
-console.log(sidebar);
 sidebarBtn.addEventListener("click", ()=> {
     sidebar.classList.toggle("close");
+    sidebar.classList.remove("rp-close");
+})
+
+/* Toggling responsive sidebar */
+let sidebarClose = document.querySelector('#sidebar-close');
+sidebarClose.addEventListener("click", ()=> {
+    sidebar.classList.add("rp-close");
+    sidebar.classList.add("close");
+
 })
 
 /* For currently selected nav -- not yet working */
@@ -23,3 +31,4 @@ for(var i =0; i < arrow.length; i++) {
         current.classList.toggle("nav-item nav-current");
     })
 }
+

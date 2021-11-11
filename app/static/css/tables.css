@@ -10,11 +10,6 @@ tr {
     border-color: #AAAAAA;
 }
 
-.table-container {
-    padding: 0 24px;
-    margin: 0 auto;
-}
-
 .table {
     width: 100%;
     border-collapse: collapse;
