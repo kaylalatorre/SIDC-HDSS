@@ -12,7 +12,7 @@
         <h1 class="heading flex-item">Farms</h1>
         <div class="btn-group" style="justify-content: flex-end; padding: 0;">
             <div class="input-group mb-3  flex-item" style="margin-right: 4px;">
-                <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+                <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" id="searchTextBoxid" onkeyup="filterSearch()">
                 <div class="input-group-append">
                   <span class="input-group-text" id="basic-addon2"><i class='bx bx-search'></i></span>
                 </div>
@@ -23,15 +23,16 @@
                 </button>
                 <ul class="dropdown-menu" style="padding: 8px;">
                     <label style="font-weight: 600;">Area</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox"/>&nbsp;TSISI</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox"/>&nbsp;East</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox"/>&nbsp;West</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_TISS" onclick="filterSearch()"/>&nbsp;TSISI</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_EAST" onclick="filterSearch()"/>&nbsp;East</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_WEST" onclick="filterSearch()"/>&nbsp;West</a></li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="box-style">
-        <table class="table">
+        <label id="NotExist" style="display:none"></label>
+        <table class="table" id="mainTableid">
             <thead>
                 <tr>
                     <th>Farm Code</th>
@@ -47,34 +48,20 @@
             </thead>
             <tbody>
                 <!-- Data -->
+                {% for farm in farms %}
                 <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Contact No.">09112346578</td>
-                    <td data-label="Address">Binictican Drive, Tanauan City 2200</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="No. of Pigs">1000</td>
-                    <td data-label="No. of Pens">10</td>
-                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="Farm Code">{{farm.code}}</td>
+                    <td data-label="Raiser">{{farm.raiser}}</td>
+                    <td data-label="Contact No.">{{farm.contact}}</td>
+                    <td data-label="Address">{{farm.address}}</td>
+                    <td data-label="Area">{{farm.area}}</td>
+                    <td data-label="No. of Pigs">{{farm.pigs}}</td>
+                    <td data-label="No. of Pens">{{farm.pens}}</td>
+                    <td data-label="Last Update">{{farm.updated}}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewFarm" onclick="viewFarm()"><span class="material-icons md-18">visibility</span>View</button>
                     </td>
-
-                    <!-- {% for farm in farms %}
-                        <tr>
-                            <td data-label="Farm Code">{{farm.code}}</td>
-                            <td data-label="Raiser">{{farm.raiser}}</td>
-                            <td data-label="Contact No.">{{farm.contact}}</td>
-                            <td data-label="Address">{{farm.address}}</td>
-                            <td data-label="Area">{{farm.area}}</td>
-                            <td data-label="No. of Pigs">{{farm.pigs}}</td>
-                            <td data-label="No. of Pens">{{farm.pens}}</td>
-                            <td data-label="Last Update">{{farm.updated}}</td>
-                            <td data-label="" class="td-btn">
-                                <button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button>
-                            </td>
-                        </tr>
-                        {% endfor %} -->
+                    {% endfor %}
                 </tr>                
             </tbody>            
         </table>

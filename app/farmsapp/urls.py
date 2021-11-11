@@ -4,22 +4,18 @@ from . import views
 # Farms Management Module URLS
 
 urlpatterns = [
-    path('', views.home, name="home"),
-    path('home', views.home, name="home"),
+    # path('', views.home, name="home"),
+    # path('home', views.home, name="home"),
     path('farms', views.farms, name="farms"),
     path('selected-farm', views.selectedFarm, name="selectedFarm"),
     path('add-farm', views.addFarm, name="addFarm"),
-<<<<<<< HEAD
-    path('save-farm', views.saveFarm, name="saveFarm"),
-    path('biosecurity', views.biosec_view, name="biosecurity"),
-=======
-    path('biosecurity', views.biosecurity, name="biosecurity"),
+    # path('save-farm', views.saveFarm, name="saveFarm"),
+
+    # path('biosecurity', views.biosecurity, name="biosecurity"),
     path('tech-selected-farm', views.techSelectedFarm, name="techSelectedFarm"),
     path('technician-assignment', views.techAssignment, name="techAssignment"),
     path('forms-approval', views.formsApproval, name="formsApproval"),
     path('selected-form', views.selectedForm, name="selectedForm"),
->>>>>>> frontend
-
     path('add-checklist', views.addChecklist, name="addChecklist"),
     path('post-addchecklist', views.post_addChecklist, name="post-addChecklist"),
 

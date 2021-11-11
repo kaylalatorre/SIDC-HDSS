@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.models import auth, User, Group
 from django.contrib.auth import logout
 
+def debug(m):
+    print("------------------------[DEBUG]------------------------")
+    print(m)
+    print("-------------------------------------------------------")
 
 # Create your views here.
 
@@ -32,14 +36,15 @@ def logout_view(request):
     return redirect('login')
 
 def home(request, *args, **kwargs):
-
     for g in Group.objects.filter():
+        
+        # TODO inculde try catch otherwise will cause error when user is not part of a group
         if g.name == request.user.groups.all()[0].name:
             # TEST: for tracking group name of User
-            print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+            debug("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
 
-            print("TEST LOG: in Home view/n")
-            print(request.user.groups.all()[0].name)
+            debug("TEST LOG: in Home view/n")
+            debug(request.user.groups.all()[0].name)
             # ENDTEST
 
             # context = {

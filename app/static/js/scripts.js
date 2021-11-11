@@ -64,3 +64,40 @@ function viewAnnounce() {
     };
 }
 
+function filterSearch(){
+    // modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/ 
+    var input, filter, table, tr, raiser, address, area, i;        
+    input   = document.getElementById("searchTextBoxid"); //to get typed in keyword    
+    filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
+    table   = document.getElementById("mainTableid"); //to get the html table    
+    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+    
+    var 
+    tiss = document.getElementById("ch_TISS").checked,
+    east = document.getElementById("ch_EAST").checked,
+    west = document.getElementById("ch_WEST").checked;
+
+    for(i=0;i<tr.length;i++){    
+        raiser=tr[i].getElementsByTagName("td")[1];
+        address=tr[i].getElementsByTagName("td")[3];
+        area = tr[i].getElementsByTagName("td")[4];
+        if(raiser && address && area){    
+            if(
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) && 
+                (
+                    (
+                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
+                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
+                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
+                        (!tiss && !east && !west)
+                    ) 
+                )
+            ){    
+                tr[i].style.display="";        
+            }    
+            else{    
+                tr[i].style.display = "none";   
+            }    
+        }    
+    }
+} 

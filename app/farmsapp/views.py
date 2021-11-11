@@ -1,29 +1,100 @@
+from django.db.models.expressions import F
+from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
-
+from datetime import date
 # for Models
-from farmsapp.models import Farm, ExternalBiosec, InternalBiosec
-import psycopg2
+from farmsapp.models import Hog_Raiser, Farm, ExternalBiosec, InternalBiosec
+
+def debug(m):
+    print("------------------------[DEBUG]------------------------")
+    print(m)
+    print("-------------------------------------------------------")
 
 # Farms Management Module Views
 
 ## Farms table for all users except Technicians
 def farms(request):
+    # :Psuedo::
+    # farmsdata = []
+    # FOR entry IN QUERY SELECT farms JOIN raiser ORDER BY farm_id
+    #   MAP(entry TO farmsdata)
+    # OUTPUT farmsdata
+
+    # # create raiser
+    # hr = Hog_Raiser(
+    #     id                  = 2,
+    #     fname               = "Juana",
+    #     lname               = "Pedra",
+    #     contact_no          = "9089990999"
+    # )
+    # hr.save()
+    # debug("hr_save")
+    # # create farm
+    # fa = Farm(
+    #     id                  = 2,
+    #     date_registered     = date(2021,11,8),
+    #     farm_address        = "farm_address_2",
+    #     area                = "east",
+    #     loc_long            = 1,
+    #     loc_lat             = 2,
+    #     bldg_cap            = 3,
+    #     num_pens            = 4,
+    #     directly_manage     = False,
+    #     total_pigs          = 5,
+    #     isolation_pen       = False,
+    #     roof_height         = 6,
+    #     feed_trough         = False,
+    #     bldg_curtain        = False,
+    #     medic_tank          = 7,
+    #     waste_mgt_septic    = False,
+    #     waste_mgt_biogas    = False,
+    #     waste_mgt_others    = False,
+    #     warehouse_length    = 8,
+    #     warehouse_width     = 9,
+    #     road_access         = False,
+    #     extbio_ID           = None,
+    #     intbio_ID           = None,
+    #     raiser_ID           = Hog_Raiser.objects.get(id=2),
+    #     weight_record_ID    = None,
+    #     symptoms_record_ID  = None,
+    # )
+    # fa.save()
+    # debug("fa_save")
+
+    qry = Farm.objects.select_related('raiser_ID').annotate(
+            fname=F("raiser_ID__fname"), lname=F("raiser_ID__lname"), contact=F("raiser_ID__contact_no")
+            ).values(
+                "id",
+                "fname",
+                "lname", 
+                "contact", 
+                "farm_address",
+                "area",
+                "total_pigs",
+                "num_pens",
+                "date_registered"
+                )
+    debug(qry)
+    # this_form = Form_DisplayFarm()
+    # Form_DisplayFarm.data
     farmsData = []
-    for f in Farm.objects.all().values_list():
+    for f in qry:
         farmObject = {
-            "code":  str(f[0]),
-            "raiser": f[3] + " " + f[4],
-            "contact": f[5],
-            "address": f[6],
-            "area": str(f[8]),
-            "pigs": str(f[14]),
-            "pens": str(f[12]),
-            "updated": str(f[2])
+            "code":  str(f["id"]),
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "contact": f["contact"],
+            "address": f["farm_address"],
+            "area": str(f["area"]),
+            "pigs": str(f["total_pigs"]),
+            "pens": str(f["num_pens"]),
+            "updated": str(f["date_registered"])
         }
         farmsData.append(farmObject)
 
-    return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
+    return render(request, 'farmstemp/farms.html'
+    , {"farms":farmsData}
+    ) ## Farms table for all users except Technicians
 
 def selectedFarm(request):
     return render(request, 'farmstemp/selected-farm.html', {})
@@ -133,8 +204,6 @@ def post_addChecklist(request):
 
 def addActivity(request):
     return render(request, 'farmstemp/add-activity.html', {})
-<<<<<<< HEAD
-=======
 
 def memAnnouncements(request):
     return render(request, 'farmstemp/mem-announce.html', {})
@@ -154,4 +223,3 @@ def intBiosecurity(request):
 def extBiosecurity(request):
     return render(request, 'farmstemp/rep-ext-biosec.html', {})
 
->>>>>>> frontend
