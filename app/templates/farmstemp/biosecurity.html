@@ -80,8 +80,9 @@
                             <label class="form-label" style="font-weight: 600;">Date</label>
                             <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
                                 {% for bio in bioList %}
-                                <option value="{{ bio.id }}"> {{ bio.last_updated }}
-                                </option>
+                                    {% load tz %}
+                                    <option value="{{ bio.id }}"> {{ bio.last_updated|localtime }}
+                                    </option>
                                 {% endfor %}
                             </select>
 

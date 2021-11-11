@@ -19,31 +19,46 @@ def login(request):
             return redirect('home')
 
         else:
-            messages.info(request, 'USER NOT FOUND')
-            return redirect('login')
+            # messages.error(request, 'USER NOT FOUND') # ERROR: 404, "User not found."
+            # return redirect('login')
+
+            # TODO: idk if this works.
+            error = {'code': 404, 
+                'message': 'User not found'
+            }
+
+            return render(request, 'login.html', error)
     else:
         return render(request, 'login.html', {})
 
 # LOGOUT function
 def logout_view(request):
     logout(request)
-    # TEST
+    
     print("TEST LOG: User signed out.")
     return redirect('login')
 
 def home(request, *args, **kwargs):
+    print("TEST LOG: in Home view/n")
 
-    for g in Group.objects.filter():
-        if g.name == request.user.groups.all()[0].name:
-            # TEST: for tracking group name of User
-            print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+    try:
+        hasUsertype = True
 
-            print("TEST LOG: in Home view/n")
-            print(request.user.groups.all()[0].name)
-            # ENDTEST
+        for g in Group.objects.filter():
+            if g.name == request.user.groups.all()[0].name:
+                # TEST: for tracking group name of User
+                print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+                return render(request, 'home.html', {})
 
-            # context = {
-            #     'user_group': request.user.groups.all()[0].name
-            # }
+            else:
+                hasUsertype = False
 
+        if hasUsertype == False:
+            # ERROR: 404, "User not found."
+            return redirect('login')
+
+    except ObjectDoesNotExist:
+        print('ERROR: 404, User not found.')
     return render(request, 'home.html', {})
+
+    

@@ -90,7 +90,7 @@ def biosec_view(request):
     ON F.intbiosec_ID = INT.id
     """
     # TODO: get farmID, Int or Ext biosec FK id from template (w/c template?)
-    # farmID = request.POST.<farmID_name_here>
+    # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
     # bioID = request.POST.<biosecID_name_here>
     
     farmID = 1
