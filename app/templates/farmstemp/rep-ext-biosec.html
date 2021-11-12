@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | External Biosecurity Report</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">   
+    <div>
+        <h1>External Biosecurity Reports</h1>
+    </div>
+    <br>
+    <!-- Date range, etc -->
+    <div style="max-width: 400px;">
+        <div class="flex subheading">
+            <div class="input-group mb-3" style="padding-right: 8px;">
+                <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
+                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                    <option value="01/01/21">01/01/21</option>
+                </select>
+            </div>
+            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+        </div>
+        <div class="flex subheading">
+            <div class="input-group mb-3" style="padding-right: 8px;">
+                <label class="form-label" style="font-weight: 600; width: 24%">Area</label>
+                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                    <option value="West">West</option>
+                </select>
+            </div>
+            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+        </div>
+    </div>
+    <hr>
+    <!-- Report description, print button -->
+    <div class="flex subheading">
+        <p class="flex-item">All External Biosecurity Report for March 22, 2021 to April 23, 2021</p>
+        <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
+    </div>
+    <!-- Report content -->
+    <div class="box-style">
+        <table class="table">
+            <thead>
+                <tr class="second-header">
+                    <th colspan="4">Farm Details</th>
+                    <th colspan="3">Biosecurity Measures</th>
+                    <th colspan="7">Biosecurity Checklist</th>
+                    <th>Total Score</th>
+                </tr>
+                <tr>
+                    <th>Farm Code</th>
+                    <th>Raiser</th>
+                    <th>Area</th>
+                    <th>Technician</th>
+                    <th>Bird Proof</th>
+                    <th>Perimeter Fence</th>
+                    <th>500-meter Distance</th>
+                    <th>Provided Foot Dip</th>
+                    <th>Provided Alcohol/Soap</th>
+                    <th>Personnel Dip Footwear</th>
+                    <th>Personnel Sanitize Hands</th>
+                    <th>Observed 'No Visitors'</th>
+                    <th>Disinfected Daily</th>
+                    <th>Last Updated</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data -->
+                <tr>
+                    <td data-label="Farm Code">001</td>
+                    <td data-label="Raiser">JM Bartolome</td>
+                    <td data-label="Area">West</td>
+                    <td data-label="Technician">David Archuleta</td>
+                    <td data-label="Bird Proof">Yes</td>
+                    <td data-label="Perimeter Fence">Yes</td>
+                    <td data-label="500-meter Distance">Septic Tank</td>
+                    <td data-label="Provided Foot Dip">Yes</td>
+                    <td data-label="Provided Alcohol/Soap">Yes</td>
+                    <td data-label="Personnel Dip Footwear">Yes</td>
+                    <td data-label="Personnel Sanitize Hands">Yes</td>
+                    <td data-label="Observed 'No Visitors'">Yes</td>
+                    <td data-label="Disinfected Daily">Yes</td>
+                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="Total Score">10</td>
+                </tr>
+                <tr>
+                    <td data-label="Farm Code">001</td>
+                    <td data-label="Raiser">JM Bartolome</td>
+                    <td data-label="Area">West</td>
+                    <td data-label="Technician">David Archuleta</td>
+                    <td data-label="Bird Proof">Yes</td>
+                    <td data-label="Perimeter Fence">Yes</td>
+                    <td data-label="500-meter Distance">Septic Tank</td>
+                    <td data-label="Provided Foot Dip">Yes</td>
+                    <td data-label="Provided Alcohol/Soap">Yes</td>
+                    <td data-label="Personnel Dip Footwear">Yes</td>
+                    <td data-label="Personnel Sanitize Hands">Yes</td>
+                    <td data-label="Observed 'No Visitors'">Yes</td>
+                    <td data-label="Disinfected Daily">Yes</td>
+                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="Total Score">10</td>
+                </tr>
+                <tr>
+                    <td data-label="Farm Code">001</td>
+                    <td data-label="Raiser">JM Bartolome</td>
+                    <td data-label="Area">West</td>
+                    <td data-label="Technician">David Archuleta</td>
+                    <td data-label="Bird Proof">Yes</td>
+                    <td data-label="Perimeter Fence">Yes</td>
+                    <td data-label="500-meter Distance">Septic Tank</td>
+                    <td data-label="Provided Foot Dip">Yes</td>
+                    <td data-label="Provided Alcohol/Soap">Yes</td>
+                    <td data-label="Personnel Dip Footwear">Yes</td>
+                    <td data-label="Personnel Sanitize Hands">Yes</td>
+                    <td data-label="Observed 'No Visitors'">Yes</td>
+                    <td data-label="Disinfected Daily">Yes</td>
+                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="Total Score">10</td>
+                </tr>
+                <!-- Totals, Averages -->
+                <tr class="table-total bold-lbl">
+                    <td colspan="14">Average Score</td>
+                    <td>10</td>
+                </tr>
+            </tbody>            
+        </table>
+    </div>
+</div>
+{% endblock section %}

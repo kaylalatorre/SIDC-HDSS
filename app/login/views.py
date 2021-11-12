@@ -47,3 +47,6 @@ def home(request, *args, **kwargs):
             # }
 
     return render(request, 'home.html', {})
+
+def error(request):
+    return render(request, 'partials/error.html', {})

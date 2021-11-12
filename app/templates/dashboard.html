@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Dashboard</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <div class="flex">
+        <section class="overview dd-flex-item-left">
+            <h3>Overview</h3>
+            <div class="box-style">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <i class='bx bx-home'></i><br>
+                                <p class="overview-text">Total Farms</p>
+                            </th>
+                            <td class="overview-num">1,230</td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <i class='bx bx-clinic' ></i><br>
+                                <p class="overview-text">Total Hogs</p>
+                            </th>
+                            <td class="overview-num">1,230</td>
+                        </tr>
+                        <tr>
+                            <th>
+                                
+                                <p class="overview-text">Average Internal Biosecurity Score</p>
+                            </th>                            
+                            <td class="overview-num">99%</td>
+                        </tr>
+                        <tr>
+                            <th>Total Farms</th>
+                            <td class="overview-num">99%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="farms-map dd-flex-item-right">
+            <h3>Farms Biosecurity</h3>
+            <div class="box-style">
+                <p>insert map</p>
+            </div>
+        </section>
+    </div>
+    <div class="flex">
+        <section class="alerts dd-flex-item-left">
+            <h3>Alerts</h3>
+            <div class="box-style">
+                
+            </div>
+            <div class="box-style">
+                
+            </div>
+        </section>
+        <section class="hogs-map dd-flex-item-right">
+            <h3>Hogs Health & Symptoms</h3>
+            <div class="box-style">
+                <p>insert map</p>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock section %}

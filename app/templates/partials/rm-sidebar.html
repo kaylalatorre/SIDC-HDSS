@@ -6,12 +6,13 @@
         <span class="logo-name">
             SIDC-HDSS
         </span>
+        <i class='bx bx-x' id='sidebar-close'></i>
     </div>
     <ul class="nav-links">
         <ul class="sidebar-header">
             <span class="header-name">Overview</span>
-            <li class="nav-item nav-current">
-                <a href="#"> 
+            <li class="nav-item">
+                <a href="/"> 
                     <i class='bx bxs-dashboard' ></i>
                     <span class="link-name">Dashboard</span>
                 </a>
@@ -26,21 +27,6 @@
                 <a href="#">
                     <i class='bx bxs-clinic' ></i>
                     <span class="link-name">Hogs Health</span>
-                </a>
-            </li>
-        </ul>
-        <ul class="sidebar-header">
-            <span class="header-name">Management</span>
-            <li class="nav-item">
-                <a href="#">
-                    <i class='bx bxs-user-pin'></i>
-                    <span class="link-name">Technician Assignment</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#">
-                    <i class='bx bxs-megaphone' ></i>
-                    <span class="link-name">Member Announcements</span>
                 </a>
             </li>
         </ul>
@@ -93,7 +79,7 @@
             <!-- LOGOUT btn -->
             <form action="logout" method="POST">
                 {% csrf_token %}
-                <button style="border:none; background-color: transparent;" type="submit">
+                <button class="text-btn" type="submit">
                     <i class='bx bx-log-out' id="logout-btn"></i>
                 </button>
             </form>

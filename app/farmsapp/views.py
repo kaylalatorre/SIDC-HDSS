@@ -24,6 +24,9 @@ def farms(request):
 
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
+def selectedFarm(request):
+    return render(request, 'farmstemp/selected-farm.html', {})
+
 def addFarm(request):
     return render(request, 'farmstemp/add-farm.html', {})
 
@@ -45,6 +48,18 @@ def biosec_view(request):
     print(bioInt[0].last_updated)
 
     return render(request, 'farmstemp/biosecurity.html', {'biosecInt': bioInt, 'biosecExt': bioExt})
+
+def techSelectedFarm(request):
+    return render(request, 'farmstemp/tech-selected-farm.html', {})
+
+def techAssignment(request):
+    return render(request, 'farmstemp/assignment.html', {})
+
+def formsApproval(request):
+    return render(request, 'farmstemp/forms-approval.html', {})
+
+def selectedForm(request):
+    return render(request, 'farmstemp/selected-form.html', {})
 
 def addChecklist(request):
     return render(request, 'farmstemp/add-checklist.html', {})
@@ -115,3 +130,22 @@ def post_addChecklist(request):
 
 def addActivity(request):
     return render(request, 'farmstemp/add-activity.html', {})
+
+def memAnnouncements(request):
+    return render(request, 'farmstemp/mem-announce.html', {})
+
+def createAnnouncement(request):
+    return render(request, 'farmstemp/create-announcement.html', {})
+
+def viewAnnouncement(request):
+    return render(request, 'farmstemp/view-announcement.html', {})
+
+def farmsAssessment(request):
+    return render(request, 'farmstemp/rep-farms-assessment.html', {})
+
+def intBiosecurity(request):
+    return render(request, 'farmstemp/rep-int-biosec.html', {})
+
+def extBiosecurity(request):
+    return render(request, 'farmstemp/rep-ext-biosec.html', {})
+
