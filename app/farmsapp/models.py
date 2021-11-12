@@ -157,10 +157,10 @@ class Pigpen_Measures(models.Model):
 class Delivery(models.Model):
     date_filed          = models.DateField(default=now)
    
-    seller_fname        = models.CharField(max_length=50)
-    seller_lname        = models.CharField(max_length=50)
-    delivery_type       = models.CharField(max_length=30)
-    qty                 = models.IntegerField()
+    seller_fname        = models.CharField(max_length=50, null=True, blank=True)
+    seller_lname        = models.CharField(max_length=50, null=True, blank=True)
+    delivery_type       = models.CharField(max_length=30, null=True, blank=True)
+    qty                 = models.IntegerField(null=True, blank=True)
 
     # def __str__(self)
     #     return self.
@@ -201,36 +201,36 @@ class Mortality(models.Model):
 class Activities_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
     
-    actTech             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='actTech', null=True, blank=True)
-    actLiveop           = models.ForeignKey('User', on_delete=models.CASCADE, related_name='actLiveop', null=True, blank=True)
+    act_tech            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_tech', null=True, blank=True)
+    act_liveop          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_liveop', null=True, blank=True)
     is_checked          = models.BooleanField(default=False)
-    actExtvet           = models.ForeignKey('User', on_delete=models.CASCADE, related_name='actExtvet',  null=True, blank=True)
+    act_extvet          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_extvet',  null=True, blank=True)
     is_reported         = models.BooleanField(default=False)
-    actAsm              = models.ForeignKey('User', on_delete=models.CASCADE, related_name='actAsm',  null=True, blank=True)
+    act_asm             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_asm',  null=True, blank=True)
     is_noted            = models.BooleanField(default=False)
 
 # PPE_FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
-    ppeTech             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppeTech', null=True, blank=True)
-    ppeExtvet           = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppeExtvet', null=True, blank=True)
+    ppe_tech            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
+    ppe_extvet          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
     is_checked          = models.BooleanField(default=False)
-    ppeAsm              = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppeAsm', null=True, blank=True)
+    ppe_asm             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
     is_approved         = models.BooleanField(default=False)
 
-class MortalityForm(models.Model):
+class Mortality_Form(models.Model):
     ref_mortality       = models.ForeignKey('Mortality', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
-    mortTech            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
-    mortMgtStaff        = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mortMgtStaff', null=True, blank=True)
+    mort_tech           = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
+    mort_mgtStaff       = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
     is_posted           = models.BooleanField(default=False)
-    mortExtvet          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mortExtvet', null=True, blank=True)
+    mort_extvet         = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
     is_reported         = models.BooleanField(default=False)
-    mortAsm             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mortAsm', null=True, blank=True)
+    mort_asm            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
     is_noted            = models.BooleanField(default=False)
 
-class MemAnnouncement(models.Model):
+class Mem_Announcement(models.Model):
     title               = models.CharField(max_length=100)
     category            = models.CharField(max_length=50)
     recip_area          = models.CharField(max_length=20)
