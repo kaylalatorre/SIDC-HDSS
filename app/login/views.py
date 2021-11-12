@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.models import auth, User, Group
 from django.contrib.auth import logout
 
+def debug(m):
+    print("------------------------[DEBUG]------------------------")
+    print(m)
+    print("-------------------------------------------------------")
 
 # Create your views here.
 
