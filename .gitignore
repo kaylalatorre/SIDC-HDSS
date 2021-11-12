@@ -1,2 +1,5 @@
 # dependencies
 /venv
+*.pyc
+app/temp.txt
+migrations/

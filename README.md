@@ -155,7 +155,7 @@ sudo ln -s /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-enabled/
 cat /etc/nginx/sites-enabled/src_nginx.conf
 ```
 
-[OPTIONAL] Step 1.1: BASH > copy 'src_nginx.conf' to '/etc/nginx/sites-available/'
+_OPTIONAL_ Step 1.1: BASH > copy 'src_nginx.conf' to '/etc/nginx/sites-available/'
 
 ```bash
 sudo cp /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-available/
@@ -187,15 +187,24 @@ uwsgi --ini src_uwsgi.ini
 
 Step 12: Go to <http://localhost:8000> to test if working
 
+### Setup Database
+See DB setup documentation [DBSETUP](/DBSETUP.md)
+
 ## Running the Project Locally
-*If conda is not activated:
-`eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"`
+
+_If conda is not activated:_ ```eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"```
+
 1. Go to the project directory `cd ~/SIDC-HDSS/`
 2. Activate the conda environment `conda activate ./venv`
 3. Go to the app directory `cd app`
-4. Start nginx `sudo /etc/init.d/nginx start`
-5. Run the application `uwsgi --ini src_uwsgi.ini`
-6. Go to http://localhost:8000/
+4. **In a separate terminal:** Start the PosgreSQL service and Apache2 server (for pgAdmin)
+```
+sudo service postgresql start
+sudo service apache2 start
+```
+5. Start nginx `sudo /etc/init.d/nginx start`
+6. `uwsgi --ini src_uwsgi.ini`
+7. Go to <http://localhost:8000>
 
 ## Authors
 
