@@ -235,7 +235,7 @@ class Mortality_Form(models.Model):
     is_noted            = models.BooleanField(default=False)
 
 class Mem_Announcement(models.Model):
-    title               = models.CharField(max_length=100)
+    title               = models.CharField(max_length=150)
     category            = models.CharField(max_length=50)
     recip_area          = models.CharField(max_length=20)
     mssg                = models.CharField(max_length=500)

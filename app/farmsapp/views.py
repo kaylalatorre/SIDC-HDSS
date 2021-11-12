@@ -204,7 +204,7 @@ def addFarm(request):
                                                         'internalBiosecForm' : internalBiosecForm})
  
 @csrf_exempt
-# (POST) For searching a Biosec Checklist based on biosecID; called in AJAX request
+# (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
@@ -258,7 +258,7 @@ def search_bioChecklist(request):
     # send to client side.
     return JsonResponse({"instance": ser_instance}, status=200)
       
-# # (POST) For updating a Biosec Checklist based on biosecID
+# # (POST-AJAX) For updating a Biosec Checklist based on biosecID
 # def update_bioChecklist(request, id):
     # return render(request, 'farmstemp/biosecurity.html', {})
 
