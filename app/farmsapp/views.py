@@ -258,9 +258,58 @@ def search_bioChecklist(request):
     # send to client side.
     return JsonResponse({"instance": ser_instance}, status=200)
       
-# # (POST-AJAX) For updating a Biosec Checklist based on biosecID
-# def update_bioChecklist(request, id):
-    # return render(request, 'farmstemp/biosecurity.html', {})
+# (POST-AJAX) For updating a Biosec Checklist based on biosecID
+def update_bioChecklist(request):
+
+    # Queryset: Get only relevant fields for biochecklist based on biosecID
+    """
+    UPDATE <external bio>,<internal bio>
+    SET extbio.<biosec field> = value1, intbio.<biosec field>, ...
+    WHERE extbioID = <biosecID>;
+    """
+    print("TEST LOG: in update_bioChecklist()/n")
+
+    # access biosecID passed from AJAX post request
+    bioID = request.POST.get("biosecID")
+
+    if None:
+        print("TEST LOG: no biosecID from AJAX req")
+    else:
+        print("bioID: " + str(bioID))
+
+    # can be filtered by biosecID only, since bioIDs passed in dropdown is w/in Farm
+    querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
+        'prvdd_foot_dip',      
+        'prvdd_alco_soap',     
+        'obs_no_visitors',     
+        'prsnl_dip_footwear',  
+        'prsnl_sanit_hands',   
+        'chg_disinfect_daily'
+    )
+
+    print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
+    
+
+    querysetInt = InternalBiosec.objects.filter(id=bioID).only(
+        'disinfect_prem',      
+        'disinfect_vet_supp',     
+    ).first()
+
+    # get first instance in query
+    bioObj = querysetExt.first()
+
+    # append Internal biosec fields
+    bioObj.disinfect_prem       = querysetInt.disinfect_prem
+    bioObj.disinfect_vet_supp   = querysetInt.disinfect_vet_supp
+
+    print("TEST LOG search_bioCheck(): querysetInt.disinfect_prem-- " + str(querysetInt.disinfect_prem))
+    print("TEST LOG search_bioCheck(): querysetInt.disinfect_vet_supp-- " + str(querysetInt.disinfect_vet_supp))
+
+
+    # serialize query object into JSON
+    ser_instance = serializers.serialize('json', [ bioObj, ])
+    # send to client side.
+    return JsonResponse({"instance": ser_instance}, status=200)
 
 # For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
