@@ -1,0 +1,119 @@
+/* All Responsive Styles */
+
+/* General, Typography, etc */
+@media (max-width: 848px) {
+    body {
+        font-family: 'Roboto'; 
+        font-size: 14px;
+        line-height: 16px;
+        box-sizing: border-box;
+    }
+
+    h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
+    h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
+    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 500; }
+    p, label { font-size: 14px; font-family: 'Roboto'; }
+
+    .flex-item { padding: 0; }
+    .main-div { margin: 16px!important; }
+}
+
+@media (max-width: 420px) {
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        background: #FFF;
+        z-index: 101;
+    }
+
+    .sidebar #sidebar-close {
+        font-size: 20px!important;
+        display: block;
+        position: absolute;
+        right: 16px; 
+    }
+
+    .sidebar.rp-close {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        z-index: 0;
+    }
+
+    .sidebar.rp-close .nav-item {
+        display: none;
+    }
+
+    .sidebar.rp-close ~ .content-section {
+        left: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Topbar */
+    .content-section .topbar { width: 100%; padding: 0 16px;}
+    .rp-text { display: block; }
+    .text { display: none; }
+
+    /* Notifications */
+    .notif-box {
+        max-width: none;
+        max-height: 632px;
+        height: 100%;
+        left: 16px;
+        right: 16px;
+    }
+}
+
+/* Tables */
+@media (max-width: 848px) {
+    .table thead {
+        display: none;
+        border-bottom: none;
+    }
+
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 16px;
+    }
+
+    .table tbody tr td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .table tbody tr .td-btn {
+        display: flex;
+        justify-content: end;
+    }
+
+    .table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 16px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    /* Buttons, icons */
+    button, .button {
+        font-size: 12px;
+    }
+
+    .bx {
+        padding-right: 4px;
+    }
+
+    .bx-printer {
+        font-size: 12px!important;
+        padding-right: 4px;
+    }
+}

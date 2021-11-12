@@ -14,8 +14,10 @@
     <form action="login" method="POST">
         {% csrf_token %}
         <input type="text" placeholder="Username" class="form-control" id="user-name" name="user-name">
+            <p id="emailError" class="error"> Sample error message. </p> <!-- temporarily hidden (code @ static/css/error.css)-->
         <!-- <input type="email" placeholder="Email Address" class="form-control" id="user-email" name="user-email" aria-describedby="emailHelp"> -->
         <input type="password" placeholder="Password" class="form-control" id="user-pass" name="user-pass">
+            <p id="pwError" class="error"> Sample error message. </p> <!-- temporarily hidden (code @ static/css/error.css)-->
         <br>
         <button class="primary-btn center" type="submit">Log In</button>
     </form>

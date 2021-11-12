@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.models import auth, User, Group
 from django.contrib.auth import logout
 
+def debug(m):
+    print("------------------------[DEBUG]------------------------")
+    print(m)
+    print("-------------------------------------------------------")
 
 # Create your views here.
 
@@ -61,4 +65,6 @@ def home(request, *args, **kwargs):
         print('ERROR: 404, User not found.')
     return render(request, 'home.html', {})
 
+def error(request):
+    return render(request, 'partials/error.html', {})
     

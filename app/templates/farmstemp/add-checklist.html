@@ -10,11 +10,12 @@
 <form action="post-addchecklist" method="POST">
     {% csrf_token %}
     <div class="main-div">
-        <h1 class="heading"><a href="/biosecurity">Biosecurity</a> > Add Checklist</h1>
-        <div class="flex subheading">
-            <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">001</p>
+        <div class="flex">
+            <h1 class="flex-item heading"><a href="/biosecurity">Biosecurity</a> > Add Checklist</h1>
             <div><button class="primary-btn">Save</button></div>
         </div>
+        <div class="flex subheading"><label style="font-weight: 600;">Farm Code:</label><p class="flex-item">001</p></div>
+        <hr>
         <h2>Farm Biosecurity Checklist</h2>
 
         <!-- render farmID for CRUD in biosec tables -->

@@ -90,6 +90,10 @@ ul, li {
     font-weight: 600;
     margin: 24px;
 }
+
+.sidebar #sidebar-close {
+    display: none;
+}
  
 /* Dropdown menus */
 .sidebar .nav-links li .sub-menu {

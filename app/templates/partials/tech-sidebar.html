@@ -6,6 +6,7 @@
         <span class="logo-name">
             SIDC-HDSS
         </span>
+        <i class='bx bx-x' id='sidebar-close'></i>
     </div>
     <ul class="nav-links">
         <li class="nav-item">
@@ -27,7 +28,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#">
+            <a href="/member-announcements">
                 <i class='bx bxs-megaphone' ></i>
                 <span class="link-name">Member Announcements</span>
             </a>
@@ -49,7 +50,7 @@
             <!-- LOGOUT btn -->
             <form action="logout" method="POST">
                 {% csrf_token %}
-                <button style="border:none; background-color: transparent;" type="submit">
+                <button class="text-btn" type="submit">
                     <i class='bx bx-log-out' id="logout-btn"></i>
                 </button>
             </form>

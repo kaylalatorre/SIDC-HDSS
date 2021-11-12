@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Member Announcements</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <h1 class="heading">Member Announcements</h1>
+    <div class="flex subheading">
+        {% if user.groups.all.0.name == 'Assistant Manager' %}
+        <p class="flex-item">Send SMS Messages to your raisers or approve messages from technicians here.</p>
+
+        {% elif user.groups.all.0.name == 'Field Technician' %}
+        <p class="flex-item">Send SMS Messages to your raisers here.</p>
+
+        {% endif %}
+        <div><a href="/create-announcement" class="button primary-btn"><i class='bx bx-plus'></i>Create Announcement</a></div>
+    </div>
+    <hr>
+
+    <section class="for-approval">
+        {% if user.groups.all.0.name == 'Assistant Manager' %}
+        <div class="flex">
+            <h2 class="heading flex-item">For Approval</h2>
+            <!-- Only show button group when a checkbox/es is checked -->
+            <div class="btn-group" style="margin-bottom: 8px;"> 
+                <button class="primary-btn" style="margin-right: 4px;"><i class='bx bx-check'></i></button>
+                <button class="primary-btn-red"><i class='bx bx-x'></i></button>
+            </div>
+        </div>
+        {% elif user.groups.all.0.name == 'Field Technician' %}
+        <h2>Pending Approvals</h2>
+
+        {% endif %}
+        <div class="box-style">
+            <table class="table">
+                <thead>
+                    <tr>
+                        {% if user.groups.all.0.name == 'Assistant Manager' %}
+                        <th><input type="checkbox" class="form-check-input" style="margin-bottom: 0!important;"></th>
+                        {% endif %}
+                        <th>Timestamp</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Recipient</th>
+                        <th>Author</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {% if user.groups.all.0.name == 'Assistant Manager' %}
+                        <td data-label=""><input type="checkbox" class="form-check-input" style="margin-bottom: 0!important;"></td>
+                        {% endif %}
+                        <td data-label="Timestamp">01/01/2021 8:00</td>
+                        <td data-label="Title">Biosecurity Check</td>
+                        <td data-label="Category">Reminder</td>
+                        <td data-label="Recipient">All</td>
+                        <td data-label="Author">David Archuletta</td>
+                        <td><button class="secondary-btn" id="viewAnnounce" onclick="viewAnnounce()"><span class="material-icons md-18">visibility</span>View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="recent-announce">
+        <h2>Recent Announcements</h2>
+        <div class="box-style">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Recipient</th>
+                        <th>Author</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-label="Timestamp">01/01/2021 8:00</td>
+                        <td data-label="Title">Biosecurity Check</td>
+                        <td data-label="Category">Reminder</td>
+                        <td data-label="Recipient">All</td>
+                        <td data-label="Author">David Archuletta</td>
+                        <td><button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock section %}
