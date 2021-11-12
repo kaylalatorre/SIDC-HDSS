@@ -1,12 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 
+# for Forms
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm
+
 # for Models
-from farmsapp.models import Farm, ExternalBiosec, InternalBiosec
 import psycopg2
+from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures
+
+#Creating a cursor object using the cursor() method
+from django.shortcuts import render
 
 # Farms Management Module Views
 
+## Farms table for all users except Technicians
 def farms(request):
     farmsData = []
     for f in Farm.objects.all().values_list():
@@ -27,9 +34,94 @@ def farms(request):
 def selectedFarm(request):
     return render(request, 'farmstemp/selected-farm.html', {})
 
+## Redirect to Add Farm Page and render form
 def addFarm(request):
-    return render(request, 'farmstemp/add-farm.html', {})
+    print("TEST LOG: Add Farm view") 
+    
+    if request.method == 'POST':
+        print("TEST LOG: Form has POST method") 
+        print(request.POST)
 
+        hogRaiserForm       = HogRaiserForm(request.POST)
+        farmForm            = FarmForm(request.POST)
+        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
+        externalBiosecForm  = ExternalBiosecForm(request.POST)
+        internalBiosecForm  = InternalBiosecForm(request.POST)
+    
+        if hogRaiserForm.is_valid():
+            hogRaiser = hogRaiserForm.save(commit=False)
+            hogRaiser.save()
+
+            print("TEST LOG: Added new raiser")
+
+            if externalBiosecForm.is_valid():
+                externalBiosec = externalBiosecForm.save(commit=False)
+                externalBiosec.save()
+
+                print("TEST LOG: Added new external biosec")
+
+                if internalBiosecForm.is_valid():
+                    internalBiosec = internalBiosecForm.save(commit=False)
+                    internalBiosec.save()
+
+                    print("TEST LOG: Added new internal biosec")
+
+                    if farmForm.is_valid():
+                        farm = farmForm.save(commit=False)
+
+                        farm.hog_raiser_id = hogRaiser.id
+                        farm.extbio_id = externalBiosec.id
+                        farm.intbio_id = internalBiosec.id
+                        
+                        farm.save()
+                        
+                        print("TEST LOG: Added new farm")
+
+                        if pigpenMeasuresForm.is_valid():
+                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+
+                            pigpenMeasures.farm_id = farm.id
+
+                            pigpenMeasures.save()
+
+                            print("TEST LOG: Added new pigpen measure")
+                            return render(request, 'home.html', {})
+
+                        else:
+                            print("TEST LOG: Pigpen Measures Form not valid")
+                            print(pigpenMeasuresForm.errors)
+                    
+                    else:
+                        print("TEST LOG: Farm Form not valid")
+                        print(farmForm.errors)
+
+                else:
+                    print("TEST LOG: Internal Biosec Form not valid")
+                    print(internalBiosec.errors)
+
+            else:
+                print("TEST LOG: External Biosec Form not valid")
+                print(externalBiosec.errors)
+            
+        else:
+            print("TEST LOG: Hog Raiser Form not valid")
+            print(hogRaiserForm.errors)
+     
+    else:
+        print("TEST LOG: Form is not a POST method")
+        
+        hogRaiserForm       = HogRaiserForm()
+        farmForm            = FarmForm()
+        pigpenMeasuresForm  = PigpenMeasuresForm()
+        externalBiosecForm  = ExternalBiosecForm()
+        internalBiosecForm  = InternalBiosecForm()
+
+    return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
+                                                        'farmForm' : farmForm,
+                                                        'pigpenMeasuresForm' : pigpenMeasuresForm,
+                                                        'externalBiosecForm' : externalBiosecForm,
+                                                        'internalBiosecForm' : internalBiosecForm})
+ 
 def biosec_view(request):
     print("TEST LOG: in Biosec view/n")
 
@@ -45,7 +137,9 @@ def biosec_view(request):
     print("bioExt len(): " + str(len(bioExt)))
 
     print("TEST LOG: bioInt last_updated-- ")
-    print(bioInt[0].last_updated)
+    # print(bioInt[0].last_updated)
+
+    # TODO: compile biosec attributes for Checklist, pass in template
 
     return render(request, 'farmstemp/biosecurity.html', {'biosecInt': bioInt, 'biosecExt': bioExt})
 
@@ -149,3 +243,37 @@ def intBiosecurity(request):
 def extBiosecurity(request):
     return render(request, 'farmstemp/rep-ext-biosec.html', {})
 
+    # print farm ID
+
+    if request.method == 'POST':
+        print("TEST LOG: Form has POST method") 
+        print(request.POST)
+
+        activityForm = ActivityForm(request.POST)
+        deliveryForm = DeliveryForm(request.POST)
+
+            
+        if deliveryForm.is_valid():
+            delivery = deliveryForm.save(commit=False)
+            delivery.save()
+
+            if activityForm.is_valid():
+                activty = activityForm.save(commit=False)
+                activity.save()
+            
+            else:
+                print("TEST LOG: activityForm is not valid")
+                print(activityForm.errors)
+
+        else:
+            print("TEST LOG: deliveryForm is not valid")
+            print(deliveryForm.errors)
+    
+    else:
+        print("TEST LOG: Form is not a POST method")
+
+        activityForm = ActivityForm()
+        deliveryForm = DeliveryForm()
+    
+    return render(request, 'farmstemp/add-activity.html', {'activityForm' : activityForm,
+                                                            'deliveryForm' : deliveryForm})

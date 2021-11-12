@@ -8,76 +8,86 @@
 
 {% block section %}
 <div class="main-div">
-    <div class="flex">
-        <h1 class="heading flex-item"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
-        <div><button class="primary-btn">Send for Approval</button></div>
+    <form action="" method="POST">
+
+    {% csrf_token %}
+
+    <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
+    <div class="flex subheading">
+        <p class="flex-item">Add a new farm record here. </p>
+        <div><button class="primary-btn" type="submit">Send for Approval</button></div>
     </div>
-    <hr>
+
     <div class="flex">
         <section class="flex-item" id="farm-details">
             <h2>Farm Details</h2>
             <div class="box-style">
                 <div class="mb-3">
                     <label for="input-code" class="form-label">Code</label>
-                    <input type="number" class="form-control" id="input-code" placeholder="ex. 001">
+                    <input type="text" class="form-control" id="input-code" name="input-code" placeholder="ex. 001">
                 </div>
+
                 <h3>Raiser</h3>
                 <div class="mb-3">
-                    <label for="input-name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="input-name" placeholder="ex. John Doe">
+                    <label for="input-first-name" class="form-label"> First Name</label>
+                    {{hogRaiserForm.fname}}
+
+                    <label for="input-last-name" class="form-label"> Last Name</label>
+                    {{hogRaiserForm.lname}}
                 </div>
                 <div class="mb-3">
                     <label for="input-contact" class="form-label">Contact No.</label>
-                    <input type="text" class="form-control" id="input-contact" placeholder="ex. 091512345678">
+                    {{hogRaiserForm.contact_no}}
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-directly">
+                    {{farmForm.directly_manage}}
                     <label class="form-check-label" for="cb-directly">Directly Managed</label>
                 </div>
                 <br>
+
                 <h3>Farm</h3>
                 <div class="mb-3">
                     <label for="input-address" class="form-label">Address</label>
-                    <input type="text" class="form-control" id="input-address" placeholder="ex. Batangas, 4200 Batangas">
+                    {{farmForm.farm_address}}
                 </div>
+                
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
-                    <select class="form-select" id="input-area">
-                        <option value="TISISI">TISISI</option>
-                        <option value="West">West</option>
-                        <option value="East">East</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    {{farmForm.area}}
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate which area.</label>
                     <input type="text" id="input-other"class="form-control" placeholder="Other Area">
                 </div>
+
                 <div class="mb-3">
                     <label for="input-roof" class="form-label">Roof Height (in ft.)</label>
-                    <input type="number" class="form-control" id="input-roof" placeholder="ex. 100">
+                    {{farmForm.roof_height}}
                 </div>
                 <div class="mb-3">
                     <label for="input-wharea" class="form-label">Warehouse Area</label>
                     <div class="input-group" id="input-wharea">
-                        <input type="number" aria-label="Length" class="form-control" id="wh-length" placeholder="Length">
-                        <input type="number" aria-label="Width" class="form-control"  id="wh-width" placeholder="Width">
+                        {{farmForm.warehouse_length}}
+                        {{farmForm.warehouse_width}}
                     </div>
                 </div>
+
                 <div class="mb-3">
                     <label for="input-trough" class="form-label">Feeding Trough</label>
-                    <select class="form-select" id="input-trough">
                         <option value="Semi-automatic">Semi-automatic</option>
                         <option value="Trough">Trough</option>
-                    </select>
+                    </select> -->
+                    {{farmForm.feed_trough}}          
                 </div>
+
                 <div class="mb-3">
                     <label for="input-roof" class="form-label">Building Capacity</label>
-                    <input type="number" class="form-control" id="input-roof" placeholder="ex. 100">
+                    {{farmForm.bldg_cap}}
                 </div>
             </div>
         </section>
     </div>
+
     <div class="flex">
         <section class="flex-item" id="pig-pens">
             <h2>Pig Pens</h2>
@@ -98,41 +108,48 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td data-label="Length"><input type="number" aria-label="Length" class="form-control" placeholder="Length"></td>
-                                <td data-label="Width"><input type="number" aria-label="Width" class="form-control"  placeholder="Width"></td>
-                                <td data-label="No. of Pigs"><input type="number" aria-label="No. of Pigs" class="form-control"  placeholder="ex. 100"></td>
+                                <td data-label="Length">
+                                    {{pigpenMeasuresForm.length}}
+                                </td>
+                                <td data-label="Width">
+                                    {{pigpenMeasuresForm.width}}
+                                </td>
+                                <td data-label="No. of Pigs">
+                                    {{pigpenMeasuresForm.num_heads}}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
-                    <p> 100 pigs </p>
+                    <p> {{numTotalPigs}} pigs </p>
                 </div>
             </div>
         </section>
+
         <section class="flex-item" id="biosec-measures">
             <h2>Biosecurity Measures</h2>
             <div class="box-style">
                 <p>Select all that apply.</p>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-isolation">
+                    {{internalBiosecForm.isol_pen}}
                     <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-birdproof">
+                    {{externalBiosecForm.bird_proof}}
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-fence">
+                    {{externalBiosecForm.perim_fence}}
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-footdip">
+                    {{internalBiosecForm.foot_dip}}
                     <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-distance">
+                    {{externalBiosecForm.fiveh_m_dist}}
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="mb-3">
@@ -168,5 +185,7 @@
             </div>
         </section>
     </div>
+    
+    </form>
 </div>
 {% endblock section %}
