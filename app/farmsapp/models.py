@@ -25,6 +25,8 @@ class ExternalBiosec(models.Model):
     prsnl_sanit_hands   = models.IntegerField(null=True, blank=True)
     chg_disinfect_daily = models.IntegerField(null=True, blank=True)
 
+    # TODO: getter function to return specific fields (?)
+
     # def __str__(self):
     #     return self.id
 
@@ -81,6 +83,8 @@ class Farm_Symptoms(models.Model):
     weight_loss         = models.BooleanField(default=False)
     trembling           = models.BooleanField(default=False)
     conjunctivitis      = models.BooleanField(default=False)
+
+    # TODO: getter function to return specific fields (?)
 
     # def __str__(self):
     #     return self.id
