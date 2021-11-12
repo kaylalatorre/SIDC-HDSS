@@ -26,7 +26,7 @@ def login(request):
             error = {'code': 404, 
                 'message': 'User not found'
             }
-
+  
             return render(request, 'login.html', error)
     else:
         return render(request, 'login.html', {})
