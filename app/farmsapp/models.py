@@ -11,13 +11,13 @@ class User(User):
 # EXTERNAL_BIOSEC Table
 class ExternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
     last_updated        = models.DateTimeField(default=now, editable=False)
 
+    # fields from Biomeasures
     bird_proof          = models.IntegerField(null=True, blank=True)
     perim_fence         = models.IntegerField(null=True, blank=True)
     fiveh_m_dist        = models.IntegerField(null=True, blank=True)
-
+    # fields from Biochecklist
     prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
     prvdd_alco_soap     = models.IntegerField(null=True, blank=True)
     obs_no_visitors     = models.IntegerField(null=True, blank=True)
@@ -33,13 +33,13 @@ class ExternalBiosec(models.Model):
 # INTERNAL_BIOSEC Table
 class InternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
     last_updated        = models.DateTimeField(default=now, editable=False)
-
+    
+    # fields from Biomeasures
     isol_pen            = models.IntegerField(null=True, blank=True)
     waste_mgt           = models.IntegerField(null=True, blank=True)
     foot_dip            = models.IntegerField(null=True, blank=True)
-    
+    # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)
     disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 

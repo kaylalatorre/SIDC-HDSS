@@ -1,14 +1,33 @@
+from django.db.models.expressions import F
+from django.forms.formsets import formset_factory
+
+# for page redirection, server response
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
+
+# for AJAX functions
 from django.http import JsonResponse
 from django.core import serializers
 
+# for Forms
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm
+
+# for Models
 from django.views.decorators.csrf import csrf_exempt
 
 # for Model imports
-from .models import ExternalBiosec, InternalBiosec, Farm
 import psycopg2
+from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
 
+#Creating a cursor object using the cursor() method
+from django.shortcuts import render
+
+from datetime import date
+
+def debug(m):
+    print("------------------------[DEBUG]------------------------")
+    print(m)
+    print("-------------------------------------------------------")
 
 # Farms Management Module Views
 
