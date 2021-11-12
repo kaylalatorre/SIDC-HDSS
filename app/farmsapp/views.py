@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # for Model imports
 import psycopg2
-from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures
+from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
@@ -69,15 +69,15 @@ def farms(request):
     #     road_access         = False,
     #     extbio_ID           = None,
     #     intbio_ID           = None,
-    #     raiser_ID           = Hog_Raiser.objects.get(id=2),
+    #     raiser           = Hog_Raiser.objects.get(id=2),
     #     weight_record_ID    = None,
     #     symptoms_record_ID  = None,
     # )
     # fa.save()
     # debug("fa_save")
 
-    qry = Farm.objects.select_related('raiser_ID').annotate(
-            fname=F("raiser_ID__fname"), lname=F("raiser_ID__lname"), contact=F("raiser_ID__contact_no")
+    qry = Farm.objects.select_related('hog_raiser').annotate(
+            fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")
             ).values(
                 "id",
                 "fname",
@@ -322,6 +322,14 @@ def addChecklist_view(request):
     # TODO: How to access farmID hidden input tag? through js?
     # TODO: from Biosec page, pass farmID here
 
+    print("TEST LOG: in addChecklist_view/n")
+
+    # get 'farm_id' from the session
+    farm_id = request.session['farm_id']
+    print("TEST LOG: farm_id -- " + str(farm_id))
+
+    return render(request, 'farmstemp/add-checklist.html', {'farmID': farm_id})
+
 def techSelectedFarm(request):
     return render(request, 'farmstemp/tech-selected-farm.html', {})
 
@@ -333,16 +341,6 @@ def formsApproval(request):
 
 def selectedForm(request):
     return render(request, 'farmstemp/selected-form.html', {})
-
-def addChecklist(request):
-    return render(request, 'farmstemp/add-checklist.html', {})
-    print("TEST LOG: in addChecklist_view/n")
-
-    # get 'farm_id' from the session
-    farm_id = request.session['farm_id']
-    print("TEST LOG: farm_id -- " + str(farm_id))
-
-    return render(request, 'farmstemp/add-checklist.html', {'farmID': farm_id})
 
 # (POST) function for adding a Biosec Checklist
 def post_addChecklist(request):
@@ -427,26 +425,6 @@ def post_addChecklist(request):
         
 
 def addActivity(request):
-    return render(request, 'farmstemp/add-activity.html', {})
-
-def memAnnouncements(request):
-    return render(request, 'farmstemp/mem-announce.html', {})
-
-def createAnnouncement(request):
-    return render(request, 'farmstemp/create-announcement.html', {})
-
-def viewAnnouncement(request):
-    return render(request, 'farmstemp/view-announcement.html', {})
-
-def farmsAssessment(request):
-    return render(request, 'farmstemp/rep-farms-assessment.html', {})
-
-def intBiosecurity(request):
-    return render(request, 'farmstemp/rep-int-biosec.html', {})
-
-def extBiosecurity(request):
-    return render(request, 'farmstemp/rep-ext-biosec.html', {})
-
     # print farm ID
 
     if request.method == 'POST':
@@ -481,3 +459,21 @@ def extBiosecurity(request):
     
     return render(request, 'farmstemp/add-activity.html', {'activityForm' : activityForm,
                                                             'deliveryForm' : deliveryForm})
+
+def memAnnouncements(request):
+    return render(request, 'farmstemp/mem-announce.html', {})
+
+def createAnnouncement(request):
+    return render(request, 'farmstemp/create-announcement.html', {})
+
+def viewAnnouncement(request):
+    return render(request, 'farmstemp/view-announcement.html', {})
+
+def farmsAssessment(request):
+    return render(request, 'farmstemp/rep-farms-assessment.html', {})
+
+def intBiosecurity(request):
+    return render(request, 'farmstemp/rep-int-biosec.html', {})
+
+def extBiosecurity(request):
+    return render(request, 'farmstemp/rep-ext-biosec.html', {})
