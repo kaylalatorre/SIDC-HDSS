@@ -1,27 +1,27 @@
 var $toggleBtn = $('#toggleBtn'); // get menu button from topbar
-var $pushSelectors = $('.sidebar') // get the sidebar and content
+var $pushSelectors = $('.sidebar'); // get the sidebar and content
+var $arrow = $('.arrow'); // dropdown menu arrow
 var sidebarIsOpen; // global variable to store sidebar state
+var menuIsOpen;
 var openOnLoad = false; // default state
 
 /**
  * Checking sessionStorage.
  */
-function checkStorage() {
     // sidebar state
-    if(sessionStorage.getItem('sidebar') === "opened") {
-        $(document).ready(function() {
-            $($pushSelectors.removeClass('close'));
-        });
-    } else {
-        console.log('Sidebar is closed.');
-    }
-
-    // nav-item states
-    if(sessionStorage.getItem('listID') != null) {
-        var val = sessionStorage.getItem('listID');
-        $('#' + val).addClass('nav-current');
-    }
+if(sessionStorage.getItem('sidebar') === "opened") {
+    $($pushSelectors.removeClass('close'));
+} else {
+    console.log('Sidebar is closed.');
 }
+
+    // nav-item state
+if(sessionStorage.getItem('listID') != null) {
+    var val = sessionStorage.getItem('listID');
+    $('#' + val).addClass('nav-current');
+    $('#' + val).closest('.nav-menu').addClass('nav-current showMenu');
+}
+
 
 /**
  * Saving active link to the sessionStorage.
@@ -82,10 +82,19 @@ $toggleBtn.on('click', toggleSidebar);
 /** 
  * Toggling the sidebar dropdown menu. 
  */ 
- let arrow = document.querySelectorAll('.arrow');
- for(var i =0; i < arrow.length; i++) {
-     arrow[i].addEventListener("click", (e)=> {
-         let arrowParent = e.target.parentElement.parentElement;
-         arrowParent.classList.toggle("showMenu");
+for(var i =0; i < $arrow.length; i++) {
+     $arrow[i].addEventListener("click", (e)=> {
+        let arrowParent = e.target.parentElement.parentElement;
+        console.log(sessionStorage.getItem('menu'));
+        menuIsOpen = !menuIsOpen; 
+
+        if(menuIsOpen) {
+            sessionStorage.setItem('menu', 'opened');
+            $('#' + arrowParent.id).addClass('showMenu');
+        }
+        else {
+            sessionStorage.setItem('menu', 'closed');
+            $('#' + arrowParent.id).removeClass('showMenu');
+        }
      })
- }
+}

@@ -7,7 +7,7 @@
         </span>
     </div>
     <!-- NAVIGATION LINKS -->
-    <ul class="nav-links">
+    <div class="nav-links">
         {% if user.groups.all.0.name != 'Field Technician' %}
         <ul class="sidebar-header">
             <span class="header-name">Overview</span>
@@ -23,7 +23,7 @@
                     <span class="link-name">Farms</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item"  id="nav-health" onclick="active('nav-health')">
                 <a href="#">
                     <i class='bx bxs-clinic' ></i>
                     <span class="link-name">Hogs Health</span>
@@ -33,20 +33,20 @@
             {% if user.groups.all.0.name != 'Regional Manager' %}
         <ul class="sidebar-header">
             <span class="header-name">Management</span>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-approval" onclick="active('nav-approval')">
                 <a href="/forms-approval">
                     <i class='bx bxs-notepad'></i>
                     <span class="link-name">Forms Approval</span>
                 </a>
             </li>
             {% if user.groups.all.0.name == 'Assistant Manager' %}
-            <li class="nav-item">
+            <li class="nav-item" id="nav-assign" onclick="active('nav-assign')">
                 <a href="/technician-assignment">
                     <i class='bx bxs-user-pin'></i>
                     <span class="link-name">Technician Assignment</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-ma" onclick="active('nav-ma')">
                 <a href="/member-announcements">
                     <i class='bx bxs-megaphone' ></i>
                     <span class="link-name">Member Announcements</span>
@@ -58,23 +58,23 @@
         {% if user.groups.all.0.name == 'Regional Manager' or 'Assistant Manager'%}
         <ul class="sidebar-header">
             <span class="header-name">Decision Support</span>
-            <li class="nav-item">
+            <li class="nav-item nav-menu" id="nav-reports" >
                 <div class="icon-link">
                     <a href="#">
-                        <i class='bx bxs-report' ></i>
+                        <i class='bx bxs-report'></i>
                         <span class="link-name">Reports</span>
                     </a>
                     <i class='bx bx-chevron-down arrow' ></i>
                 </div>
                 <ul class="sub-menu">
-                    <li class="nav-item"><a href="/farms-assessment">Farms Assessment</a></li>
-                    <li class="nav-item"><a href="/int-biosecurity">Internal Biosecurity</a></li>
-                    <li class="nav-item"><a href="/ext-biosecurity">External Biosecurity</a></li>
-                    <li class="nav-item"><a href="">Hogs Weight</a></li>
-                    <li class="nav-item"><a href="">Symptoms Reported</a></li>
+                    <li class="nav-item" id="nav-fa" onclick="active('nav-fa')"><a href="/farms-assessment">Farms Assessment</a></li>
+                    <li class="nav-item" id="nav-ib" onclick="active('nav-ib')"><a href="/int-biosecurity">Internal Biosecurity</a></li>
+                    <li class="nav-item" id="nav-eb" onclick="active('nav-eb')"><a href="/ext-biosecurity">External Biosecurity</a></li>
+                    <li class="nav-item" id="nav-hw" onclick="active('nav-hw')"><a href="">Hogs Weight</a></li>
+                    <li class="nav-item" id="nav-sr" onclick="active('nav-sr')"><a href="">Symptoms Reported</a></li>
                 </ul>
             </li>
-            <li class="nav-item">
+            <li class="nav-item nav-menu" id="nav-analytics">
                 <div class="icon-link">
                     <a href="#">
                         <i class='bx bx-analyse' ></i>
@@ -83,8 +83,8 @@
                     <i class='bx bx-chevron-down arrow' ></i>
                 </div>
                 <ul class="sub-menu">
-                    <li class="nav-item"><a href="">Disease Monitoring</a></li>
-                    <li class="nav-item"><a href="">Action Recommendation</a></li>
+                    <li class="nav-item" id="nav-dm" onclick="active('nav-dm')"><a href="">Disease Monitoring</a></li>
+                    <li class="nav-item" id="nav-ar" onclick="active('nav-ar')"><a href="">Action Recommendation</a></li>
                 </ul>
             </li>
         </ul>
@@ -93,25 +93,25 @@
         <!-- FIELD TECHNICIAN LINKS -->
         {% if user.groups.all.0.name == 'Field Technician' %}
         <ul>
-            <li class="nav-item" id="">
+            <li class="nav-item" id="nav-tech-farms" onclick="active('nav-tech-farms')">
                 <a href="/"> 
                     <i class='bx bxs-home' ></i>
                     <span class="link-name">Farms</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-biosec" onclick="active('nav-biosec')">
                 <a href="/biosecurity">
                     <i class='bx bxs-home-circle'></i>
                     <span class="link-name">Biosecurity</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-tech-health" onclick="active('nav-tech-health')">
                 <a href="#">
                     <i class='bx bxs-clinic' ></i>
                     <span class="link-name">Hogs Health & Symptoms</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-tech-ma" onclick="active('nav-tech-ma')">
                 <a href="/member-announcements">
                     <i class='bx bxs-megaphone' ></i>
                     <span class="link-name">Member Announcements</span>
@@ -119,7 +119,7 @@
             </li>
         </ul>
         {% endif %}
-    </ul>
+    </div>
 
     <!-- LOGOUT -->
     <li>
