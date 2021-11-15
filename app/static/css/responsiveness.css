@@ -35,22 +35,6 @@
         right: 16px; 
     }
 
-    .sidebar.rp-close {
-        display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        z-index: 0;
-    }
-
-    .sidebar.rp-close .nav-item {
-        display: none;
-    }
-
-    .sidebar.rp-close ~ .content-section {
-        left: 0 !important;
-        width: 100% !important;
-    }
-
     /* Topbar */
     .content-section .topbar { width: 100%; padding: 0 16px;}
     .rp-text { display: block; }

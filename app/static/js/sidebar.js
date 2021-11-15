@@ -98,3 +98,12 @@ for(var i =0; i < $arrow.length; i++) {
         }
      })
 }
+
+/** 
+ * Toggling responsive sidebar. 
+ */
+var $sidebarClose = $('#sidebar-close');
+var $sidebar = $('.sidebar');
+$sidebarClose.on("click", ()=> {
+    $sidebar.addClass("close");
+})

@@ -176,8 +176,12 @@ ul, li {
     color: #FAFAFA;
 }
 
-#logout-btn:hover {
+#logout-icon:hover {
     color: #006633;
+}
+
+.sidebar.close li #logout-btn {
+    max-width: 64px;
 }
 
 /* Selected Nav */
