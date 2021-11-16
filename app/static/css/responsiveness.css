@@ -13,9 +13,13 @@
     h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
     h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 500; }
     p, label { font-size: 14px; font-family: 'Roboto'; }
-
+    
     .flex-item { padding: 0; }
     .main-div { margin: 16px!important; }
+
+    .subheading { display: none; }
+    .mobile-subheading { opacity: 1; padding-bottom: 8px;}
+    .button i, button i { text-align: center; align-items: center;}
 }
 
 @media (max-width: 420px) {
@@ -69,6 +73,12 @@
     .table tbody tr td {
         text-align: right;
         padding-left: 50%;
+        position: relative;
+    }
+
+    #biosec-checklists .table tbody tr td {
+        text-align: left;
+        padding-left: 0;
         position: relative;
     }
 

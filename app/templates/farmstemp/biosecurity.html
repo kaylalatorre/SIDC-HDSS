@@ -11,7 +11,7 @@
     <h1 class="heading">Biosecurity</h1>
     <p>Select a farm to check its biosecurity records.</p>
     <div class="box-style">
-        <div class="input-group mb-3" style="width: 40%">
+        <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
             <select class="form-select" id="farm-code" style="margin-bottom: 0;">
                 <option value="001">001</option>
@@ -34,6 +34,18 @@
                 </ul>
             </div>
         </div>
+        <div class="flex mobile-subheading">
+            <p style="width: 90%;">Biosecurity Records.</p>
+            <div class="dropdown">
+                <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  + Add New
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li><a class="dropdown-item" href="/add-checklist">Biosecurity Checklist</a></li>
+                  <li><a class="dropdown-item" href="/add-activity">Activity Record</a></li>
+                </ul>
+            </div>
+        </div>
     
         <h2 class="heading">Biosecurity Measures</h2>
         <!-- Disabled form -- result from adding new farm record -->
@@ -42,6 +54,10 @@
                 <div class="flex subheading">
                     <p class="flex-item">All biosecurity measures in the farm. </p>
                     <div><button class="secondary-btn"><i class='bx bxs-edit'></i>Edit</button></div>
+                </div>
+                <div class="flex mobile-subheading">
+                    <p style="width: 90%;">All biosecurity measures. </p>
+                    <div><button class="secondary-btn"><i class='bx bxs-edit'></i><span class="text">Edit</span></button></div>
                 </div>
                 <div class="mb-3">
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
@@ -90,6 +106,22 @@
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
                             <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i>Edit</button>
                             <button class="secondary-btn-red"><i class='bx bxs-trash'></i>Delete</button>
+                        </div>
+                    </div>
+                    <div class="flex mobile-subheading">     
+                        <div class="input-group mb-3" style="width:90%; padding-right: 4px;">
+                            <label class="form-label" style="font-weight: 600;">Date</label>
+                            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                                {% for bio in bioList %}
+                                    {% load tz %}
+                                    <option value="{{ bio.id }}"> {{ bio.last_updated|localtime }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="btn-group" style="justify-content: flex-end; padding: 0;">
+                            <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                            <button class="secondary-btn-red"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                         </div>
                     </div>
                 </div>
@@ -261,15 +293,15 @@
                     <tbody>
                         <!-- Data -->
                         <tr>
-                            <td>01/01/21</td>
-                            <td>Delivery of Medicine</td>
-                            <td>16:00 - 18:00</td>
-                            <td>Very good</td>
-                            <td>N/A</td>
+                            <td data-label="Date">01/01/21</td>
+                            <td data-label="Trip Type">Delivery of Medicine</td>
+                            <td data-label="Time">16:00 - 18:00</td>
+                            <td data-label="Description">Very good</td>
+                            <td data-label="Remarks">N/A</td>
                             <td>
                                 <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i>Edit</button>
-                                    <button class="secondary-btn-red"><i class='bx bxs-trash'></i>Delete</button>
+                                    <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button class="secondary-btn-red"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                                 </div>
                             </td>
                         </tr>
