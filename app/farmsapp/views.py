@@ -203,8 +203,9 @@ def addFarm(request):
                                                         'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
  
-@csrf_exempt
+
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
+@csrf_exempt
 def search_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
@@ -259,6 +260,7 @@ def search_bioChecklist(request):
     return JsonResponse({"instance": ser_instance}, status=200)
       
 # (POST-AJAX) For updating a Biosec Checklist based on biosecID
+@csrf_exempt
 def update_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
@@ -272,42 +274,49 @@ def update_bioChecklist(request):
     # access biosecID passed from AJAX post request
     bioID = request.POST.get("biosecID")
 
+    # access checkArr from AJAX post
+    chArr = []
+    chArr = request.POST.getlist("checkArr[]")
+
+    print("TEST LOG: chArr[0]-- " + chArr[0])
+
+
     if None:
         print("TEST LOG: no biosecID from AJAX req")
     else:
         print("bioID: " + str(bioID))
 
-    # can be filtered by biosecID only, since bioIDs passed in dropdown is w/in Farm
-    querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
-        'prvdd_foot_dip',      
-        'prvdd_alco_soap',     
-        'obs_no_visitors',     
-        'prsnl_dip_footwear',  
-        'prsnl_sanit_hands',   
-        'chg_disinfect_daily'
-    )
+    # # init Biosec models
+    # extBio = ExternalBiosec()
+    # intBio = InternalBiosec()    
 
-    print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
-    
+    extBio = ExternalBiosec.objects.get(pk=bioID)
+    extBio.prvdd_foot_dip       = chArr[0]
+    extBio.prvdd_alco_soap      = chArr[1]
+    extBio.obs_no_visitors      = chArr[2]
+    extBio.prsnl_dip_footwear   = chArr[3]
+    extBio.prsnl_sanit_hands    = chArr[4]
+    extBio.chg_disinfect_daily  = chArr[5]
 
-    querysetInt = InternalBiosec.objects.filter(id=bioID).only(
-        'disinfect_prem',      
-        'disinfect_vet_supp',     
-    ).first()
+    intBio = InternalBiosec.objects.get(pk=bioID)
+    intBio.disinfect_prem       = chArr[6]
+    intBio.disinfect_vet_supp   = chArr[7]
+
+    # save in Biosec models
+    extBio.save()
+    intBio.save()
 
     # get first instance in query
-    bioObj = querysetExt.first()
+    checkObj = extBio
 
     # append Internal biosec fields
-    bioObj.disinfect_prem       = querysetInt.disinfect_prem
-    bioObj.disinfect_vet_supp   = querysetInt.disinfect_vet_supp
+    checkObj.disinfect_prem       = intBio.disinfect_prem
+    checkObj.disinfect_vet_supp   = intBio.disinfect_vet_supp
 
-    print("TEST LOG search_bioCheck(): querysetInt.disinfect_prem-- " + str(querysetInt.disinfect_prem))
-    print("TEST LOG search_bioCheck(): querysetInt.disinfect_vet_supp-- " + str(querysetInt.disinfect_vet_supp))
-
+    print("TEST LOG: checkObj.disinfect_prem-- " + str(checkObj.disinfect_prem))
 
     # serialize query object into JSON
-    ser_instance = serializers.serialize('json', [ bioObj, ])
+    ser_instance = serializers.serialize('json', [ checkObj, ])
     # send to client side.
     return JsonResponse({"instance": ser_instance}, status=200)
 
