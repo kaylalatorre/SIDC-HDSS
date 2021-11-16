@@ -24,6 +24,9 @@ from django.shortcuts import render
 
 from datetime import date
 
+# for getting date today
+from django.utils.timezone import now 
+
 def debug(m):
     print("------------------------[DEBUG]------------------------")
     print(m)
@@ -250,8 +253,8 @@ def search_bioChecklist(request):
     bioObj.disinfect_prem       = querysetInt.disinfect_prem
     bioObj.disinfect_vet_supp   = querysetInt.disinfect_vet_supp
 
-    print("TEST LOG search_bioCheck(): querysetInt.disinfect_prem-- " + str(querysetInt.disinfect_prem))
-    print("TEST LOG search_bioCheck(): querysetInt.disinfect_vet_supp-- " + str(querysetInt.disinfect_vet_supp))
+    print("TEST LOG search_bioCheck(): bioObj.disinfect_prem-- " + str(bioObj.disinfect_prem))
+    print("TEST LOG search_bioCheck(): bioObj.disinfect_vet_supp-- " + str(bioObj.disinfect_vet_supp))
 
 
     # serialize query object into JSON
@@ -278,19 +281,23 @@ def update_bioChecklist(request):
     chArr = []
     chArr = request.POST.getlist("checkArr[]")
 
-    print("TEST LOG: chArr[0]-- " + chArr[0])
+    print("TEST LOG: chArr ELEMENTS")
 
+    for index, value in enumerate(chArr): 
+        if value is None:
+            print("No value for chArr")
+        else:
+            # convert str element to int
+            int(value)
+            print(list((index, value)))
 
     if None:
         print("TEST LOG: no biosecID from AJAX req")
     else:
-        print("bioID: " + str(bioID))
-
-    # # init Biosec models
-    # extBio = ExternalBiosec()
-    # intBio = InternalBiosec()    
+        print("bioID: " + str(bioID)) 
 
     extBio = ExternalBiosec.objects.get(pk=bioID)
+    extBio.last_updated = now
     extBio.prvdd_foot_dip       = chArr[0]
     extBio.prvdd_alco_soap      = chArr[1]
     extBio.obs_no_visitors      = chArr[2]
@@ -299,6 +306,7 @@ def update_bioChecklist(request):
     extBio.chg_disinfect_daily  = chArr[5]
 
     intBio = InternalBiosec.objects.get(pk=bioID)
+    intBio.last_updated = now
     intBio.disinfect_prem       = chArr[6]
     intBio.disinfect_vet_supp   = chArr[7]
 
@@ -374,7 +382,7 @@ def biosec_view(request):
     # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
     request.session['farm_id'] = farmID 
 
-    print("TEST LOG: bioInt last_updated-- ")
+    # print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
     # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
     return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList}) 
