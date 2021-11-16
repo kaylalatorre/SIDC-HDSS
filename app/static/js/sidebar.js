@@ -107,3 +107,5 @@ var $sidebar = $('.sidebar');
 $sidebarClose.on("click", ()=> {
     $sidebar.addClass("close");
 })
+
+$sidebarClose.on('click', toggleSidebar); 

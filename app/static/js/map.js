@@ -6,7 +6,7 @@
 // });
 
 document.addEventListener('DOMContentLoaded', function () {
-    const chart = Highcharts.chart('map-container', {
+    const chart = Highcharts.chart('container', {
         chart: {
             type: 'bar'
         },
