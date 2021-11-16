@@ -7,64 +7,97 @@
 
 {% block section %}
 <div class="table-container main-div">
-    <div class="flex">
-        <section class="overview dd-flex-item-left">
-            <h3>Overview</h3>
-            <div class="box-style">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>
-                                <i class='bx bx-home'></i><br>
-                                <p class="overview-text">Total Farms</p>
-                            </th>
-                            <td class="overview-num">1,230</td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <i class='bx bx-clinic' ></i><br>
-                                <p class="overview-text">Total Hogs</p>
-                            </th>
-                            <td class="overview-num">1,230</td>
-                        </tr>
-                        <tr>
-                            <th>
-                                
-                                <p class="overview-text">Average Internal Biosecurity Score</p>
-                            </th>                            
-                            <td class="overview-num">99%</td>
-                        </tr>
-                        <tr>
-                            <th>Total Farms</th>
-                            <td class="overview-num">99%</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- Overview -->
+    <section id="overview">
+        <h3 class="heading">Overview</h3>
+        <div class="overview">
+            <div class="overview-item">
+                <div class="ov-icon">
+                    <i class='bx bx-home'></i>
+                </div>
+                <div class="ov-info">
+                    <h2 id="total-farms">1,999</h2>
+                    <label for="total-farms">Total Farms</label>
+                </div>
             </div>
-        </section>
-        <section class="farms-map dd-flex-item-right">
-            <h3>Farms Biosecurity</h3>
-            <div class="box-style">
-                <p>insert map</p>
+            <div class="overview-item">
+                <div class="ov-icon">
+                    <i class='bx bx-home-circle' ></i>
+                </div>
+                <div class="ov-info">
+                    <h2 id="total-farms">12,999</h2>
+                    <label for="total-farms">Total Hogs</label>
+                </div>
             </div>
-        </section>
-    </div>
-    <div class="flex">
-        <section class="alerts dd-flex-item-left">
-            <h3>Alerts</h3>
-            <div class="box-style">
-                
+            <div class="overview-item">
+                <div class="ov-icon">
+                    <i class='bx bx-intersect' ></i>
+                </div>
+                <div class="ov-info">
+                    <h2 id="total-farms">90% <small class="txt-positive">5%</small></h2>
+                    <label for="total-farms">Ave. Int. Biosecurity Score</label>
+                </div>
             </div>
-            <div class="box-style">
-                
+            <div class="overview-item">
+                <div class="ov-icon">
+                    <i class='bx bx-exclude' ></i>
+                </div>
+                <div class="ov-info">
+                    <h2 id="total-farms">92% <small class="txt-negative">5%</small></h2>
+                    <label for="total-farms">Ave. Ext. Biosecurity Score</label>
+                </div>
             </div>
-        </section>
-        <section class="hogs-map dd-flex-item-right">
-            <h3>Hogs Health & Symptoms</h3>
-            <div class="box-style">
-                <p>insert map</p>
-            </div>
-        </section>
-    </div>
+        </div>
+    </section>
+    
+    <!-- Alerts, Map -->
+    <section>
+       <div class="block-grid">
+           <div class="alerts">
+                <h3 class="heading">Alerts</h3>
+                <div class="alerts-content">
+                    <!-- Disease possibility -->
+                    <div class="alerts-item" id="disease-alert">
+                        <div class="al-icon">
+                            <i class='bx bx-network-chart' ></i>
+                        </div>
+                        <div class="al-info">
+                            <h2 id="total-farms">0.1%</h2>
+                            <label for="total-farms">Disease Spread Possibility</label>
+                        </div>
+                    </div>
+                    <!-- others -->
+                    <div class="alerts-item">
+                        <div class="al-icon">
+                            <i class='bx bx-search-alt' ></i>
+                        </div>
+                        <div class="al-info">
+                            <h2 id="total-farms">12</h2>
+                            <label for="total-farms">Farms Need Inspection</label>
+                        </div>
+                    </div>
+                    <div class="alerts-item">
+                        <div class="al-icon">
+                            <i class='bx bx-first-aid'></i>
+                        </div>
+                        <div class="al-info">
+                            <h2 id="total-farms">2</h2>
+                            <label for="total-farms">New Symptoms Reported</label>
+                        </div>
+                    </div>
+                </div>
+           </div>
+           <!-- Map -->
+           <div class="map">
+               <h3 class="heading">Map</h3>
+               <div class="box-style">
+                    <div id="map-containter">
+
+                    </div>
+               </div>
+           </div>
+       </div>
+    </section>
+    
 </div>
 {% endblock section %}
