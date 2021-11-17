@@ -3,10 +3,6 @@ from django.contrib import messages
 from django.contrib.auth.models import auth, User, Group
 from django.contrib.auth import logout
 
-register = Library()
-
-@register.inclusion_tag('farmsapp/tech-farms.html')
-
 def debug(m):
     print("------------------------[DEBUG]------------------------")
     print(m)

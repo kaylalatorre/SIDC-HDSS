@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Farm_Symptoms, Delivery, Activity, Mortality
+from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Farm_Symptoms, Delivery, Activity, Mortality, Area
 
 class DateInput(ModelForm):
     input_type = 'date'
