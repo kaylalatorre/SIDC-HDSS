@@ -25,17 +25,9 @@ def login(request):
 
         user = auth.authenticate(username=uname,password=password)
     
-        if user is not None:
-            if user.is_active: # successful login, proceed to Home view
+        if user is not None and user.is_active: 
                 auth.login(request, user)
-                return redirect('home')
-            else:
-                error = {'errCode': 404, 
-                    'errMessage': 'Unauthorized access. Please login.'
-                }
-                debug("in LOGIN ERROR: Unauth access")
-                return render(request, 'login.html', error)
-
+                return redirect('check_group')
         else:
             error = {'errCode': 404, 
                 'errMessage': 'Incorrect credentials. Please try again.'
@@ -45,24 +37,20 @@ def login(request):
     else:
         return render(request, 'login.html', {})
 
-# LOGOUT function
-def logout_view(request):
-    logout(request)
-    
-    print("TEST LOG: User signed out.")
-    return redirect('login')
 
-def home(request, *args, **kwargs):
+def check_group(request):
     print("TEST LOG: in Home view/n")
 
     # TODO: fix routing, login errors should be in login() view
+
+    error = {'errCode': 404, 
+        'errMessage': 'Unauthorized access. Please login.'
+    }
+
     try:
         userGroup = request.user.groups.all()[0].name
     except IndexError:
         # (ERROR) User has no group; None value
-        error = {'errCode': 404, 
-            'errMessage': 'Unauthorized access. Please login.'
-        }
         debug("in LOGIN ERROR: Unauth access")
         return render(request, 'login.html', error)   
 
@@ -73,26 +61,30 @@ def home(request, *args, **kwargs):
             for g in Group.objects.filter(): # in list of Group names, find group of the User
                 if g.name == userGroup:
                     hasUsertype = True
-                    # TEST: for tracking group name of User
+                    # (SUCCESS) User has logged in.
                     print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
-                    return render(request, 'home.html', {})
+                    return render("home")
 
             if not hasUsertype:
                 # (ERROR) User came from attempted login, but with no usertype
-                error = {'errCode': 404, 
-                    'errMessage': 'Unauthorized access. Please login.'
-                }
                 debug("in LOGIN ERROR: Unauth access")
                 return render(request, 'login.html', error)
         else:
             # (ERROR) User has no group; None value
-            error = {'errCode': 404, 
-                'errMessage': 'Unauthorized access. Please login.'
-            }
             debug("in LOGIN ERROR: Unauth access")
             return render(request, 'login.html', error)
         
     # except ObjectDoesNotExist:
+    return render(request, 'login.html', error)
+
+def home_view(request):
+    return render(request, 'home.html', {})
+
+# LOGOUT function
+def logout_view(request):
+    logout(request)
+    
+    print("TEST LOG: User signed out.")
     return redirect('login')
 
 def error(request):
