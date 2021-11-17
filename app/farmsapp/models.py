@@ -11,7 +11,7 @@ class User(User):
 # EXTERNAL_BIOSEC Table
 class ExternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-    last_updated        = models.DateTimeField(default=now, editable=False)
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     # fields from Biomeasures
     bird_proof          = models.IntegerField(null=True, blank=True)
@@ -33,7 +33,7 @@ class ExternalBiosec(models.Model):
 # INTERNAL_BIOSEC Table
 class InternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-    last_updated        = models.DateTimeField(default=now, editable=False)
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
     # fields from Biomeasures
     isol_pen            = models.IntegerField(null=True, blank=True)

@@ -300,7 +300,7 @@ def update_bioChecklist(request):
         print("bioID: " + str(bioID)) 
 
     extBio = ExternalBiosec.objects.get(pk=bioID)
-    extBio.last_updated = now
+    # extBio.last_updated = str(now)
     extBio.prvdd_foot_dip       = chArr[0]
     extBio.prvdd_alco_soap      = chArr[1]
     extBio.obs_no_visitors      = chArr[2]
@@ -309,7 +309,7 @@ def update_bioChecklist(request):
     extBio.chg_disinfect_daily  = chArr[5]
 
     intBio = InternalBiosec.objects.get(pk=bioID)
-    intBio.last_updated = now
+    # intBio.last_updated = str(now)
     intBio.disinfect_prem       = chArr[6]
     intBio.disinfect_vet_supp   = chArr[7]
 
@@ -317,19 +317,38 @@ def update_bioChecklist(request):
     extBio.save()
     intBio.save()
 
-    # get first instance in query
-    checkObj = extBio
+    # # get first instance in query
+    # checkObj = extBio
 
-    # append Internal biosec fields
-    checkObj.disinfect_prem       = intBio.disinfect_prem
-    checkObj.disinfect_vet_supp   = intBio.disinfect_vet_supp
+    # # append Internal biosec fields
+    # checkObj.disinfect_prem       = intBio.disinfect_prem
+    # checkObj.disinfect_vet_supp   = intBio.disinfect_vet_supp
 
-    print("TEST LOG: checkObj.disinfect_prem-- " + str(checkObj.disinfect_prem))
+    # print("TEST LOG: checkObj.disinfect_prem-- " + str(checkObj.disinfect_prem))
 
-    # serialize query object into JSON
-    ser_instance = serializers.serialize('json', [ checkObj, ])
-    # send to client side.
-    return JsonResponse({"instance": ser_instance}, status=200)
+    # # serialize query object into JSON
+    # ser_instance = serializers.serialize('json', [ checkObj, ])
+    # # send to client side.
+    # return JsonResponse({"instance": ser_instance}, status=200)
+
+    bioDict = {
+        # External bio
+        'prvdd_foot_dip'        : extBio.prvdd_foot_dip,  
+        'prvdd_alco_soap'       : extBio.prvdd_alco_soap,     
+        'obs_no_visitors'       : extBio.obs_no_visitors,     
+        'prsnl_dip_footwear'    : extBio.prsnl_dip_footwear,  
+        'prsnl_sanit_hands'     : extBio.prsnl_sanit_hands,   
+        'chg_disinfect_daily'   : extBio.chg_disinfect_daily,
+
+        # Internal bio
+        'disinfect_prem'        : intBio.disinfect_prem,
+        'disinfect_vet_supp'    : intBio.disinfect_vet_supp,   
+    }
+
+    jsonStr = json.dumps(bioDict)
+
+    # send to client side (js)
+    return JsonResponse({"instance": jsonStr}, status=200)
 
 # For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):

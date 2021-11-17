@@ -13,15 +13,12 @@ $('#checklist-date').change(function() {
 
     $.ajax({
         type: 'POST',
-        // url: "{% url 'search_biochecklist' %}", 
         url: '/biosecurity/getchecklist',
         data: {"biosecID": biosecID}, // pass biosec id here
         success: function (response){
 
             // alert("in AJAX success");
             var biofields = JSON.parse(response["instance"]);
-
-            console.log(response["instance"]);
 
             // select btn in btn group based on db value
             // EXTERNAL biosec fields
@@ -119,6 +116,7 @@ function disableCheck(){
  * on-click AJAX for save Biochecklist btn
  */
 function saveBiocheck(){
+// $('#saveCheck-btn').on("click", function(){
     // Get biosec ID of selected option tag
     var biosecID = $("#checklist-date option:selected").val()
     alert("biosecID: " + biosecID);
@@ -188,16 +186,15 @@ function saveBiocheck(){
     // for (i = 0; i < checkArr.length; i++)
     //     alert("checkArr ["+ i + "]:" + checkArr[i]);
 
-// $('#saveCheck-btn').on("click", function(){
+
     $.ajax({
         type: 'POST',
         url: '/biosecurity/edit-checklist',
-        data: {"biosecID": bioID, "checkArr": chArr}, // pass biosec id here
+        data: {"biosecID": biosecID, "checkArr": checkArr}, // pass biosec id here
         success: function (response){
 
             alert("in AJAX edit success");
-            var bioInstance = JSON.parse(response["instance"]);
-            var biofields = bioInstance[0]["fields"];
+            var biofields = JSON.parse(response["instance"]);
 
             // select btn in btn group based on db value
             // EXTERNAL biosec fields
@@ -257,6 +254,9 @@ function saveBiocheck(){
                 $('#disinfect_vet_supp_radio2').prop("checked", true);
             else
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
+
+            // reload Biosec page to update dropdown of Biosec last_updated
+            window.location.reload(true);
         },
         error: function (response){
             alert("in AJAX error. ");
@@ -266,5 +266,5 @@ function saveBiocheck(){
     
     disableCheck();
 
-    // });
+// });
 }
