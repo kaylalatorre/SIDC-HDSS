@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, DateField, widgets
 from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Farm_Symptoms, Delivery, Activity, Mortality, Area
 
 class DateInput(ModelForm):
@@ -188,6 +188,8 @@ class DeliveryForm(ModelForm):
         fields = ('__all__')
 
 class ActivityForm(ModelForm):
+    # date = ModelForm.DateField()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].widget.attrs.update({
@@ -195,6 +197,11 @@ class ActivityForm(ModelForm):
             'aria-label' : 'Date',
             'class' : 'form-control',
             'placeholder' : '01/01/2021'
+        })
+        self.fields['trip_desc'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'act-trip-type',
+           'style' : 'margin-bottom: 0'
         })
         self.fields['time_departure'].widget.attrs.update({
             'type' : 'time', 
@@ -224,6 +231,16 @@ class ActivityForm(ModelForm):
     class Meta:
         model = Activity
         fields = ('__all__')
+        # widgets = {
+        #     'date' : ModelForm.DateInput(format=('%d-%m-%Y'), 
+        #                                      attrs={'class':'myDateClass', 
+        #                                     'placeholder':'Select a date'})
+        # }
+        widgets = {
+            'date' : widgets.DateInput(attrs={'type' : 'date'}),
+            'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),
+            'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
+        }
 
 class MortalityForm(ModelForm):
     class Meta:

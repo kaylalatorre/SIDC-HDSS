@@ -179,7 +179,16 @@ class Activity(models.Model):
     ref_delivery        = models.ForeignKey('Delivery', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
     date                = models.DateField()
-    trip_desc           = models.CharField(max_length=500)
+
+    TYPE_CHOICES        = [('Delivery of Feeds', 'Delivery of Feeds'),
+                            ('Delivery of Medicine', 'Delivery of Medicine'),
+                            ('Delivery of Pigs', 'Delivery of Pigs'),
+                            ('Vaccinations', 'Vaccinations'),
+                            ('Inspection', 'Inspection'),
+                            ('Trucking', 'Trucking'),
+                            ('Other', 'Other')]
+
+    trip_desc           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.DateTimeField()
     time_arrival        = models.DateTimeField()
     description         = models.CharField(max_length=500)
