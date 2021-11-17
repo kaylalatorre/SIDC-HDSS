@@ -66,20 +66,23 @@ def home(request, *args, **kwargs):
         return render(request, 'login.html', error)   
 
     else:
+        hasUsertype = False
+
         if userGroup is not None: 
-            for g in Group.objects.filter():
+            for g in Group.objects.filter(): # in list of Group names, find group of the User
                 if g.name == userGroup:
+                    hasUsertype = True
                     # TEST: for tracking group name of User
                     print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
                     return render(request, 'home.html', {})
 
-                else:
-                    # (ERROR) User came from attempted login, but with no usertype
-                    error = {'errCode': 404, 
-                        'errMessage': 'Unauthorized access. Please login.'
-                    }
-                    debug("in LOGIN ERROR: Unauth access")
-                    return render(request, 'login.html', error)
+            if not hasUsertype:
+                # (ERROR) User came from attempted login, but with no usertype
+                error = {'errCode': 404, 
+                    'errMessage': 'Unauthorized access. Please login.'
+                }
+                debug("in LOGIN ERROR: Unauth access")
+                return render(request, 'login.html', error)
         else:
             # (ERROR) User has no group; None value
             error = {'errCode': 404, 
