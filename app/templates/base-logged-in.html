@@ -4,19 +4,7 @@
 
 {% block content %}
     <!-- Sidebar of logged in user -->
-    {% if user.groups.all.0.name == 'Field Technician' %}
-        {% include 'partials/tech-sidebar.html' %}
-
-    {% elif user.groups.all.0.name == 'Assistant Manager' %}
-        {% include 'partials/am-sidebar.html' %}
-
-    {% elif user.groups.all.0.name == 'Regional Manager' %}
-        {% include 'partials/rm-sidebar.html' %}
-
-    {% else %}
-        {% include 'partials/sidebar.html' %}
-
-    {% endif %}
+    {% include 'partials/sidebar.html' %}
 
     <section class="content-section">
         

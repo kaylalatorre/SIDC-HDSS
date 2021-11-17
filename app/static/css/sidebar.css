@@ -176,8 +176,12 @@ ul, li {
     color: #FAFAFA;
 }
 
-#logout-btn:hover {
+#logout-icon:hover {
     color: #006633;
+}
+
+.sidebar.close li #logout-btn {
+    max-width: 64px;
 }
 
 /* Selected Nav */
@@ -185,15 +189,11 @@ ul, li {
     background-color: #006633;
 }
 
-.sidebar .nav-links li.nav-current a i {
-    color: #FAFAFA;
-}
-
-.sidebar .nav-links li.nav-current a span {
-    color: #FAFAFA;
-}
-
-.sidebar .nav-links li.nav-current .icon-link i {
+.sidebar .nav-links li.nav-current .icon-link i,
+.sidebar .nav-links .sub-menu li.nav-current a,
+.sidebar .nav-links li.nav-current a span, 
+.sidebar .nav-links li.nav-current a i,
+li:active {
     color: #FAFAFA;
 }
 
@@ -216,7 +216,8 @@ ul, li {
     transition-delay: 0s;
 }
 
-.sidebar.close .nav-links li a .link-name  {
+.sidebar.close .nav-links li a .link-name,
+.sidebar.close .nav-links .nav-menu li {
     display: none;
     transition-delay: 0s;
 }
