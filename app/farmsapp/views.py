@@ -319,8 +319,24 @@ def biosec_view(request):
 
     print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
+
+    # GET ACTIVITIES
+    actQueury = Activity.objects.filter(id=farmID).all()
+
+    actList = []
+
+    for activity in actQueury:
+        actList.append({
+            'date' : activity.date,
+            'trip_desc' : activity.trip_desc,
+            'time_departure' : activity.time_departure,
+            'time_arrival' : activity.time_arrival,
+            'description' : activity.description,
+            'remarks' : activity.remarks
+        })
+
     # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
-    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList}) 
+    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList, 'activity' : actList}) 
 
 
 def addChecklist_view(request):
@@ -444,9 +460,15 @@ def addActivity(request):
             delivery = deliveryForm.save(commit=False)
             delivery.save()
 
+            print("TEST LOG: Added new delivery")
+
+
             if activityForm.is_valid():
-                activty = activityForm.save(commit=False)
+                activity = activityForm.save(commit=False)
                 activity.save()
+
+                print("TEST LOG: Added new activty")
+                return render(request, 'farmstemp/biosecurity.html', {})
             
             else:
                 print("TEST LOG: activityForm is not valid")
