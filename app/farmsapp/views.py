@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 # for AJAX functions
 from django.http import JsonResponse
 from django.core import serializers
+import json
 
 # for Forms
 from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm
@@ -229,38 +230,40 @@ def search_bioChecklist(request):
 
 
     # can be filtered by biosecID only, since bioIDs passed in dropdown is w/in Farm
-    querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
+    ext = ExternalBiosec.objects.filter(id=bioID).only(
         'prvdd_foot_dip',      
         'prvdd_alco_soap',     
         'obs_no_visitors',     
         'prsnl_dip_footwear',  
         'prsnl_sanit_hands',   
         'chg_disinfect_daily'
-    )
+    ).first()
+    # print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
 
-    print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
-    
-
-    querysetInt = InternalBiosec.objects.filter(id=bioID).only(
+    inter = InternalBiosec.objects.filter(id=bioID).only(
         'disinfect_prem',      
         'disinfect_vet_supp',     
     ).first()
 
-    # get first instance in query
-    bioObj = querysetExt.first()
+    bioDict = {
+        # External bio
+        'prvdd_foot_dip'        : ext.prvdd_foot_dip,  
+        'prvdd_alco_soap'       : ext.prvdd_alco_soap,     
+        'obs_no_visitors'       : ext.obs_no_visitors,     
+        'prsnl_dip_footwear'    : ext.prsnl_dip_footwear,  
+        'prsnl_sanit_hands'     : ext.prsnl_sanit_hands,   
+        'chg_disinfect_daily'   : ext.chg_disinfect_daily,
 
-    # append Internal biosec fields
-    bioObj.disinfect_prem       = querysetInt.disinfect_prem
-    bioObj.disinfect_vet_supp   = querysetInt.disinfect_vet_supp
+        # Internal bio
+        'disinfect_prem'        : inter.disinfect_prem,
+        'disinfect_vet_supp'    : inter.disinfect_vet_supp,   
+    }
 
-    print("TEST LOG search_bioCheck(): bioObj.disinfect_prem-- " + str(bioObj.disinfect_prem))
-    print("TEST LOG search_bioCheck(): bioObj.disinfect_vet_supp-- " + str(bioObj.disinfect_vet_supp))
+    jsonStr = json.dumps(bioDict)
 
+    # send to client side (js)
+    return JsonResponse({"instance": jsonStr}, status=200)
 
-    # serialize query object into JSON
-    ser_instance = serializers.serialize('json', [ bioObj, ])
-    # send to client side.
-    return JsonResponse({"instance": ser_instance}, status=200)
       
 # (POST-AJAX) For updating a Biosec Checklist based on biosecID
 @csrf_exempt

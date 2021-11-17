@@ -55,6 +55,7 @@ def logout_view(request):
 def home(request, *args, **kwargs):
     print("TEST LOG: in Home view/n")
 
+    # TODO: fix routing, login errors should be in login() view
     try:
         userGroup = request.user.groups.all()[0].name
     except IndexError:

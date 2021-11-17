@@ -19,10 +19,9 @@ $('#checklist-date').change(function() {
         success: function (response){
 
             // alert("in AJAX success");
-            var bioInstance = JSON.parse(response["instance"]);
-            var biofields = bioInstance[0]["fields"];
+            var biofields = JSON.parse(response["instance"]);
 
-            // alert("biofields[prvdd_alco_soap]: " + biofields["prvdd_alco_soap"]);
+            console.log(response["instance"]);
 
             // select btn in btn group based on db value
             // EXTERNAL biosec fields
@@ -70,24 +69,21 @@ $('#checklist-date').change(function() {
 
             // INTERNAL biosec fields
             if (biofields["disinfect_prem"] == 0)
-                // $('#disinfect_prem_radio1').prop("checked", true);
-                alert("disinfect_prem == 0");
+                $('#disinfect_prem_radio1').prop("checked", true);
             else if (biofields["disinfect_prem"] == 1)
                 $('#disinfect_prem_radio2').prop("checked", true);
             else
                 $('#disinfect_prem_radio3').prop("checked", true);
 
-            alert("biofields[disinfect_prem] -- " + biofields["disinfect_prem"]);
-            alert("biofields[disinfect_vet_supp] -- " + biofields["disinfect_vet_supp"]);
+            // alert("biofields[disinfect_prem] -- " + biofields["disinfect_prem"]);
+            // alert("biofields[disinfect_vet_supp] -- " + biofields["disinfect_vet_supp"]);
 
             if (biofields["disinfect_vet_supp"] == 0)
-                // $('#disinfect_vet_supp_radio1').prop("checked", true);
-                alert("disinfect_vet_supp == 0");
+                $('#disinfect_vet_supp_radio1').prop("checked", true);
             else if (biofields["disinfect_vet_supp"] == 1)
                 $('#disinfect_vet_supp_radio2').prop("checked", true);
             else
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
-
 
         },
         error: function (response){
@@ -103,7 +99,7 @@ $('#checklist-date').change(function() {
  * on-click for edit Biochecklist btn; 
  * Gets relevant values for biosec tables (i.e., biosecID, biosec fields) then passes to saveBiocheck()
  */
-function editBiocheck(){
+function enableBiocheck(){
     // remove disabled attribute from biosec grp btns 
     var bioBtns = document.getElementsByClassName('btn-check');
     for(var i = 0; i < bioBtns.length; i++) {
