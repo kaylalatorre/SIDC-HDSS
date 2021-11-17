@@ -1,32 +1,11 @@
-// $( document ).ready(function() {
-//     console.log( "ready!" );
-//     let map = Highcharts.mapChart('map-container', {
-//         //    
-//     });
-// });
-
-document.addEventListener('DOMContentLoaded', function () {
-    const chart = Highcharts.chart('container', {
+$(document).ready(function() {
+    console.log( "ready!" );
+    $("#map-container").highcharts({
         chart: {
-            type: 'bar'
+            map: 'countries/ph/ph-all'
         },
         title: {
-            text: 'Fruit Consumption'
+            text: "test"
         },
-        xAxis: {
-            categories: ['Apples', 'Bananas', 'Oranges']
-        },
-        yAxis: {
-            title: {
-                text: 'Fruit eaten'
-            }
-        },
-        series: [{
-            name: 'Jane',
-            data: [1, 0, 4]
-        }, {
-            name: 'John',
-            data: [5, 7, 3]
-        }]
-    });
+    }) 
 });

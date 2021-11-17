@@ -11,15 +11,20 @@
 
     h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
     h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
-    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 500; }
+    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 600; }
     p, label { font-size: 14px; font-family: 'Roboto'; }
     
     .flex-item { padding: 0; }
     .main-div { margin: 16px!important; }
 
     .subheading { display: none; }
-    .mobile-subheading { opacity: 1; padding-bottom: 8px;}
+    .mobile-subheading { opacity: 1; padding-bottom: 8px; height: 40px;}
     .button i, button i { text-align: center; align-items: center;}
+
+    .flex-form {
+        flex-direction: column;
+        padding: 0;
+    }
 }
 
 @media (max-width: 420px) {
@@ -77,7 +82,8 @@
         position: relative;
     }
 
-    #biosec-checklists .table tbody tr td {
+    #biosec-checklists .table tbody tr td,
+    #checklist-form .table tbody tr td {
         text-align: left;
         padding-left: 0;
         position: relative;

@@ -89,7 +89,7 @@ ul, li { list-style: none;}
     padding-bottom: 8px;
 }
 
-.mobile-subheading { opacity: 0; }
+.mobile-subheading { opacity: 0; height: 8px; }
 .heading .box-style .input-group { width: 40%!important; }
 
 .content-section {

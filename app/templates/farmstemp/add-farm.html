@@ -18,6 +18,7 @@
         <div><button class="primary-btn" type="submit">Send for Approval</button></div>
     </div>
 
+    <hr>
     <div class="flex">
         <section class="flex-item" id="farm-details">
             <h2>Farm Details</h2>
@@ -85,14 +86,18 @@
         </section>
     </div>
 
-    <div class="flex">
+    <div class="flex flex-form">
         <section class="flex-item" id="pig-pens">
-            <h2>Pig Pens</h2>
+            
+            <div class="flex subheading">
+                <h2 class="flex-item">Pig Pens</h2>
+                <div><button class="secondary-btn" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> <!-- Adds another row --></div>
+            </div>
+            <div class="flex mobile-subheading">
+                <h2   style="width: 90%">Pig Pens</h2>
+                <div><button class="secondary-btn" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> <!-- Adds another row --></div>
+            </div>
             <div class="box-style">
-                <div class="flex subheading">
-                    <p class="flex-item">Add all pens and details here. </p>
-                    <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Pen</button> <!-- Adds another row --></div>
-                </div>
                 <br>
                 <div class="input-group" id="input-pen">
                     <table class="table">
@@ -176,13 +181,13 @@
                     </div>
                     <div class="mb-3">
                         <input type="checkbox" class="form-check-input" id="cb-am">
-                        <label class="form-check-label" for="cb-am">Assistant Manager for Swine Business Unit</label>
+                        <label class="form-check-label" for="cb-am">Assistant Manager</label>
                     </div>
                 </div>
             </div>
         </section>
     </div>
-    
+    <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
     </form>
 </div>
 {% endblock section %}
