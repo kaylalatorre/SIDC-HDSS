@@ -59,6 +59,19 @@ class FarmSymptomsForm(ModelForm):
         model = Farm_Symptoms
         fields = ('__all__')
 
+class AreaForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['area_name'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-area'
+        })
+
+    class Meta:
+        model = Area
+        fields = ('__all__')
+
+
 class FarmForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -74,10 +87,6 @@ class FarmForm(ModelForm):
             'id' : 'input-address',
             'name' : 'input-address',
             'placeholder' : 'ex. Batangas, 4200 Batangas'
-        })
-        self.fields['area'].widget.attrs.update({
-           'select class' : 'form-select',
-           'id' : 'input-area'
         })
         self.fields['roof_height'].widget.attrs.update({
             'input type' : 'number', 

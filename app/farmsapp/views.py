@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.core import serializers
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm, AreaForm
 
 # for Models
 from django.views.decorators.csrf import csrf_exempt
@@ -112,6 +112,7 @@ def addFarm(request):
 
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
+        areaForm            = AreaForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
@@ -133,35 +134,46 @@ def addFarm(request):
                     internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
-
-                    if farmForm.is_valid():
-                        farm = farmForm.save(commit=False)
-
-                        farm.hog_raiser_id = hogRaiser.id
-                        farm.extbio_id = externalBiosec.id
-                        farm.intbio_id = internalBiosec.id
+                    
+                    if areaForm.is_valid():
+                        area = areaForm.save(commit=False)
+                        area.save()
                         
-                        farm.save()
+                        print("TEST LOG: Added area")
+
+                        if farmForm.is_valid():
+                            farm = farmForm.save(commit=False)
+
+                            farm.hog_raiser_id = hogRaiser.id
+                            farm.extbio_id = externalBiosec.id
+                            farm.intbio_id = internalBiosec.id
+                            farm.area_id = area.id
+
+                            farm.save()
+                            
+                            print("TEST LOG: Added new farm")
+
+                            if pigpenMeasuresForm.is_valid():
+                                pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+
+                                pigpenMeasures.farm_id = farm.id
+
+                                pigpenMeasures.save()
+
+                                print("TEST LOG: Added new pigpen measure")
+                                return render(request, 'home.html', {})
+
+                            else:
+                                print("TEST LOG: Pigpen Measures Form not valid")
+                                print(pigpenMeasuresForm.errors)
                         
-                        print("TEST LOG: Added new farm")
-
-                        if pigpenMeasuresForm.is_valid():
-                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-
-                            pigpenMeasures.farm_id = farm.id
-
-                            pigpenMeasures.save()
-
-                            print("TEST LOG: Added new pigpen measure")
-                            return render(request, 'home.html', {})
-
                         else:
-                            print("TEST LOG: Pigpen Measures Form not valid")
-                            print(pigpenMeasuresForm.errors)
+                            print("TEST LOG: Farm Form not valid")
+                            print(farmForm.errors)
                     
                     else:
-                        print("TEST LOG: Farm Form not valid")
-                        print(farmForm.errors)
+                        print("TEST LOG: Area Form not valid")
+                        print(areaForm.errors)
 
                 else:
                     print("TEST LOG: Internal Biosec Form not valid")
@@ -180,12 +192,14 @@ def addFarm(request):
         
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
+        areaForm            = AreaForm()
         pigpenMeasuresForm  = PigpenMeasuresForm()
         externalBiosecForm  = ExternalBiosecForm()
         internalBiosecForm  = InternalBiosecForm()
 
     return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
+                                                        'areaForm' : areaForm,
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,
                                                         'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
