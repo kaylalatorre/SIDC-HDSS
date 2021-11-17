@@ -8,6 +8,9 @@ urlpatterns = [
     path('selected-farm', views.selectedFarm, name="selectedFarm"),
     path('add-farm', views.addFarm, name="addFarm"),
     
+    # path('tech-farms', views.techFarms, name="techFarms"),
+    path('', views.techFarms, name="techFarms"),
+    path('home/view-farm', views.techFarms, name="techFarms"),
     path('tech-selected-farm', views.techSelectedFarm, name="techSelectedFarm"),
     path('technician-assignment', views.techAssignment, name="techAssignment"),
     path('forms-approval', views.formsApproval, name="formsApproval"),

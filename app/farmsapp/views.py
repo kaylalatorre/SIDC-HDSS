@@ -29,53 +29,6 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    # :Psuedo::
-    # farmsdata = []
-    # FOR entry IN QUERY SELECT farms JOIN raiser ORDER BY farm_id
-    #   MAP(entry TO farmsdata)
-    # OUTPUT farmsdata
-
-    # # create raiser
-    # hr = Hog_Raiser(
-    #     id                  = 2,
-    #     fname               = "Juana",
-    #     lname               = "Pedra",
-    #     contact_no          = "9089990999"
-    # )
-    # hr.save()
-    # debug("hr_save")
-    # # create farm
-    # fa = Farm(
-    #     id                  = 2,
-    #     date_registered     = date(2021,11,8),
-    #     farm_address        = "farm_address_2",
-    #     area                = "east",
-    #     loc_long            = 1,
-    #     loc_lat             = 2,
-    #     bldg_cap            = 3,
-    #     num_pens            = 4,
-    #     directly_manage     = False,
-    #     total_pigs          = 5,
-    #     isolation_pen       = False,
-    #     roof_height         = 6,
-    #     feed_trough         = False,
-    #     bldg_curtain        = False,
-    #     medic_tank          = 7,
-    #     waste_mgt_septic    = False,
-    #     waste_mgt_biogas    = False,
-    #     waste_mgt_others    = False,
-    #     warehouse_length    = 8,
-    #     warehouse_width     = 9,
-    #     road_access         = False,
-    #     extbio_ID           = None,
-    #     intbio_ID           = None,
-    #     raiser           = Hog_Raiser.objects.get(id=2),
-    #     weight_record_ID    = None,
-    #     symptoms_record_ID  = None,
-    # )
-    # fa.save()
-    # debug("fa_save")
-
     qry = Farm.objects.select_related('hog_raiser').annotate(
             fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")
             ).values(
@@ -110,6 +63,44 @@ def farms(request):
 
 def selectedFarm(request):
     return render(request, 'farmstemp/selected-farm.html', {})
+
+## Display Farms assigned to Technician
+def techFarms(request):
+
+    # print("Collecting farms under technician")
+
+    query  = Farm.objects.select_related('hog_raiser').annotate(
+                fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
+                        "id",
+                        "fname",
+                        "lname", 
+                        "contact", 
+                        "farm_address",
+                        "area",
+                        "total_pigs",
+                        "num_pens",
+                        "date_registered" )
+    
+    debug(query)
+
+    farmsData = []
+
+    for f in query:
+        farmObject = {
+            "code":  str(f["id"]),
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "contact": f["contact"],
+            "address": f["farm_address"],
+            "area": str(f["area"]),
+            "pigs": str(f["total_pigs"]),
+            "pens": str(f["num_pens"]),
+            "updated": str(f["date_registered"])
+        }
+
+        farmsData.append(farmObject)
+    
+    # fix
+    return render(request, 'farmstemp/tech-farms.html', {"techFarms":farmsData}) 
 
 ## Redirect to Add Farm Page and render form
 def addFarm(request):

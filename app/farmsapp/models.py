@@ -98,19 +98,23 @@ class Hog_Raiser(models.Model):
     # def __str__(self)
     #     return self.
 
+class Area(models.Model):
+    AREA_CHOICES        = [('TISISI', 'TISISI'),
+                        ('West', 'West'),
+                        ('East', 'East'),
+                        ('Other', 'Other')]
+
+    area_name           = models.CharField(max_length=15, choices=AREA_CHOICES, default='TISISI')
+    tech                = models.ForeignKey('User', on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+
 # FARM Table -- might remove
 class Farm(models.Model): 
     hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
 
     date_registered     = models.DateField(default=now, null=True, blank=True)
 
-    AREA_CHOICES        = [('TISISI', 'TISISI'),
-                            ('West', 'West'),
-                            ('East', 'East'),
-                            ('Other', 'Other')]
-
+    area                = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True)
     farm_address        = models.CharField(max_length=200)
-    area                = models.CharField(max_length=15, choices=AREA_CHOICES, default='TISISI')
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
 
