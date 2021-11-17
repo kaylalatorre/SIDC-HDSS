@@ -18,6 +18,11 @@
         <!-- <input type="email" placeholder="Email Address" class="form-control" id="user-email" name="user-email" aria-describedby="emailHelp"> -->
         <input type="password" placeholder="Password" class="form-control" id="user-pass" name="user-pass">
             <p id="pwError" class="error"> Sample error message. </p> <!-- temporarily hidden (code @ static/css/error.css)-->
+
+            <!-- for LOGIN error message placeholder -->
+            {% if errCode == 404 %}
+            <p id="loginError" class="error-mssg" > {{ errMessage }} </p>
+            {% endif %}
         <br>
         <button class="primary-btn center" type="submit">Log In</button>
     </form>
