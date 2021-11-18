@@ -18,6 +18,13 @@ def debug(m):
     print("-------------------------------------------------------")
 
 # LOGIN function
+""""
+Login function for SIDC users. 
+Error handling for:
+- Incorrect username and/or password
+- Empty either/or submitted fields 
+- Attempted user login but no belonging to a usertype/Group (e.g., admin)
+"""
 def login(request):
     if request.method == 'POST':
         uname = request.POST['user-name']
@@ -25,59 +32,45 @@ def login(request):
 
         user = auth.authenticate(username=uname,password=password)
     
-        if user is not None and user.is_active: 
-                auth.login(request, user)
-                return redirect('check_group')
-        else:
-            error = {'errCode': 404, 
-                'errMessage': 'Incorrect credentials. Please try again.'
-            }
-            debug("in LOGIN ERROR: Incorrect credentials")
-            return render(request, 'login.html', error)
-    else:
-        return render(request, 'login.html', {})
-
-
-def check_group(request):
-    print("TEST LOG: in Home view/n")
-
-    # TODO: fix routing, login errors should be in login() view
-
-    error = {'errCode': 404, 
-        'errMessage': 'Unauthorized access. Please login.'
-    }
-
-    try:
-        userGroup = request.user.groups.all()[0].name
-    except IndexError:
-        # (ERROR) User has no group; None value
-        debug("in LOGIN ERROR: Unauth access")
-        return render(request, 'login.html', error)   
-
-    else:
-        hasUsertype = False
-
-        if userGroup is not None: 
-            for g in Group.objects.filter(): # in list of Group names, find group of the User
-                if g.name == userGroup:
-                    hasUsertype = True
-                    # (SUCCESS) User has logged in.
-                    print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
-                    return render("home")
-
-            if not hasUsertype:
-                # (ERROR) User came from attempted login, but with no usertype
+        if user is not None: # User exists, next check if User belongs to a Group.
+            auth.login(request, user)
+            
+            # (TRY-CATCH) for checking if User belongs in a Group
+            try: 
+                userGroup = request.user.groups.all()[0].name
+            except IndexError: # for handling list index exception
+                # (ERROR) User has no group; None value
                 debug("in LOGIN ERROR: Unauth access")
-                return render(request, 'login.html', error)
+                messages.error(request, "Unauthorized access. Please login.")
+                return redirect('login')  
+            else:
+                hasUsertype = False
+
+                if userGroup is not None: 
+                    for g in Group.objects.filter(): # in list of Group names, find group of the User
+                        if g.name == userGroup:
+                            hasUsertype = True
+                            # (SUCCESS) User has group, redirect to Home page.
+                            print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+                            return redirect("home")
+
+                    if not hasUsertype:
+                        # (ERROR) User came from attempted login, but with no usertype
+                        debug("in LOGIN ERROR: Unauth access")
+                        messages.error(request, "Unauthorized access. Please login.")
+                        return redirect('login')  
         else:
-            # (ERROR) User has no group; None value
-            debug("in LOGIN ERROR: Unauth access")
-            return render(request, 'login.html', error)
-        
-    # except ObjectDoesNotExist:
-    return render(request, 'login.html', error)
+            # (ERROR) User inputs have empty fields or are incorrect.
+            debug("in LOGIN ERROR: Incorrect credentials")
+            messages.error(request, "Incorrect credentials. Please try again.")
+            return redirect('login')
+            
+    return render(request, 'login.html', {})
+
+
 
 def home_view(request):
+    print("TEST LOG: in Home view/n")
     return render(request, 'home.html', {})
 
 # LOGOUT function

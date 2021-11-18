@@ -72,9 +72,6 @@ $('#checklist-date').change(function() {
             else
                 $('#disinfect_prem_radio3').prop("checked", true);
 
-            // alert("biofields[disinfect_prem] -- " + biofields["disinfect_prem"]);
-            // alert("biofields[disinfect_vet_supp] -- " + biofields["disinfect_vet_supp"]);
-
             if (biofields["disinfect_vet_supp"] == 0)
                 $('#disinfect_vet_supp_radio1').prop("checked", true);
             else if (biofields["disinfect_vet_supp"] == 1)
@@ -93,8 +90,7 @@ $('#checklist-date').change(function() {
 
 
 /**
- * on-click for edit Biochecklist btn; 
- * Gets relevant values for biosec tables (i.e., biosecID, biosec fields) then passes to saveBiocheck()
+ * functions for enabling/disabling Biochecklist btns; 
  */
 function enableBiocheck(){
     // remove disabled attribute from biosec grp btns 
@@ -116,10 +112,9 @@ function disableCheck(){
  * on-click AJAX for save Biochecklist btn
  */
 function saveBiocheck(){
-// $('#saveCheck-btn').on("click", function(){
     // Get biosec ID of selected option tag
     var biosecID = $("#checklist-date option:selected").val()
-    alert("biosecID: " + biosecID);
+    // alert("biosecID: " + biosecID);
 
     // Put biosec fields in an array
     var checkArr = []
@@ -182,10 +177,7 @@ function saveBiocheck(){
     else
         checkArr[7] = 2;
         
-    alert("checkArr length: " + checkArr.length);
-    // for (i = 0; i < checkArr.length; i++)
-    //     alert("checkArr ["+ i + "]:" + checkArr[i]);
-
+    // alert("checkArr length: " + checkArr.length);
 
     $.ajax({
         type: 'POST',
@@ -193,7 +185,7 @@ function saveBiocheck(){
         data: {"biosecID": biosecID, "checkArr": checkArr}, // pass biosec id here
         success: function (response){
 
-            alert("in AJAX edit success");
+            // alert("in AJAX edit success");
             var biofields = JSON.parse(response["instance"]);
 
             // select btn in btn group based on db value
@@ -260,11 +252,8 @@ function saveBiocheck(){
         },
         error: function (response){
             alert("in AJAX error. ");
-            // alert(response);
         }
     });
     
     disableCheck();
-
-// });
 }
