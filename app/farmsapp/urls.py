@@ -1,15 +1,15 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 # Farms Management Module URLS
-
+# r'^selected-farm/(?P<parameter>[0-9]+)$'
 urlpatterns = [
     path('farms', views.farms, name="farms"),
-    path('selected-farm', views.selectedFarm, name="selectedFarm"),
+    path('selected-farm/<str:farmID>', views.selectedFarm, name="selectedFarm"),
     path('add-farm', views.addFarm, name="addFarm"),
-    
     path('tech-selected-farm', views.techSelectedFarm, name="techSelectedFarm"),
     path('technician-assignment', views.techAssignment, name="techAssignment"),
+    path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
     path('forms-approval', views.formsApproval, name="formsApproval"),
     path('selected-form', views.selectedForm, name="selectedForm"),
 
