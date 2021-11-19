@@ -11,13 +11,13 @@ class User(User):
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    last_updated        = models.DateTimeField(default=now, editable=False)
-
+    # fields from Biomeasures
     bird_proof          = models.IntegerField(null=True, blank=True)
     perim_fence         = models.IntegerField(null=True, blank=True)
     fiveh_m_dist        = models.IntegerField(null=True, blank=True)
-
+    # fields from Biochecklist
     prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
     prvdd_alco_soap     = models.IntegerField(null=True, blank=True)
     obs_no_visitors     = models.IntegerField(null=True, blank=True)
@@ -31,13 +31,19 @@ class ExternalBiosec(models.Model):
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
-    last_updated        = models.DateTimeField(default=now, editable=False)
-
-    isol_pen            = models.IntegerField(null=True, blank=True)
-    waste_mgt           = models.IntegerField(null=True, blank=True)
-    foot_dip            = models.IntegerField(null=True, blank=True)
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
+    # fields from Biomeasures
+    isol_pen            = models.IntegerField(null=True, blank=True)
+
+    WASTE_MGT_CHOICES  = [('Septic Tank', 'Septic Tank'),
+                            ('Biogas', 'Biogas'),
+                            ('Other', 'Other')]
+
+    waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
+    
+    foot_dip            = models.IntegerField(null=True, blank=True)
+    # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)
     disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 
@@ -128,12 +134,6 @@ class Farm(models.Model):
     feed_trough         = models.CharField(max_length=15, choices=FEED_CHOICES, default='Semi-automatic')
     bldg_curtain        = models.BooleanField(default=False)
     medic_tank          = models.IntegerField(null=True, blank=True)
-
-    WASTE_MGT_CHOICES  = [('Septic Tank', 'Septic Tank'),
-                            ('Biogas', 'Biogas'),
-                            ('Other', 'Other')]
-
-    waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
     
     warehouse_length    = models.FloatField(null=True, blank=True)
     warehouse_width     = models.FloatField(null=True, blank=True)
@@ -252,7 +252,7 @@ class Mortality_Form(models.Model):
 
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):
-    title               = models.CharField(max_length=100)
+    title               = models.CharField(max_length=150)
     category            = models.CharField(max_length=50)
     recip_area          = models.CharField(max_length=20)
     mssg                = models.CharField(max_length=500)

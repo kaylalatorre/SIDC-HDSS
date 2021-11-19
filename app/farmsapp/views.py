@@ -177,11 +177,11 @@ def addFarm(request):
 
                 else:
                     print("TEST LOG: Internal Biosec Form not valid")
-                    print(internalBiosec.errors)
+                    print(internalBiosecForm.errors)
 
             else:
                 print("TEST LOG: External Biosec Form not valid")
-                print(externalBiosec.errors)
+                print(externalBiosecForm.errors)
             
         else:
             print("TEST LOG: Hog Raiser Form not valid")
@@ -471,7 +471,7 @@ def addActivity(request):
                 activity.save()
 
                 print("TEST LOG: Added new activty")
-                return render(request, 'farmstemp/biosecurity.html', {})
+                return redirect('/biosecurity')
             
             else:
                 print("TEST LOG: activityForm is not valid")

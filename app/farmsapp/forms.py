@@ -40,6 +40,10 @@ class InternalBiosecForm(ModelForm):
             'class' : 'form-check-input',
             'id': 'cb-footdip'         
         })
+        self.fields['waste_mgt'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-waste-mgt'
+        })
 
     class Meta:
         model = InternalBiosec
@@ -121,10 +125,6 @@ class FarmForm(ModelForm):
             'id' : 'input-roof',
             'name' : 'input-roof',
             'placeholder' : 'ex. 100'
-        })
-        self.fields['waste_mgt'].widget.attrs.update({
-           'select class' : 'form-select',
-           'id' : 'input-trough'
         })
 
     class Meta:
