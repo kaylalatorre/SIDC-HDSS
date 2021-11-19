@@ -22,23 +22,23 @@
                         <tbody>
                             <tr>
                                 <th>Farm Code</td>
-                                <td>001</td>
+                                <td>{{id}}</td>
                             </tr>
                             <tr>
                                 <th >Raiser</td>
-                                <td>John Doe</td>
+                                <td>{{raiser}}</td>
                             </tr>
                             <tr>
                                 <th>Contact No.</td>
-                                <td>091512345678</td>
+                                <td>{{contact}}</td>
                             </tr>
                             <tr>
                                 <th>Directly Managed</td>
-                                <td>Yes</td>
+                                <td>{{directly_manage|yesno:"Yes,No"}}</td>
                             </tr>
                             <tr>
                                 <th>Address</td>
-                                <td>Batangas, 4200 Batangas</td>
+                                <td>{{farm_address}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -48,23 +48,23 @@
                         <tbody>
                             <tr>
                                 <th>Area</td>
-                                <td>West</td>
+                                <td>{{farm_area}}</td>
                             </tr>
                             <tr>
                                 <th>Roof Height (in ft.)</td>
-                                <td>100</td>
+                                <td>{{roof_height|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Warehouse Area</td>
-                                <td>10 x 10</td>
+                                <td>{{length|floatformat:"-2"}} x {{width|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Feeding Trough</td>
-                                <td>Semi-automatic</td>
+                                <td>{{feed_trough}}</td>
                             </tr>
                             <tr>
                                 <th>Building Capacity</td>
-                                <td>100</td>
+                                <td>{{bldg_cap}}</td>
                             </tr>
                         </tbody>
                     </table>

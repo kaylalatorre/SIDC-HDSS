@@ -1,9 +1,15 @@
-from django.db.models.expressions import F
+from django.contrib.auth.models import User
+from django.db.models.expressions import F, Value
 from django.forms.formsets import formset_factory
+
+# for page redirection, server response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, response
+
+# for AJAX functions
 from django.http import JsonResponse
 from django.core import serializers
+import json
 
 # for Forms
 from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm, AreaForm
@@ -13,14 +19,24 @@ from django.views.decorators.csrf import csrf_exempt
 
 # for Model imports
 import psycopg2
-from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
 
 from datetime import date
 
+# for getting date today
+from django.utils.timezone import now 
+
 def debug(m):
+    """
+    For debugging purposes
+
+    :param m: The message
+    :type m: String
+    """
     print("------------------------[DEBUG]------------------------")
     print(m)
     print("-------------------------------------------------------")
@@ -29,15 +45,64 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    qry = Farm.objects.select_related('hog_raiser').annotate(
-            fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")
+    
+    # hr  = Hog_Raiser(
+    #     id                  = 1,
+    #     fname               = "Ramf",
+    #     lname               = "Drocer",
+    #     contact_no          = "09158700315"
+    # )
+    # hr.save()
+
+    # ar = Area(
+    #     id                  = 1,
+    #     area_name           = "West",
+    #     tech                = None
+    # )
+    # ar.save()
+
+    # fa = Farm(
+    #     id                  = 1,
+    #     hog_raiser          = Hog_Raiser.objects.get(id=1),
+    #     date_registered     = date(2021,11,8),
+    #     farm_address        = "Batangas, 4200 Batangas",
+    #     area                = Area.objects.get(area_name = "West"), 
+    #     loc_long            = 0,
+    #     loc_lat             = 1,
+    #     bldg_cap            = 2,
+    #     num_pens            = 3,
+    #     directly_manage     = True,
+    #     total_pigs          = 4,
+    #     isolation_pen       = False,
+    #     roof_height         = 5,
+    #     feed_trough         = "Trough",
+    #     bldg_curtain        = True,
+    #     medic_tank          = True,
+    #     waste_mgt_septic    = False,
+    #     waste_mgt_biogas    = True,
+    #     waste_mgt_others    = False,
+    #     warehouse_length    = 6,
+    #     warehouse_width     = 7,
+    #     road_access         = True,
+    #     extbio              = None,
+    #     intbio              = None,
+    #     farm_weight         = None,
+    #     farm_symptoms       = None    
+    # )
+    # fa.save()
+
+    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+            fname=F("hog_raiser__fname"), 
+            lname=F("hog_raiser__lname"), 
+            contact=F("hog_raiser__contact_no"),
+            farm_area = F("area__area_name")
             ).values(
                 "id",
                 "fname",
                 "lname", 
                 "contact", 
                 "farm_address",
-                "area",
+                "farm_area",
                 "total_pigs",
                 "num_pens",
                 "date_registered"
@@ -52,17 +117,38 @@ def farms(request):
             "raiser": " ".join((f["fname"],f["lname"])),
             "contact": f["contact"],
             "address": f["farm_address"],
-            "area": str(f["area"]),
+            "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
             "updated": str(f["date_registered"])
         }
         farmsData.append(farmObject)
-
+    debug(farmsData)
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
-def selectedFarm(request):
-    return render(request, 'farmstemp/selected-farm.html', {})
+def selectedFarm(request, farmID):
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
+        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        contact=F("hog_raiser__contact_no"),
+        length=F("warehouse_length"),
+        width=F("warehouse_width"),
+        farm_area = F("area__area_name")
+    )
+    context = qry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "length",
+        "width",
+        "feed_trough",
+        "bldg_cap"    
+    ).first()
+   
+    return render(request, 'farmstemp/selected-farm.html', context)
 
 ## Display Farms assigned to Technician
 def techFarms(request):
@@ -204,8 +290,9 @@ def addFarm(request):
                                                         'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
  
+
+# (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 @csrf_exempt
-# (POST) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request):
 
     # Queryset: Get only relevant fields for biochecklist based on biosecID
@@ -226,42 +313,125 @@ def search_bioChecklist(request):
 
 
     # can be filtered by biosecID only, since bioIDs passed in dropdown is w/in Farm
-    querysetExt = ExternalBiosec.objects.filter(id=bioID).only(
+    ext = ExternalBiosec.objects.filter(id=bioID).only(
         'prvdd_foot_dip',      
         'prvdd_alco_soap',     
         'obs_no_visitors',     
         'prsnl_dip_footwear',  
         'prsnl_sanit_hands',   
         'chg_disinfect_daily'
-    )
+    ).first()
+    # print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
 
-    print("TEST LOG search_bioCheck(): Queryset-- " + str(querysetExt.query))
-    
-
-    querysetInt = InternalBiosec.objects.filter(id=bioID).only(
+    inter = InternalBiosec.objects.filter(id=bioID).only(
         'disinfect_prem',      
         'disinfect_vet_supp',     
     ).first()
 
-    # get first instance in query
-    bioObj = querysetExt.first()
+    bioDict = {
+        # External bio
+        'prvdd_foot_dip'        : ext.prvdd_foot_dip,  
+        'prvdd_alco_soap'       : ext.prvdd_alco_soap,     
+        'obs_no_visitors'       : ext.obs_no_visitors,     
+        'prsnl_dip_footwear'    : ext.prsnl_dip_footwear,  
+        'prsnl_sanit_hands'     : ext.prsnl_sanit_hands,   
+        'chg_disinfect_daily'   : ext.chg_disinfect_daily,
 
-    # append Internal biosec fields
-    bioObj.disinfect_prem       = querysetInt.disinfect_prem
-    bioObj.disinfect_vet_supp   = querysetInt.disinfect_vet_supp
+        # Internal bio
+        'disinfect_prem'        : inter.disinfect_prem,
+        'disinfect_vet_supp'    : inter.disinfect_vet_supp,   
+    }
 
-    print("TEST LOG search_bioCheck(): querysetInt.disinfect_prem-- " + str(querysetInt.disinfect_prem))
-    print("TEST LOG search_bioCheck(): querysetInt.disinfect_vet_supp-- " + str(querysetInt.disinfect_vet_supp))
+    jsonStr = json.dumps(bioDict)
 
+    # send to client side (js)
+    return JsonResponse({"instance": jsonStr}, status=200)
 
-    # serialize query object into JSON
-    ser_instance = serializers.serialize('json', [ bioObj, ])
-    # send to client side.
-    return JsonResponse({"instance": ser_instance}, status=200)
       
-# # (POST) For updating a Biosec Checklist based on biosecID
-# def update_bioChecklist(request, id):
-    # return render(request, 'farmstemp/biosecurity.html', {})
+# (POST-AJAX) For updating a Biosec Checklist based on biosecID
+@csrf_exempt
+def update_bioChecklist(request):
+
+    # Queryset: Get only relevant fields for biochecklist based on biosecID
+    """
+    UPDATE <external bio>,<internal bio>
+    SET extbio.<biosec field> = value1, intbio.<biosec field>, ...
+    WHERE extbioID = <biosecID>;
+    """
+    print("TEST LOG: in update_bioChecklist()/n")
+
+    # access biosecID passed from AJAX post request
+    bioID = request.POST.get("biosecID")
+
+    # access checkArr from AJAX post
+    chArr = []
+    chArr = request.POST.getlist("checkArr[]")
+
+    print("TEST LOG: chArr ELEMENTS")
+
+    for index, value in enumerate(chArr): 
+        if value is None:
+            print("No value for chArr")
+        else:
+            # convert str element to int
+            int(value)
+            print(list((index, value)))
+
+    if None:
+        print("TEST LOG: no biosecID from AJAX req")
+    else:
+        print("bioID: " + str(bioID)) 
+
+    extBio = ExternalBiosec.objects.get(pk=bioID)
+    # extBio.last_updated = str(now)
+    extBio.prvdd_foot_dip       = chArr[0]
+    extBio.prvdd_alco_soap      = chArr[1]
+    extBio.obs_no_visitors      = chArr[2]
+    extBio.prsnl_dip_footwear   = chArr[3]
+    extBio.prsnl_sanit_hands    = chArr[4]
+    extBio.chg_disinfect_daily  = chArr[5]
+
+    intBio = InternalBiosec.objects.get(pk=bioID)
+    # intBio.last_updated = str(now)
+    intBio.disinfect_prem       = chArr[6]
+    intBio.disinfect_vet_supp   = chArr[7]
+
+    # save in Biosec models
+    extBio.save()
+    intBio.save()
+
+    # # get first instance in query
+    # checkObj = extBio
+
+    # # append Internal biosec fields
+    # checkObj.disinfect_prem       = intBio.disinfect_prem
+    # checkObj.disinfect_vet_supp   = intBio.disinfect_vet_supp
+
+    # print("TEST LOG: checkObj.disinfect_prem-- " + str(checkObj.disinfect_prem))
+
+    # # serialize query object into JSON
+    # ser_instance = serializers.serialize('json', [ checkObj, ])
+    # # send to client side.
+    # return JsonResponse({"instance": ser_instance}, status=200)
+
+    bioDict = {
+        # External bio
+        'prvdd_foot_dip'        : extBio.prvdd_foot_dip,  
+        'prvdd_alco_soap'       : extBio.prvdd_alco_soap,     
+        'obs_no_visitors'       : extBio.obs_no_visitors,     
+        'prsnl_dip_footwear'    : extBio.prsnl_dip_footwear,  
+        'prsnl_sanit_hands'     : extBio.prsnl_sanit_hands,   
+        'chg_disinfect_daily'   : extBio.chg_disinfect_daily,
+
+        # Internal bio
+        'disinfect_prem'        : intBio.disinfect_prem,
+        'disinfect_vet_supp'    : intBio.disinfect_vet_supp,   
+    }
+
+    jsonStr = json.dumps(bioDict)
+
+    # send to client side (js)
+    return JsonResponse({"instance": jsonStr}, status=200)
 
 # For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
@@ -317,7 +487,7 @@ def biosec_view(request):
     # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
     request.session['farm_id'] = farmID 
 
-    print("TEST LOG: bioInt last_updated-- ")
+    # print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
 
     # GET ACTIVITIES
@@ -355,7 +525,34 @@ def techSelectedFarm(request):
     return render(request, 'farmstemp/tech-selected-farm.html', {})
 
 def techAssignment(request):
-    return render(request, 'farmstemp/assignment.html', {})
+    areasData = []
+    areas = Area.objects.select_related("tech_id").annotate(
+        curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
+    ).values()
+    techs = User.objects.filter(groups__name="Field Technician").annotate(
+        name = Concat('first_name', Value(' '), 'last_name'),
+    ).values(
+        "id",
+        "name",
+    )
+    for a in areas:
+        areaObject = {
+            "id": str(a["id"]),
+            "area_name": a["area_name"],
+            "curr_tech_id": a["tech_id"],
+            "curr_tech": a["curr_tech"],
+            "farm_count": Farm.objects.filter(area=a["id"]).count()
+        }
+        areasData.append(areaObject)
+    context = {
+        "areasData":areasData,
+        "technicians":techs
+    }
+    return render(request, 'farmstemp/assignment.html', context)
+
+def assign_technician(request):
+    
+    return response()
 
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
