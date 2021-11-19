@@ -11,13 +11,13 @@ class User(User):
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    last_updated        = models.DateTimeField(default=now, editable=False)
-
+    # fields from Biomeasures
     bird_proof          = models.IntegerField(null=True, blank=True)
     perim_fence         = models.IntegerField(null=True, blank=True)
     fiveh_m_dist        = models.IntegerField(null=True, blank=True)
-
+    # fields from Biochecklist
     prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
     prvdd_alco_soap     = models.IntegerField(null=True, blank=True)
     obs_no_visitors     = models.IntegerField(null=True, blank=True)
@@ -31,13 +31,13 @@ class ExternalBiosec(models.Model):
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
-    last_updated        = models.DateTimeField(default=now, editable=False)
-
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
+    
+    # fields from Biomeasures
     isol_pen            = models.IntegerField(null=True, blank=True)
     waste_mgt           = models.IntegerField(null=True, blank=True)
     foot_dip            = models.IntegerField(null=True, blank=True)
-    
+    # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)
     disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 
@@ -252,7 +252,7 @@ class Mortality_Form(models.Model):
 
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):
-    title               = models.CharField(max_length=100)
+    title               = models.CharField(max_length=150)
     category            = models.CharField(max_length=50)
     recip_area          = models.CharField(max_length=20)
     mssg                = models.CharField(max_length=500)

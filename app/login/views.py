@@ -1,6 +1,15 @@
 from django.shortcuts import render, redirect
+
+# for storing error messages
 from django.contrib import messages
+
+# for handling try-catch exceptions
+from django.core.exceptions import ObjectDoesNotExist
+
+# for User login validation
 from django.contrib.auth.models import auth, User, Group
+
+# for ending User session
 from django.contrib.auth import logout
 
 def debug(m):
@@ -8,9 +17,14 @@ def debug(m):
     print(m)
     print("-------------------------------------------------------")
 
-# Create your views here.
-
 # LOGIN function
+""""
+Login function for SIDC users. 
+Error handling for:
+- Incorrect username and/or password
+- Empty either/or submitted fields 
+- Attempted user login but no belonging to a usertype/Group (e.g., admin)
+"""
 def login(request):
     if request.method == 'POST':
         uname = request.POST['user-name']
@@ -18,22 +32,46 @@ def login(request):
 
         user = auth.authenticate(username=uname,password=password)
     
-        if user is not None:
+        if user is not None: # User exists, next check if User belongs to a Group.
             auth.login(request, user)
-            return redirect('home')
+            
+            # (TRY-CATCH) for checking if User belongs in a Group
+            try: 
+                userGroup = request.user.groups.all()[0].name
+            except IndexError: # for handling list index exception
+                # (ERROR) User has no group; None value
+                debug("in LOGIN ERROR: Unauth access")
+                messages.error(request, "Unauthorized access. Please login.")
+                return redirect('login')  
+            else:
+                hasUsertype = False
 
+                if userGroup is not None: 
+                    for g in Group.objects.filter(): # in list of Group names, find group of the User
+                        if g.name == userGroup:
+                            hasUsertype = True
+                            # (SUCCESS) User has group, redirect to Home page.
+                            print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
+                            return redirect("home")
+
+                    if not hasUsertype:
+                        # (ERROR) User came from attempted login, but with no usertype
+                        debug("in LOGIN ERROR: Unauth access")
+                        messages.error(request, "Unauthorized access. Please login.")
+                        return redirect('login')  
         else:
-            # messages.error(request, 'USER NOT FOUND') # ERROR: 404, "User not found."
-            # return redirect('login')
+            # (ERROR) User inputs have empty fields or are incorrect.
+            debug("in LOGIN ERROR: Incorrect credentials")
+            messages.error(request, "Incorrect credentials. Please try again.")
+            return redirect('login')
+            
+    return render(request, 'login.html', {})
 
-            # TODO: idk if this works.
-            error = {'code': 404, 
-                'message': 'User not found'
-            }
-  
-            return render(request, 'login.html', error)
-    else:
-        return render(request, 'login.html', {})
+
+
+def home_view(request):
+    print("TEST LOG: in Home view/n")
+    return render(request, 'home.html', {})
 
 # LOGOUT function
 def logout_view(request):
@@ -41,29 +79,6 @@ def logout_view(request):
     
     print("TEST LOG: User signed out.")
     return redirect('login')
-
-def home(request, *args, **kwargs):
-    print("TEST LOG: in Home view/n")
-
-    try:
-        hasUsertype = True
-
-        for g in Group.objects.filter():
-            if g.name == request.user.groups.all()[0].name:
-                # TEST: for tracking group name of User
-                print("TEST LOG: USERTYPE-- " + request.user.groups.all()[0].name)
-                return render(request, 'home.html', {})
-
-            else:
-                hasUsertype = False
-
-        if hasUsertype == False:
-            # ERROR: 404, "User not found."
-            return redirect('login')
-
-    except ObjectDoesNotExist:
-        print('ERROR: 404, User not found.')
-    return render(request, 'home.html', {})
 
 def error(request):
     return render(request, 'partials/error.html', {})
