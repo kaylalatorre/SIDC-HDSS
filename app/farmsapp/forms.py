@@ -122,6 +122,10 @@ class FarmForm(ModelForm):
             'name' : 'input-roof',
             'placeholder' : 'ex. 100'
         })
+        self.fields['waste_mgt'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-trough'
+        })
 
     class Meta:
         model = Farm

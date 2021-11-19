@@ -128,9 +128,13 @@ class Farm(models.Model):
     feed_trough         = models.CharField(max_length=15, choices=FEED_CHOICES, default='Semi-automatic')
     bldg_curtain        = models.BooleanField(default=False)
     medic_tank          = models.IntegerField(null=True, blank=True)
-    waste_mgt_septic    = models.BooleanField(default=False)
-    waste_mgt_biogas    = models.BooleanField(default=False)
-    waste_mgt_others    = models.BooleanField(default=False)
+
+    WASTE_MGT_CHOICES  = [('Septic Tank', 'Septic Tank'),
+                            ('Biogas', 'Biogas'),
+                            ('Other', 'Other')]
+
+    waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
+    
     warehouse_length    = models.FloatField(null=True, blank=True)
     warehouse_width     = models.FloatField(null=True, blank=True)
     road_access         = models.BooleanField(default=False)
@@ -141,7 +145,7 @@ class Farm(models.Model):
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
     farm_symptoms       = models.ForeignKey('Farm_Symptoms', on_delete=models.CASCADE, null=True, blank=True)
 
-    # is_approved         = models.BooleanField(default=False)
+    is_approved         = models.BooleanField(default=False)
 
     # def __str__(self):
     #     return self.raiser_ID
@@ -189,7 +193,8 @@ class Activity(models.Model):
     time_arrival        = models.TimeField()
     description         = models.CharField(max_length=500)
     remarks             = models.CharField(max_length=500)
-    # is_approved         = models.BooleanField(default=False)
+
+    is_approved         = models.BooleanField(default=False)
 
     # def __str__(self)
     #     return self.
