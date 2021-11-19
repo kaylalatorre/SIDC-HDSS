@@ -192,8 +192,8 @@ class Activity(models.Model):
     trip_desc           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
-    description         = models.CharField(max_length=500)
-    remarks             = models.CharField(max_length=500)
+    description         = models.CharField(max_length=500, null=True, blank=True)
+    remarks             = models.CharField(max_length=500, null=True, blank=True)
 
     is_approved         = models.BooleanField(default=False)
 

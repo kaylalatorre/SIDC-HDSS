@@ -85,8 +85,8 @@ def selectedFarm(request, farmID):
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
         contact=F("hog_raiser__contact_no"),
-        length=F("warehouse_length"),
-        width=F("warehouse_width"),
+        length=F("wh_length"),
+        width=F("wh_width"),
         farm_area = F("area__area_name")
     )
     context = qry.values(
@@ -108,8 +108,6 @@ def selectedFarm(request, farmID):
 ## Display Farms assigned to Technician
 def techFarms(request):
 
-    # print("Collecting farms under technician")
-
     query  = Farm.objects.select_related('hog_raiser').annotate(
                 fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
                         "id",
@@ -124,8 +122,8 @@ def techFarms(request):
     
     debug(query)
 
+    # pass all data into an array; to be passed to tech-farms
     farmsData = []
-
     for f in query:
         farmObject = {
             "code":  str(f["id"]),
@@ -140,8 +138,8 @@ def techFarms(request):
 
         farmsData.append(farmObject)
     
-    # fix
-    return render(request, 'farmstemp/tech-farms.html', {"techFarms":farmsData}) 
+    # fix routing
+    return render(request, 'farmstemp/tech-farms.html', {'techFarms' : farmsData}) 
 
 ## Redirect to Add Farm Page and render form
 def addFarm(request):
@@ -190,6 +188,12 @@ def addFarm(request):
                             farm.intbio_id = internalBiosec.id
                             farm.area_id = area.id
 
+                            # get recently created internal and external biosec ID
+
+
+                            # update ref_farm_id of both records
+
+
                             farm.save()
                             
                             print("TEST LOG: Added new farm")
@@ -200,6 +204,10 @@ def addFarm(request):
                                 pigpenMeasures.farm_id = farm.id
 
                                 # add all num_heads (pigpen measure) for total_pigs (farm)
+
+
+                                # update total_pigs of newly added farm
+
 
                                 pigpenMeasures.save()
 
@@ -600,7 +608,7 @@ def post_addChecklist(request):
         
 
 def addActivity(request):
-    # print farm ID
+    # print farm ID ; currently dummy data
     farmID = 1
 
     if request.method == 'POST':
