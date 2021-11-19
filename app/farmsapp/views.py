@@ -321,7 +321,7 @@ def biosec_view(request):
     # print(bioInt[0].last_updated)
 
     # GET ACTIVITIES
-    actQueury = Activity.objects.filter(id=farmID).all()
+    actQueury = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
 
     actList = []
 
@@ -447,6 +447,7 @@ def post_addChecklist(request):
 
 def addActivity(request):
     # print farm ID
+    farmID = 1
 
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
@@ -462,9 +463,11 @@ def addActivity(request):
 
             print("TEST LOG: Added new delivery")
 
-
             if activityForm.is_valid():
                 activity = activityForm.save(commit=False)
+
+                activity.ref_farm_id = farmID
+
                 activity.save()
 
                 print("TEST LOG: Added new activty")

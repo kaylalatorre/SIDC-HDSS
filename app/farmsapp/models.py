@@ -141,6 +141,8 @@ class Farm(models.Model):
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
     farm_symptoms       = models.ForeignKey('Farm_Symptoms', on_delete=models.CASCADE, null=True, blank=True)
 
+    # is_approved         = models.BooleanField(default=False)
+
     # def __str__(self):
     #     return self.raiser_ID
 
@@ -187,6 +189,7 @@ class Activity(models.Model):
     time_arrival        = models.TimeField()
     description         = models.CharField(max_length=500)
     remarks             = models.CharField(max_length=500)
+    # is_approved         = models.BooleanField(default=False)
 
     # def __str__(self)
     #     return self.
