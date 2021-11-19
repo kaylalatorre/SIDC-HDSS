@@ -46,51 +46,6 @@ def debug(m):
 ## Farms table for all users except Technicians
 def farms(request):
     
-    # hr  = Hog_Raiser(
-    #     id                  = 1,
-    #     fname               = "Ramf",
-    #     lname               = "Drocer",
-    #     contact_no          = "09158700315"
-    # )
-    # hr.save()
-
-    # ar = Area(
-    #     id                  = 1,
-    #     area_name           = "West",
-    #     tech                = None
-    # )
-    # ar.save()
-
-    # fa = Farm(
-    #     id                  = 1,
-    #     hog_raiser          = Hog_Raiser.objects.get(id=1),
-    #     date_registered     = date(2021,11,8),
-    #     farm_address        = "Batangas, 4200 Batangas",
-    #     area                = Area.objects.get(area_name = "West"), 
-    #     loc_long            = 0,
-    #     loc_lat             = 1,
-    #     bldg_cap            = 2,
-    #     num_pens            = 3,
-    #     directly_manage     = True,
-    #     total_pigs          = 4,
-    #     isolation_pen       = False,
-    #     roof_height         = 5,
-    #     feed_trough         = "Trough",
-    #     bldg_curtain        = True,
-    #     medic_tank          = True,
-    #     waste_mgt_septic    = False,
-    #     waste_mgt_biogas    = True,
-    #     waste_mgt_others    = False,
-    #     warehouse_length    = 6,
-    #     warehouse_width     = 7,
-    #     road_access         = True,
-    #     extbio              = None,
-    #     intbio              = None,
-    #     farm_weight         = None,
-    #     farm_symptoms       = None    
-    # )
-    # fa.save()
-
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -243,6 +198,8 @@ def addFarm(request):
                                 pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
                                 pigpenMeasures.farm_id = farm.id
+
+                                # add all num_heads (pigpen measure) for total_pigs (farm)
 
                                 pigpenMeasures.save()
 

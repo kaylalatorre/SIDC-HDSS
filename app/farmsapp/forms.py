@@ -1,5 +1,5 @@
 from django.forms import ModelForm, DateField, widgets
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Farm_Symptoms, Delivery, Activity, Mortality, Area
+from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Delivery, Activity, Mortality, Area
 
 class DateInput(ModelForm):
     input_type = 'date'
@@ -54,13 +54,13 @@ class FarmWeightForm(ModelForm):
         model = Farm_Weight
         fields = ('__all__')
 
-class FarmSymptomsForm(ModelForm):
+class HogSymptomsForm(ModelForm):
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     #     self.fields[''].widget.attrs.update({
    
     class Meta:
-        model = Farm_Symptoms
+        model = Hog_Symptoms
         fields = ('__all__')
 
 class AreaForm(ModelForm):
@@ -99,7 +99,7 @@ class FarmForm(ModelForm):
             'name' : 'input-roof',
             'placeholder' : 'ex. 100'
         })
-        self.fields['warehouse_length'].widget.attrs.update({
+        self.fields['wh_length'].widget.attrs.update({
             'input type' : 'number',
             'aria-label' : 'Length', 
             'class' : 'form-control',
@@ -107,7 +107,7 @@ class FarmForm(ModelForm):
             'name' : 'wh-length',
             'placeholder' : 'Length'
         })
-        self.fields['warehouse_width'].widget.attrs.update({
+        self.fields['wh_width'].widget.attrs.update({
             'input type' : 'number',
             'aria-label' : 'Width', 
             'class' : 'form-control',
@@ -125,6 +125,18 @@ class FarmForm(ModelForm):
             'id' : 'input-roof',
             'name' : 'input-roof',
             'placeholder' : 'ex. 100'
+        })
+        self.fields['bldg_curtain'].widget.attrs.update({
+            'input type' : 'checkbox',
+            'class' : 'form-check-input',
+            'id': 'cb-curtain', 
+            'name' : 'cb-curtain'            
+        })
+        self.fields['road_access'].widget.attrs.update({
+            'input type' : 'checkbox',
+            'class' : 'form-check-input',
+            'id': 'cb-road', 
+            'name' : 'cb-road'            
         })
 
     class Meta:
