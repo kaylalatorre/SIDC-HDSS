@@ -1,7 +1,8 @@
-from django.db.models.expressions import F
+from django.contrib.auth.models import User
+from django.db.models.expressions import F, Value
 from django.forms.formsets import formset_factory
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, response
 from django.http import JsonResponse
 from django.core import serializers
 
@@ -13,7 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 # for Model imports
 import psycopg2
-from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
@@ -21,6 +23,12 @@ from django.shortcuts import render
 from datetime import date
 
 def debug(m):
+    """
+    For debugging purposes
+
+    :param m: The message
+    :type m: String
+    """
     print("------------------------[DEBUG]------------------------")
     print(m)
     print("-------------------------------------------------------")
@@ -29,15 +37,64 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    qry = Farm.objects.select_related('hog_raiser').annotate(
-            fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")
+    
+    # hr  = Hog_Raiser(
+    #     id                  = 1,
+    #     fname               = "Ramf",
+    #     lname               = "Drocer",
+    #     contact_no          = "09158700315"
+    # )
+    # hr.save()
+
+    # ar = Area(
+    #     id                  = 1,
+    #     area_name           = "West",
+    #     tech                = None
+    # )
+    # ar.save()
+
+    # fa = Farm(
+    #     id                  = 1,
+    #     hog_raiser          = Hog_Raiser.objects.get(id=1),
+    #     date_registered     = date(2021,11,8),
+    #     farm_address        = "Batangas, 4200 Batangas",
+    #     area                = Area.objects.get(area_name = "West"), 
+    #     loc_long            = 0,
+    #     loc_lat             = 1,
+    #     bldg_cap            = 2,
+    #     num_pens            = 3,
+    #     directly_manage     = True,
+    #     total_pigs          = 4,
+    #     isolation_pen       = False,
+    #     roof_height         = 5,
+    #     feed_trough         = "Trough",
+    #     bldg_curtain        = True,
+    #     medic_tank          = True,
+    #     waste_mgt_septic    = False,
+    #     waste_mgt_biogas    = True,
+    #     waste_mgt_others    = False,
+    #     warehouse_length    = 6,
+    #     warehouse_width     = 7,
+    #     road_access         = True,
+    #     extbio              = None,
+    #     intbio              = None,
+    #     farm_weight         = None,
+    #     farm_symptoms       = None    
+    # )
+    # fa.save()
+
+    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+            fname=F("hog_raiser__fname"), 
+            lname=F("hog_raiser__lname"), 
+            contact=F("hog_raiser__contact_no"),
+            farm_area = F("area__area_name")
             ).values(
                 "id",
                 "fname",
                 "lname", 
                 "contact", 
                 "farm_address",
-                "area",
+                "farm_area",
                 "total_pigs",
                 "num_pens",
                 "date_registered"
@@ -52,17 +109,38 @@ def farms(request):
             "raiser": " ".join((f["fname"],f["lname"])),
             "contact": f["contact"],
             "address": f["farm_address"],
-            "area": str(f["area"]),
+            "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
             "updated": str(f["date_registered"])
         }
         farmsData.append(farmObject)
-
+    debug(farmsData)
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
-def selectedFarm(request):
-    return render(request, 'farmstemp/selected-farm.html', {})
+def selectedFarm(request, farmID):
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
+        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        contact=F("hog_raiser__contact_no"),
+        length=F("warehouse_length"),
+        width=F("warehouse_width"),
+        farm_area = F("area__area_name")
+    )
+    context = qry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "length",
+        "width",
+        "feed_trough",
+        "bldg_cap"    
+    ).first()
+   
+    return render(request, 'farmstemp/selected-farm.html', context)
 
 ## Display Farms assigned to Technician
 def techFarms(request):
@@ -355,7 +433,34 @@ def techSelectedFarm(request):
     return render(request, 'farmstemp/tech-selected-farm.html', {})
 
 def techAssignment(request):
-    return render(request, 'farmstemp/assignment.html', {})
+    areasData = []
+    areas = Area.objects.select_related("tech_id").annotate(
+        curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
+    ).values()
+    techs = User.objects.filter(groups__name="Field Technician").annotate(
+        name = Concat('first_name', Value(' '), 'last_name'),
+    ).values(
+        "id",
+        "name",
+    )
+    for a in areas:
+        areaObject = {
+            "id": str(a["id"]),
+            "area_name": a["area_name"],
+            "curr_tech_id": a["tech_id"],
+            "curr_tech": a["curr_tech"],
+            "farm_count": Farm.objects.filter(area=a["id"]).count()
+        }
+        areasData.append(areaObject)
+    context = {
+        "areasData":areasData,
+        "technicians":techs
+    }
+    return render(request, 'farmstemp/assignment.html', context)
+
+def assign_technician(request):
+    
+    return response()
 
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
