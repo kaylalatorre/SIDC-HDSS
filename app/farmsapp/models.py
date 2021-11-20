@@ -182,7 +182,7 @@ class Activity(models.Model):
     description         = models.CharField(max_length=500, null=True, blank=True)
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
-    last_updated        = models.DateTimeField(default=now)
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
     is_approved         = models.BooleanField(default=False)
 
     # def __str__(self)

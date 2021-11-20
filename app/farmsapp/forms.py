@@ -209,7 +209,7 @@ class ActivityForm(ModelForm):
             'class' : 'form-control',
             'placeholder' : '01/01/2021'
         })
-        self.fields['trip_desc'].widget.attrs.update({
+        self.fields['trip_type'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'act-trip-type',
            'style' : 'margin-bottom: 0'
