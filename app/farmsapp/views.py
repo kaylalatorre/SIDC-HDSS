@@ -12,14 +12,14 @@ from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm, AreaForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm
 
 # for Models
 from django.views.decorators.csrf import csrf_exempt
 
 # for Model imports
 import psycopg2
-from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
@@ -463,11 +463,12 @@ def biosec_view(request):
     for activity in actQueury:
         actList.append({
             'date' : activity.date,
-            'trip_desc' : activity.trip_desc,
+            'trip_type' : activity.trip_type,
             'time_departure' : activity.time_departure,
             'time_arrival' : activity.time_arrival,
             'description' : activity.description,
-            'remarks' : activity.remarks
+            'remarks' : activity.remarks,
+            # 'last_updated' : last_updated,
         })
 
     # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
@@ -616,41 +617,27 @@ def addActivity(request):
         print(request.POST)
 
         activityForm = ActivityForm(request.POST)
-        deliveryForm = DeliveryForm(request.POST)
 
-            
-        if deliveryForm.is_valid():
-            delivery = deliveryForm.save(commit=False)
-            delivery.save()
+        if activityForm.is_valid():
+            activity = activityForm.save(commit=False)
 
-            print("TEST LOG: Added new delivery")
+            activity.ref_farm_id = farmID
 
-            if activityForm.is_valid():
-                activity = activityForm.save(commit=False)
+            activity.save()
 
-                activity.ref_farm_id = farmID
-
-                activity.save()
-
-                print("TEST LOG: Added new activty")
-                return redirect('/biosecurity')
-            
-            else:
-                print("TEST LOG: activityForm is not valid")
-                print(activityForm.errors)
-
+            print("TEST LOG: Added new activty")
+            return redirect('/biosecurity')
+        
         else:
-            print("TEST LOG: deliveryForm is not valid")
-            print(deliveryForm.errors)
-    
+            print("TEST LOG: activityForm is not valid")
+            print(activityForm.errors)
+
     else:
         print("TEST LOG: Form is not a POST method")
 
         activityForm = ActivityForm()
-        deliveryForm = DeliveryForm()
     
-    return render(request, 'farmstemp/add-activity.html', {'activityForm' : activityForm,
-                                                            'deliveryForm' : deliveryForm})
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm })
 
 def memAnnouncements(request):
     return render(request, 'farmstemp/mem-announce.html', {})

@@ -1,5 +1,5 @@
 from django.forms import ModelForm, DateField, widgets
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Delivery, Activity, Mortality, Area
+from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
 
 class DateInput(ModelForm):
     input_type = 'date'
@@ -196,11 +196,6 @@ class PigpenMeasuresForm(ModelForm):
 
     class Meta:
         model = Pigpen_Measures
-        fields = ('__all__')
-
-class DeliveryForm(ModelForm):
-    class Meta:
-        model = Delivery
         fields = ('__all__')
 
 class ActivityForm(ModelForm):

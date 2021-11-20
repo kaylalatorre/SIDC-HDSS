@@ -162,22 +162,9 @@ class Pigpen_Measures(models.Model):
     # def __str__(self)
     #     return self.
 
-# DELIVERY Table
-class Delivery(models.Model):
-    date_filed          = models.DateField(default=now,null=True, blank=True)
-   
-    seller_fname        = models.CharField(max_length=50, null=True, blank=True)
-    seller_lname        = models.CharField(max_length=50, null=True, blank=True)
-    delivery_type       = models.CharField(max_length=30, null=True, blank=True)
-    qty                 = models.IntegerField(null=True, blank=True)
-
-    # def __str__(self)
-    #     return self.
-
 # ACTIVITY Table
 class Activity(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-    ref_delivery        = models.ForeignKey('Delivery', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
     date                = models.DateField()
 
@@ -189,12 +176,13 @@ class Activity(models.Model):
                             ('Trucking', 'Trucking'),
                             ('Other', 'Other')]
 
-    trip_desc           = models.CharField(max_length=50, choices=TYPE_CHOICES)
+    trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
     description         = models.CharField(max_length=500, null=True, blank=True)
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
+    last_updated        = models.DateTimeField(default=now)
     is_approved         = models.BooleanField(default=False)
 
     # def __str__(self)
