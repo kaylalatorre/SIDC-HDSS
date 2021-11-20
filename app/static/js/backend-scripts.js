@@ -1,5 +1,35 @@
 /* BACKEND-specific Functions */
 
+/**
+ * Helper function to prepare AJAX functions with CSRF middleware tokens.
+ * This avoids getting 403 (Forbidden) errors.
+ */
+function ajaxCSRF(){
+    $.ajaxSetup({ 
+        beforeSend: function(xhr, settings) {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                // Only send the token to relative URLs i.e. locally.
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        } 
+   });
+}
+
 /** 
  * on-change AJAX for Biochecklist search
  */
@@ -10,6 +40,8 @@ $('#checklist-date').change(function() {
     // Get biosec ID of selected option tag
     var biosecID = $("#checklist-date option:selected").val()
     // alert("biosecID: " + biosecID);
+
+    ajaxCSRF();
 
     $.ajax({
         type: 'POST',
@@ -80,7 +112,7 @@ $('#checklist-date').change(function() {
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
 
         },
-        error: function (response){
+        error: function (res){
             alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
         }
     });
@@ -177,6 +209,8 @@ function saveBiocheck(){
         checkArr[7] = 2;
         
     // alert("checkArr length: " + checkArr.length);
+
+    ajaxCSRF();
 
     $.ajax({
         type: 'POST',

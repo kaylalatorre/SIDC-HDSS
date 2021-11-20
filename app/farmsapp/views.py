@@ -16,9 +16,6 @@ from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecFo
 # for storing error messages
 from django.contrib import messages
 
-# for Models
-from django.views.decorators.csrf import csrf_exempt
-
 # for Model imports
 import psycopg2
 from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
@@ -211,8 +208,7 @@ def addFarm(request):
                                                         'internalBiosecForm' : internalBiosecForm})
  
 
-# (GET-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
-@csrf_exempt
+# (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request):
     if request.is_ajax and request.method == 'POST':
         # Queryset: Get only relevant fields for biochecklist based on biosecID
@@ -271,7 +267,6 @@ def search_bioChecklist(request):
     return JsonResponse({"error": "in search_Checklist() -- not an AJAX POST request"}, status=400)
       
 # (POST-AJAX) For updating a Biosec Checklist based on biosecID
-@csrf_exempt
 def update_bioChecklist(request, biosecID):
     if request.is_ajax and request.method == 'POST':
         # Queryset: Get only relevant fields for biochecklist based on biosecID
