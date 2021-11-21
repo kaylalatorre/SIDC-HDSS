@@ -508,9 +508,6 @@ def addChecklist_view(request):
 
     return render(request, 'farmstemp/add-checklist.html', {'farmID': farm_id})
 
-def techSelectedFarm(request):
-    return render(request, 'farmstemp/tech-selected-farm.html', {})
-
 def techAssignment(request):
     areasData = []
     areas = Area.objects.select_related("tech_id").annotate(
