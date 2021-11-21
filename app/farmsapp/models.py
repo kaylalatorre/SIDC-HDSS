@@ -136,8 +136,11 @@ class Farm(models.Model):
     bldg_cap            = models.IntegerField(null=True, blank=True)
     
     bldg_curtain        = models.BooleanField(default=False)
-    medic_tank          = models.IntegerField(null=True, blank=True)
-    
+
+    MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
+                            ('50 GAL', '50 GAL')]
+
+    medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
     road_access         = models.BooleanField(default=False)
     
     extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)

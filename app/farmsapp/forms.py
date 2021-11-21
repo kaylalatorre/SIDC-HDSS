@@ -138,6 +138,10 @@ class FarmForm(ModelForm):
             'id': 'cb-road', 
             'name' : 'cb-road'            
         })
+        self.fields['medic_tank'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'inout-medic-tank',
+        })
 
     class Meta:
         model = Farm
