@@ -262,8 +262,6 @@ function saveBiocheck(){
 function viewTechFarm(techFarm) {
     // var techFarm = document.getElementById("viewTechFarm");
 
-    // print(techFarm);
-
     try{
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
         console.log(url);
