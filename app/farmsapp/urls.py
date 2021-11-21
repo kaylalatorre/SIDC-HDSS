@@ -8,8 +8,7 @@ urlpatterns = [
     path('selected-farm/<str:farmID>', views.selectedFarm, name="selectedFarm"),
     path('add-farm', views.addFarm, name="addFarm"),
     
-    # path('tech-farms', views.techFarms, name="techFarms"),
-    path('tech-farms', views.techFarms, name="techFarms"),
+    path('tech-farms', views.techFarms, name="techFarms"), # temporary
     path('home/view-farm', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
     path('technician-assignment', views.techAssignment, name="techAssignment"),
