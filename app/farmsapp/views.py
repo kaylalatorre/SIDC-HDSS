@@ -472,8 +472,8 @@ def biosec_view(request):
             # 'last_updated' : last_updated,
         })
 
-    # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
-    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': extQuery}) 
+    # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm, (4) activities
+    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
 
 def addChecklist_view(request):

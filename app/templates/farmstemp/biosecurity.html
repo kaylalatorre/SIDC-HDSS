@@ -55,28 +55,56 @@
                     <p>All biosecurity measures in the farm. </p>
                 </div>
                 <div class="mb-3">
+                    <!-- <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label> -->
+
+                    {% if currBio.intbio.isol_pen == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked="checked" disabled> 
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    {% endif %}
                     <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.extbio.bird_proof == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-birdproof" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-birdproof" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.extbio.perim_fence == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-fence" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-fence" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.intbio.foot_dip == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-footdip" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.extbio.fiveh_m_dist == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-distance" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-distance" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
+
                 <div class="flex">
                     <label for="input-trough" class="form-label">Waste Management:</label>
-                    <p style="font-weight: 600;">Septic Tank</p>
+                    <p style="font-weight: 600;"> {{ currBio.intbio.waste_mgt }}</p>
                 </div>
             </div>
         </section>
@@ -100,7 +128,7 @@
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
                             <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck()"><i class='bx bxs-save'></i>Save</button>
-                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="editBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
+                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
                             <button id="delCheck-btn"class="secondary-btn-red"><i class='bx bxs-trash'></i>Delete</button>
                         </div>
                     </div>
