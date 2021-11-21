@@ -258,15 +258,32 @@ function saveBiocheck(){
     disableCheck();
 }
 
+function viewFarm() {
+    // Note: This links to a temporary navigation to template
+        // not sure if this can be used with actual implementation? with data
+    var farm = document.getElementById("viewFarm");
+    try{
+        url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log("reloading...");
+        location.reload(true);
+    }
+}
+
 // VIEW SELECTED TECH FARM
-function viewTechFarm(techFarm) {
-    print("Accessing selected assigned farm...")
+function viewTechFarm() {
+    print("Accessing selected assigned farm...");
+
+    var techFarm = document.getElementById("viewTechFarm");
 
     try{
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
         // console.log(url);
         location.href = url;
-    }catch (error){
+    } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
     }
