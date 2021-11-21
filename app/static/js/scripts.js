@@ -27,6 +27,24 @@ for(var i = 0; i < save.length; i++) {
     })
 }
 
+/**
+ * Changing style of statuses
+ */
+let rowStatus = document.querySelectorAll('.status');
+console.log(rowStatus);
+for(var i = 0; i < rowStatus.length; i++) { 
+    let val = rowStatus[i].innerText;
+    if( val === "Resolved") {
+        rowStatus[i].classList.add("green");
+    }
+    else if ( val === "Active") {
+        rowStatus[i].classList.add("red");
+    }
+    else {
+        console.log("No status detected/status value invalid.")
+    }
+}   
+
 // MGIHT BE BACKEND
 function viewTechFarm() {
     // Note: This links to a temporary navigation to template

@@ -5,7 +5,7 @@ table, thead {
 }
 
 tr {
-    vertical-align: middle;
+    vertical-align: text-top;
     border-bottom-width: 0.5px;
     border-color: #AAAAAA;
 }

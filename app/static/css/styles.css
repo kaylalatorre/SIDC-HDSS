@@ -108,6 +108,9 @@ section {
     align-items: center;
 }
 
+.green { color: #00a854 }
+.red { color: #BB0A1E }
+
 /* Button Styles */
 button, .button {
     display: flex;
