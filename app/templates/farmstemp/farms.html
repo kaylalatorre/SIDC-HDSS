@@ -46,8 +46,9 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
-                {% for farm in farms %}
+            <!-- Data -->
+            {% for farm in farms %}
+                <!-- {% load tz %} -->
                 <tr>
                     <td data-label="Farm Code">{{farm.code}}</td>
                     <td data-label="Raiser">{{farm.raiser}}</td>
@@ -60,8 +61,8 @@
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewFarm" onclick="viewFarm(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>
-                    {% endfor %}
-                </tr>                
+                </tr>
+            {% endfor %}                
             </tbody>            
         </table>
     </div>

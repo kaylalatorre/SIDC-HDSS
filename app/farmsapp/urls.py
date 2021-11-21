@@ -9,9 +9,9 @@ urlpatterns = [
     path('add-farm', views.addFarm, name="addFarm"),
     
     # path('tech-farms', views.techFarms, name="techFarms"),
-    path('', views.techFarms, name="techFarms"),
+    path('tech-farms', views.techFarms, name="techFarms"),
     path('home/view-farm', views.techFarms, name="techFarms"),
-    path('tech-selected-farm', views.techSelectedFarm, name="techSelectedFarm"),
+    path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
     path('technician-assignment', views.techAssignment, name="techAssignment"),
     path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
     path('forms-approval', views.formsApproval, name="formsApproval"),

@@ -29,8 +29,9 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
-                {% for techFarm in techFarms %}
+            <!-- Data -->
+            {% for techFarm in techFarms %}
+                <!-- {% load tz %} -->
                 <tr>
                     <td data-label="Farm Code">{{techFarm.code}}</td>
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
@@ -38,11 +39,10 @@
                     <td data-label="Address">{{techFarm.address}}</td>
                     <td data-label="Last Update">{{techFarm.updated}}</td>
                     <td data-label="" class="td-btn">
-                        <!-- Note: This links to a temporary navigation to template (code @ static/js/scripts.js) -->
-                        <button class="secondary-btn" id="viewTechFarm" onclick=viewTechFarm()><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
+                        <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
                 </tr>    
-                {% endfor %}
+            {% endfor %}
             </tbody>            
         </table>
     </div>

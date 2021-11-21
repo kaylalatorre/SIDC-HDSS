@@ -60,7 +60,7 @@ def farms(request):
                 "farm_area",
                 "total_pigs",
                 "num_pens",
-                "date_registered"
+                "last_updated"
                 )
     debug(qry)
     # this_form = Form_DisplayFarm()
@@ -75,7 +75,7 @@ def farms(request):
             "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
-            "updated": str(f["date_registered"])
+            "updated": str(f["last_updated"])
         }
         farmsData.append(farmObject)
     debug(farmsData)
@@ -107,39 +107,60 @@ def selectedFarm(request, farmID):
 
 ## Display Farms assigned to Technician
 def techFarms(request):
+    """
+    description
+    """
 
-    query  = Farm.objects.select_related('hog_raiser').annotate(
+    techFarmQry  = Farm.objects.select_related('hog_raiser').annotate(
                 fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
                         "id",
                         "fname",
                         "lname", 
                         "contact", 
                         "farm_address",
-                        "area",
-                        "total_pigs",
-                        "num_pens",
-                        "date_registered" )
-    
-    debug(query)
+                        "last_updated" )
+    # debug(techFarmQry)
 
-    # pass all data into an array; to be passed to tech-farms
-    farmsData = []
-    for f in query:
+    # pass all data into an array; to be passed to tech-farms template
+    techFarmsList = []
+    for farm in techFarmQry:
         farmObject = {
-            "code":  str(f["id"]),
-            "raiser": " ".join((f["fname"],f["lname"])),
-            "contact": f["contact"],
-            "address": f["farm_address"],
-            "area": str(f["area"]),
-            "pigs": str(f["total_pigs"]),
-            "pens": str(f["num_pens"]),
-            "updated": str(f["date_registered"])
+            "code": str(farm["id"]),
+            "raiser": " ".join((farm["fname"],farm["lname"])),
+            "contact": farm["contact"],
+            "address": farm["farm_address"],
+            "updated": str(farm["last_updated"])
         }
 
-        farmsData.append(farmObject)
+        techFarmsList.append(farmObject)
     
     # fix routing
-    return render(request, 'farmstemp/tech-farms.html', {'techFarms' : farmsData}) 
+    return render(request, 'farmstemp/tech-farms.html', {'techFarms' : techFarmsList}) 
+
+## Display selected farm of technician
+def techSelectedFarm(request, farmID):
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
+                    raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact=F("hog_raiser__contact_no"),
+                    length=F("wh_length"),
+                    width=F("wh_width"),
+                    farm_area = F("area__area_name"))
+
+    selTechFarm = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "length",
+        "width",
+        "feed_trough",
+        "bldg_cap"    
+    ).first()
+   
+    return render(request, 'farmstemp/tech-selected-farm.html', selTechFarm)
 
 ## Redirect to Add Farm Page and render form
 def addFarm(request):
