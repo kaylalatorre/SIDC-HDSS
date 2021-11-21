@@ -299,3 +299,17 @@ function saveBiocheck(){
     
     disableCheck();
 }
+
+// VIEW SELECTED TECH FARM
+function viewTechFarm(techFarm) {
+    print("Accessing selected assigned farm...")
+
+    try{
+        url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        // console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}

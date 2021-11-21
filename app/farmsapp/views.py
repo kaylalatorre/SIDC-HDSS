@@ -1,9 +1,10 @@
-from django.db.models.expressions import F
+from django.contrib.auth.models import User
+from django.db.models.expressions import F, Value
 from django.forms.formsets import formset_factory
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, response
 
 # for AJAX functions
 from django.http import JsonResponse
@@ -11,14 +12,15 @@ from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, DeliveryForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm
 
 # for storing error messages
 from django.contrib import messages
 
 # for Model imports
 import psycopg2
-from .models import ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity
+from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
@@ -29,6 +31,12 @@ from datetime import date
 from django.utils.timezone import now 
 
 def debug(m):
+    """
+    For debugging purposes
+
+    :param m: The message
+    :type m: String
+    """
     print("------------------------[DEBUG]------------------------")
     print(m)
     print("-------------------------------------------------------")
@@ -37,65 +45,22 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    # :Psuedo::
-    # farmsdata = []
-    # FOR entry IN QUERY SELECT farms JOIN raiser ORDER BY farm_id
-    #   MAP(entry TO farmsdata)
-    # OUTPUT farmsdata
-
-    # # create raiser
-    # hr = Hog_Raiser(
-    #     id                  = 2,
-    #     fname               = "Juana",
-    #     lname               = "Pedra",
-    #     contact_no          = "9089990999"
-    # )
-    # hr.save()
-    # debug("hr_save")
-    # # create farm
-    # fa = Farm(
-    #     id                  = 2,
-    #     date_registered     = date(2021,11,8),
-    #     farm_address        = "farm_address_2",
-    #     area                = "east",
-    #     loc_long            = 1,
-    #     loc_lat             = 2,
-    #     bldg_cap            = 3,
-    #     num_pens            = 4,
-    #     directly_manage     = False,
-    #     total_pigs          = 5,
-    #     isolation_pen       = False,
-    #     roof_height         = 6,
-    #     feed_trough         = False,
-    #     bldg_curtain        = False,
-    #     medic_tank          = 7,
-    #     waste_mgt_septic    = False,
-    #     waste_mgt_biogas    = False,
-    #     waste_mgt_others    = False,
-    #     warehouse_length    = 8,
-    #     warehouse_width     = 9,
-    #     road_access         = False,
-    #     extbio_ID           = None,
-    #     intbio_ID           = None,
-    #     raiser           = Hog_Raiser.objects.get(id=2),
-    #     weight_record_ID    = None,
-    #     symptoms_record_ID  = None,
-    # )
-    # fa.save()
-    # debug("fa_save")
-
-    qry = Farm.objects.select_related('hog_raiser').annotate(
-            fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")
+    
+    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+            fname=F("hog_raiser__fname"), 
+            lname=F("hog_raiser__lname"), 
+            contact=F("hog_raiser__contact_no"),
+            farm_area = F("area__area_name")
             ).values(
                 "id",
                 "fname",
                 "lname", 
                 "contact", 
                 "farm_address",
-                "area",
+                "farm_area",
                 "total_pigs",
                 "num_pens",
-                "date_registered"
+                "last_updated"
                 )
     debug(qry)
     # this_form = Form_DisplayFarm()
@@ -107,17 +72,95 @@ def farms(request):
             "raiser": " ".join((f["fname"],f["lname"])),
             "contact": f["contact"],
             "address": f["farm_address"],
-            "area": str(f["area"]),
+            "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
-            "updated": str(f["date_registered"])
+            "updated": str(f["last_updated"])
         }
         farmsData.append(farmObject)
-
+    debug(farmsData)
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
-def selectedFarm(request):
-    return render(request, 'farmstemp/selected-farm.html', {})
+def selectedFarm(request, farmID):
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
+        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        contact=F("hog_raiser__contact_no"),
+        length=F("wh_length"),
+        width=F("wh_width"),
+        farm_area = F("area__area_name")
+    )
+    context = qry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "length",
+        "width",
+        "feed_trough",
+        "bldg_cap"    
+    ).first()
+   
+    return render(request, 'farmstemp/selected-farm.html', context)
+
+## Display Farms assigned to Technician
+def techFarms(request):
+    """
+    description
+    """
+
+    techFarmQry  = Farm.objects.select_related('hog_raiser').annotate(
+                fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
+                        "id",
+                        "fname",
+                        "lname", 
+                        "contact", 
+                        "farm_address",
+                        "last_updated" )
+    # debug(techFarmQry)
+
+    # pass all data into an array; to be passed to tech-farms template
+    techFarmsList = []
+    for farm in techFarmQry:
+        farmObject = {
+            "code": str(farm["id"]),
+            "raiser": " ".join((farm["fname"],farm["lname"])),
+            "contact": farm["contact"],
+            "address": farm["farm_address"],
+            "updated": str(farm["last_updated"])
+        }
+
+        techFarmsList.append(farmObject)
+    
+    # fix routing
+    return render(request, 'farmstemp/tech-farms.html', {'techFarms' : techFarmsList}) 
+
+## Display selected farm of technician
+def techSelectedFarm(request, farmID):
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
+                    raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact=F("hog_raiser__contact_no"),
+                    length=F("wh_length"),
+                    width=F("wh_width"),
+                    farm_area = F("area__area_name"))
+
+    selTechFarm = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "length",
+        "width",
+        "feed_trough",
+        "bldg_cap"    
+    ).first()
+   
+    return render(request, 'farmstemp/tech-selected-farm.html', selTechFarm)
 
 ## Redirect to Add Farm Page and render form
 def addFarm(request):
@@ -129,6 +172,7 @@ def addFarm(request):
 
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
+        areaForm            = AreaForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
@@ -150,43 +194,66 @@ def addFarm(request):
                     internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
-
-                    if farmForm.is_valid():
-                        farm = farmForm.save(commit=False)
-
-                        farm.hog_raiser_id = hogRaiser.id
-                        farm.extbio_id = externalBiosec.id
-                        farm.intbio_id = internalBiosec.id
+                    
+                    if areaForm.is_valid():
+                        area = areaForm.save(commit=False)
+                        area.save()
                         
-                        farm.save()
+                        print("TEST LOG: Added area")
+
+                        if farmForm.is_valid():
+                            farm = farmForm.save(commit=False)
+
+                            farm.hog_raiser_id = hogRaiser.id
+                            farm.extbio_id = externalBiosec.id
+                            farm.intbio_id = internalBiosec.id
+                            farm.area_id = area.id
+
+                            # get recently created internal and external biosec ID
+
+
+                            # update ref_farm_id of both records
+
+
+                            farm.save()
+                            
+                            print("TEST LOG: Added new farm")
+
+                            if pigpenMeasuresForm.is_valid():
+                                pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+
+                                pigpenMeasures.farm_id = farm.id
+
+                                # add all num_heads (pigpen measure) for total_pigs (farm)
+
+
+                                # update total_pigs of newly added farm
+
+
+                                pigpenMeasures.save()
+
+                                print("TEST LOG: Added new pigpen measure")
+                                return render(request, 'home.html', {})
+
+                            else:
+                                print("TEST LOG: Pigpen Measures Form not valid")
+                                print(pigpenMeasuresForm.errors)
                         
-                        print("TEST LOG: Added new farm")
-
-                        if pigpenMeasuresForm.is_valid():
-                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-
-                            pigpenMeasures.farm_id = farm.id
-
-                            pigpenMeasures.save()
-
-                            print("TEST LOG: Added new pigpen measure")
-                            return render(request, 'home.html', {})
-
                         else:
-                            print("TEST LOG: Pigpen Measures Form not valid")
-                            print(pigpenMeasuresForm.errors)
+                            print("TEST LOG: Farm Form not valid")
+                            print(farmForm.errors)
                     
                     else:
-                        print("TEST LOG: Farm Form not valid")
-                        print(farmForm.errors)
+                        print("TEST LOG: Area Form not valid")
+                        print(areaForm.errors)
 
                 else:
                     print("TEST LOG: Internal Biosec Form not valid")
-                    print(internalBiosec.errors)
+                    print(internalBiosecForm.errors)
 
             else:
                 print("TEST LOG: External Biosec Form not valid")
-                print(externalBiosec.errors)
+                print(externalBiosecForm.errors)
             
         else:
             print("TEST LOG: Hog Raiser Form not valid")
@@ -197,12 +264,14 @@ def addFarm(request):
         
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
+        areaForm            = AreaForm()
         pigpenMeasuresForm  = PigpenMeasuresForm()
         externalBiosecForm  = ExternalBiosecForm()
         internalBiosecForm  = InternalBiosecForm()
 
     return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
+                                                        'areaForm' : areaForm,
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,
                                                         'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
@@ -386,6 +455,23 @@ def biosec_view(request):
 
     # print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
+
+    # GET ACTIVITIES
+    actQueury = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
+
+    actList = []
+
+    for activity in actQueury:
+        actList.append({
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_departure' : activity.time_departure,
+            'time_arrival' : activity.time_arrival,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+            # 'last_updated' : last_updated,
+        })
+
     # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
     return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': extQuery}) 
 
@@ -406,7 +492,34 @@ def techSelectedFarm(request):
     return render(request, 'farmstemp/tech-selected-farm.html', {})
 
 def techAssignment(request):
-    return render(request, 'farmstemp/assignment.html', {})
+    areasData = []
+    areas = Area.objects.select_related("tech_id").annotate(
+        curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
+    ).values()
+    techs = User.objects.filter(groups__name="Field Technician").annotate(
+        name = Concat('first_name', Value(' '), 'last_name'),
+    ).values(
+        "id",
+        "name",
+    )
+    for a in areas:
+        areaObject = {
+            "id": str(a["id"]),
+            "area_name": a["area_name"],
+            "curr_tech_id": a["tech_id"],
+            "curr_tech": a["curr_tech"],
+            "farm_count": Farm.objects.filter(area=a["id"]).count()
+        }
+        areasData.append(areaObject)
+    context = {
+        "areasData":areasData,
+        "technicians":techs
+    }
+    return render(request, 'farmstemp/assignment.html', context)
+
+def assign_technician(request):
+    
+    return response()
 
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
@@ -498,40 +611,35 @@ def post_addChecklist(request):
         
 
 def addActivity(request):
-    # print farm ID
+    # print farm ID ; currently dummy data
+    farmID = 1
 
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
         activityForm = ActivityForm(request.POST)
-        deliveryForm = DeliveryForm(request.POST)
 
-            
-        if deliveryForm.is_valid():
-            delivery = deliveryForm.save(commit=False)
-            delivery.save()
+        if activityForm.is_valid():
+            activity = activityForm.save(commit=False)
 
-            if activityForm.is_valid():
-                activty = activityForm.save(commit=False)
-                activity.save()
-            
-            else:
-                print("TEST LOG: activityForm is not valid")
-                print(activityForm.errors)
+            activity.ref_farm_id = farmID
 
+            activity.save()
+
+            print("TEST LOG: Added new activty")
+            return redirect('/biosecurity')
+        
         else:
-            print("TEST LOG: deliveryForm is not valid")
-            print(deliveryForm.errors)
-    
+            print("TEST LOG: activityForm is not valid")
+            print(activityForm.errors)
+
     else:
         print("TEST LOG: Form is not a POST method")
 
         activityForm = ActivityForm()
-        deliveryForm = DeliveryForm()
     
-    return render(request, 'farmstemp/add-activity.html', {'activityForm' : activityForm,
-                                                            'deliveryForm' : deliveryForm})
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm })
 
 def memAnnouncements(request):
     return render(request, 'farmstemp/mem-announce.html', {})

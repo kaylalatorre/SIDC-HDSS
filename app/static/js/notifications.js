@@ -1,4 +1,6 @@
-// Toggling to show notif-box
+/*
+*   Toggling to show notif-box
+*/
 var box = document.getElementById('notification-box');
 var down = false;
 
