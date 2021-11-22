@@ -39,14 +39,15 @@ $('#checklist-date').change(function() {
 
     // Get biosec ID of selected option tag
     var biosecID = $("#checklist-date option:selected").val()
-    // alert("biosecID: " + biosecID);
+    // alert("in search_checklist() -- biosecID: " + biosecID);
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/biosecurity/getchecklist',
-        data: {"biosecID": biosecID}, // pass biosec id here
+        // url: '/biosecurity/getchecklist',
+        url: '/biosecurity/getchecklist/' + biosecID,
+        // data: {"biosecID": biosecID}, // pass biosec id here
         success: function (response){
 
             // alert("in AJAX success");

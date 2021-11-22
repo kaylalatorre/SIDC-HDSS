@@ -19,7 +19,7 @@ urlpatterns = [
     # for biosecurity
     path('biosecurity', views.biosec_view, name="biosecurity"),
     path('biosecurity/<str:farmID>', views.select_biosec, name="select_biosecurity"),
-    path('biosecurity/getchecklist', views.search_bioChecklist, name="search_biochecklist"),
+    path('biosecurity/getchecklist/<str:biosecID>', views.search_bioChecklist, name="search_biochecklist"),
     # path('biosecurity/edit-checklist', views.update_bioChecklist, name="update_biochecklist"),
     path('biosecurity/edit-checklist/<str:biosecID>', views.update_bioChecklist, name="update_biochecklist"),
     path('add-checklist', views.addChecklist_view, name="addChecklist"),

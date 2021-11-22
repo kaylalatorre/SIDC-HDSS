@@ -298,7 +298,7 @@ def addFarm(request):
  
 
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
-def search_bioChecklist(request):
+def search_bioChecklist(request, biosecID):
     if request.is_ajax and request.method == 'POST':
         # Queryset: Get only relevant fields for biochecklist based on biosecID
         """
@@ -310,7 +310,8 @@ def search_bioChecklist(request):
 
         # access biosecID passed from AJAX post request
         # TODO: error handling if biosecID None
-        bioID = request.POST.get("biosecID")
+        # bioID = request.POST.get("biosecID")
+        bioID = biosecID
 
         if None:
             print("TEST LOG: no biosecID from AJAX req")
