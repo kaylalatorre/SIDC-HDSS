@@ -15,7 +15,7 @@
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
                     {% for farm in farmList %}
-                        <option value="{{ farm.id }}"> {{ farm.id }} </option>
+                        <option value="{{ farmID }}"> {{ farmID }} </option>
                     {% endfor %}
                 </select>
         </div>
@@ -31,8 +31,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="/add-checklist">Biosecurity Checklist</a></li>
-                  <li><a class="dropdown-item" href="/add-activity">Activity Record</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
@@ -43,8 +43,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="/add-checklist">Biosecurity Checklist</a></li>
-                  <li><a class="dropdown-item" href="/add-activity">Activity Record</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
