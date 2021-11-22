@@ -19,13 +19,13 @@ def debug(m):
 
 # LOGIN function
 def login(request):
-""""
-Login function for SIDC users. 
-Error handling for:
-- Incorrect username and/or password
-- Empty either/or submitted fields 
-- Attempted user login but no belonging to a usertype/Group (e.g., admin)
-"""
+    """"
+    Login function for SIDC users. 
+    Error handling for:
+    - Incorrect username and/or password
+    - Empty either/or submitted fields 
+    - Attempted user login but no belonging to a usertype/Group (e.g., admin)
+    """
     if request.method == 'POST':
         uname = request.POST['user-name']
         password = request.POST['user-pass']
