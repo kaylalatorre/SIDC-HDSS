@@ -35,3 +35,9 @@ tr {
 .small-table {
     max-width: 920px;
 }
+
+.symptoms-checklist {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+}

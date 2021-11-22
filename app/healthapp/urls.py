@@ -10,4 +10,5 @@ urlpatterns = [
     path('symptoms-reported', views.symptomsReported, name="symptomsReported"),
     path('health-symptoms', views.healthSymptoms, name="healthSymptoms"),
     path('selected-health-symptoms', views.selectedHealthSymptoms, name="selectedHealthSymptoms"),
+    path('add-case', views.addCase, name="addCase"),
 ]
