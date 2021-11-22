@@ -105,12 +105,14 @@ def selectedFarm(request, farmID):
    
     return render(request, 'farmstemp/selected-farm.html', context)
 
-## Display Farms assigned to Technician
 def techFarms(request):
     """
-    description
+    - Display all farms assigned to currently logged in technician. 
+    - Will only display the approved farms.
     """
-
+    
+    # get all farms under the current technician 
+    # collect the corresponding hog raiser details for each farm 
     techFarmQry  = Farm.objects.select_related('hog_raiser').annotate(
                 fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
                         "id",
@@ -121,7 +123,7 @@ def techFarms(request):
                         "last_updated" )
     # debug(techFarmQry)
 
-    # pass all data into an array; to be passed to tech-farms template
+    # pass all data into an array
     techFarmsList = []
     for farm in techFarmQry:
         farmObject = {
@@ -134,16 +136,17 @@ def techFarms(request):
 
         techFarmsList.append(farmObject)
     
-    # fix routing
+    # pass techFarmsList array to template
     return render(request, 'farmstemp/tech-farms.html', {'techFarms' : techFarmsList}) 
 
-## Display selected farm of technician
 def techSelectedFarm(request, farmID):
-
     """
-    
+    - Display details of the selected farm under the currently logged in technician.
+    - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
     """
 
+    # get details of selected farm
+    # collect the corresponding details for: hog raiser, area, internal and external biosecurity, and pigpen measures
     techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio', 'pigpen_measures').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
                     contact     = F("hog_raiser__contact_no"),
@@ -154,9 +157,9 @@ def techSelectedFarm(request, farmID):
                     perim_fence = F("extbio__perim_fence"),
                     foot_dip    = F("intbio__foot_dip"),
                     fiveh_m_dist = F("extbio__fiveh_m_dist"),
-
                     )
 
+    # pass all data into an object
     selTechFarm = techFarmQry.values(
         "id",
         "raiser",
@@ -179,12 +182,17 @@ def techSelectedFarm(request, farmID):
         "foot_dip",
         "fiveh_m_dist"
     ).first()
-   
+
+    # pass selTechFarm object to template   
     return render(request, 'farmstemp/tech-selected-farm.html', selTechFarm)
 
-## Redirect to Add Farm Page and render form
 def addFarm(request):
-    print("TEST LOG: Add Farm view") 
+    """
+    - Redirect to Add Farm Page and render corresponding Django form
+    - Add new farm to database (will be sent for approval by asst. manager)
+    - Save details to hog_raiser, farm, pigpen_measure, externalbiosec and internalbiosec, and area tables
+    - Django forms will first check the validity of input (based on the fields within models.py)
+    """
     
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
@@ -281,7 +289,8 @@ def addFarm(request):
      
     else:
         print("TEST LOG: Form is not a POST method")
-        
+
+        # if the forms have no input yet, only display empty forms
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
         areaForm            = AreaForm()
@@ -289,6 +298,7 @@ def addFarm(request):
         externalBiosecForm  = ExternalBiosecForm()
         internalBiosecForm  = InternalBiosecForm()
 
+    # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
                                                         'areaForm' : areaForm,
@@ -496,11 +506,19 @@ def biosec_view(request, farmID):
     # print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
 
-    # GET ACTIVITIES
+    # Collecting all activities under selected tech farm
+    """
+    SELECT farmsapp_activity.id
+    FROM farmsapp_activity
+    WHERE farmsapp_activity.ref_farm_id = farmID
+    ORDER BY farmsapp_activity.date DESC
+    """
+
     actQueury = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
 
     actList = []
 
+    # store all data to an array
     for activity in actQueury:
         actList.append({
             'date' : activity.date,
@@ -512,8 +530,8 @@ def biosec_view(request, farmID):
             # 'last_updated' : last_updated,
         })
 
-    # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
-    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList, 'activity' : actList, 'farmID' : farmID}) 
+    # pass (1) farmID, (2) latest checklist, (3) all biocheck id and dates, and (4) all activities within that Farm
+    return render(request, 'farmstemp/biosecurity.html', { 'farmID' : farmID, 'currBio': currbioObj, 'bioList': biocheckList, 'activity' : actList }) 
 
 
 def addChecklist_view(request, farmID):
@@ -648,6 +666,13 @@ def post_addChecklist(request):
         
 
 def addActivity(request, farmID):
+    """
+    - Redirect to Add Activity Page and render corresponding Django form
+    - Add new activity to database (will be sent for approval by asst. manager)
+    - Save details to activity and current farm tables
+    """
+
+    # collected farmID of selected tech farm
     farmID = farmID
 
     if request.method == 'POST':
@@ -673,8 +698,10 @@ def addActivity(request, farmID):
     else:
         print("TEST LOG: Form is not a POST method")
 
+        # if form has no input yet, only display an empty form
         activityForm = ActivityForm()
     
+    # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
 def memAnnouncements(request):
