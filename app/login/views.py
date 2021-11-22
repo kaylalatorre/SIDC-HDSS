@@ -18,6 +18,7 @@ def debug(m):
     print("-------------------------------------------------------")
 
 # LOGIN function
+def login(request):
 """"
 Login function for SIDC users. 
 Error handling for:
@@ -25,7 +26,6 @@ Error handling for:
 - Empty either/or submitted fields 
 - Attempted user login but no belonging to a usertype/Group (e.g., admin)
 """
-def login(request):
     if request.method == 'POST':
         uname = request.POST['user-name']
         password = request.POST['user-pass']
@@ -41,7 +41,7 @@ def login(request):
             except IndexError: # for handling list index exception
                 # (ERROR) User has no group; None value
                 debug("in LOGIN ERROR: Unauth access")
-                messages.error(request, "Unauthorized access. Please login.")
+                messages.error(request, "Unauthorized access. Please login.", extra_tags='login')
                 return redirect('login')  
             else:
                 hasUsertype = False
@@ -57,12 +57,12 @@ def login(request):
                     if not hasUsertype:
                         # (ERROR) User came from attempted login, but with no usertype
                         debug("in LOGIN ERROR: Unauth access")
-                        messages.error(request, "Unauthorized access. Please login.")
+                        messages.error(request, "Unauthorized access. Please login.", extra_tags='login')
                         return redirect('login')  
         else:
             # (ERROR) User inputs have empty fields or are incorrect.
             debug("in LOGIN ERROR: Incorrect credentials")
-            messages.error(request, "Incorrect credentials. Please try again.")
+            messages.error(request, "Incorrect credentials. Please try again.", extra_tags='login')
             return redirect('login')
             
     return render(request, 'login.html', {})

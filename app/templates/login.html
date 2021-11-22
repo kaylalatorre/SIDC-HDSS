@@ -21,12 +21,14 @@
 
             <!-- for LOGIN error message placeholder -->
             {% for mssg in messages %}
-                <div class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                    {{ mssg }}
-                    <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button> -->
-                </div>
+                {% if "login" in message.tags %}
+                    <div class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                        {{ mssg }}
+                        <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> -->
+                    </div>
+                {% endif %}
             {% endfor %}
         <br>
         <button class="primary-btn center" type="submit">Log In</button>

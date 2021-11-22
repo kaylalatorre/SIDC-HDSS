@@ -560,7 +560,7 @@ def post_addChecklist(request):
                 debug("ERROR: Index value is None.")
                 checkComplete = False
                 # (ERROR) Incomplete input/s for Biosecurity Checklist
-                messages.error(request, "Incomplete input/s for Biosecurity Checklist.")
+                messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
                 return redirect('biosecurity')
 
             int(value)
@@ -602,11 +602,11 @@ def post_addChecklist(request):
         else:
             # (ERROR) Incomplete input/s for Biosecurity Checklist
             debug("ERROR: Incomplete input/s for Biosecurity Checklist.")
-            messages.error(request, "Incomplete input/s for Biosecurity Checklist.")
+            messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
             return redirect('biosecurity')
     else:
         # (ERROR) not an AJAX Post request
-        messages.error(request, "Incomplete input/s for Biosecurity Checklist.")
+        messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
         return redirect('biosecurity')
         
 
