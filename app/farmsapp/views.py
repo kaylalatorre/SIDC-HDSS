@@ -369,7 +369,7 @@ def techAssignment(request):
     areasData = []
     areas = Area.objects.select_related("tech_id").annotate(
         curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
-    ).values()
+    ).order_by('id').values()
     techs = User.objects.filter(groups__name="Field Technician").annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
     ).values(
@@ -391,9 +391,30 @@ def techAssignment(request):
     }
     return render(request, 'farmstemp/assignment.html', context)
 
+@csrf_exempt
 def assign_technician(request):
+    areaQry = request.POST.get("area")
+    techQry = request.POST.get("technician")
+
+    # validate if input will be valid
+    ## check if area exists
+    ## check if technician exists
+    area = Area.objects.filter(area_name=areaQry)
+    technician = User.objects.filter(id=techQry)
+
+    if(area.exists() and technician.exists()):
+        # save changes
+        a = area.get()
+        a.tech_id = technician.get()
+        a.save()
+        # return output
+        return HttpResponse("message",status=200)
+    else:
+        # abort
+        # return output
+        return HttpResponseNotFound("Not Found",status=400)
     
-    return response()
+    
 
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})

@@ -92,3 +92,27 @@ $('#checklist-date').change(function() {
     })
 
 });
+
+$('.assignSave').on('click', function () {
+    var area = $(this).parent().parent().siblings(":eq(0)").text();
+    var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    // location.reload(true);
+    if(technician){
+        $.ajax({
+            type:'POST',
+            url:'technician-assignment/assign',
+            data:{
+                "area":area,
+                "technician":technician
+            },
+            success: function(response){
+                console.log(response);
+                location.reload(true);
+            },
+            error: function(response){
+                console.log(response);
+                location.reload(true);
+            }
+        });
+    }
+});

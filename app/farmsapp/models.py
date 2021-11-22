@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.timezone import now 
 # for importing Users
 from django.contrib.auth.models import User
-
+from django.conf import settings
 class User(User):
     pass
 
@@ -99,18 +99,22 @@ class Hog_Raiser(models.Model):
     #     return self.
 
 # FARM Table -- might remove
+
+class Area(models.Model):
+    AREA_CHOICES        = [('TISISI', 'TISISI'),
+                        ('West', 'West'),
+                        ('East', 'East'),
+                        ('Other', 'Other')]
+
+    area_name           = models.CharField(max_length=15, choices=AREA_CHOICES, default='TISISI')
+    tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
 class Farm(models.Model): 
     hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
 
     date_registered     = models.DateField(default=now, null=True, blank=True)
 
-    AREA_CHOICES        = [('TISISI', 'TISISI'),
-                            ('West', 'West'),
-                            ('East', 'East'),
-                            ('Other', 'Other')]
-
     farm_address        = models.CharField(max_length=200)
-    area                = models.CharField(max_length=15, choices=AREA_CHOICES, default='TISISI')
+    area                = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True) 
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
 
