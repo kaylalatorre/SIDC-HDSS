@@ -15,7 +15,7 @@
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
                     {% for farm in farmList %}
-                        <option value="{{ farmID }}"> {{ farmID }} </option>
+                        <option value="{{ farm.id }}"> {{ farm.id }} </option>
                     {% endfor %}
                 </select>
         </div>

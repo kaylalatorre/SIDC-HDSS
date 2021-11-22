@@ -7,7 +7,9 @@
 {% endblock page_title %}
 
 {% block section %}
-<form action="post-addchecklist" method="POST">
+<!-- <form action="post-addchecklist" method="POST"> -->
+<form action="post-addchecklist/{{farmID}}" method="POST">
+
     {% csrf_token %}
     <div class="main-div">
         <h1 class="flex-item heading"><a href="/biosecurity/{{farmID}}">Biosecurity</a> > Add Checklist</h1>
@@ -19,7 +21,7 @@
         <h2>Farm Biosecurity Checklist</h2>
 
         <!-- render farmID for CRUD in biosec tables -->
-        <input type="hidden" value={{farmID}} name="farmID">
+        <!-- <input type="hidden" value="{{farmID}}" name="farmID"> -->
 
         <section id="checklist-form">
             <div class="box-style">

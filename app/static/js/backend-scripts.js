@@ -365,6 +365,7 @@ function addBiosecPage(farmID) {
 
     try{
         url = "/add-checklist/" + techFarm;
+        // url = "/add-checklist";
         console.log(url);
         location.href = url;
     } catch (error){

@@ -471,6 +471,7 @@ def biosec_view(request):
 
     debug("biosec_view() farmID -- " + str(farmID))
 
+    # getting current internal and external FKs
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
     # (2) Get latest instance of Biochecklist
@@ -508,8 +509,27 @@ def biosec_view(request):
 
     actList = []
 
+    # store all data to an array
+    for activity in actQueury:
+        actList.append({
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_departure' : activity.time_departure,
+            'time_arrival' : activity.time_arrival,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+            # 'last_updated' : last_updated,
+        })
+
+    # pass in context:
+    # - (1) farmIDs under Technician user, 
+    # - (2) latest intbio-extbio Checklist, 
+    # - (3) all biocheck IDs and dates within that Farm, 
+    # - (4) activities
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+
 # For getting all Biosec checklist versions under a Farm.
-def biosec_view(request, farmID):
+def select_biosec(request, farmID):
     print("TEST LOG: in Biosec view/n")
 
     """
@@ -658,14 +678,16 @@ def selectedForm(request):
     return render(request, 'farmstemp/selected-form.html', {})
 
 # (POST) function for adding a Biosec Checklist
-def post_addChecklist(request):
+def post_addChecklist(request, farmID):
     print("TEST LOG: in post_addChecklist/n")
 
     if request.method == "POST":
         
         # TODO: get farmID from hidden input tag
         # TODO: error hadn,iung cjheck if None
-        farmID = request.POST.get("farmID", None)
+        # farmID = request.POST.get("farmID", None)
+
+        farmID = farmID
 
         print("in POST biochecklist: farmID -- " + str(farmID))
         
