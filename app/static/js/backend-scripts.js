@@ -119,11 +119,19 @@ $('#checklist-date').change(function() {
 
 });
 
-// $('#farm-code').change(function() { 
+$('#farm-code').change(function() { 
 
+    farmID = $("#farm-code option:selected").val()
+    try{
+        url = "/biosecurity/" + farmID;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching biosec details failed.");
+        location.reload(true);
+    }
 
-
-// });
+});
 
 /**
  * functions for enabling/disabling Biochecklist btns; 

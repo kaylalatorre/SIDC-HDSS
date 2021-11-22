@@ -459,7 +459,7 @@ def biosec_view(request):
     farm = farmlistQry.first()
     farmID = farm.id
 
-    debug("farmID -- " + str(farmID))
+    debug("biosec_view() farmID -- " + str(farmID))
 
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
@@ -467,8 +467,8 @@ def biosec_view(request):
     currbioObj = currbioQuery.first()
     # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
-    bioID = currbioObj.id
-    debug("bioID -- " + str(bioID))
+    # bioID = currbioObj.id
+    # debug("bioID -- " + str(bioID))
 
     # (3) Get all biosecID, last_updated in extbio under a Farm
     """
@@ -517,14 +517,94 @@ def biosec_view(request):
     return render(request, 'farmstemp/biosecurity.html', {'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
 
-def select_biosec(request):
+def select_biosec(request, farmID):
+    print("TEST LOG: in Biosec view/n")
 
-    debug("TEST LOG: in select_biosec() view/n")
+    """
+    SELECT biosec.id,<biochecklist fields INTERNAL>, <biochecklist fields EXTERNAL>
+    FROM farm F
+    JOIN externalbiosec EXT
+    ON F.extbiosec_ID = EXT.id
+    JOIN internalbiosec INT
+    ON F.intbiosec_ID = INT.id
+    """
+    # TODO: get farmID, Int or Ext biosec FK id from template (w/c template?)
+    # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
+    # bioID = request.POST.<biosecID_name_here>
+    
+    # (1) Get all Farms under a technician User
+    techID = request.user.id
+    areaQry = Area.objects.filter(tech_id=techID).first()
 
-    farmID = request.POST.get("farm-code", None)
-    debug("farmID -- " + str(farmID))
+    debug("areaQry.id -- " + str(areaQry.id))
 
-    return render(request, 'farmstemp/biosecurity.html', {}) 
+    farmlistQry = Farm.objects.filter(area_id=areaQry.id).only(
+        "id"
+    ).all()
+
+    debug("farmlistQry -- " + str(farmlistQry))
+
+    # Select Biochecklist from intbio-extbio FKs
+    # farm = farmlistQry.first()
+    # farmID = farm.id
+
+    debug("select_biosec() farmID -- " + str(farmID))
+
+    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    
+    # (2) Get latest instance of Biochecklist
+    currbioObj = currbioQuery.first()
+    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
+
+    # bioID = currbioObj.id
+    # debug("bioID -- " + str(bioID))
+
+    # (3) Get all biosecID, last_updated in extbio under a Farm
+    """
+    SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
+    FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
+    ORDER BY "farmsapp_externalbiosec"."last_updated" DESC
+    """
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+        'last_updated',
+    ).order_by('-last_updated')
+
+    print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
+
+    print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
+
+    # debug("currbioObj.intbio.disinfect_vet_supp -- " + str(currbioObj.intbio.disinfect_vet_supp))
+    # debug("currbioObj.extbio.prsnl_dip_footwear -- " + str(currbioObj.extbio.prsnl_dip_footwear))
+
+    # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
+    request.session['farm_id'] = farmID 
+
+    # print("TEST LOG: bioInt last_updated-- ")
+    # print(bioInt[0].last_updated)
+
+    # (4) GET ACTIVITIES
+    actQueury = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
+
+    actList = []
+
+    for activity in actQueury:
+        actList.append({
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_departure' : activity.time_departure,
+            'time_arrival' : activity.time_arrival,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+            # 'last_updated' : last_updated,
+        })
+
+    # pass in context:
+    # - (1) farmIDs under Technician user, 
+    # - (2) latest intbio-extbio Checklist, 
+    # - (3) all biocheck IDs and dates within that Farm, 
+    # - (4) activities
+    return render(request, 'farmstemp/biosecurity.html', {'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+
 
 def addChecklist_view(request):
     # TODO: How to access farmID hidden input tag? through js?

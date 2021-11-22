@@ -13,14 +13,11 @@
     <div class="box-style">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
-            <form action="select-biosec" method="POST">
-                {% csrf_token %}
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
                     {% for farm in farmList %}
                         <option value="{{ farm.id }}"> {{ farm.id }} </option>
                     {% endfor %}
                 </select>
-            </form>
         </div>
     </div>
 
