@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Hogs Health 001 </title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <div class="flex subheading">
+        <h1 class="heading flex-item">Hogs Health</h1>
+        <div class="dropdown">
+            <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+              + Add New
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <li><a class="dropdown-item" href="#">Incident Case</a></li>
+              <li><a class="dropdown-item" href="#">Mortality Record</a></li>
+            </ul>
+        </div>
+    </div>
+    <section>
+        <h2>Symptoms Reported</h2>
+        <div class="box-style">
+            <table class="table" id="symptoms-reported">
+                <thead>
+                    <tr>
+                        <th>Incident Code</th>
+                        <th>Date Reported</th>
+                        <th>No. of Pigs Affected</th>
+                        <th>Symptoms Observed</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-label="Incident Code">1</td>
+                        <td data-label="Date Reported"> 50000 </td>
+                        <td data-label="No. of Pigs Affected"> 50000 </td>
+                        <td data-label="Symptoms Observed">  
+                            <ul>
+                                <li>hi</li>
+                                <li>hello</li>
+                            </ul>
+                        </td>
+                        <td data-label="Status" class="status"> Resolved </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <section>
+        <h2>Mortality Records</h2>
+        <div class="box-style">
+      
+        </div>
+    </section>
+</div>
+{% endblock section %}
