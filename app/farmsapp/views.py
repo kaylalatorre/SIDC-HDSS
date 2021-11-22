@@ -309,6 +309,7 @@ def search_bioChecklist(request):
         print("TEST LOG: in search_bioChecklist()")
 
         # access biosecID passed from AJAX post request
+        # TODO: error handling if biosecID None
         bioID = request.POST.get("biosecID")
 
         if None:
@@ -442,20 +443,32 @@ def biosec_view(request):
     # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
     # bioID = request.POST.<biosecID_name_here>
     
-    # TODO: (1) Get all Farms under a technician User
-    # farmlistQry = Farm > Area > User
+    # (1) Get all Farms under a technician User
+    techID = request.user.id
+    areaQry = Area.objects.filter(tech_id=techID).first()
 
+    debug("areaQry.id -- " + str(areaQry.id))
+
+    farmlistQry = Farm.objects.filter(area_id=areaQry.id).only(
+        "id"
+    ).all()
+
+    debug("farmlistQry -- " + str(farmlistQry))
 
     # Select Biochecklist from intbio-extbio FKs
-    farmID = 1
-    bioID = 1 
+    farm = farmlistQry.first()
+    farmID = farm.id
+
+    debug("farmID -- " + str(farmID))
+
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
     # (2) Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
+    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
-    print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
-
+    bioID = currbioObj.id
+    debug("bioID -- " + str(bioID))
 
     # (3) Get all biosecID, last_updated in extbio under a Farm
     """
@@ -501,8 +514,17 @@ def biosec_view(request):
     # - (2) latest intbio-extbio Checklist, 
     # - (3) all biocheck IDs and dates within that Farm, 
     # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    return render(request, 'farmstemp/biosecurity.html', {'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
+
+def select_biosec(request):
+
+    debug("TEST LOG: in select_biosec() view/n")
+
+    farmID = request.POST.get("farm-code", None)
+    debug("farmID -- " + str(farmID))
+
+    return render(request, 'farmstemp/biosecurity.html', {}) 
 
 def addChecklist_view(request):
     # TODO: How to access farmID hidden input tag? through js?
@@ -559,6 +581,7 @@ def post_addChecklist(request):
     if request.method == "POST":
         
         # TODO: get farmID from hidden input tag
+        # TODO: error hadn,iung cjheck if None
         farmID = request.POST.get("farmID", None)
 
         print("in POST biochecklist: farmID -- " + str(farmID))

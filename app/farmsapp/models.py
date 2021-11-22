@@ -4,6 +4,7 @@ from django.utils.timezone import now
 
 # for importing Users
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class User(User):
     pass
@@ -109,7 +110,7 @@ class Area(models.Model):
                         ('Other', 'Other')]
 
     area_name           = models.CharField(max_length=20, choices=AREA_CHOICES, default='TISISI')
-    tech                = models.ForeignKey('User', on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+    tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
 
 # FARM Table
 class Farm(models.Model): 

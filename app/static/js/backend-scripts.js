@@ -119,6 +119,11 @@ $('#checklist-date').change(function() {
 
 });
 
+// $('#farm-code').change(function() { 
+
+
+
+// });
 
 /**
  * functions for enabling/disabling Biochecklist btns; 
