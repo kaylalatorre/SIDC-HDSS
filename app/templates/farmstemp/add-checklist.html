@@ -10,9 +10,9 @@
 <form action="post-addchecklist" method="POST">
     {% csrf_token %}
     <div class="main-div">
-        <h1 class="flex-item heading"><a href="/biosecurity">Biosecurity</a> > Add Checklist</h1>
+        <h1 class="flex-item heading"><a href="/biosecurity/{{farmID}}">Biosecurity</a> > Add Checklist</h1>
         <div class="flex subheading">
-            <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">001</p>
+            <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">{{ farmID }}</p>
             <div><button class="primary-btn">Save</button></div>
         </div>
         <hr>

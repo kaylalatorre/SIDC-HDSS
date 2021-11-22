@@ -5,6 +5,9 @@ from django.utils.timezone import now
 # for importing Users
 from django.contrib.auth.models import User
 
+# for importing Users from
+from django.conf import settings
+
 class User(User):
     pass
 
@@ -37,7 +40,7 @@ class InternalBiosec(models.Model):
     # fields from Biomeasures
     isol_pen            = models.IntegerField(null=True, blank=True)
 
-    WASTE_MGT_CHOICES  = [('Septic Tank', 'Septic Tank'),
+    WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
                             ('Biogas', 'Biogas'),
                             ('Other', 'Other')]
 
@@ -64,7 +67,7 @@ class Farm_Weight(models.Model):
 
 # FARM SYMPTOMS Table
 class Hog_Symptoms(models.Model):
-    date_filed          = models.DateField(default=now)
+    date_filed          = models.DateTimeField(default=now)
 
     high_fever          = models.BooleanField(default=False)
     loss_appetite       = models.BooleanField(default=False)
@@ -109,7 +112,8 @@ class Area(models.Model):
                         ('Other', 'Other')]
 
     area_name           = models.CharField(max_length=20, choices=AREA_CHOICES, default='TISISI')
-    tech                = models.ForeignKey('User', on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+    # tech                = models.ForeignKey('User', on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+    tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
 
 # FARM Table
 class Farm(models.Model): 

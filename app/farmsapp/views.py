@@ -440,7 +440,7 @@ def update_bioChecklist(request):
     return JsonResponse({"instance": jsonStr}, status=200)
 
 # For getting all Biosec checklist versions under a Farm.
-def biosec_view(request):
+def biosec_view(request, farmID):
     print("TEST LOG: in Biosec view/n")
 
     """
@@ -455,7 +455,7 @@ def biosec_view(request):
     # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
     # bioID = request.POST.<biosecID_name_here>
     
-    farmID = 1
+    farmID = farmID
     bioID = 1 
     # select Biochecklist with latest date
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
@@ -513,20 +513,21 @@ def biosec_view(request):
         })
 
     # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm
-    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList, 'activity' : actList}) 
+    return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': biocheckList, 'activity' : actList, 'farmID' : farmID}) 
 
 
-def addChecklist_view(request):
+def addChecklist_view(request, farmID):
     # TODO: How to access farmID hidden input tag? through js?
     # TODO: from Biosec page, pass farmID here
 
     print("TEST LOG: in addChecklist_view/n")
 
     # get 'farm_id' from the session
-    farm_id = request.session['farm_id']
+    # farm_id = request.session['farm_id']
+    farm_id = farmID
     print("TEST LOG: farm_id -- " + str(farm_id))
 
-    return render(request, 'farmstemp/add-checklist.html', {'farmID': farm_id})
+    return render(request, 'farmstemp/add-checklist.html', { 'farmID' : farm_id })
 
 def techAssignment(request):
     areasData = []
@@ -640,15 +641,14 @@ def post_addChecklist(request):
             farm.save()
 
             # Properly redirect to Biosec main page
-            return redirect('/biosecurity')
+            return redirect('/biosecurity/' + farmID)
         
     else:
         return render(request, 'farmstemp/biosecurity.html', {})
         
 
-def addActivity(request):
-    # print farm ID ; currently dummy data
-    farmID = 1
+def addActivity(request, farmID):
+    farmID = farmID
 
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
@@ -664,7 +664,7 @@ def addActivity(request):
             activity.save()
 
             print("TEST LOG: Added new activty")
-            return redirect('/biosecurity')
+            return redirect('/biosecurity/' + str(farmID))
         
         else:
             print("TEST LOG: activityForm is not valid")
@@ -675,7 +675,7 @@ def addActivity(request):
 
         activityForm = ActivityForm()
     
-    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm })
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
 def memAnnouncements(request):
     return render(request, 'farmstemp/mem-announce.html', {})

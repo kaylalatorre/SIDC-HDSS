@@ -271,3 +271,54 @@ function viewTechFarm(techFarm) {
         location.reload(true);
     }
 }
+
+// VIEW BIOSECURITY OF SELECTED TECH FARM
+function viewBiosec(farmID) {
+    // var techFarm = document.getElementById("viewTechFarm");
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/biosecurity/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+// REDIRECT TO NEW BIOCHECKLIST FOR SELECTED TECH FARM
+function addBiosecPage(farmID) {
+    // var techFarm = document.getElementById("viewTechFarm");
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-checklist/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+// REDIRECT TO NEW ACTIVITY FOR SELECTED TECH FARM
+function addActivityPage(farmID) {
+    // var techFarm = document.getElementById("viewTechFarm");
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-activity/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
