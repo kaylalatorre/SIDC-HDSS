@@ -442,18 +442,22 @@ def biosec_view(request):
     # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
     # bioID = request.POST.<biosecID_name_here>
     
+    # TODO: (1) Get all Farms under a technician User
+    # farmlistQry = Farm > Area > User
+
+
+    # Select Biochecklist from intbio-extbio FKs
     farmID = 1
     bioID = 1 
-    # select Biochecklist with latest date
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
-    # gets latest instance of Biochecklist
+    # (2) Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
 
     print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
-    # select only biosecID, last_updated under a Farm
+    # (3) Get all biosecID, last_updated in extbio under a Farm
     """
     SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
     FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
@@ -476,7 +480,7 @@ def biosec_view(request):
     # print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
 
-    # GET ACTIVITIES
+    # (4) GET ACTIVITIES
     actQueury = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
 
     actList = []
@@ -492,7 +496,11 @@ def biosec_view(request):
             # 'last_updated' : last_updated,
         })
 
-    # pass (1) farmID, (2) latest Checklist, (3) all biocheck id and dates within that Farm, (4) activities
+    # pass in context:
+    # - (1) farmIDs under Technician user, 
+    # - (2) latest intbio-extbio Checklist, 
+    # - (3) all biocheck IDs and dates within that Farm, 
+    # - (4) activities
     return render(request, 'farmstemp/biosecurity.html', {'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
 
@@ -584,10 +592,41 @@ def post_addChecklist(request):
             print(list((index, value)))
 
         if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
-            # init Biosec Models
-            extBio = ExternalBiosec() #TODO: convert to a filter query --> extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID)
-            intBio = InternalBiosec() #TODO: convert to a filter query
+
+            # Get current biosec Measures from Farm
+            bioMeasure = Farm.objects.filter(id=farmID).select_related("intbio", "extbio").annotate(
+                            waste_mgt   = F("intbio__waste_mgt"),
+                            isol_pen    = F("intbio__isol_pen"),
+                            foot_dip    = F("intbio__foot_dip"),
+                            bird_proof  = F("extbio__bird_proof"),
+                            perim_fence = F("extbio__perim_fence"),
+                            fiveh_m_dist = F("extbio__fiveh_m_dist")
+            ).values(
+                "waste_mgt",
+                "isol_pen",
+                "bird_proof",
+                "perim_fence",
+                "foot_dip",
+                "fiveh_m_dist"
+            ).first()
+
+            debug("BIOMEASURE: -- " + str(bioMeasure))
+
+        
+            # init Biosec and Farm models
+            extBio = ExternalBiosec() 
+            intBio = InternalBiosec() 
             farmQuery = Farm.objects.get(pk=farmID)
+
+            # Put bioMeasures into External model
+            extBio.bird_proof   = bioMeasure.get("bird_proof")
+            extBio.perim_fence  = bioMeasure.get("perim_fence")
+            extBio.fiveh_m_dist = bioMeasure.get("fiveh_m_dist")
+
+            # Put bioMeasures into Internal model
+            intBio.waste_mgt    = bioMeasure.get("waste_mgt")
+            intBio.isol_pen     = bioMeasure.get("isol_pen")
+            intBio.foot_dip     = bioMeasure.get("foot_dip")
 
             # Put biochecklist attributes into External model
             extBio.ref_farm = farmQuery
