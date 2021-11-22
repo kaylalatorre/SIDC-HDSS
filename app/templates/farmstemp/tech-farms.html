@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% extends 'base-logged-in.html' %} <!-- temporary -->
 {% load static %}
 
 {% block page_title %}
@@ -29,18 +30,20 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
+            <!-- Data -->
+            {% for techFarm in techFarms %}
+                <!-- {% load tz %} -->
                 <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Contact No.">09112346578</td>
-                    <td data-label="Address">Binictican Drive, Tanauan City 2200</td>
-                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="Farm Code">{{techFarm.code}}</td>
+                    <td data-label="Raiser">{{techFarm.raiser}}</td>
+                    <td data-label="Contact No.">{{techFarm.contact}}</td>
+                    <td data-label="Address">{{techFarm.address}}</td>
+                    <td data-label="Last Update">{{techFarm.updated}}</td>
                     <td data-label="" class="td-btn">
-                        <!-- Note: This links to a temporary navigation to template (code @ static/js/scripts.js) -->
-                        <button class="secondary-btn" id="viewTechFarm" onclick=viewTechFarm()><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
+                        <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
-                </tr>               
+                </tr>    
+            {% endfor %}
             </tbody>            
         </table>
     </div>

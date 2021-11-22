@@ -46,22 +46,19 @@ for(var i = 0; i < rowStatus.length; i++) {
 }   
 
 // MGIHT BE BACKEND
-function viewTechFarm() {
+function viewFarm(farm) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
-    let viewFarm = document.querySelector('#viewTechFarm');
-    viewFarm.onclick = function () {
-        location.href = "/tech-selected-farm";
-    };
-}
 
-function viewFarm() {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
-    let viewFarm = document.querySelector('#viewFarm');
-    viewFarm.onclick = function () {
-        location.href = "/selected-farm";
-    };
+    try{
+        url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log("reloading...");
+        location.reload(true);
+    }
 }
 
 function viewForm() {
@@ -82,8 +79,11 @@ function viewAnnounce() {
     };
 }
 
-function filterSearch(){
-    // modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/ 
+/** 
+* Filters and search farms client side. Only verified to works for assistant manager. Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
+* @summary Filters and searches farms for assistant manager.
+*/
+function filterSearch(){ 
     var input, filter, table, tr, raiser, address, area, i;        
     input   = document.getElementById("searchTextBoxid"); //to get typed in keyword    
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    

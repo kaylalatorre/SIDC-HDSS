@@ -54,7 +54,7 @@
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
-                    {{farmForm.area}}
+                    {{areaForm.area_name}}
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate which area.</label>
@@ -68,8 +68,8 @@
                 <div class="mb-3">
                     <label for="input-wharea" class="form-label">Warehouse Area</label>
                     <div class="input-group" id="input-wharea">
-                        {{farmForm.warehouse_length}}
-                        {{farmForm.warehouse_width}}
+                        {{farmForm.wh_length}}
+                        {{farmForm.wh_width}}
                     </div>
                 </div>
 
@@ -81,6 +81,20 @@
                 <div class="mb-3">
                     <label for="input-roof" class="form-label">Building Capacity</label>
                     {{farmForm.bldg_cap}}
+                </div>
+
+                <div class="mb-3">
+                    <label for="input-medic-tank" class="form-label">Medic Tank</label>
+                    {{farmForm.medic_tank}}
+                </div>
+
+                <div class="mb-3">
+                    {{farmForm.bldg_curtain}}
+                    <label class="form-check-label" for="cb-curtain">Building Curtain</label>
+                </div>
+                <div class="mb-3">
+                    {{farmForm.road_access}}
+                    <label class="form-check-label" for="cb-road">Road Access</label>
                 </div>
             </div>
         </section>
@@ -155,12 +169,8 @@
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="mb-3">
-                    <label for="input-trough" class="form-label">Waste Management</label>
-                    <select class="form-select" id="input-trough">
-                        <option value="Semi-automatic">Septic Tank</option>
-                        <option value="Trough">Biogas</option>
-                        <option value="Trough">Other</option>
-                    </select>
+                    <label for="input-waste-mgt" class="form-label">Waste Management</label>
+                    {{internalBiosecForm.waste_mgt}}
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>

@@ -3,13 +3,13 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Farm 001 </title>
+    <title>SIDC-HDSS | Farm {{id}} </title>
 {% endblock page_title %}
 
 {% block section %}
 <div class="main-div">
     <div class="flex">
-        <h1 class="heading flex-item"><a href="/farms">Farms Assigned</a> >  001</h1>
+        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> >  {{id}}</h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               View
@@ -30,23 +30,23 @@
                         <tbody>
                             <tr>
                                 <th>Farm Code</td>
-                                <td>001</td>
+                                <td>{{id}}</td>
                             </tr>
                             <tr>
                                 <th>Raiser</td>
-                                <td>John Doe</td>
+                                <td>{{raiser}}</td>
                             </tr>
                             <tr>
                                 <th>Contact No.</td>
-                                <td>091512345678</td>
+                                <td>{{contact}}</td>
                             </tr>
                             <tr>
                                 <th>Directly Managed</td>
-                                <td>Yes</td>
+                                <td>{{directly_manage|yesno:"Yes,No"}}</td>
                             </tr>
                             <tr>
                                 <th>Address</td>
-                                <td>Batangas, 4200 Batangas</td>
+                                <td>{{farm_address}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -56,23 +56,23 @@
                         <tbody>
                             <tr>
                                 <th>Area</td>
-                                <td>West</td>
+                                <td>{{farm_area}}</td>
                             </tr>
                             <tr>
                                 <th>Roof Height (in ft.)</td>
-                                <td>100</td>
+                                <td>{{roof_height|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Warehouse Area</td>
-                                <td>10 x 10</td>
+                                <td>{{wh_length|floatformat:"-2"}} x {{wh_width|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Feeding Trough</td>
-                                <td>Semi-automatic</td>
+                                <td>{{feed_trough}}</td>
                             </tr>
                             <tr>
                                 <th>Building Capacity</td>
-                                <td>100</td>
+                                <td>{{bldg_cap}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -92,19 +92,23 @@
                             <th>Width</th>
                             <th>No. of Pigs</th>
                         </tr>
-                    </thead>
+                    </thead>                   
                     <tbody>
+                    <!-- {% for pen in pigpens %} -->
+                    
                         <tr>
                             <td>1</td>
-                            <td data-label="Length"> 50000 </td>
-                            <td data-label="Width"> 50000 </td>
-                            <td data-label="No. of Pigs"> 50000 </td>
+                            <td data-label="Length"> {{pen.length} </td>
+                            <td data-label="Width"> {{pen.width} </td>
+                            <td data-label="No. of Pigs"> {{pen.num_heads}} </td>
                         </tr>
+        
+                    <!-- {% endfor %} -->
                     </tbody>
                 </table>
                 <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
-                    <p> 100 pigs </p>
+                    <p> {{total_pigs}} pigs </p>
                 </div>
             </div>
         </section>
@@ -112,28 +116,53 @@
             <h2>Biosecurity Measures</h2>
             <div class="box-style">
                 <div class="mb-3">
+                    {% if isol_pen == 1 %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked disabled> 
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    {% endif %}
+
                     <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-birdproof" disabled>
+                    {% if bird_proof == 1 %}
+                    <input type="checkbox" class="form-check-input" id="cb-birdproof" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-birdproof" value="true" disabled> 
+                    {% endif %}
+
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-fence" disabled>
+                    {% if perim_fence == 1 %}
+                    <input type="checkbox" class="form-check-input" id="cb-fence" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-fence" value="true" disabled> 
+                    {% endif %}
+
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-footdip" disabled>
+                    {% if foot_dip == 1 %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" disabled> 
+                    {% endif %}
+
                     <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-distance" disabled>
+                    {% if fiveh_m_dist == 1 %}
+                    <input type="checkbox" class="form-check-input" id="cb-distance" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-distance" value="true" disabled> 
+                    {% endif %}
+                    
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="flex">
                     <label for="input-trough" class="form-label">Waste Management:</label>
-                    <p style="font-weight: 600;">Septic Tank</p>
+                    <p style="font-weight: 600;">{{waste_mgt}}</p>
                 </div>
             </div>
         </section>
