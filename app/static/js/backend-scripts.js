@@ -302,13 +302,13 @@ function saveBiocheck(){
 
 // VIEW SELECTED TECH FARM
 function viewTechFarm(techFarm) {
-    print("Accessing selected assigned farm...")
+    // var techFarm = document.getElementById("viewTechFarm");
 
     try{
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-        // console.log(url);
+        console.log(url);
         location.href = url;
-    }catch (error){
+    } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
     }

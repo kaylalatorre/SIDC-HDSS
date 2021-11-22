@@ -139,12 +139,23 @@ def techFarms(request):
 
 ## Display selected farm of technician
 def techSelectedFarm(request, farmID):
-    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
-                    raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
-                    contact=F("hog_raiser__contact_no"),
-                    length=F("wh_length"),
-                    width=F("wh_width"),
-                    farm_area = F("area__area_name"))
+
+    """
+    
+    """
+
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio', 'pigpen_measures').annotate(
+                    raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact     = F("hog_raiser__contact_no"),
+                    farm_area   = F("area__area_name"),
+                    waste_mgt   = F("intbio__waste_mgt"),
+                    isol_pen    = F("intbio__isol_pen"),
+                    bird_proof  = F("extbio__bird_proof"),
+                    perim_fence = F("extbio__perim_fence"),
+                    foot_dip    = F("intbio__foot_dip"),
+                    fiveh_m_dist = F("extbio__fiveh_m_dist"),
+
+                    )
 
     selTechFarm = techFarmQry.values(
         "id",
@@ -154,10 +165,19 @@ def techSelectedFarm(request, farmID):
         "farm_address",
         "farm_area",
         "roof_height",
-        "length",
-        "width",
+        "wh_length", 
+        "wh_width",
         "feed_trough",
-        "bldg_cap"    
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist"
     ).first()
    
     return render(request, 'farmstemp/tech-selected-farm.html', selTechFarm)
@@ -487,9 +507,6 @@ def addChecklist_view(request):
     print("TEST LOG: farm_id -- " + str(farm_id))
 
     return render(request, 'farmstemp/add-checklist.html', {'farmID': farm_id})
-
-def techSelectedFarm(request):
-    return render(request, 'farmstemp/tech-selected-farm.html', {})
 
 def techAssignment(request):
     areasData = []

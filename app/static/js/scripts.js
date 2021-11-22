@@ -30,6 +30,7 @@ for(var i = 0; i < save.length; i++) {
 function viewFarm(farm) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
+
     try{
         url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
         console.log(url);
