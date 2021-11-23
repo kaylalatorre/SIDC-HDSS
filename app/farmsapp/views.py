@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models.expressions import F, Value
+from django.db.models import Q
 from django.forms.formsets import formset_factory
 
 # for page redirection, server response
@@ -455,11 +456,11 @@ def biosec_view(request):
     
     # (1) Get all Farms under a technician User
     techID = request.user.id
-    areaQry = Area.objects.filter(tech_id=techID).first()
+    areaQry = Area.objects.filter(tech_id=techID).values("id")
 
-    debug("areaQry.id -- " + str(areaQry.id))
+    debug("areaQry.id -- " + str(areaQry))
 
-    farmlistQry = Farm.objects.filter(area_id=areaQry.id).only(
+    farmlistQry = Farm.objects.filter(Q(area_id=1)|Q(area_id=2)).only(
         "id"
     ).all()
 

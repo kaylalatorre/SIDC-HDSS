@@ -8,7 +8,7 @@
 
 {% block section %}
 <!-- <form action="post-addchecklist" method="POST"> -->
-<form action="post-addchecklist/{{farmID}}" method="POST">
+<form action="/post-addchecklist/{{farmID}}" method="POST">
 
     {% csrf_token %}
     <div class="main-div">
