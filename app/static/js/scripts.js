@@ -1,4 +1,6 @@
-/* Tech assignment edit button */
+/* 
+* Tech assignment edit button 
+*/
 let edit = document.querySelectorAll('.assignEdit');
 for(var i = 0; i < edit.length; i++) { 
     edit[i].addEventListener("click", (e)=> {
