@@ -28,7 +28,7 @@ urlpatterns = [
     path('biosecurity/<str:farmID>', views.select_biosec, name="select_biosecurity"),
 
     # technician - biosecurity checklist
-    path('biosecurity/getchecklist', views.search_bioChecklist, name="search_biochecklist"),
+    path('biosecurity/getchecklist/<str:biosecID>', views.search_bioChecklist, name="search_biochecklist"),
     path('biosecurity/edit-checklist/<str:biosecID>', views.update_bioChecklist, name="update_biochecklist"),
     path('add-checklist/<str:farmID>', views.addChecklist_view, name="addChecklist"),
     path('post-addchecklist/<str:farmID>', views.post_addChecklist, name="post-addChecklist"), # not working even without param

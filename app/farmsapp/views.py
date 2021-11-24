@@ -366,6 +366,7 @@ def search_bioChecklist(request, biosecID):
         return JsonResponse({"instance": jsonStr}, status=200)
 
     # TODO: update accurate error code 
+
     return JsonResponse({"error": "in search_Checklist() -- not an AJAX POST request"}, status=400)
       
 # (POST-AJAX) For updating a Biosec Checklist based on biosecID
@@ -436,7 +437,10 @@ def update_bioChecklist(request, biosecID):
         # send to client side (js)
         return JsonResponse({"instance": jsonStr}, status=200)
 
-    # TODO: update accurate error code 
+    # TODO: update accurate error code
+
+    
+
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
 # For getting all Biosec checklist versions under a Farm.
