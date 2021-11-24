@@ -8,9 +8,9 @@
 
 {% block section %}
 <div class="main-div">
-    <form action="" method="POST">
+    <!-- <form action="" method="POST"> -->
 
-    {% csrf_token %}
+    <!-- {% csrf_token %} -->
     <h1 class="heading"><a href="/biosecurity/{{farmID}}">Biosecurity</a> > Add Activity</h1>
     <div class="flex subheading">
         <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">{{ farmID }}</p>
@@ -23,7 +23,7 @@
         <div class="box-style">
             <div class="flex subheading">
                 <p class="flex-item">Add all activity details here. </p>
-                <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
+                <div><button class="secondary-btn" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
             </div>
             <br>
             <div class="input-group" id="input-activity">
@@ -69,7 +69,7 @@
             </div>
         </div>
     </section>
-    <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
+    <!-- <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div> -->
     </form>
 </div>
 {% endblock section %}

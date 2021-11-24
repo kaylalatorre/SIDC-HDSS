@@ -822,10 +822,10 @@ def addActivity(request, farmID):
 
             activity.ref_farm_id = farmID
 
-            activity.save()
+            # activity.save()
 
             print("TEST LOG: Added new activty")
-            return redirect('/biosecurity/' + str(farmID))
+            # return redirect('/biosecurity/' + str(farmID))
         
         else:
             print("TEST LOG: activityForm is not valid")

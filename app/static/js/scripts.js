@@ -42,9 +42,27 @@ function viewFarm(farm) {
     }
 }
 
-function addPigPen() {
-    console.log("hello");
+function addPigPenRow() {
+    // $("#input-pigpen").append("<tr> \
+    //     <td data-label='Length'> {{{pigpenMeasuresForm.length}}} </td> \
+    //     <td data-label='Width'> {{{pigpenMeasuresForm.width}}} </td> \
+    //     <td data-label='No. of Pigs'> {{{pigpenMeasuresForm.num_heads}}} </td> \
+    // </tr>");
 
+    var length = document.getElementById('pigpen-length');
+    var width = document.getElementById('pigpen-width');
+    var num_heads = document.getElementById('pigpen-num-heads');
+
+    var table = document.getElementById('input-pigpen');
+
+    table.append(pigpenRow);
+
+    console.log("new pigpen row");
+
+}
+
+function addActivityRow() {
+    console.log("new activity row");
 }
 
 function viewForm() {
