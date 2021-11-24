@@ -208,7 +208,7 @@ def addFarm(request):
     
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            hogRaiser.save()
+            # hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
@@ -220,7 +220,7 @@ def addFarm(request):
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
-                    internalBiosec.save()
+                    # internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
                     
@@ -230,7 +230,7 @@ def addFarm(request):
                         # save current user (technician) ID to tech_id
                         area.tech_id = request.user.id
 
-                        area.save()
+                        # area.save()
                         
                         print("TEST LOG: Added area")
 
@@ -242,7 +242,7 @@ def addFarm(request):
                             farm.intbio_id = internalBiosec.id
                             farm.area_id = area.id
 
-                            farm.save()
+                            # farm.save()
 
                             # get recently created pigpen measures, and internal and external biosec IDs
 
@@ -258,15 +258,15 @@ def addFarm(request):
                                 pigpenMeasures.ref_farm_id = farm.id
 
                                 # add all num_heads (pigpen measure) for total_pigs (farm)
-                                
+
 
                                 # update total_pigs of newly added farm
 
 
-                                pigpenMeasures.save()
+                                # pigpenMeasures.save()
 
                                 print("TEST LOG: Added new pigpen measure")
-                                return render(request, 'home.html', {})
+                                # return render(request, 'home.html', {})
 
                             else:
                                 print("TEST LOG: Pigpen Measures Form not valid")

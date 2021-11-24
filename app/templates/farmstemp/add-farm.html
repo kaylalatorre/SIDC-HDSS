@@ -8,14 +8,14 @@
 
 {% block section %}
 <div class="main-div">
-    <form action="/add-farm" method="POST">
+    <!-- <form action="/add-farm" method="POST"> -->
 
-    {% csrf_token %}
+    <!-- {% csrf_token %} -->
 
     <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
     <div class="flex subheading">
         <p class="flex-item">Add a new farm record here. </p>
-        <div><button class="primary-btn" formaction="/add-farm" type="submit">Send for Approval</button></div>
+        <div><button class="primary-btn" type="submit">Send for Approval</button></div>
     </div>
 
     <hr>
@@ -105,7 +105,7 @@
             
             <div class="flex subheading">
                 <h2 class="flex-item">Pig Pens</h2>
-                <div><button class="secondary-btn" button="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> </div>
+                <div><button class="secondary-btn" type="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> </div>
             </div>
             <div class="flex mobile-subheading">
                 <h2 style="width: 90%">Pig Pens</h2>
@@ -197,7 +197,7 @@
             </div>
         </section>
     </div>
-    <div class="mobile-subheading"><button class="primary-btn" formaction="/add-farm" type="submit">Send for Approval</button></div>
-    </form>
+    <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
+    <!-- </form> -->
 </div>
 {% endblock section %}
