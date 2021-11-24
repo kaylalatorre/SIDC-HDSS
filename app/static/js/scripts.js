@@ -54,24 +54,24 @@ function addPigPenRow() {
     //     event.preventDefault();
     // }
 
-    const length = document.getElementById('pigpen-length').cloneNode(true);
-    const width = document.getElementById('pigpen-width').cloneNode(true);
-    const num_heads = document.getElementById('pigpen-num-heads').cloneNode(true);
+    const length = document.getElementById('pigpen-length').innerHTML;
+    const width = document.getElementById('pigpen-width').innerHTML;
+    const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
 
     // const row = document.getElementById("pigpen-row");
     const table = document.getElementById("input-pigpen");
 
-    table.append(length);
-    table.append(width);
-    table.append(num_heads);
+    // table.append(length);
+    // table.append(width);
+    // table.append(num_heads);
 
     // table.append(row);
  
-    // $("#input-pigpen").append("<tr> \
-    //     <td data-label='Length'> {{{pigpenMeasuresForm.length}}} </td> \
-    //     <td data-label='Width'> {{{pigpenMeasuresForm.width}}} </td> \
-    //     <td data-label='No. of Pigs'> {{{pigpenMeasuresForm.num_heads}}} </td> \
-    // </tr>");
+    $("#input-pigpen").append("<tr> \
+        <td data-label='Length'> " + length + " </td> \
+        <td data-label='Width'> " + width + " </td> \
+        <td data-label='No. of Pigs'> " + num_heads + " </td> \
+        </tr>");
  
 }
 
