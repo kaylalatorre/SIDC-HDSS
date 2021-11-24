@@ -208,25 +208,29 @@ def addFarm(request):
     
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            hogRaiser.save()
+            # hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
             if externalBiosecForm.is_valid():
                 externalBiosec = externalBiosecForm.save(commit=False)
-                externalBiosec.save()
+                # externalBiosec.save()
 
                 print("TEST LOG: Added new external biosec")
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
-                    internalBiosec.save()
+                    # internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
                     
                     if areaForm.is_valid():
                         area = areaForm.save(commit=False)
-                        area.save()
+
+                        # save current user (technician) ID to tech_id
+                        area.tech_id = request.user.id
+
+                        # area.save()
                         
                         print("TEST LOG: Added area")
 
@@ -238,20 +242,20 @@ def addFarm(request):
                             farm.intbio_id = internalBiosec.id
                             farm.area_id = area.id
 
-                            # get recently created internal and external biosec ID
+                            # farm.save()
+
+                            # get recently created pigpen measures, and internal and external biosec IDs
 
 
-                            # update ref_farm_id of both records
+                            # update ref_farm_id of all records
 
 
-                            farm.save()
-                            
                             print("TEST LOG: Added new farm")
 
                             if pigpenMeasuresForm.is_valid():
                                 pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
-                                pigpenMeasures.farm_id = farm.id
+                                pigpenMeasures.ref_farm_id = farm.id
 
                                 # add all num_heads (pigpen measure) for total_pigs (farm)
 
@@ -259,10 +263,10 @@ def addFarm(request):
                                 # update total_pigs of newly added farm
 
 
-                                pigpenMeasures.save()
+                                # pigpenMeasures.save()
 
                                 print("TEST LOG: Added new pigpen measure")
-                                return render(request, 'home.html', {})
+                                # return render(request, 'home.html', {})
 
                             else:
                                 print("TEST LOG: Pigpen Measures Form not valid")

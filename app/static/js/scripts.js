@@ -42,6 +42,11 @@ function viewFarm(farm) {
     }
 }
 
+function addPigPen() {
+    console.log("hello");
+
+}
+
 function viewForm() {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
