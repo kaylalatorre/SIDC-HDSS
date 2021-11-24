@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models.expressions import F, Value
+from django.db.models import Q
 from django.forms.formsets import formset_factory
 
 # for page redirection, server response
@@ -456,11 +457,11 @@ def biosec_view(request):
     
     # (1) Get all Farms under a technician User
     techID = request.user.id
-    areaQry = Area.objects.filter(tech_id=techID).first()
+    areaQry = Area.objects.filter(tech_id=techID).values("id")
 
-    debug("areaQry.id -- " + str(areaQry.id))
+    debug("areaQry.id -- " + str(areaQry))
 
-    farmlistQry = Farm.objects.filter(area_id=areaQry.id).only(
+    farmlistQry = Farm.objects.filter(Q(area_id=1)|Q(area_id=2)).only(
         "id"
     ).all()
 
@@ -472,6 +473,7 @@ def biosec_view(request):
 
     debug("biosec_view() farmID -- " + str(farmID))
 
+    # getting current internal and external FKs
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
     # (2) Get latest instance of Biochecklist
@@ -527,8 +529,6 @@ def biosec_view(request):
     # - (3) all biocheck IDs and dates within that Farm, 
     # - (4) activities
     return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
-
-
 
 # For getting all Biosec checklist versions under a Farm.
 def select_biosec(request, farmID):
@@ -680,14 +680,16 @@ def selectedForm(request):
     return render(request, 'farmstemp/selected-form.html', {})
 
 # (POST) function for adding a Biosec Checklist
-def post_addChecklist(request):
+def post_addChecklist(request, farmID):
     print("TEST LOG: in post_addChecklist/n")
 
     if request.method == "POST":
         
         # TODO: get farmID from hidden input tag
         # TODO: error hadn,iung cjheck if None
-        farmID = request.POST.get("farmID", None)
+        # farmID = request.POST.get("farmID", None)
+
+        farmID = farmID
 
         print("in POST biochecklist: farmID -- " + str(farmID))
         
