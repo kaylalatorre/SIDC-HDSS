@@ -42,23 +42,37 @@ function viewFarm(farm) {
     }
 }
 
+const addPenBtn = document.getElementById("addPigPenRow");
+// addPenBtn.addEventListener('click', addPigPenRow)
+
+
 function addPigPenRow() {
+// function addPigPenRow(event) {
+    // console.log(args);
+
+    // if (event) {
+    //     event.preventDefault();
+    // }
+
+    const length = document.getElementById('pigpen-length').cloneNode(true);
+    const width = document.getElementById('pigpen-width').cloneNode(true);
+    const num_heads = document.getElementById('pigpen-num-heads').cloneNode(true);
+
+    // const row = document.getElementById("pigpen-row");
+    const table = document.getElementById("input-pigpen");
+
+    table.append(length);
+    table.append(width);
+    table.append(num_heads);
+
+    // table.append(row);
+ 
     // $("#input-pigpen").append("<tr> \
     //     <td data-label='Length'> {{{pigpenMeasuresForm.length}}} </td> \
     //     <td data-label='Width'> {{{pigpenMeasuresForm.width}}} </td> \
     //     <td data-label='No. of Pigs'> {{{pigpenMeasuresForm.num_heads}}} </td> \
     // </tr>");
-
-    var length = document.getElementById('pigpen-length');
-    var width = document.getElementById('pigpen-width');
-    var num_heads = document.getElementById('pigpen-num-heads');
-
-    var table = document.getElementById('input-pigpen');
-
-    table.append(pigpenRow);
-
-    console.log("new pigpen row");
-
+ 
 }
 
 function addActivityRow() {

@@ -105,16 +105,16 @@
             
             <div class="flex subheading">
                 <h2 class="flex-item">Pig Pens</h2>
-                <div><button class="secondary-btn" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> </div>
+                <div><button class="secondary-btn" button="button  " id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> </div>
             </div>
             <div class="flex mobile-subheading">
                 <h2 style="width: 90%">Pig Pens</h2>
-                <div><button class="secondary-btn" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
+                <div><button class="secondary-btn" type="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
             </div>
             <div class="box-style">
                 <br>
                 <div class="input-group" id="input-pen">
-                    <table class="table" id="input-pigpen">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Length</th>
@@ -122,15 +122,20 @@
                                 <th>No. of Pigs</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr id="pigpen-row">
-                                <td data-label="Length" id="pigpen-length">
+                        <tbody  id="input-pigpen">
+                            <tr>
+                                <!-- <td data-label="Length" id="pigpen-length">
                                     {{pigpenMeasuresForm.length}}
                                 </td>
                                 <td data-label="Width" id="pigpen-width">
                                     {{pigpenMeasuresForm.width}}
                                 </td>
                                 <td data-label="No. of Pigs" id="pigpen-num-heads">
+                                    {{pigpenMeasuresForm.num_heads}}
+                                </td> -->
+                                <td colspan="3" id="pigpen-row">
+                                    {{pigpenMeasuresForm.length}}
+                                    {{pigpenMeasuresForm.width}}
                                     {{pigpenMeasuresForm.num_heads}}
                                 </td>
                             </tr>
