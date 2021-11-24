@@ -509,8 +509,29 @@ def biosec_view(request):
 
     actList = []
 
+    # store all data to an array
+    for activity in actQueury:
+        actList.append({
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_departure' : activity.time_departure,
+            'time_arrival' : activity.time_arrival,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+            # 'last_updated' : last_updated,
+        })
+
+    # pass in context:
+    # - (1) farmIDs under Technician user, 
+    # - (2) latest intbio-extbio Checklist, 
+    # - (3) all biocheck IDs and dates within that Farm, 
+    # - (4) activities
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+
+
+
 # For getting all Biosec checklist versions under a Farm.
-def biosec_view(request, farmID):
+def select_biosec(request, farmID):
     print("TEST LOG: in Biosec view/n")
 
     """
@@ -573,7 +594,7 @@ def biosec_view(request, farmID):
     # debug("currbioObj.extbio.prsnl_dip_footwear -- " + str(currbioObj.extbio.prsnl_dip_footwear))
 
     # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
-    request.session['farm_id'] = farmID 
+    # request.session['farm_id'] = farmID 
 
     # print("TEST LOG: bioInt last_updated-- ")
     # print(bioInt[0].last_updated)
@@ -773,7 +794,7 @@ def post_addChecklist(request):
         # (ERROR) not an AJAX Post request
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
         return redirect('biosecurity')
-        
+
 
 def addActivity(request, farmID):
     """
