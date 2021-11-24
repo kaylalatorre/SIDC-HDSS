@@ -360,6 +360,9 @@ def search_bioChecklist(request, biosecID):
             'disinfect_vet_supp'    : inter.disinfect_vet_supp,   
         }
 
+        debug("in search_checklist(): bioID" + str(bioID))
+
+
         jsonStr = json.dumps(bioDict)
 
         # send to client side (js)
@@ -417,6 +420,9 @@ def update_bioChecklist(request, biosecID):
         # save in Biosec models
         extBio.save()
         intBio.save()
+
+        debug("disinfect_prem -- " + str(chArr[6]))
+        debug("prvdd_foot_dip -- " + str(chArr[0]))
 
         bioDict = {
             # External bio
@@ -480,6 +486,9 @@ def biosec_view(request):
     # getting current internal and external FKs
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
+    debug("in biosec_view(): currbioObj")
+    debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
+
     # (2) Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
     # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
@@ -500,9 +509,6 @@ def biosec_view(request):
     print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
 
     print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
-
-    # debug("currbioObj.intbio.disinfect_vet_supp -- " + str(currbioObj.intbio.disinfect_vet_supp))
-    # debug("currbioObj.extbio.prsnl_dip_footwear -- " + str(currbioObj.extbio.prsnl_dip_footwear))
 
     # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
     request.session['farm_id'] = farmID 
@@ -573,6 +579,9 @@ def select_biosec(request, farmID):
     # select Biochecklist with latest date
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
+    debug("in select_biosec(): currbioObj")
+    debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
+
     # (2) Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
     # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
