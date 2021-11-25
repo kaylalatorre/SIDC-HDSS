@@ -29,7 +29,7 @@ urlpatterns = [
     # path('biosecurity', views.biosec_view, name="biosecurity"),
 
     # technician - biosecurity checklist
-    path('biosecurity/<str:farmID>', views.select_biosec, name="select_biosecurity"),
+    # path('biosecurity/<str:farmID>', views.select_biosec, name="select_biosecurity"),
     path('biosecurity/getchecklist', views.search_bioChecklist, name="search_biochecklist"),
     path('biosecurity/edit-checklist/<str:biosecID>', views.update_bioChecklist, name="update_biochecklist"),
     path('add-checklist/<str:farmID>', views.addChecklist_view, name="addChecklist"),

@@ -400,6 +400,7 @@ function addActivityPage(farmID) {
 $('.assignSave').on('click', function () {
     var area = $(this).parent().parent().siblings(":eq(0)").text();
     var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    ajaxCSRF();
     if(technician){
         $.ajax({
             type:'POST',

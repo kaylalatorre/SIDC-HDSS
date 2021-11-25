@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db.models.expressions import F, Value
-from django.forms.formsets import formset_factory
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -44,7 +43,9 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    
+    """
+    Display all farms for assistant manager
+    """
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -62,8 +63,6 @@ def farms(request):
                 "last_updated"
                 )
     debug(qry)
-    # this_form = Form_DisplayFarm()
-    # Form_DisplayFarm.data
     farmsData = []
     for f in qry:
         farmObject = {
@@ -81,6 +80,12 @@ def farms(request):
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
+    """
+    Display information of selected farm for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
         contact=F("hog_raiser__contact_no"),
@@ -646,8 +651,10 @@ def techAssignment(request):
     }
     return render(request, 'farmstemp/assignment.html', context)
 
-@csrf_exempt
 def assign_technician(request):
+    """
+    Assign technician to area through ajax
+    """
     areaQry = request.POST.get("area")
     techQry = request.POST.get("technician")
 
@@ -835,31 +842,9 @@ def addActivity(request, farmID):
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
 def memAnnouncements(request):
-    # maA = Mem_Announcement(
-    #     id = 3,
-    #     title = "Test Announcement",
-    #     category = "Announcement",
-    #     recip_area = "West",
-    #     mssg = "This is a sample of an APPROVED annnouncement to be used for testing",
-    #     author = User.objects.filter(id = 2).get(),
-    #     timestamp = datetime.now(),
-    #     is_approved = True
-    # )
-    # maA.save()
-    # maNA = Mem_Announcement(
-    #     id = 4,
-    #     title = "Test Announcement",
-    #     category = "Announcement",
-    #     recip_area = "West",
-    #     mssg = "This is a sample of a UNAPPROVED annnouncement to be used for testing",
-    #     author = User.objects.filter(id = 3).get(),
-    #     timestamp = datetime.now(),
-    #     is_approved = False
-    # )
-    # maNA.save()
-    # approved = Mem_Announcement.objects.filter(is_approved=True)
-    # notapproved = Mem_Announcement.objects.filter(is_approved=False)
-
+    """
+    Display approved and unapproved announcements
+    """
     announcements = Mem_Announcement.objects.select_related("author").annotate(
         name = Concat('author__first_name', Value(' '), 'author__last_name')
     ).values(
@@ -870,19 +855,17 @@ def memAnnouncements(request):
         "recip_area",
         "name"
     )
-
-    # debug(announcements.filter(is_approved = True).first())
-    # debug(announcements.filter(is_approved = False).first())
     context = {
         "approved": announcements.filter(is_approved = True),
         "unapproved": announcements.filter(is_approved = False),
     }
-
-    debug(datetime.now())
-
     return render(request, 'farmstemp/mem-announce.html', context)
 
 def createAnnouncement(request):
+    """
+    Create announcment
+    Defaults to approved if assistant manager
+    """
     if request.method == 'POST':
         debug(request.POST)
         debug(MemAnnouncementForm(request.POST))
