@@ -271,7 +271,7 @@ def addFarm(request):
 
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            # hogRaiser.save()
+            hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
@@ -297,15 +297,13 @@ def addFarm(request):
                 # print("TEST LOG externalBiosec.perim_fence: " + str(externalBiosec.perim_fence))
                 # print("TEST LOG externalBiosec.fiveh_m_dist: " + str(externalBiosec.fiveh_m_dist))
 
-                # externalBiosec.save()
-
+                externalBiosec.save()
                 print("TEST LOG: Added new external biosec")
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
 
-                    # internalBiosec.save()
-
+                    internalBiosec.save()
                     print("TEST LOG: Added new internal biosec")
                     
                     if farmForm.is_valid():
@@ -319,22 +317,27 @@ def addFarm(request):
 
                         # print("TEST LOG farm.area_id: " + str(farm.area_id))
 
-                        # farm.save()
+                        farm.save()
                         print("TEST LOG: Added new farm")
 
                         # get recently created internal and external biosec IDs and update ref_farm_id
                         externalBiosec.ref_farm_id = farm
                         internalBiosec.ref_farm_id = farm
 
-                        # externalBiosec.save()
-                        # internalBiosec.save()
+                        externalBiosec.save()
+                        internalBiosec.save()
 
                         if pigpenMeasuresForm.is_valid():
                             pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
-                            pigpenMeasures.ref_farm_id = farm.id
+                            # for num_heads in request.POST.get("num_heads") :
+                            #     pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
-                            # pigpenMeasures.save()
+                            #     pigpenMeasures.ref_farm_id = farm.id
+
+                            #     print(str(pigpenMeasures.length))
+                            
+                            pigpenMeasures.save()
                             print("TEST LOG: Added new pigpen measure")
 
                             # add all num_heads (pigpen measure) for total_pigs (farm)
@@ -344,12 +347,12 @@ def addFarm(request):
 
                             # temporary
                             farm.total_pigs = pigpenMeasures.num_heads
-                            # farm.save()
+                            farm.save()
                             
                             # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
                             # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
-                            # return render(request, 'home.html', {})
+                            return render(request, 'home.html', {})
 
                         else:
                             print("TEST LOG: Pigpen Measures Form not valid")

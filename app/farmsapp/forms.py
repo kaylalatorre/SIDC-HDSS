@@ -220,7 +220,7 @@ class PigpenMeasuresForm(ModelForm):
             'class' : 'form-control',
             'placeholder' : 'ex. 100'
         })
-
+    
     class Meta:
         model = Pigpen_Measures
         fields = ('__all__')
