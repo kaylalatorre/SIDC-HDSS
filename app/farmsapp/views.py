@@ -13,14 +13,13 @@ from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecFo
 from django.views.decorators.csrf import csrf_exempt
 
 # for Model imports
-import psycopg2
-from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Delivery
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Mem_Announcement, Pigpen_Measures, Activity, Delivery
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
 
-from datetime import date
+from datetime import datetime
 
 def debug(m):
     """
@@ -495,13 +494,57 @@ def addActivity(request):
                                                             'deliveryForm' : deliveryForm})
 
 def memAnnouncements(request):
-    return render(request, 'farmstemp/mem-announce.html', {})
+    # maA = Mem_Announcement(
+    #     id = 3,
+    #     title = "Test Announcement",
+    #     category = "Announcement",
+    #     recip_area = "West",
+    #     mssg = "This is a sample of an APPROVED annnouncement to be used for testing",
+    #     author = User.objects.filter(id = 2).get(),
+    #     timestamp = datetime.now(),
+    #     is_approved = True
+    # )
+    # maA.save()
+    # maNA = Mem_Announcement(
+    #     id = 4,
+    #     title = "Test Announcement",
+    #     category = "Announcement",
+    #     recip_area = "West",
+    #     mssg = "This is a sample of a UNAPPROVED annnouncement to be used for testing",
+    #     author = User.objects.filter(id = 3).get(),
+    #     timestamp = datetime.now(),
+    #     is_approved = False
+    # )
+    # maNA.save()
+    # approved = Mem_Announcement.objects.filter(is_approved=True)
+    # notapproved = Mem_Announcement.objects.filter(is_approved=False)
+
+    announcements = Mem_Announcement.objects.select_related("author").annotate(
+        name = Concat('author__first_name', Value(' '), 'author__last_name')
+    ).values(
+        "id",
+        "timestamp",
+        "title",
+        "category",
+        "recip_area",
+        "name"
+    )
+
+    # debug(announcements.filter(is_approved = True).first())
+    # debug(announcements.filter(is_approved = False).first())
+    context = {
+        "approved": announcements.filter(is_approved = True),
+        "unapproved": announcements.filter(is_approved = False),
+    }
+
+    debug(datetime.now())
+
+    return render(request, 'farmstemp/mem-announce.html', context)
 
 def createAnnouncement(request):
     if request.method == 'POST':
         debug(request.POST)
         debug(MemAnnouncementForm(request.POST))
-
 
     announcementForm = MemAnnouncementForm()
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
