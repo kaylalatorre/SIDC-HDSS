@@ -598,6 +598,39 @@ def post_addChecklist(request, farmID):
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
         return redirect('/biosecurity/' + farmID)
 
+def delete_bioChecklist(request, biosecID):
+    """
+    (POST-AJAX) For deleting a biosecurity checklist based on biosecID
+    """
+
+    if request.is_ajax and request.method == 'POST':
+
+        print("TEST LOG: in delete_bioChecklist()/n")
+
+        # Get biosecID from AJAX url param
+        bioID = biosecID
+
+        # Get checkArr from AJAX data param
+        chArr = []
+        chArr = request.POST.getlist("checkArr[]")
+
+        if bioID is None:
+            # (ERROR) Invalid or null biosecID
+            debug("(ERROR) Invalid or null biosecID")
+            return JsonResponse({"error": "Invalid biosecurity ID."}, status=400)
+
+        else:
+            
+            debug("in delete_bioChecklist() -- bioID: " + str(bioID)) 
+
+            extBio = ExternalBiosec.objects.filter(id=bioID).delete()
+            intBio = InternalBiosec.objects.filter(id=bioID).delete()
+
+            # (SUCCESS) Biosec record has been deleted.
+            # return JsonResponse({"instance": jsonStr}, status=200)
+            return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)
+
+    return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
 # For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
@@ -618,7 +651,7 @@ def biosec_view(request):
     techID = request.user.id
     areaQry = Area.objects.filter(tech_id=techID).values("id")
 
-    debug("areaQry.id -- " + str(areaQry))
+    debug("areaQry -- " + str(areaQry))
 
     # TODO: loop selected Area IDs in this Farm query
     farmlistQry = Farm.objects.filter(Q(area_id=1)|Q(area_id=2)).only(
@@ -643,8 +676,8 @@ def biosec_view(request):
     # ON F.intbiosec_ID = INT.id
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
-    debug("in biosec_view(): currbioObj")
-    debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
+    # debug("in biosec_view(): currbioObj")
+    # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
 
     # (2) Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
@@ -716,16 +749,16 @@ def select_biosec(request, farmID):
 
     debug("farmlistQry -- " + str(farmlistQry))
 
-
+    # Get farmID passed from URL param
     farmID = farmID
     debug("in select_biosec() farmID -- " + str(farmID))
 
 
-    # select Biochecklist with latest date
+    # Select Biochecklist with latest date
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
-    debug("in select_biosec(): currbioObj")
-    debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
+    # debug("in select_biosec(): currbioObj")
+    # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
 
     # (2) Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()

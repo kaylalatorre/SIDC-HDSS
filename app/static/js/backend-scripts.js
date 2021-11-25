@@ -46,9 +46,7 @@ $('.checklist-date').change(function() {
 
     $.ajax({
         type: 'POST',
-        // url: '/biosecurity/getchecklist',
         url: '/biosecurity/getchecklist/' + biosecID,
-        // data: {"biosecID": biosecID}, // pass biosec id here
         success: function (response){
 
             // alert("in AJAX success");
@@ -160,7 +158,7 @@ function disableCheck(){
 function saveBiocheck(elem){
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
-    alert("in saveBiocheck() biosecID: " + biosecID);
+    // alert("in saveBiocheck() biosecID: " + biosecID);
 
     // Put biosec fields in an array
     var checkArr = [];
@@ -311,6 +309,34 @@ function saveBiocheck(elem){
     });
     
     disableCheck();
+}
+
+function deleteBiocheck(elem){
+
+    // Get biosec ID of selected option tag
+    var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
+    alert("in deleteBiocheck() -- biosecID: " + biosecID);
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/biosecurity/delete-checklist/' + biosecID,
+        // data: {"checkArr": checkArr}, 
+        success: function (response){
+
+            if (response.status == 200){
+                alert("Biochecklist record deleted.");
+            }
+            // reload Biosec page to update dropdown of Biosec last_updated
+            // window.location.reload(true);
+            window.location.replace("/biosecurity");
+
+        },
+        error: function (res){
+            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+        }
+    });
 }
 
 /**
