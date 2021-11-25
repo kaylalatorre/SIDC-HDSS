@@ -7,6 +7,16 @@
 {% endblock page_title %}
 
 {% block section %}
+
+    <!-- TEST: for ADD-CHECKLIST success-error message placeholder -->
+    {% for mssg in messages %}
+        {% if "add-checklist" in mssg.tags %}
+            <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
     <p>Select a farm to check its biosecurity records.</p>

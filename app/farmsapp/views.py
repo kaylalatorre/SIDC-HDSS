@@ -421,9 +421,6 @@ def update_bioChecklist(request, biosecID):
         extBio.save()
         intBio.save()
 
-        debug("disinfect_prem -- " + str(chArr[6]))
-        debug("prvdd_foot_dip -- " + str(chArr[0]))
-
         bioDict = {
             # External bio
             'prvdd_foot_dip'        : extBio.prvdd_foot_dip,  
@@ -449,21 +446,144 @@ def update_bioChecklist(request, biosecID):
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
+# (POST) function for adding a Biosec Checklist
+def post_addChecklist(request, farmID):
+    print("TEST LOG: in post_addChecklist/n")
+
+    if request.method == "POST":
+        
+        # Get farmID from URL param and check if farmID exists
+        if Farm.objects.filter(id=farmID).exists():
+            farmID = farmID
+
+            debug("in POST biochecklist /n: farmID -- " + str(farmID))
+            
+            # If none selected in btn group, default value taken from btn tag is None
+            biosecArr = [
+                request.POST.get("disinfect_prem", None),
+                request.POST.get("prvdd_foot_dip", None),
+                request.POST.get("prvdd_alco_soap", None),
+                request.POST.get("obs_no_visitors", None),
+                request.POST.get("disinfect_vet_supp", None),
+                request.POST.get("prsnl_dip_footwear", None),
+                request.POST.get("prsnl_sanit_hands", None),
+                request.POST.get("cng_disinfect_daily", None),
+            ]
+            
+            checkComplete = True # bool for checking if checklist is complete
+
+            # Array length must be 8 for the 8 fields in a Biosec checklist.
+            print("biosecArr len(): " + str(len(biosecArr)))
+
+            debug("TEST LOG: List of Biocheck values")
+            for index, value in enumerate(biosecArr): 
+                if value is None:
+                    # (ERROR) Incomplete input/s for Biosecurity Checklist
+                    debug("ERROR: Index value in biosec is None.")
+                    checkComplete = False
+
+                    messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
+                    return redirect('/biosecurity/' + farmID)
+
+                int(value)
+                print(list((index, value)))
+
+            if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
+
+                # Get current biosec Measures from Farm
+                bioMeasure = Farm.objects.filter(id=farmID).select_related("intbio", "extbio").annotate(
+                                waste_mgt   = F("intbio__waste_mgt"),
+                                isol_pen    = F("intbio__isol_pen"),
+                                foot_dip    = F("intbio__foot_dip"),
+                                bird_proof  = F("extbio__bird_proof"),
+                                perim_fence = F("extbio__perim_fence"),
+                                fiveh_m_dist = F("extbio__fiveh_m_dist")
+                ).values(
+                    "waste_mgt",
+                    "isol_pen",
+                    "bird_proof",
+                    "perim_fence",
+                    "foot_dip",
+                    "fiveh_m_dist"
+                ).first()
+
+                debug("BIOMEASURE: -- " + str(bioMeasure))
+
+                # init Biosec and Farm models
+                extBio = ExternalBiosec() 
+                intBio = InternalBiosec() 
+                farmQuery = Farm.objects.get(pk=farmID)
+
+                # Put bioMeasures into External model
+                extBio.bird_proof   = bioMeasure.get("bird_proof")
+                extBio.perim_fence  = bioMeasure.get("perim_fence")
+                extBio.fiveh_m_dist = bioMeasure.get("fiveh_m_dist")
+
+                # Put bioMeasures into Internal model
+                intBio.waste_mgt    = bioMeasure.get("waste_mgt")
+                intBio.isol_pen     = bioMeasure.get("isol_pen")
+                intBio.foot_dip     = bioMeasure.get("foot_dip")
+
+                # Put biochecklist attributes into External model
+                extBio.ref_farm = farmQuery
+                extBio.prvdd_foot_dip       = biosecArr[1]
+                extBio.prvdd_alco_soap      = biosecArr[2]
+                extBio.obs_no_visitors      = biosecArr[3]
+                extBio.prsnl_dip_footwear   = biosecArr[5]
+                extBio.prsnl_sanit_hands    = biosecArr[6]
+                extBio.chg_disinfect_daily  = biosecArr[7]
+                
+                # Put biochecklist attributes into Internal model
+                intBio.ref_farm = farmQuery
+                intBio.disinfect_prem      = biosecArr[0]
+                intBio.disinfect_vet_supp  = biosecArr[4]
+
+                # Update data of the INTERNAL, EXTERNAL Biosec tables
+                extBio.save()
+                intBio.save()
+
+                # Update biosec FKs in Farm model
+                farm = Farm.objects.filter(id=farmID).select_related("intbio", "extbio").first()
+                farm.intbio = intBio
+                farm.extbio = extBio
+
+                farm.save()
+
+                # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
+                messages.success(request, "200", extra_tags='add-checklist')
+                return redirect('/biosecurity/' + farmID)
+        
+            else:
+                # (ERROR) Incomplete input/s for Biosecurity Checklist
+                debug("ERROR: Incomplete input/s for Biosecurity Checklist.")
+                messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
+                return redirect('/biosecurity/' + farmID)
+        else:
+            # (ERROR) Invalid farmID
+            debug("ERROR: Invalid/None-type farmID from parameter.")
+            messages.error(request, "Farm record not found.", extra_tags='add-checklist')
+            return redirect('/biosecurity')
+
+    else:
+        # (ERROR) not an AJAX Post request
+        messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
+        return redirect('/biosecurity/' + farmID)
+
+
 # For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
+    """
+    For getting all Biosecurity details under a Farm. 
+    This function gets the ID of the first Farm due to no passed farmID as parameter.
+
+    - (1) farms under Technician user, 
+    - (2) latest intbio-extbio Checklist, 
+    - (3) all biosec IDs and dates within that Farm, 
+    - (4) activities
+    """
+
     print("TEST LOG: in Biosec view/n")
 
-    """
-    SELECT biosec.id,<biochecklist fields INTERNAL>, <biochecklist fields EXTERNAL>
-    FROM farm F
-    JOIN externalbiosec EXT
-    ON F.extbiosec_ID = EXT.id
-    JOIN internalbiosec INT
-    ON F.intbiosec_ID = INT.id
-    """
-    # TODO: get farmID, Int or Ext biosec FK id from template (w/c template?)
-    # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
-    # bioID = request.POST.<biosecID_name_here>
     
     # (1) Get all Farms under a technician User
     techID = request.user.id
@@ -471,6 +591,7 @@ def biosec_view(request):
 
     debug("areaQry.id -- " + str(areaQry))
 
+    # TODO: loop selected Area IDs in this Farm query
     farmlistQry = Farm.objects.filter(Q(area_id=1)|Q(area_id=2)).only(
         "id"
     ).all()
@@ -483,7 +604,14 @@ def biosec_view(request):
 
     debug("biosec_view() farmID -- " + str(farmID))
 
-    # getting current internal and external FKs
+    # Get current internal and external FKs
+
+    # SELECT biosec.id,<biochecklist fields INTERNAL>, <biochecklist fields EXTERNAL>
+    # FROM farm F
+    # JOIN externalbiosec EXT
+    # ON F.extbiosec_ID = EXT.id
+    # JOIN internalbiosec INT
+    # ON F.intbiosec_ID = INT.id
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
     debug("in biosec_view(): currbioObj")
@@ -493,28 +621,19 @@ def biosec_view(request):
     currbioObj = currbioQuery.first()
     # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
-    # bioID = currbioObj.id
-    # debug("bioID -- " + str(bioID))
 
     # (3) Get all biosecID, last_updated in extbio under a Farm
-    """
-    SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
-    FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
-    ORDER BY "farmsapp_externalbiosec"."last_updated" DESC
-    """
+
+    # SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
+    # FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
+    # ORDER BY "farmsapp_externalbiosec"."last_updated" DESC
     extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
         'last_updated',
     ).order_by('-last_updated')
 
-    print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-
+    # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
     print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
-    # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
-    request.session['farm_id'] = farmID 
-
-    # print("TEST LOG: bioInt last_updated-- ")
-    # print(bioInt[0].last_updated)
 
     # (4) GET ACTIVITIES
     actQueury = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
@@ -540,21 +659,20 @@ def biosec_view(request):
     # - (4) activities
     return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
-# For getting all Biosec checklist versions under a Farm.
+# For getting all Biosec checklist versions under a Farm based on farmID.
 def select_biosec(request, farmID):
+    """
+    For getting all Biosecurity details under a Farm. 
+    This serves as a search function when a farmID or farm code is selected from its dropdown.
+
+    - (1) farms under Technician user, 
+    - (2) latest intbio-extbio Checklist, 
+    - (3) all biosec IDs and dates within that Farm, 
+    - (4) activities
+    """
+
     print("TEST LOG: in Biosec view/n")
 
-    """
-    SELECT biosec.id,<biochecklist fields INTERNAL>, <biochecklist fields EXTERNAL>
-    FROM farm F
-    JOIN externalbiosec EXT
-    ON F.extbiosec_ID = EXT.id
-    JOIN internalbiosec INT
-    ON F.intbiosec_ID = INT.id
-    """
-    # TODO: get farmID, Int or Ext biosec FK id from template (w/c template?)
-    # farmID = request.POST.<farmID_name_here> OR request.session['farm_id'] = farmID 
-    # bioID = request.POST.<biosecID_name_here>
     
     # (1) Get all Farms under a technician User
     techID = request.user.id
@@ -562,20 +680,18 @@ def select_biosec(request, farmID):
 
     debug("areaQry.id -- " + str(areaQry.id))
 
+    # TODO: loop selected Area IDs in this Farm query
     farmlistQry = Farm.objects.filter(area_id=areaQry.id).only(
         "id"
     ).all()
 
     debug("farmlistQry -- " + str(farmlistQry))
 
-    # Select Biochecklist from intbio-extbio FKs
-    # farm = farmlistQry.first()
-    # farmID = farm.id
 
     farmID = farmID
-    debug("select_biosec() farmID -- " + str(farmID))
+    debug("in select_biosec() farmID -- " + str(farmID))
 
-    bioID = 1 
+
     # select Biochecklist with latest date
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
@@ -586,31 +702,15 @@ def select_biosec(request, farmID):
     currbioObj = currbioQuery.first()
     # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
-    # bioID = currbioObj.id
-    # debug("bioID -- " + str(bioID))
 
     # (3) Get all biosecID, last_updated in extbio under a Farm
-    """
-    SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
-    FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
-    ORDER BY "farmsapp_externalbiosec"."last_updated" DESC
-    """
     extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
         'last_updated',
     ).order_by('-last_updated')
 
-    print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-
+    # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
     print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
-    # debug("currbioObj.intbio.disinfect_vet_supp -- " + str(currbioObj.intbio.disinfect_vet_supp))
-    # debug("currbioObj.extbio.prsnl_dip_footwear -- " + str(currbioObj.extbio.prsnl_dip_footwear))
-
-    # set 'farm_id' in the session --> needs to be accessed in addChecklist_view()
-    # request.session['farm_id'] = farmID 
-
-    # print("TEST LOG: bioInt last_updated-- ")
-    # print(bioInt[0].last_updated)
 
     # Collecting all activities under selected tech farm
     """
@@ -644,15 +744,14 @@ def select_biosec(request, farmID):
     return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
 def addChecklist_view(request, farmID):
-    # TODO: How to access farmID hidden input tag? through js?
-    # TODO: from Biosec page, pass farmID here
+    """
+    For passing farmID from Biosecurity page to addChecklist page ("add-checklist.html")
+    """
 
-    print("TEST LOG: in addChecklist_view/n")
+    debug("TEST LOG: in addChecklist_view/n")
 
-    # get 'farm_id' from the session
-    # farm_id = request.session['farm_id']
     farm_id = farmID
-    print("TEST LOG: farm_id -- " + str(farm_id))
+    debug("TEST LOG: farm_id -- " + str(farm_id))
 
     return render(request, 'farmstemp/add-checklist.html', { 'farmID' : farm_id })
 
@@ -691,124 +790,6 @@ def formsApproval(request):
 
 def selectedForm(request):
     return render(request, 'farmstemp/selected-form.html', {})
-
-# (POST) function for adding a Biosec Checklist
-def post_addChecklist(request, farmID):
-    print("TEST LOG: in post_addChecklist/n")
-
-    if request.method == "POST":
-        
-        # TODO: get farmID from hidden input tag
-        # TODO: error hadn,iung cjheck if None
-        # farmID = request.POST.get("farmID", None)
-
-        farmID = farmID
-
-        print("in POST biochecklist: farmID -- " + str(farmID))
-        
-        # If none selected in btn group, default value taken from btn tag is None
-        biosecArr = [
-            request.POST.get("disinfect_prem", None),
-            request.POST.get("prvdd_foot_dip", None),
-            request.POST.get("prvdd_alco_soap", None),
-            request.POST.get("obs_no_visitors", None),
-            request.POST.get("disinfect_vet_supp", None),
-            request.POST.get("prsnl_dip_footwear", None),
-            request.POST.get("prsnl_sanit_hands", None),
-            request.POST.get("cng_disinfect_daily", None),
-        ]
-        
-        checkComplete = True # bool for checking if checklist is complete
-
-        print("biosecArr len(): " + str(len(biosecArr)))
-
-        debug("TEST LOG: List of Biocheck values")
-        for index, value in enumerate(biosecArr): 
-            if value is None:
-                debug("ERROR: Index value is None.")
-                checkComplete = False
-                # (ERROR) Incomplete input/s for Biosecurity Checklist
-                messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-                return redirect('biosecurity')
-
-            int(value)
-            print(list((index, value)))
-
-        if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
-
-            # Get current biosec Measures from Farm
-            bioMeasure = Farm.objects.filter(id=farmID).select_related("intbio", "extbio").annotate(
-                            waste_mgt   = F("intbio__waste_mgt"),
-                            isol_pen    = F("intbio__isol_pen"),
-                            foot_dip    = F("intbio__foot_dip"),
-                            bird_proof  = F("extbio__bird_proof"),
-                            perim_fence = F("extbio__perim_fence"),
-                            fiveh_m_dist = F("extbio__fiveh_m_dist")
-            ).values(
-                "waste_mgt",
-                "isol_pen",
-                "bird_proof",
-                "perim_fence",
-                "foot_dip",
-                "fiveh_m_dist"
-            ).first()
-
-            debug("BIOMEASURE: -- " + str(bioMeasure))
-
-        
-            # init Biosec and Farm models
-            extBio = ExternalBiosec() 
-            intBio = InternalBiosec() 
-            farmQuery = Farm.objects.get(pk=farmID)
-
-            # Put bioMeasures into External model
-            extBio.bird_proof   = bioMeasure.get("bird_proof")
-            extBio.perim_fence  = bioMeasure.get("perim_fence")
-            extBio.fiveh_m_dist = bioMeasure.get("fiveh_m_dist")
-
-            # Put bioMeasures into Internal model
-            intBio.waste_mgt    = bioMeasure.get("waste_mgt")
-            intBio.isol_pen     = bioMeasure.get("isol_pen")
-            intBio.foot_dip     = bioMeasure.get("foot_dip")
-
-            # Put biochecklist attributes into External model
-            extBio.ref_farm = farmQuery
-            extBio.prvdd_foot_dip       = biosecArr[1]
-            extBio.prvdd_alco_soap      = biosecArr[2]
-            extBio.obs_no_visitors      = biosecArr[3]
-            extBio.prsnl_dip_footwear   = biosecArr[5]
-            extBio.prsnl_sanit_hands    = biosecArr[6]
-            extBio.chg_disinfect_daily  = biosecArr[7]
-            
-            # Put biochecklist attributes into Internal model
-            intBio.ref_farm = farmQuery
-            intBio.disinfect_prem      = biosecArr[0]
-            intBio.disinfect_vet_supp  = biosecArr[4]
-
-            # Update data of the INTERNAL, EXTERNAL Biosec tables
-            extBio.save()
-            intBio.save()
-
-            # update biosec FKs in Farm model
-            farm = Farm.objects.filter(id=farmID).select_related("intbio").first()
-            farm.intbio = intBio
-            farm.extbio = extBio
-
-            farm.save()
-
-            # Properly redirect to Biosec main page
-            return redirect('biosecurity')
-        else:
-            # (ERROR) Incomplete input/s for Biosecurity Checklist
-            debug("ERROR: Incomplete input/s for Biosecurity Checklist.")
-            messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-            # return redirect('biosecurity')
-            return redirect('/biosecurity/' + farmID)
-        
-    else:
-        # (ERROR) not an AJAX Post request
-        messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-        return redirect('biosecurity')
 
 
 def addActivity(request, farmID):
