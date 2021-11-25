@@ -214,7 +214,7 @@ def addFarm(request):
     # get current user (technician) ID
     techID = request.user.id
 
-    # collect all assigned areas under technician
+    # collect all assigned areas under technician; to be passed to template
     areaQry = Area.objects.filter(tech_id=techID)
     print("TEST LOG areaQry: " + str(areaQry))
 
@@ -222,11 +222,20 @@ def addFarm(request):
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
-        farmID              = request.POST.get("input-code", None)
+        farmID = request.POST.get("input-code", None)
         print("TEST LOG farmID: " + farmID)
 
-        areaName            = request.POST.get("input-area", None)
+        areaName = request.POST.get("input-area", None)
         print("TEST LOG areaName: " + areaName)
+
+        # get ID of selected area
+        areaIDQry = Area.objects.filter(area_name=areaName).first()
+        print("TEST LOG areaIDQry: " + str(areaIDQry))
+
+        areaID = areaIDQry.id
+        # areaID = area.id
+
+        print("TEST LOG areaID: " + str(areaID))
 
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
@@ -238,7 +247,7 @@ def addFarm(request):
     
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            # hogRaiser.save()
+            hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
@@ -247,7 +256,7 @@ def addFarm(request):
 
                 # externalBiosec.ref_farm_id = farmID
 
-                # externalBiosec.save()
+                externalBiosec.save()
 
                 print("TEST LOG: Added new external biosec")
 
@@ -256,7 +265,7 @@ def addFarm(request):
 
                     # internalBiosec.ref_farm_id = farmID
 
-                    # internalBiosec.save()
+                    internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
                     
@@ -279,25 +288,27 @@ def addFarm(request):
                         farm.hog_raiser_id = hogRaiser.id
                         farm.extbio_id = externalBiosec.id
                         farm.intbio_id = internalBiosec.id
-                        # farm.area_id = area.id
+                        farm.area_id = areaID
                         farm.id = farmID
 
-                        # farm.save()
+                        print("TEST LOG farm.area_id: " + str(farm.area_id))
+
+                        farm.save()
                         print("TEST LOG: Added new farm")
 
                         # get recently created internal and external biosec IDs and update ref_farm_id
                         externalBiosec.ref_farm_id = farm
                         internalBiosec.ref_farm_id = farm
 
-                        # externalBiosec.save()
-                        # internalBiosec.save()
+                        externalBiosec.save()
+                        internalBiosec.save()
 
                         if pigpenMeasuresForm.is_valid():
                             pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
                             pigpenMeasures.ref_farm_id = farm.id
 
-                            # pigpenMeasures.save()
+                            pigpenMeasures.save()
                             print("TEST LOG: Added new pigpen measure")
 
                             # add all num_heads (pigpen measure) for total_pigs (farm)
@@ -307,12 +318,12 @@ def addFarm(request):
 
                             # temporary
                             farm.total_pigs = pigpenMeasures.num_heads
-                            # farm.save()
+                            farm.save()
                             
                             # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
                             # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
-                            # return render(request, 'home.html', {})
+                            return render(request, 'home.html', {})
 
                         else:
                             print("TEST LOG: Pigpen Measures Form not valid")
