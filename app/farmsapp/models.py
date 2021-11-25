@@ -18,9 +18,9 @@ class ExternalBiosec(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     # fields from Biomeasures
-    bird_proof          = models.IntegerField(null=True, blank=True)
-    perim_fence         = models.IntegerField(null=True, blank=True)
-    fiveh_m_dist        = models.IntegerField(null=True, blank=True)
+    bird_proof          = models.IntegerField(null=True, blank=True, default=1)
+    perim_fence         = models.IntegerField(null=True, blank=True, default=1)
+    fiveh_m_dist        = models.IntegerField(null=True, blank=True, default=1)
     
     # fields from Biochecklist
     prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
@@ -39,14 +39,14 @@ class InternalBiosec(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
     # fields from Biomeasures
-    isol_pen            = models.IntegerField(null=True, blank=True)
-    foot_dip            = models.IntegerField(null=True, blank=True)
+    isol_pen            = models.IntegerField(null=True, blank=True, default=1)
+    foot_dip            = models.IntegerField(null=True, blank=True, default=1)
 
-    # WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
-    #                         ('Biogas', 'Biogas'),
-    #                         ('Other', 'Other')]
+    WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
+                            ('Biogas', 'Biogas'),
+                            ('Other', 'Other')]
 
-    waste_mgt           = models.CharField(max_length=50, null=True, blank=True)
+    waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
     
     # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)

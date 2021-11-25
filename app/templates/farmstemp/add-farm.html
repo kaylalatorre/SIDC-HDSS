@@ -154,32 +154,28 @@
             <div class="box-style">
                 <p>Select all that apply.</p>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-isolation" name="cb-isolation">
+                    {{internalBiosecForm.isol_pen}}
                     <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-birdproof" name="cb-birdproof">
+                    {{externalBiosecForm.bird_proof}}
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-fence" name="cb-fence">
+                    {{externalBiosecForm.perim_fence}}
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-footdip" name="cb-footdip">
+                    {{internalBiosecForm.foot_dip}}
                     <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-distance" name="cb-distance">
+                    {{externalBiosecForm.fiveh_m_dist}}
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="mb-3">
                     <label for="input-waste-mgt" class="form-label">Waste Management</label>
-                    <select class="form-select" id="input-waste-mgt" name="input-waste-mgt">
-                        <option>Septic Tank</option>
-                        <option>Biogas</option>
-                        <option>Other</option>
-                    </select>
+                    {{internalBiosecForm.waste_mgt}}
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
