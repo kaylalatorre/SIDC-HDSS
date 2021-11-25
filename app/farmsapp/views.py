@@ -132,7 +132,7 @@ def techFarms(request):
             "raiser": " ".join((farm["fname"],farm["lname"])),
             "contact": farm["contact"],
             "address": farm["farm_address"],
-            "updated": str(farm["last_updated"])
+            "updated": farm["last_updated"]
         }
 
         techFarmsList.append(farmObject)
