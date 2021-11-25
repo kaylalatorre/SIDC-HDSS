@@ -38,7 +38,7 @@
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
                     <td data-label="Contact No.">{{techFarm.contact}}</td>
                     <td data-label="Address">{{techFarm.address}}</td>
-                    <td data-label="Last Update">{{techFarm.updated}}</td>
+                    <td data-label="Last Update">{{techFarm.updated|date:'M d, Y'}}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
