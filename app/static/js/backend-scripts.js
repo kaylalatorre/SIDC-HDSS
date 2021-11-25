@@ -229,8 +229,6 @@ function saveBiocheck(elem){
 
     $.ajax({
         type: 'POST',
-        // url: '/biosecurity/edit-checklist', // TODO: convert to '/biosecurity/edit-checklist/' + biosecID
-        // data: {"biosecID": biosecID, "checkArr": checkArr}, 
         url: '/biosecurity/edit-checklist/' + biosecID,
         data: {"checkArr": checkArr}, 
         success: function (response){
