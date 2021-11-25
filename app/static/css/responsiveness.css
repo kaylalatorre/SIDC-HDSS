@@ -11,11 +11,20 @@
 
     h1, h1 a { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
     h2 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
-    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 500; }
+    h3 { font-size: 14px; font-family: 'Public Sans'; font-weight: 600; }
     p, label { font-size: 14px; font-family: 'Roboto'; }
-
+    
     .flex-item { padding: 0; }
     .main-div { margin: 16px!important; }
+
+    .subheading { display: none; }
+    .mobile-subheading { opacity: 1; padding-bottom: 8px; height: 40px;}
+    .button i, button i { text-align: center; align-items: center;}
+
+    .flex-form {
+        flex-direction: column;
+        padding: 0;
+    }
 }
 
 @media (max-width: 420px) {
@@ -23,6 +32,7 @@
     .sidebar {
         position: fixed;
         height: 100%;
+        max-height: 848px;
         width: 100%;
         background: #FFF;
         z-index: 101;
@@ -33,22 +43,6 @@
         display: block;
         position: absolute;
         right: 16px; 
-    }
-
-    .sidebar.rp-close {
-        display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        z-index: 0;
-    }
-
-    .sidebar.rp-close .nav-item {
-        display: none;
-    }
-
-    .sidebar.rp-close ~ .content-section {
-        left: 0 !important;
-        width: 100% !important;
     }
 
     /* Topbar */
@@ -85,6 +79,13 @@
     .table tbody tr td {
         text-align: right;
         padding-left: 50%;
+        position: relative;
+    }
+
+    #biosec-checklists .table tbody tr td,
+    #checklist-form .table tbody tr td {
+        text-align: left;
+        padding-left: 0;
         position: relative;
     }
 

@@ -21,6 +21,10 @@
         {% endif %}
         <div><a href="/create-announcement" class="button primary-btn"><i class='bx bx-plus'></i>Create Announcement</a></div>
     </div>
+    <div class="flex mobile-subheading">
+        <p style="width: 90%; padding: 4px">Send SMS Messages to your raisers here.</p>
+        <div><a href="/create-announcement" class="button primary-btn"><i class='bx bx-plus'></i><span class="text">Create Announcement</span></a></div>
+    </div>
     <hr>
 
     <section class="for-approval">
@@ -63,7 +67,7 @@
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
                         <td data-label="Author">{{announcement.name}}</td>
-                        <td><button class="secondary-btn" id="viewAnnounce" onclick="viewAnnounce()"><span class="material-icons md-18">visibility</span>View</button></td>
+                        <td data-label="" class="td-btn"><button class="secondary-btn" id="viewAnnounce" onclick="viewAnnounce()"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -93,7 +97,7 @@
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
                         <td data-label="Author">{{announcement.name}}</td>
-                        <td><button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button></td>
+                        <td data-label="" class="td-btn"><button class="secondary-btn"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
                     </tr>
                     {% endfor %}
                     

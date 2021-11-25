@@ -55,7 +55,7 @@ textarea {
 
 /* Responsive Styles */
 @media (max-width: 848px) {
-    .flex, .flex-item {
+    .table .flex, .flex-item {
         display: inline-block;
         min-width: 100%;
         vertical-align: middle;

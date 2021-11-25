@@ -35,6 +35,7 @@ a { text-decoration: none; color: #333;}
 a:hover { color: #006633}
 ul, li { list-style: none;}
 
+
 /* General Styles */
 .main-div {
     margin: 24px;
@@ -62,7 +63,7 @@ ul, li { list-style: none;}
 
 .flex {
     display: flex;
-    min-width: 100%;
+    max-width: 100%;
     vertical-align: middle;
 }
 
@@ -87,6 +88,9 @@ ul, li { list-style: none;}
     vertical-align: middle;
     padding-bottom: 8px;
 }
+
+.mobile-subheading { opacity: 0; height: 8px; }
+.heading .box-style .input-group { width: 40%!important; }
 
 .content-section {
     position: relative;
@@ -209,6 +213,10 @@ button:hover, .button:hover, .primary-btn:hover{
 }
 
 /* Save button for technician assignment */
+.assignSave, .assignEdit {
+    margin-right: 4px;
+}
+
 .assignSave {
     display: none;
 }
