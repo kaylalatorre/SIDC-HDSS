@@ -211,6 +211,13 @@ def addFarm(request):
     - Django forms will first check the validity of input (based on the fields within models.py)
     """
     
+    # get current user (technician) ID
+    techID = request.user.id
+
+    # collect all assigned areas under technician
+    areaQry = Area.objects.filter(tech_id=techID)
+    print("TEST LOG areaQry: " + str(areaQry))
+
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
         print(request.POST)
@@ -218,16 +225,20 @@ def addFarm(request):
         farmID              = request.POST.get("input-code", None)
         print("TEST LOG farmID: " + farmID)
 
+        areaName            = request.POST.get("input-area", None)
+        print("TEST LOG areaName: " + areaName)
+
+        # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        areaForm            = AreaForm(request.POST)
+        # areaForm            = AreaForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
     
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            hogRaiser.save()
+            # hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
@@ -236,7 +247,7 @@ def addFarm(request):
 
                 # externalBiosec.ref_farm_id = farmID
 
-                externalBiosec.save()
+                # externalBiosec.save()
 
                 print("TEST LOG: Added new external biosec")
 
@@ -245,75 +256,75 @@ def addFarm(request):
 
                     # internalBiosec.ref_farm_id = farmID
 
-                    internalBiosec.save()
+                    # internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
                     
-                    if areaForm.is_valid(): 
-                        # temporary solution
-                        area = areaForm.save(commit=False)
+                    # if areaForm.is_valid(): 
+                        # # temporary solution
+                        # area = areaForm.save(commit=False)
 
-                        # save current user (technician) ID to tech_id
-                        area.tech_id = request.user.id
-                        area.save()                        
-                        print("TEST LOG: Added area")
+                        # # save current user (technician) ID to tech_id
+                        # area.tech_id = request.user.id
+                        # area.save()                        
+                        # print("TEST LOG: Added area")
 
                         ## updated solution
                         # get area_id of area selected for farm
 
 
-                        if farmForm.is_valid():
-                            farm = farmForm.save(commit=False)
+                    if farmForm.is_valid():
+                        farm = farmForm.save(commit=False)
 
-                            farm.hog_raiser_id = hogRaiser.id
-                            farm.extbio_id = externalBiosec.id
-                            farm.intbio_id = internalBiosec.id
-                            farm.area_id = area.id
-                            farm.id = farmID
+                        farm.hog_raiser_id = hogRaiser.id
+                        farm.extbio_id = externalBiosec.id
+                        farm.intbio_id = internalBiosec.id
+                        # farm.area_id = area.id
+                        farm.id = farmID
 
-                            farm.save()
-                            print("TEST LOG: Added new farm")
+                        # farm.save()
+                        print("TEST LOG: Added new farm")
 
-                            # get recently created internal and external biosec IDs and update ref_farm_id
-                            externalBiosec.ref_farm_id = farm
-                            internalBiosec.ref_farm_id = farm
+                        # get recently created internal and external biosec IDs and update ref_farm_id
+                        externalBiosec.ref_farm_id = farm
+                        internalBiosec.ref_farm_id = farm
 
-                            externalBiosec.save()
-                            internalBiosec.save()
+                        # externalBiosec.save()
+                        # internalBiosec.save()
 
-                            if pigpenMeasuresForm.is_valid():
-                                pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+                        if pigpenMeasuresForm.is_valid():
+                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
-                                pigpenMeasures.ref_farm_id = farm.id
+                            pigpenMeasures.ref_farm_id = farm.id
 
-                                pigpenMeasures.save()
-                                print("TEST LOG: Added new pigpen measure")
+                            # pigpenMeasures.save()
+                            print("TEST LOG: Added new pigpen measure")
 
-                                # add all num_heads (pigpen measure) for total_pigs (farm)
+                            # add all num_heads (pigpen measure) for total_pigs (farm)
 
 
-                                # update total_pigs of newly added farm
+                            # update total_pigs of newly added farm
 
-                                # temporary
-                                farm.total_pigs = pigpenMeasures.num_heads
-                                farm.save()
-                                
-                                # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
-                                # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
+                            # temporary
+                            farm.total_pigs = pigpenMeasures.num_heads
+                            # farm.save()
+                            
+                            # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
+                            # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
-                                return render(request, 'home.html', {})
+                            # return render(request, 'home.html', {})
 
-                            else:
-                                print("TEST LOG: Pigpen Measures Form not valid")
-                                print(pigpenMeasuresForm.errors)
-                        
                         else:
-                            print("TEST LOG: Farm Form not valid")
-                            print(farmForm.errors)
+                            print("TEST LOG: Pigpen Measures Form not valid")
+                            print(pigpenMeasuresForm.errors)
                     
                     else:
-                        print("TEST LOG: Area Form not valid")
-                        print(areaForm.errors)
+                        print("TEST LOG: Farm Form not valid")
+                        print(farmForm.errors)
+                    
+                    # else:
+                    #     print("TEST LOG: Area Form not valid")
+                    #     print(areaForm.errors)
 
                 else:
                     print("TEST LOG: Internal Biosec Form not valid")
@@ -339,9 +350,10 @@ def addFarm(request):
         internalBiosecForm  = InternalBiosecForm()
 
     # pass django forms to template
-    return render(request, 'farmstemp/add-farm.html', {'hogRaiserForm' : hogRaiserForm,
+    return render(request, 'farmstemp/add-farm.html', { 'area' : areaQry,
+                                                        'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
-                                                        'areaForm' : areaForm,
+                                                        # 'areaForm' : areaForm,
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,
                                                         'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
