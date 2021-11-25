@@ -8,9 +8,9 @@
 
 {% block section %}
 <div class="main-div">
-    <!-- <form action="/add-farm" method="POST"> -->
+    <form action="/add-farm" method="POST">
 
-    <!-- {% csrf_token %} -->
+    {% csrf_token %}
 
     <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
     <div class="flex subheading">
@@ -134,6 +134,17 @@
                                     {{pigpenMeasuresForm.num_heads}}
                                 </td>
                             </tr>
+                            <tr>
+                                <td data-label="Length" id="pigpen-length">
+                                    {{pigpenMeasuresForm.length}}
+                                </td>
+                                <td data-label="Width" id="pigpen-width">
+                                    {{pigpenMeasuresForm.width}}
+                                </td>
+                                <td data-label="No. of Pigs" id="pigpen-num-heads">
+                                    {{pigpenMeasuresForm.num_heads}}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -198,6 +209,6 @@
         </section>
     </div>
     <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
-    <!-- </form> -->
+    </form>
 </div>
 {% endblock section %}
