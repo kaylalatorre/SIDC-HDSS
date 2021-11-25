@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ModelForm, DateField, widgets
 from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
 
@@ -26,6 +27,15 @@ class ExternalBiosecForm(ModelForm):
     class Meta:
         model = ExternalBiosec
         fields = ('__all__')
+        widgets = {
+            'bird_proof' : widgets.CheckboxInput(),
+            'perim_fence' : widgets.CheckboxInput(),
+            'fiveh_m_dist' : widgets.CheckboxInput(),
+        }
+
+# class ExternalBiosecForm(forms:Form)
+#     bird_proof = forms.IntegerField()
+
 
 class InternalBiosecForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -48,6 +58,10 @@ class InternalBiosecForm(ModelForm):
     class Meta:
         model = InternalBiosec
         fields = ('__all__')
+        widgets = {
+            'isol_pen' : widgets.CheckboxInput(),
+            'foot_dip' : widgets.CheckboxInput(),
+        }
 
 class FarmWeightForm(ModelForm):
     class Meta:
@@ -246,11 +260,6 @@ class ActivityForm(ModelForm):
     class Meta:
         model = Activity
         fields = ('__all__')
-        # widgets = {
-        #     'date' : ModelForm.DateInput(format=('%d-%m-%Y'), 
-        #                                      attrs={'class':'myDateClass', 
-        #                                     'placeholder':'Select a date'})
-        # }
         widgets = {
             'date' : widgets.DateInput(attrs={'type' : 'date'}),
             'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),

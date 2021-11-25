@@ -107,12 +107,7 @@ class Hog_Raiser(models.Model):
 
 # AREA Table
 class Area(models.Model):
-    # AREA_CHOICES        = [('TISISI', 'TISISI'),
-    #                     ('West', 'West'),
-    #                     ('East', 'East'),
-    #                     ('Other', 'Other')]
-
-    area_name           = models.CharField(max_length=20, default='TISISI')
+    area_name           = models.CharField(max_length=20, null=True, blank=True)
     tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
 
 # FARM Table
