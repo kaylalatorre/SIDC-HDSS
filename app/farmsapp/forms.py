@@ -1,4 +1,3 @@
-from django import forms
 from django.forms import ModelForm, DateField, widgets
 from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
 
@@ -32,11 +31,6 @@ class ExternalBiosecForm(ModelForm):
             'perim_fence' : widgets.CheckboxInput(),
             'fiveh_m_dist' : widgets.CheckboxInput(),
         }
-
-# class ExternalBiosecForm(forms.Form):
-#     bird_proof = forms.CheckboxInput()
-#     perim_fence = forms.CheckboxInput()
-#     fiveh_m_dist = forms.CheckboxInput()
 
 class InternalBiosecForm(ModelForm):
     def __init__(self, *args, **kwargs):

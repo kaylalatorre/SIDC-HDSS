@@ -40,13 +40,13 @@ class InternalBiosec(models.Model):
     
     # fields from Biomeasures
     isol_pen            = models.IntegerField(null=True, blank=True)
-
-    WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
-                            ('Biogas', 'Biogas'),
-                            ('Other', 'Other')]
-
-    waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
     foot_dip            = models.IntegerField(null=True, blank=True)
+
+    # WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
+    #                         ('Biogas', 'Biogas'),
+    #                         ('Other', 'Other')]
+
+    waste_mgt           = models.CharField(max_length=50, null=True, blank=True)
     
     # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)

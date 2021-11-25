@@ -222,11 +222,11 @@ def addFarm(request):
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
-        # collect non-Django form inputs
-        farmID = request.POST.get("input-code", None)
+        ## collect non-Django form inputs
+        farmID = request.POST.get("input-code")
         # print("TEST LOG farmID: " + farmID)
 
-        areaName = request.POST.get("input-area", None)
+        areaName = request.POST.get("input-area")
         # print("TEST LOG areaName: " + areaName)
 
         # get ID of selected area
@@ -237,130 +237,143 @@ def addFarm(request):
 
         print("TEST LOG areaID: " + str(areaID))
 
+        ## biosecurity
+        # external biosecurity
+        bird_proof = request.POST.get("cb-birdproof")
+        perim_fence = request.POST.get("cb-fence")
+        fiveh_m_dist = request.POST.get("cb-distance")
+
+        if bird_proof == 'on':
+            bird_proof = 0
+        else :
+            bird_proof = 1
+
+        if perim_fence == 'on':
+            perim_fence = 0
+        else :
+            perim_fence = 1
+
+        if fiveh_m_dist == 'on':
+            fiveh_m_dist = 0
+        else :
+            fiveh_m_dist = 1
+
+        # print("TEST LOG bird_proof: " + str(bird_proof))
+        # print("TEST LOG perim_fence: " + str(perim_fence))
+        # print("TEST LOG fiveh_m_dist: " + str(fiveh_m_dist))
+
+        externalBiosec = ExternalBiosec()
+        externalBiosec.bird_proof = bird_proof
+        externalBiosec.perim_fence = perim_fence
+        externalBiosec.fiveh_m_dist = fiveh_m_dist
+        externalBiosec.ref_farm_id = farmID
+        externalBiosec.save()
+        print("TEST LOG: Added new external biosec")
+
+        # internal biosecurity
+        isol_pen = request.POST.get("cb-isolation")
+        foot_dip = request.POST.get("cb-footdip")
+        waste_mgt = request.POST.get("input-waste-mgt")
+
+        if isol_pen == 'on':
+            isol_pen = 0
+        else :
+            isol_pen = 1
+
+        if foot_dip == 'on':
+            foot_dip = 0
+        else :
+            foot_dip = 1
+
+        internalBiosec = InternalBiosec()
+        internalBiosec.isol_pen = isol_pen
+        internalBiosec.foot_dip = foot_dip
+        internalBiosec.waste_mgt = waste_mgt
+        internalBiosec.ref_farm_id = farmID
+        internalBiosec.save()
+        print("TEST LOG: Added new internal biosec")
+
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
-        externalBiosecForm  = ExternalBiosecForm(request.POST)
-        internalBiosecForm  = InternalBiosecForm(request.POST)
-
-        print("TEST LOG externalBiosecForm: " + str(externalBiosecForm.cleaned_data['bird_proof']))
-        # if externalBiosecForm.bird_proof == 'on':
-        #     externalBiosecForm.bird_proof == 0
-        # else :
-        #     externalBiosecForm.bird_proof == 1
-
-        # if externalBiosecForm.perim_fence == 'on':
-        #     externalBiosecForm.perim_fence== 0
-        # else :
-        #     externalBiosecForm.perim_fence == 1
-
-        # if externalBiosecForm.fiveh_m_dist == 'on':
-        #     externalBiosecForm.fiveh_m_dist == 0
-        # else :
-        #     externalBiosecForm.fiveh_m_dist == 1
-
-        # print("TEST LOG externalBiosecForm.bird_proof: " + str(externalBiosecForm.bird_proof))
-        # print("TEST LOG externalBiosecForm.perim_fence: " + str(externalBiosecForm.perim_fence))
-        # print("TEST LOG externalBiosecForm.fiveh_m_dist: " + str(externalBiosecForm.fiveh_m_dist))
+        # externalBiosecForm  = ExternalBiosecForm(request.POST)
+        # internalBiosecForm  = InternalBiosecForm(request.POST)
 
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            # hogRaiser.save()
+            hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
-            if externalBiosecForm.is_valid():
-                externalBiosec = externalBiosecForm.save(commit=False)
+            # if externalBiosecForm.is_valid():
+            #     externalBiosec = externalBiosecForm.save(commit=False)
 
-                # if externalBiosec.bird_proof == 'on':
-                #     externalBiosec.bird_proof == 0
-                # else :
-                #     externalBiosec.bird_proof == 1
 
-                # if externalBiosec.perim_fence == 'on':
-                #     externalBiosec.perim_fence== 0
-                # else :
-                #     externalBiosec.perim_fence == 1
-
-                # if externalBiosec.fiveh_m_dist == 'on':
-                #     externalBiosec.fiveh_m_dist == 0
-                # else :
-                #     externalBiosec.fiveh_m_dist == 1
-
-                # print("TEST LOG externalBiosec.bird_proof: " + str(externalBiosec.bird_proof))
-                # print("TEST LOG externalBiosec.perim_fence: " + str(externalBiosec.perim_fence))
-                # print("TEST LOG externalBiosec.fiveh_m_dist: " + str(externalBiosec.fiveh_m_dist))
-
-                # externalBiosec.save()
-
-                print("TEST LOG: Added new external biosec")
-
-                if internalBiosecForm.is_valid():
-                    internalBiosec = internalBiosecForm.save(commit=False)
+                # if internalBiosecForm.is_valid():
+                #     internalBiosec = internalBiosecForm.save(commit=False)
 
                     # internalBiosec.save()
 
-                    print("TEST LOG: Added new internal biosec")
                     
-                    if farmForm.is_valid():
-                        farm = farmForm.save(commit=False)
+            if farmForm.is_valid():
+                farm = farmForm.save(commit=False)
 
-                        farm.hog_raiser_id = hogRaiser.id
-                        farm.extbio_id = externalBiosec.id
-                        farm.intbio_id = internalBiosec.id
-                        farm.area_id = areaID
-                        farm.id = farmID
+                farm.hog_raiser_id = hogRaiser.id
+                farm.extbio_id = externalBiosec.id
+                farm.intbio_id = internalBiosec.id
+                farm.area_id = areaID
+                farm.id = farmID
 
-                        print("TEST LOG farm.area_id: " + str(farm.area_id))
+                # print("TEST LOG farm.area_id: " + str(farm.area_id))
 
-                        # farm.save()
-                        print("TEST LOG: Added new farm")
+                farm.save()
+                print("TEST LOG: Added new farm")
 
-                        # get recently created internal and external biosec IDs and update ref_farm_id
-                        externalBiosec.ref_farm_id = farm
-                        internalBiosec.ref_farm_id = farm
+                # get recently created internal and external biosec IDs and update ref_farm_id
+                # externalBiosec.ref_farm_id = farm
+                # internalBiosec.ref_farm_id = farm
 
-                        # externalBiosec.save()
-                        # internalBiosec.save()
+                # externalBiosec.save()
+                # internalBiosec.save()
 
-                        if pigpenMeasuresForm.is_valid():
-                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+                if pigpenMeasuresForm.is_valid():
+                    pigpenMeasures = pigpenMeasuresForm.save(commit=False)
 
-                            pigpenMeasures.ref_farm_id = farm.id
+                    pigpenMeasures.ref_farm_id = farm.id
 
-                            # pigpenMeasures.save()
-                            print("TEST LOG: Added new pigpen measure")
+                    pigpenMeasures.save()
+                    print("TEST LOG: Added new pigpen measure")
 
-                            # add all num_heads (pigpen measure) for total_pigs (farm)
+                    # add all num_heads (pigpen measure) for total_pigs (farm)
 
 
-                            # update total_pigs of newly added farm
+                    # update total_pigs of newly added farm
 
-                            # temporary
-                            farm.total_pigs = pigpenMeasures.num_heads
-                            # farm.save()
-                            
-                            # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
-                            # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
-
-                            # return render(request, 'home.html', {})
-
-                        else:
-                            print("TEST LOG: Pigpen Measures Form not valid")
-                            print(pigpenMeasuresForm.errors)
+                    # temporary
+                    farm.total_pigs = pigpenMeasures.num_heads
+                    # farm.save()
                     
-                    else:
-                        print("TEST LOG: Farm Form not valid")
-                        print(farmForm.errors)
+                    # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
+                    # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
+
+                    # return render(request, 'home.html', {})
 
                 else:
-                    print("TEST LOG: Internal Biosec Form not valid")
-                    print(internalBiosecForm.errors)
-
+                    print("TEST LOG: Pigpen Measures Form not valid")
+                    print(pigpenMeasuresForm.errors)
+            
             else:
-                print("TEST LOG: External Biosec Form not valid")
-                print(externalBiosecForm.errors)
+                print("TEST LOG: Farm Form not valid")
+                print(farmForm.errors)
+
+            #     else:
+            #         print("TEST LOG: Internal Biosec Form not valid")
+            #         print(internalBiosecForm.errors)
+
+            # else:
+            #     print("TEST LOG: External Biosec Form not valid")
+            #     print(externalBiosecForm.errors)
             
         else:
             print("TEST LOG: Hog Raiser Form not valid")
@@ -373,16 +386,16 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
         pigpenMeasuresForm  = PigpenMeasuresForm()
-        externalBiosecForm  = ExternalBiosecForm()
-        internalBiosecForm  = InternalBiosecForm()
+        # externalBiosecForm  = ExternalBiosecForm()
+        # internalBiosecForm  = InternalBiosecForm()
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'area' : areaQry,
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
-                                                        'pigpenMeasuresForm' : pigpenMeasuresForm,
-                                                        'externalBiosecForm' : externalBiosecForm,
-                                                        'internalBiosecForm' : internalBiosecForm})
+                                                        'pigpenMeasuresForm' : pigpenMeasuresForm })
+                                                        # 'externalBiosecForm' : externalBiosecForm,
+                                                        # 'internalBiosecForm' : internalBiosecForm})
  
 
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
