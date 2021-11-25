@@ -146,12 +146,18 @@ def techSelectedFarm(request, farmID):
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
     """
 
-    # get details of selected farm
+    ## get details of selected farm
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
-    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area').annotate(
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
                     contact     = F("hog_raiser__contact_no"),
-                    farm_area   = F("area__area_name")
+                    farm_area   = F("area__area_name"),
+                    waste_mgt   = F("intbio__waste_mgt"),
+                    isol_pen    = F("intbio__isol_pen"),
+                    bird_proof  = F("extbio__bird_proof"),
+                    perim_fence = F("extbio__perim_fence"),
+                    foot_dip    = F("intbio__foot_dip"),
+                    fiveh_m_dist = F("extbio__fiveh_m_dist"),
                     )
 
     # pass all data into an object
@@ -171,40 +177,23 @@ def techSelectedFarm(request, farmID):
         "medic_tank",
         "bldg_curtain",
         "road_access",
-        # "waste_mgt",
-        # "isol_pen",
-        # "bird_proof",
-        # "perim_fence",
-        # "foot_dip",
-        # "fiveh_m_dist",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
     ).first()
 
     # collect the corresponding pigpens for selected farm
     pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
-    print("TEST LOG pigpenQry: " + str(pigpenQry.query))
 
-    # collect the corresponding biosecurity details for selected farm
-    intBioQry = InternalBiosec.objects.filter(ref_farm_id=farmID)
-    print("TEST LOG intBioQry: " + str(intBioQry.query))
+    # FOR TESTING
+    # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
+    # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
 
-    # intBioQry = InternalBiosec.objects.filter(ref_farm_id=farmID).annotate(
-    #                 waste_mgt   = F("intbio__waste_mgt"),
-    #                 isol_pen    = F("intbio__isol_pen"),
-    #                 foot_dip    = F("intbio__foot_dip")
-    # )
-
-    extBioQry = ExternalBiosec.objects.filter(ref_farm_id=farmID)
-    print("TEST LOG extBioQry: " + str(extBioQry.query))
-
-    # extBioQry = ExternalBiosec.objects.filter(ref_farm_id=farmID).annotate(
-    #                 bird_proof  = F("extbio__bird_proof"),
-    #                 perim_fence = F("extbio__perim_fence"),
-    #                 fiveh_m_dist = F("extbio__fiveh_m_dist")
-    # )
-
-    # print("TEST LOG waste_mgt: " + str(techFarmQry.values("waste_mgt")))
-    # pass (1) farm details, (2) pigpen measures, and (3) internal and external biosecurity details to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenQry, "intBio" : intBioQry, "extBio" : extBioQry})
+    # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenQry})
 
 def addFarm(request):
     """
@@ -227,19 +216,19 @@ def addFarm(request):
     
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
-            # hogRaiser.save()
+            hogRaiser.save()
 
             print("TEST LOG: Added new raiser")
 
             if externalBiosecForm.is_valid():
                 externalBiosec = externalBiosecForm.save(commit=False)
-                # externalBiosec.save()
+                externalBiosec.save()
 
                 print("TEST LOG: Added new external biosec")
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
-                    # internalBiosec.save()
+                    internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
                     
@@ -249,7 +238,7 @@ def addFarm(request):
                         # save current user (technician) ID to tech_id
                         area.tech_id = request.user.id
 
-                        # area.save()
+                        area.save()
                         
                         print("TEST LOG: Added area")
 
@@ -261,7 +250,7 @@ def addFarm(request):
                             farm.intbio_id = internalBiosec.id
                             farm.area_id = area.id
 
-                            # farm.save()
+                            farm.save()
 
                             # get recently created pigpen measures, and internal and external biosec IDs
 
@@ -274,7 +263,7 @@ def addFarm(request):
                             if pigpenMeasuresForm.is_valid():
                                 # for len(pigpenMeasuresForm.length)
                                 pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-                                print(pigpenMeasures.length)
+                                # print(pigpenMeasures.length)
 
                                 pigpenMeasures.ref_farm_id = farm.id
 
@@ -284,10 +273,10 @@ def addFarm(request):
                                 # update total_pigs of newly added farm
 
 
-                                # pigpenMeasures.save()
+                                pigpenMeasures.save()
 
                                 print("TEST LOG: Added new pigpen measure")
-                                # return render(request, 'home.html', {})
+                                return render(request, 'home.html', {})
 
                             else:
                                 print("TEST LOG: Pigpen Measures Form not valid")

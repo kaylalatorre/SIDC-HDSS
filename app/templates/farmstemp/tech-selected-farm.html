@@ -125,9 +125,11 @@
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
                     
                     {% if farm.total_pigs == 0 %}
-                    <p> No pigs </p>
+                        <p> No pigs </p>
+                    {% elif farm.total_pigs == Null %}
+                        <p> No pigs </p>
                     {% else %}
-                    <p> {{farm.total_pigs}} pigs </p>
+                        <p> {{farm.total_pigs}} pigs </p>
                     {% endif %}
 
                 </div>
@@ -137,7 +139,7 @@
             <h2>Biosecurity Measures</h2>
             <div class="box-style">
                 <div class="mb-3">
-                    {% if intBio.isol_pen == 0 %}
+                    {% if farm.isol_pen == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked disabled> 
                     {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
@@ -146,7 +148,7 @@
                     <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
                 <div class="mb-3">
-                    {% if extBio.bird_proof == 0 %}
+                    {% if farm.bird_proof == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-birdproof" value="true" checked disabled> 
                     {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-birdproof" value="true" disabled> 
@@ -155,7 +157,7 @@
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    {% if extBio.perim_fence == 0 %}
+                    {% if farm.perim_fence == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-fence" value="true" checked disabled> 
                     {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-fence" value="true" disabled> 
@@ -164,7 +166,7 @@
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    {% if intBio.foot_dip == 0 %}
+                    {% if farm.foot_dip == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" checked disabled> 
                     {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" disabled> 
@@ -173,7 +175,7 @@
                     <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
                 <div class="mb-3">
-                    {% if extBio.fiveh_m_dist == 0 %}
+                    {% if farm.fiveh_m_dist == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-distance" value="true" checked disabled> 
                     {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-distance" value="true" disabled> 
@@ -183,7 +185,7 @@
                 </div>
                 <div class="flex">
                     <label for="input-trough" class="form-label">Waste Management:</label>
-                    <p style="font-weight: 600;">{{intBio.waste_mgt}}</p>
+                    <p style="font-weight: 600;">{{farm.waste_mgt}}</p>
                 </div>
             </div>
         </section>
