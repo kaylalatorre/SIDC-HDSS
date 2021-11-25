@@ -76,7 +76,7 @@ def farms(request):
             "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
-            "updated": str(f["last_updated"])
+            "updated": f["last_updated"]
         }
         farmsData.append(farmObject)
     debug(farmsData)
@@ -113,7 +113,15 @@ def techFarms(request):
     """
     
     # get all farms under the current technician 
+    techID = request.user.id
+    areaQry = Area.objects.filter(tech_id=techID).values("id")
+
+    print("TEST LOG areaQry: " + str(areaQry))
+
     # collect the corresponding hog raiser details for each farm 
+    
+    # techFarmQry  = Farm.filter(area_id=area).objects.select_related('hog_raiser').annotate(
+
     techFarmQry  = Farm.objects.select_related('hog_raiser').annotate(
                 fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
                         "id",
@@ -207,6 +215,9 @@ def addFarm(request):
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
+        farmID              = request.POST.get("input-code", None)
+        print("TEST LOG farmID: " + farmID)
+
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         areaForm            = AreaForm(request.POST)
@@ -222,25 +233,34 @@ def addFarm(request):
 
             if externalBiosecForm.is_valid():
                 externalBiosec = externalBiosecForm.save(commit=False)
+
+                # externalBiosec.ref_farm_id = farmID
+
                 externalBiosec.save()
 
                 print("TEST LOG: Added new external biosec")
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
+
+                    # internalBiosec.ref_farm_id = farmID
+
                     internalBiosec.save()
 
                     print("TEST LOG: Added new internal biosec")
                     
-                    if areaForm.is_valid():
+                    if areaForm.is_valid(): 
+                        # temporary solution
                         area = areaForm.save(commit=False)
 
                         # save current user (technician) ID to tech_id
                         area.tech_id = request.user.id
-
-                        area.save()
-                        
+                        area.save()                        
                         print("TEST LOG: Added area")
+
+                        ## updated solution
+                        # get area_id of area selected for farm
+
 
                         if farmForm.is_valid():
                             farm = farmForm.save(commit=False)
@@ -249,33 +269,38 @@ def addFarm(request):
                             farm.extbio_id = externalBiosec.id
                             farm.intbio_id = internalBiosec.id
                             farm.area_id = area.id
+                            farm.id = farmID
 
                             farm.save()
-
-                            # get recently created pigpen measures, and internal and external biosec IDs
-
-
-                            # update ref_farm_id of all records
-
-
                             print("TEST LOG: Added new farm")
 
+                            # get recently created internal and external biosec IDs and update ref_farm_id
+                            externalBiosec.ref_farm_id = farm
+                            internalBiosec.ref_farm_id = farm
+
+                            externalBiosec.save()
+                            internalBiosec.save()
+
                             if pigpenMeasuresForm.is_valid():
-                                # for len(pigpenMeasuresForm.length)
                                 pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-                                # print(pigpenMeasures.length)
 
                                 pigpenMeasures.ref_farm_id = farm.id
+
+                                pigpenMeasures.save()
+                                print("TEST LOG: Added new pigpen measure")
 
                                 # add all num_heads (pigpen measure) for total_pigs (farm)
 
 
                                 # update total_pigs of newly added farm
 
+                                # temporary
+                                farm.total_pigs = pigpenMeasures.num_heads
+                                farm.save()
+                                
+                                # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
+                                # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
-                                pigpenMeasures.save()
-
-                                print("TEST LOG: Added new pigpen measure")
                                 return render(request, 'home.html', {})
 
                             else:

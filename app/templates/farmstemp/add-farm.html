@@ -25,7 +25,7 @@
             <div class="box-style">
                 <div class="mb-3">
                     <label for="input-code" class="form-label">Code</label>
-                    <input type="text" class="form-control" id="input-code" name="input-code" placeholder="ex. 001">
+                    <input type="text" class="form-control" id="input-code" maxlength="3" minlength="3" name="input-code" placeholder="ex. 001">
                 </div>
 
                 <h3>Raiser</h3>
@@ -123,17 +123,6 @@
                             </tr>
                         </thead>
                         <tbody  id="input-pigpen">
-                            <tr>
-                                <td data-label="Length" id="pigpen-length">
-                                    {{pigpenMeasuresForm.length}}
-                                </td>
-                                <td data-label="Width" id="pigpen-width">
-                                    {{pigpenMeasuresForm.width}}
-                                </td>
-                                <td data-label="No. of Pigs" id="pigpen-num-heads">
-                                    {{pigpenMeasuresForm.num_heads}}
-                                </td>
-                            </tr>
                             <tr>
                                 <td data-label="Length" id="pigpen-length">
                                     {{pigpenMeasuresForm.length}}
