@@ -243,7 +243,27 @@ def addFarm(request):
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
-    
+
+        print("TEST LOG externalBiosecForm: " + str(externalBiosecForm.cleaned_data['bird_proof']))
+        # if externalBiosecForm.bird_proof == 'on':
+        #     externalBiosecForm.bird_proof == 0
+        # else :
+        #     externalBiosecForm.bird_proof == 1
+
+        # if externalBiosecForm.perim_fence == 'on':
+        #     externalBiosecForm.perim_fence== 0
+        # else :
+        #     externalBiosecForm.perim_fence == 1
+
+        # if externalBiosecForm.fiveh_m_dist == 'on':
+        #     externalBiosecForm.fiveh_m_dist == 0
+        # else :
+        #     externalBiosecForm.fiveh_m_dist == 1
+
+        # print("TEST LOG externalBiosecForm.bird_proof: " + str(externalBiosecForm.bird_proof))
+        # print("TEST LOG externalBiosecForm.perim_fence: " + str(externalBiosecForm.perim_fence))
+        # print("TEST LOG externalBiosecForm.fiveh_m_dist: " + str(externalBiosecForm.fiveh_m_dist))
+
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
             # hogRaiser.save()
@@ -253,24 +273,24 @@ def addFarm(request):
             if externalBiosecForm.is_valid():
                 externalBiosec = externalBiosecForm.save(commit=False)
 
-                if externalBiosec.bird_proof == 'on':
-                    externalBiosec.bird_proof == 0
-                else :
-                    externalBiosec.bird_proof == 1
+                # if externalBiosec.bird_proof == 'on':
+                #     externalBiosec.bird_proof == 0
+                # else :
+                #     externalBiosec.bird_proof == 1
 
-                if externalBiosec.perim_fence == 'on':
-                    externalBiosec.perim_fence== 0
-                else :
-                    externalBiosec.perim_fence == 1
+                # if externalBiosec.perim_fence == 'on':
+                #     externalBiosec.perim_fence== 0
+                # else :
+                #     externalBiosec.perim_fence == 1
 
-                if externalBiosec.fiveh_m_dist == 'on':
-                    externalBiosec.fiveh_m_dist == 0
-                else :
-                    externalBiosec.fiveh_m_dist == 1
+                # if externalBiosec.fiveh_m_dist == 'on':
+                #     externalBiosec.fiveh_m_dist == 0
+                # else :
+                #     externalBiosec.fiveh_m_dist == 1
 
-                print("TEST LOG externalBiosec.bird_proof: " + str(externalBiosec.bird_proof))
-                print("TEST LOG externalBiosec.perim_fence: " + str(externalBiosec.perim_fence))
-                print("TEST LOG externalBiosec.fiveh_m_dist: " + str(externalBiosec.fiveh_m_dist))
+                # print("TEST LOG externalBiosec.bird_proof: " + str(externalBiosec.bird_proof))
+                # print("TEST LOG externalBiosec.perim_fence: " + str(externalBiosec.perim_fence))
+                # print("TEST LOG externalBiosec.fiveh_m_dist: " + str(externalBiosec.fiveh_m_dist))
 
                 # externalBiosec.save()
 

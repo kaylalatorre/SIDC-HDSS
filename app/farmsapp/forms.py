@@ -11,7 +11,7 @@ class ExternalBiosecForm(ModelForm):
         self.fields['bird_proof'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-isolation'         
+            'id': 'cb-bird-proof'         
         })
         self.fields['perim_fence'].widget.attrs.update({
             'input type' : 'checkbox',
@@ -33,9 +33,10 @@ class ExternalBiosecForm(ModelForm):
             'fiveh_m_dist' : widgets.CheckboxInput(),
         }
 
-# class ExternalBiosecForm(forms:Form)
-#     bird_proof = forms.IntegerField()
-
+# class ExternalBiosecForm(forms.Form):
+#     bird_proof = forms.CheckboxInput()
+#     perim_fence = forms.CheckboxInput()
+#     fiveh_m_dist = forms.CheckboxInput()
 
 class InternalBiosecForm(ModelForm):
     def __init__(self, *args, **kwargs):
