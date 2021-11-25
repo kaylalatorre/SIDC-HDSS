@@ -394,22 +394,3 @@ function addActivityPage(farmID) {
         location.reload(true);
     }
 }
-
-// $(document).ready(function(){
-//     $("#add-pen").click(function(){
-//         $("#input-pigpen").append("<tr> \
-//                 <td data-label='Length'> {{pigpenMeasuresForm.length}} </td> \
-//                 <td data-label='Width'> {{pigpenMeasuresForm.width}} </td> \
-//                 <td data-label='No. of Pigs'> {{pigpenMeasuresForm.num_heads}} </td> \
-//             </tr>");
-
-    
-//         console.log("pen added");
-//     });
-
-// });
-
-
-// function addPigPen() {
-//     console.log(hello);
-// }

@@ -42,8 +42,6 @@ function viewFarm(farm) {
     }
 }
 
-// const addPenBtn = document.getElementById("addPigPenRow");
-
 function addPigPenRow() {
 
     const length = document.getElementById('pigpen-length').innerHTML;
@@ -62,7 +60,24 @@ function addPigPenRow() {
 }
 
 function addActivityRow() {
-    console.log("new activity row");
+    const date = document.getElementById('date').innerHTML;
+    const trip_type = document.getElementById('trip_type').innerHTML;
+    const time_departure = document.getElementById('time_departure').innerHTML;
+    const time_arrival = document.getElementById('time_arrival').innerHTML;
+    const description = document.getElementById('description').innerHTML;
+    const remarks = document.getElementById('remarks').innerHTML;
+
+    // const row = document.getElementById("pigpen-row");
+    const table = document.getElementById("input-act");
+ 
+    $("#input-act").append("<tr> \
+        <td data-label='Date'> " + date + " </td> \
+        <td data-label='Trip Type'> " + trip_type + " </td> \
+        <td data-label='Departure Time'> " + time_departure + " </td> \
+        <td data-label='Arrival Time'> " + time_arrival + " </td> \
+        <td data-label='Description'> " + description + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
+        </tr>");
 }
 
 function viewForm() {
