@@ -623,8 +623,12 @@ def delete_bioChecklist(request, biosecID):
             
             debug("in delete_bioChecklist() -- bioID: " + str(bioID)) 
 
+            # TODO: check if this does DELETE-CASCADE
             extBio = ExternalBiosec.objects.filter(id=bioID).delete()
             intBio = InternalBiosec.objects.filter(id=bioID).delete()
+
+            # TODO: if to be deleted Biochecklist is the FK in Farms, replace Farm int-extbio FK w/ 
+            # 2nd latest biosec
 
             # (SUCCESS) Biosec record has been deleted.
             # return JsonResponse({"instance": jsonStr}, status=200)
@@ -646,34 +650,66 @@ def biosec_view(request):
 
     print("TEST LOG: in Biosec view/n")
 
-    
-    # (1) Get all Farms under a technician User
+
+    # get all farms under the current technician 
     techID = request.user.id
-    areaQry = Area.objects.filter(tech_id=techID).values("id")
 
-    debug("areaQry -- " + str(areaQry))
+    # collect all IDs of assigned areas under technician
+    areaQry = Area.objects.filter(tech_id=techID).all()
 
-    # TODO: loop selected Area IDs in this Farm query
-    farmlistQry = Farm.objects.filter(Q(area_id=1)|Q(area_id=2)).only(
-        "id"
-    ).all()
+    print("TEST LOG areaQry: " + str(areaQry))
 
-    debug("farmlistQry -- " + str(farmlistQry))
+    # array to store all farms under each area
+    techFarmsList = []
 
-    # Select Biochecklist from intbio-extbio FKs
-    farm = farmlistQry.first()
-    farmID = farm.id
+    for area in areaQry :
+        print(str(area.id))
+        print(str(area.area_name))
+
+        # collect the corresponding hog raiser details for each farm 
+        techFarmQry  = Farm.objects.filter(area_id=area.id)
+        debug("techFarmQry -- " + str(techFarmQry))
+
+        # # pass all data into an array
+        # for farm in techFarmQry:
+        #     farmObject = {
+        #         # 'id': farm.id,
+        #         "id": str(farm["id"]),
+        #     }
+
+        techFarmsList.append(techFarmQry)
+
+    debug("techFarmsList -- " + str(techFarmsList))
+
+    # -----------------
+    # # (1) Get all Farms under the logged-in technician User
+    # techID = request.user.id
+    # areaQry = Area.objects.filter(tech_id=techID).values("id")
+
+    # debug("areaQry -- " + str(areaQry))
+
+    # # TODO: loop selected Area IDs in this Farm query
+    # farmlistQry = Farm.objects.filter(area_id=1).only(
+    #     "id"
+    # ).all()
+
+    # debug("farmlistQry -- " + str(farmlistQry))
+
+    # # Select Biochecklist from intbio-extbio FKs
+    farmID = techFarmsList[0].id
+
+    # # if not farmlistQry.exists() or farm.id is None: # for checking Farms that have no Biosec records
+    # #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
+    # #     return redirect('/biosecurity')
+    # # else: 
+    # farmID = farm.id
+    # farmID = 4
+
 
     debug("biosec_view() farmID -- " + str(farmID))
+    # ------------------
 
     # Get current internal and external FKs
-
-    # SELECT biosec.id,<biochecklist fields INTERNAL>, <biochecklist fields EXTERNAL>
-    # FROM farm F
-    # JOIN externalbiosec EXT
-    # ON F.extbiosec_ID = EXT.id
-    # JOIN internalbiosec INT
-    # ON F.intbiosec_ID = INT.id
     currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
     
     # debug("in biosec_view(): currbioObj")
@@ -685,13 +721,14 @@ def biosec_view(request):
 
 
     # (3) Get all biosecID, last_updated in extbio under a Farm
-
-    # SELECT "farmsapp_externalbiosec"."id", "farmsapp_externalbiosec"."last_updated" 
-    # FROM "farmsapp_externalbiosec" WHERE "farmsapp_externalbiosec"."ref_farm_id" = <farm id> 
-    # ORDER BY "farmsapp_externalbiosec"."last_updated" DESC
     extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
         'last_updated',
     ).order_by('-last_updated')
+
+    if not extQuery.exists(): # for checking Farms that have no Biosec records
+        messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biochecklist")
+        return redirect('/biosecurity')
+
 
     # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
     print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
@@ -719,7 +756,7 @@ def biosec_view(request):
     # - (2) latest intbio-extbio Checklist, 
     # - (3) all biocheck IDs and dates within that Farm, 
     # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
 # For getting all Biosec checklist versions under a Farm based on farmID.
 def select_biosec(request, farmID):
@@ -749,9 +786,14 @@ def select_biosec(request, farmID):
 
     debug("farmlistQry -- " + str(farmlistQry))
 
+    # if not farmlistQry.exists() or farmID is None: # for checking Farms that have no Biosec records
+    #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
+    #     return render(request, 'farmstemp/biosecurity.html', {})
+    # else: 
     # Get farmID passed from URL param
     farmID = farmID
     debug("in select_biosec() farmID -- " + str(farmID))
+
 
 
     # Select Biochecklist with latest date
