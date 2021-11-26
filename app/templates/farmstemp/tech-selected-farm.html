@@ -29,10 +29,6 @@
                     <table class="table">
                         <tbody>
                             <tr>
-                                <th>Farm Code</td>
-                                <td>{{farm.id}}</td>
-                            </tr>
-                            <tr>
                                 <th>Raiser</td>
                                 <td>{{farm.raiser}}</td>
                             </tr>
@@ -53,7 +49,10 @@
                                 <td>{{farm.farm_area}}</td>
                             </tr>
                             <tr>
-
+                            <tr>
+                                <th>Road Access</td>
+                                <td>{{farm.road_access|yesno:"Yes,No"}}</td>
+                            </tr>
                             </tr>
                         </tbody>
                     </table>
@@ -82,10 +81,6 @@
                                 <td>{{farm.bldg_curtain|yesno:"Yes,No"}}</td>
                             </tr>
                             <tr>
-                                <th>Road Access</td>
-                                <td>{{farm.road_access|yesno:"Yes,No"}}</td>
-                            </tr>
-                            <tr>
                                 <th>Medic Tank</td>
                                 <td>{{farm.medic_tank}}</td>
                             </tr>
@@ -112,7 +107,7 @@
                     {% for pen in pigpens %}
                     
                         <tr>
-                            <td></td>
+                            <td> {{pen.pen_no}} </td>
                             <td data-label="Length"> {{pen.length|floatformat:"-2"}} </td>
                             <td data-label="Width"> {{pen.width|floatformat:"-2"}} </td>
                             <td data-label="No. of Pigs"> {{pen.num_heads}} </td>

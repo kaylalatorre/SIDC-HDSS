@@ -121,19 +121,30 @@ def techFarms(request):
 
     print("TEST LOG areaQry: " + str(areaQry))
     
+        # area_num = 1
+    # # concatenate all areas into one string (for frontend purposes)
+    # for area in areaQry :
+    #     if area_num == len(areaQry):
+    #         areaList = Concat('area.area_name')
+    #     else :
+    #         areaList = Concat('area.area_name', Value(', '))
+
+    #     area_num += 1
+
     # collect number of areas assigned (for frontend purposes)
     areaNum = len(areaQry)
     print("TEST LOG areaNum: " + str(areaNum))
 
     # array to store all farms under each area
     techFarmsList = []
-
-    # collect the corresponding hog raiser details for each farm 
+    
+    # collect all farms under each area
     for area in areaQry :
         print(str(area.id))
         print(str(area.area_name))
 
-        techFarmQry  = Farm.objects.filter(area_id=area.id).filter(is_approved=True).select_related('hog_raiser').annotate(
+        # collect the corresponding hog raiser details for each farm 
+        techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
                             "id",
                             "fname",
@@ -141,7 +152,7 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_updated")
-        print(techFarmQry)
+        # print(techFarmQry)
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -157,7 +168,9 @@ def techFarms(request):
             techFarmsList.append(farmObject)
     
     # pass techFarmsList array to template
+    # return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaCount' : areaNum, 'areaList' : areaQry, 'areas' : areaList })
     return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaCount' : areaNum, 'areaList' : areaQry }) 
+
 
 def techSelectedFarm(request, farmID):
     """
@@ -207,12 +220,28 @@ def techSelectedFarm(request, farmID):
     # collect the corresponding pigpens for selected farm
     pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
 
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+
+        pen_no += 1
+
     # FOR TESTING
     # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
+    # print("TEST LOG pigpenList: " + str(pigpenList))
     # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenQry})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList})
 
 def addFarm(request):
     """

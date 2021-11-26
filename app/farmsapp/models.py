@@ -114,7 +114,7 @@ class Area(models.Model):
 class Farm(models.Model): 
     hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
 
-    date_registered     = models.DateField(null=True, blank=True)
+    date_registered     = models.DateField(default=now, null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     area                = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True)
