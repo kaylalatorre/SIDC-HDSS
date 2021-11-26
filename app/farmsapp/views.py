@@ -117,8 +117,6 @@ def techFarms(request):
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all()
-    # areaNameQry = Area.objects.filter()
-
     print("TEST LOG areaQry: " + str(areaQry))
     
         # area_num = 1
@@ -140,8 +138,7 @@ def techFarms(request):
     
     # collect all farms under each area
     for area in areaQry :
-        print(str(area.id))
-        print(str(area.area_name))
+        print(str(area.id) + str(area.area_name))
 
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
@@ -152,7 +149,8 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_updated")
-        # print(techFarmQry)
+
+        print("TEST LOG techFarmQry: " + str(techFarmQry))
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -775,53 +773,37 @@ def biosec_view(request):
 
     print("TEST LOG: in Biosec view/n")
 
-
-    # get all farms under the current technician 
+    # # (1) Get all Farms under the logged-in technician User
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all()
-
     print("TEST LOG areaQry: " + str(areaQry))
 
     # array to store all farms under each area
     techFarmsList = []
 
     for area in areaQry :
-        print(str(area.id))
-        print(str(area.area_name))
+        print(str(area.id) + str(area.area_name))
 
         # collect the corresponding hog raiser details for each farm 
-        techFarmQry  = Farm.objects.filter(area_id=area.id)
+        techFarmQry  = Farm.objects.filter(area_id=area.id).values(
+            "id"
+        ).all()
         debug("techFarmQry -- " + str(techFarmQry))
 
-        # # pass all data into an array
-        # for farm in techFarmQry:
-        #     farmObject = {
-        #         # 'id': farm.id,
-        #         "id": str(farm["id"]),
-        #     }
-
-        techFarmsList.append(techFarmQry)
+        # pass all data into an array
+        for farm in techFarmQry:
+            farmObject = {
+                "id": str(farm["id"]),
+            }
+            techFarmsList.append(farmObject)
 
     debug("techFarmsList -- " + str(techFarmsList))
 
-    # -----------------
-    # # (1) Get all Farms under the logged-in technician User
-    # techID = request.user.id
-    # areaQry = Area.objects.filter(tech_id=techID).values("id")
-
-    # debug("areaQry -- " + str(areaQry))
-
-    # # TODO: loop selected Area IDs in this Farm query
-    # farmlistQry = Farm.objects.filter(area_id=1).only(
-    #     "id"
-    # ).all()
-
-    # debug("farmlistQry -- " + str(farmlistQry))
-
-    # # Select Biochecklist from intbio-extbio FKs
-    farmID = techFarmsList[0].id
+    # # Get ID of first farm under technician
+    firstFarm = str(*techFarmsList[0].values())
+    farmID = int(firstFarm)
 
     # # if not farmlistQry.exists() or farm.id is None: # for checking Farms that have no Biosec records
     # #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
@@ -829,7 +811,6 @@ def biosec_view(request):
     # # else: 
     # farmID = farm.id
     # farmID = 4
-
 
     debug("biosec_view() farmID -- " + str(farmID))
     # ------------------
@@ -897,19 +878,33 @@ def select_biosec(request, farmID):
 
     print("TEST LOG: in Biosec view/n")
 
-    
-    # (1) Get all Farms under a technician User
+    # # (1) Get all Farms under the logged-in technician User
     techID = request.user.id
-    areaQry = Area.objects.filter(tech_id=techID).first()
 
-    debug("areaQry.id -- " + str(areaQry.id))
+    # collect all IDs of assigned areas under technician
+    areaQry = Area.objects.filter(tech_id=techID).all()
+    print("TEST LOG areaQry: " + str(areaQry))
 
-    # TODO: loop selected Area IDs in this Farm query
-    farmlistQry = Farm.objects.filter(area_id=areaQry.id).only(
-        "id"
-    ).all()
+    # array to store all farms under each area
+    techFarmsList = []
 
-    debug("farmlistQry -- " + str(farmlistQry))
+    for area in areaQry :
+        print(str(area.id) + str(area.area_name))
+
+        # collect the corresponding hog raiser details for each farm 
+        techFarmQry  = Farm.objects.filter(area_id=area.id).values(
+            "id"
+        ).all()
+        debug("techFarmQry -- " + str(techFarmQry))
+
+        # pass all data into an array
+        for farm in techFarmQry:
+            farmObject = {
+                "id": str(farm["id"]),
+            }
+            techFarmsList.append(farmObject)
+
+    debug("techFarmsList -- " + str(techFarmsList))
 
     # if not farmlistQry.exists() or farmID is None: # for checking Farms that have no Biosec records
     #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
@@ -918,7 +913,6 @@ def select_biosec(request, farmID):
     # Get farmID passed from URL param
     farmID = farmID
     debug("in select_biosec() farmID -- " + str(farmID))
-
 
 
     # Select Biochecklist with latest date
@@ -963,7 +957,7 @@ def select_biosec(request, farmID):
     # - (2) latest intbio-extbio Checklist, 
     # - (3) all biocheck IDs and dates within that Farm, 
     # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': farmlistQry,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
 def addChecklist_view(request, farmID):
     """
