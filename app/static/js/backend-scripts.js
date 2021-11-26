@@ -33,20 +33,20 @@ function ajaxCSRF(){
 /** 
  * on-change AJAX for Biochecklist search
  */
-$('#checklist-date').change(function() {
-    
+$('.checklist-date').change(function() {
+
+// function searchBiocheck(){
     disableCheck();
 
     // Get biosec ID of selected option tag
-    var biosecID = $("#checklist-date option:selected").val()
-    // alert("biosecID: " + biosecID);
+    var biosecID = $(this).val();
+    alert("in search_checklist() -- biosecID: " + biosecID);
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/biosecurity/getchecklist',
-        data: {"biosecID": biosecID}, // pass biosec id here
+        url: '/biosecurity/getchecklist/' + biosecID,
         success: function (response){
 
             // alert("in AJAX success");
@@ -116,12 +116,12 @@ $('#checklist-date').change(function() {
             alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
         }
     });
-
+// }
 });
 
 $('#farm-code').change(function() { 
 
-    farmID = $("#farm-code option:selected").val()
+    farmID = $("#farm-code option:selected").val();
     try{
         url = "/biosecurity/" + farmID;
         console.log(url);
@@ -155,13 +155,13 @@ function disableCheck(){
 /**
  * on-click AJAX for save Biochecklist btn
  */
-function saveBiocheck(){
+function saveBiocheck(elem){
     // Get biosec ID of selected option tag
-    var biosecID = $("#checklist-date option:selected").val()
-    // alert("biosecID: " + biosecID);
+    var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
+    // alert("in saveBiocheck() biosecID: " + biosecID);
 
     // Put biosec fields in an array
-    var checkArr = []
+    var checkArr = [];
 
     // EXTERNAL biosec fields
     if ($('#prvdd_foot_dip_radio1').prop('checked') == true)
@@ -227,8 +227,6 @@ function saveBiocheck(){
 
     $.ajax({
         type: 'POST',
-        // url: '/biosecurity/edit-checklist', // TODO: convert to '/biosecurity/edit-checklist/' + biosecID
-        // data: {"biosecID": biosecID, "checkArr": checkArr}, 
         url: '/biosecurity/edit-checklist/' + biosecID,
         data: {"checkArr": checkArr}, 
         success: function (response){
@@ -313,6 +311,34 @@ function saveBiocheck(){
     disableCheck();
 }
 
+function deleteBiocheck(elem){
+
+    // Get biosec ID of selected option tag
+    var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
+    alert("in deleteBiocheck() -- biosecID: " + biosecID);
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/biosecurity/delete-checklist/' + biosecID,
+        // data: {"checkArr": checkArr}, 
+        success: function (response){
+
+            if (response.status == 200){
+                alert("Biochecklist record deleted.");
+            }
+            // reload Biosec page to update dropdown of Biosec last_updated
+            // window.location.reload(true);
+            window.location.replace("/biosecurity");
+
+        },
+        error: function (res){
+            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+        }
+    });
+}
+
 /**
 *   - Redirects current user (technician) to the selected farm. 
 *   - Appends selected farm ID to url that will display farm details.
@@ -365,7 +391,6 @@ function addBiosecPage(farmID) {
 
     try{
         url = "/add-checklist/" + techFarm;
-        // url = "/add-checklist";
         console.log(url);
         location.href = url;
     } catch (error){

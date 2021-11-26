@@ -7,6 +7,22 @@
 {% endblock page_title %}
 
 {% block section %}
+
+    <!-- TEST: for ADD-CHECKLIST success-error message placeholder -->
+    {% for mssg in messages %}
+        {% if "add-checklist" in mssg.tags %}
+            <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+        {% if "view-biochecklist" in mssg.tags %}
+            <div style="color:blue;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+        
+    {% endfor %}
+
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
     <p>Select a farm to check its biosecurity records.</p>
@@ -120,7 +136,7 @@
                     <div class="flex subheading">     
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-                            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                            <select class="form-select checklist-date desktop" id="checklist-date" style="margin-bottom: 0;">
                                 <option hidden value="{{ bioList.0.id }}"> {{ bioList.0.last_updated}} </option>
                                 {% for bio in bioList %}
                                     <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
@@ -129,26 +145,25 @@
 
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
-                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck()"><i class='bx bxs-save'></i>Save</button>
+                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i>Save</button>
                             <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
-                            <button id="delCheck-btn"class="secondary-btn-red"><i class='bx bxs-trash'></i>Delete</button>
+                            <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)"><i class='bx bxs-trash' ></i>Delete</button>
                         </div>
                     </div>
                     <div class="flex mobile-subheading">     
                         <div class="input-group mb-3" style="width:90%; padding-right: 4px;">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-                            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                                {% for bio in bioList %}
-                                    {% load tz %}
-                                    <option value="{{ bio.id }}"> {{ bio.last_updated|localtime }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                                <select class="form-select checklist-date mobile" id="checklist-date" style="margin-bottom: 0;">
+                                    <option hidden value="{{ bioList.0.id }}"> {{ bioList.0.last_updated}} </option>
+                                    {% for bio in bioList %}
+                                        <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
+                                    {% endfor %}
+                                </select>
                         </div>
                         <div class="btn-group" style="justify-content: flex-end; padding: 0;">
-                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck()"><i class='bx bxs-save'></i><span class="text">Save</span></button>
-                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="editBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                            <button id="delCheck-btn"class="secondary-btn-red"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i><span class="text">Save</span></button>
+                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                            <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)" ><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                         </div>
                     </div>
                 </div>
