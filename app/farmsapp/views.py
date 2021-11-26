@@ -120,41 +120,50 @@ def techFarms(request):
     # areaNameQry = Area.objects.filter()
 
     print("TEST LOG areaQry: " + str(areaQry))
-
-    # collect the corresponding hog raiser details for each farm 
     
-    # techFarmQry  = Farm.filter(area_id=area).objects.select_related('hog_raiser').annotate(
+    # collect number of areas assigned (for frontend purposes)
+    areaNum = len(areaQry)
+    print("TEST LOG areaNum: " + str(areaNum))
 
+    # array to store all farms under each area
     techFarmsList = []
 
+    # collect the corresponding hog raiser details for each farm 
     for area in areaQry :
         print(str(area.id))
         print(str(area.area_name))
 
-        techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
+        techFarmQry  = Farm.objects.filter(area_id=area.id).filter(is_approved=True).select_related('hog_raiser').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
                             "id",
                             "fname",
                             "lname", 
                             "contact", 
                             "farm_address",
-                            "last_updated" )
+                            "last_updated",)
+                            # "is_approved" )
         print(techFarmQry)
 
         # pass all data into an array
         for farm in techFarmQry:
+            
+            # print(farm["is_approved"])
+
             farmObject = {
                 "code": str(farm["id"]),
                 "raiser": " ".join((farm["fname"],farm["lname"])),
                 "contact": farm["contact"],
                 "address": farm["farm_address"],
-                "updated": farm["last_updated"]
+                "updated": farm["last_updated"],
+                # "approved": farm["is_approved"],
             }
 
+
+        
             techFarmsList.append(farmObject)
     
     # pass techFarmsList array to template
-    return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaList' : areaQry }) 
+    return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaCount' : areaNum, 'areaList' : areaQry }) 
 
 def techSelectedFarm(request, farmID):
     """
