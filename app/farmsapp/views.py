@@ -114,7 +114,10 @@ def techFarms(request):
     
     # get all farms under the current technician 
     techID = request.user.id
-    areaQry = Area.objects.filter(tech_id=techID).values("id")
+
+    # collect all IDs of assigned areas under technician
+    areaQry = Area.objects.filter(tech_id=techID).all()
+    # areaNameQry = Area.objects.filter()
 
     print("TEST LOG areaQry: " + str(areaQry))
 
@@ -122,31 +125,36 @@ def techFarms(request):
     
     # techFarmQry  = Farm.filter(area_id=area).objects.select_related('hog_raiser').annotate(
 
-    techFarmQry  = Farm.objects.select_related('hog_raiser').annotate(
-                fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
-                        "id",
-                        "fname",
-                        "lname", 
-                        "contact", 
-                        "farm_address",
-                        "last_updated" )
-    # debug(techFarmQry)
-
-    # pass all data into an array
     techFarmsList = []
-    for farm in techFarmQry:
-        farmObject = {
-            "code": str(farm["id"]),
-            "raiser": " ".join((farm["fname"],farm["lname"])),
-            "contact": farm["contact"],
-            "address": farm["farm_address"],
-            "updated": farm["last_updated"]
-        }
 
-        techFarmsList.append(farmObject)
+    for area in areaQry :
+        print(str(area.id))
+        print(str(area.area_name))
+
+        techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
+                    fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
+                            "id",
+                            "fname",
+                            "lname", 
+                            "contact", 
+                            "farm_address",
+                            "last_updated" )
+        print(techFarmQry)
+
+        # pass all data into an array
+        for farm in techFarmQry:
+            farmObject = {
+                "code": str(farm["id"]),
+                "raiser": " ".join((farm["fname"],farm["lname"])),
+                "contact": farm["contact"],
+                "address": farm["farm_address"],
+                "updated": farm["last_updated"]
+            }
+
+            techFarmsList.append(farmObject)
     
     # pass techFarmsList array to template
-    return render(request, 'farmstemp/tech-farms.html', {'techFarms' : techFarmsList}) 
+    return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaList' : areaQry }) 
 
 def techSelectedFarm(request, farmID):
     """
