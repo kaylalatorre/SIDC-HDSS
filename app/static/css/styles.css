@@ -110,6 +110,8 @@ section {
 
 .green { color: #00a854 }
 .red { color: #BB0A1E }
+.hide { display: none; }
+.show { display: block; }
 
 /* Button Styles */
 button, .button {
@@ -215,6 +217,7 @@ button:hover, .button:hover, .primary-btn:hover{
     padding-right: 4px;
 }
 
+
 /* Save button for technician assignment */
 .assignSave, .assignEdit {
     margin-right: 4px;
@@ -247,4 +250,8 @@ button:hover, .button:hover, .primary-btn:hover{
 
 .dropdown-item:active {
     background: #006633!important;
+}
+
+.btn-outline-secondary {
+    box-shadow: none;
 }

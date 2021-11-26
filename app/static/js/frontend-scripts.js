@@ -47,6 +47,26 @@ for(var i = 0; i < rowStatus.length; i++) {
     }
 }   
 
+/**
+ * Toggling view to adding of area
+ */
+function toggleAreaView() {
+    const area = $('.add-new-area');
+    const addBtn = $('#add-area');
+    const cancelBtn = $('#cancel-area');
+    
+    if(area.hasClass('hide')) {
+        area.removeClass('hide').addClass('show');
+        addBtn.addClass('hide').removeClass('show');
+        cancelBtn.addClass('show').removeClass('hide');
+    }
+    else {
+        area.removeClass('show').addClass('hide');
+        addBtn.addClass('show').removeClass('hide');
+        cancelBtn.addClass('hide').removeClass('show');
+    }
+}
+
 // MGIHT BE BACKEND
 function viewFarm(farm) {
     // Note: This links to a temporary navigation to template
