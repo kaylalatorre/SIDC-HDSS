@@ -140,26 +140,20 @@ def techFarms(request):
                             "lname", 
                             "contact", 
                             "farm_address",
-                            "last_updated",)
-                            # "is_approved" )
+                            "last_updated")
         print(techFarmQry)
 
         # pass all data into an array
         for farm in techFarmQry:
             
-            # print(farm["is_approved"])
-
             farmObject = {
                 "code": str(farm["id"]),
                 "raiser": " ".join((farm["fname"],farm["lname"])),
                 "contact": farm["contact"],
                 "address": farm["farm_address"],
                 "updated": farm["last_updated"],
-                # "approved": farm["is_approved"],
             }
 
-
-        
             techFarmsList.append(farmObject)
     
     # pass techFarmsList array to template
@@ -608,7 +602,7 @@ def biosec_view(request):
     # print(bioInt[0].last_updated)
 
     # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
     actList = []
 
@@ -701,7 +695,7 @@ def select_biosec(request, farmID):
     # print(bioInt[0].last_updated)
 
     # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).all().order_by('-date')
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
     actList = []
 
@@ -913,10 +907,10 @@ def addActivity(request, farmID):
 
             activity.ref_farm_id = farmID
 
-            # activity.save()
+            activity.save()
 
             print("TEST LOG: Added new activty")
-            # return redirect('/biosecurity/' + str(farmID))
+            return redirect('/biosecurity/' + str(farmID))
         
         else:
             print("TEST LOG: activityForm is not valid")
