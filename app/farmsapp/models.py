@@ -14,7 +14,7 @@ class User(User):
 
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     # fields from Biomeasures
@@ -35,7 +35,7 @@ class ExternalBiosec(models.Model):
 
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
     # fields from Biomeasures
@@ -143,8 +143,8 @@ class Farm(models.Model):
     medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
     road_access         = models.BooleanField(default=False)
     
-    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
-    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
+    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
+    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
     hog_symptoms       = models.ForeignKey('Hog_Symptoms', on_delete=models.CASCADE, null=True, blank=True)

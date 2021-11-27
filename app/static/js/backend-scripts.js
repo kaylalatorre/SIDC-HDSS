@@ -317,11 +317,15 @@ function deleteBiocheck(elem){
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
     alert("in deleteBiocheck() -- biosecID: " + biosecID);
 
+    var farmID = $("#farm-code option:selected").val();
+    alert("in deleteBiocheck() -- farmID: " + farmID);
+
+
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/biosecurity/delete-checklist/' + biosecID,
+        url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
         // data: {"checkArr": checkArr}, 
         success: function (response){
 

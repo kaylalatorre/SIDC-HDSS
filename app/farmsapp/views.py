@@ -721,7 +721,7 @@ def post_addChecklist(request, farmID):
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
         return redirect('/biosecurity/' + farmID)
 
-def delete_bioChecklist(request, biosecID):
+def delete_bioChecklist(request, biosecID, farmID):
     """
     (POST-AJAX) For deleting a biosecurity checklist based on biosecID
     """
@@ -733,10 +733,6 @@ def delete_bioChecklist(request, biosecID):
         # Get biosecID from AJAX url param
         bioID = biosecID
 
-        # Get checkArr from AJAX data param
-        chArr = []
-        chArr = request.POST.getlist("checkArr[]")
-
         if bioID is None:
             # (ERROR) Invalid or null biosecID
             debug("(ERROR) Invalid or null biosecID")
@@ -746,15 +742,41 @@ def delete_bioChecklist(request, biosecID):
             
             debug("in delete_bioChecklist() -- bioID: " + str(bioID)) 
 
-            # TODO: check if this does DELETE-CASCADE
-            extBio = ExternalBiosec.objects.filter(id=bioID).delete()
-            intBio = InternalBiosec.objects.filter(id=bioID).delete()
+            # check if to be deleted Checklist is current int-extbio in Farm
+            currFarm = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').first()
+            intBio = currFarm.intbio
+            extBio = currFarm.extbio
 
-            # TODO: if to be deleted Biochecklist is the FK in Farms, replace Farm int-extbio FK w/ 
-            # 2nd latest biosec
+            if intBio.id is bioID and extBio.id is bioID:
+
+                ExternalBiosec.objects.filter(id=bioID).delete()
+                InternalBiosec.objects.filter(id=bioID).delete()
+
+                # get 2nd latest biosec after deletion
+                lateExt = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+                    'last_updated',
+                ).order_by('-last_updated').first()
+
+                lateInt = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+                    'last_updated',
+                ).order_by('-last_updated').first()
+
+                # replace biosec FKs in Farm
+                farm = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').first()
+
+                farm.intbio = lateInt
+                farm.extbio = lateExt
+                farm.save()
+
+            else:
+                # Not current checklist in Farm, simply delete record
+                ExternalBiosec.objects.filter(id=bioID).delete()
+                InternalBiosec.objects.filter(id=bioID).delete()
+
+                # (SUCCESS) Biosec record has been deleted.
+                return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)
 
             # (SUCCESS) Biosec record has been deleted.
-            # return JsonResponse({"instance": jsonStr}, status=200)
             return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
@@ -831,7 +853,7 @@ def biosec_view(request):
         # (ERROR) for checking Farms that have no Biosec records
         if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
             messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biosec")
-            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, , 'farmList': techFarmsList})
+            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList})
 
 
         # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
@@ -938,7 +960,7 @@ def select_biosec(request, farmID):
         # (ERROR) for checking Farms that have no Biosec records
         if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
             messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biosec")
-            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, , 'farmList': techFarmsList})
+            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList})
 
         # (4) GET ACTIVITIES
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
