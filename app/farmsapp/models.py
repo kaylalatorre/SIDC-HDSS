@@ -30,8 +30,8 @@ class ExternalBiosec(models.Model):
     prsnl_sanit_hands   = models.IntegerField(null=True, blank=True)
     chg_disinfect_daily = models.IntegerField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
 
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
@@ -52,8 +52,8 @@ class InternalBiosec(models.Model):
     disinfect_prem      = models.IntegerField(null=True, blank=True)
     disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
 
 # FARM WEIGHT Table
 class Farm_Weight(models.Model):

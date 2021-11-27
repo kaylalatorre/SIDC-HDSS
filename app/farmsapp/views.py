@@ -747,8 +747,11 @@ def delete_bioChecklist(request, biosecID, farmID):
             intBio = currFarm.intbio
             extBio = currFarm.extbio
 
-            if intBio.id is bioID and extBio.id is bioID:
+            debug("intBio.id -- " + str(intBio.id))
+            debug("extBio.id -- " + str(extBio.id))
 
+            if str(intBio.id) == str(bioID) and str(extBio.id) == str(bioID):
+                
                 ExternalBiosec.objects.filter(id=bioID).delete()
                 InternalBiosec.objects.filter(id=bioID).delete()
 
@@ -757,9 +760,12 @@ def delete_bioChecklist(request, biosecID, farmID):
                     'last_updated',
                 ).order_by('-last_updated').first()
 
-                lateInt = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+                lateInt = InternalBiosec.objects.filter(ref_farm_id=farmID).only(
                     'last_updated',
                 ).order_by('-last_updated').first()
+
+                debug("lateInt.id -- " + str(lateInt.id))
+                debug("lateExt.id -- " + str(lateExt.id))
 
                 # replace biosec FKs in Farm
                 farm = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').first()
@@ -768,13 +774,14 @@ def delete_bioChecklist(request, biosecID, farmID):
                 farm.extbio = lateExt
                 farm.save()
 
+                debug("save() farm.intbio -- " + str(farm.intbio.id))
+                debug("save() farm.extbio -- " + str(farm.extbio.id))
+
             else:
                 # Not current checklist in Farm, simply delete record
                 ExternalBiosec.objects.filter(id=bioID).delete()
                 InternalBiosec.objects.filter(id=bioID).delete()
 
-                # (SUCCESS) Biosec record has been deleted.
-                return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)
 
             # (SUCCESS) Biosec record has been deleted.
             return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)

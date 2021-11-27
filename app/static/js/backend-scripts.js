@@ -334,7 +334,7 @@ function deleteBiocheck(elem){
             }
             // reload Biosec page to update dropdown of Biosec last_updated
             // window.location.reload(true);
-            window.location.replace("/biosecurity");
+            window.location.replace("/biosecurity/" + farmID);
 
         },
         error: function (res){
