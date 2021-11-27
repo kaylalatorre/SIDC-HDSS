@@ -723,7 +723,7 @@ def post_addChecklist(request, farmID):
 
 def delete_bioChecklist(request, biosecID, farmID):
     """
-    (POST-AJAX) For deleting a biosecurity checklist based on biosecID
+    (POST-AJAX) For deleting a biosecurity checklist based on biosecID and farmID from dropdowns
     """
 
     if request.is_ajax and request.method == 'POST':
