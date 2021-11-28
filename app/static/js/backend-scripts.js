@@ -4,7 +4,7 @@
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
  */
-function ajaxCSRF(){
+ function ajaxCSRF(){
     $.ajaxSetup({ 
         beforeSend: function(xhr, settings) {
             function getCookie(name) {
@@ -419,3 +419,34 @@ function addActivityPage(farmID) {
         location.reload(true);
     }
 }
+
+/**
+*   - Validates user input for new activities
+*   - Checks if date is not later than today
+*   - Checks if time departure is before time arrival
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+// function addActivity(farmID){
+
+//     ajaxCSRF();
+
+//     $.ajax({
+//         type: 'POST',
+//         url: '/post-add-activity/' + farmID,
+//         // data: {"checkArr": checkArr}, 
+//         success: function (response){
+
+//             if (response.status == 200){
+//                 alert("Activities added.");
+//             }
+
+//             window.location.replace("/biosecurity/" + farmID);
+
+//         },
+//         error: function (res){
+//             alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+//         }
+//     });
+// }
+

@@ -42,15 +42,17 @@ function viewFarm(farm) {
     }
 }
 
+/**
+*   - Appends new pigpen row for when adding a new farm
+*   
+*   input-pgipen = table body that the row will be appended to
+*/
 function addPigPenRow() {
 
     const length = document.getElementById('pigpen-length').innerHTML;
     const width = document.getElementById('pigpen-width').innerHTML;
     const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
 
-    // const row = document.getElementById("pigpen-row");
-    const table = document.getElementById("input-pigpen");
- 
     $("#input-pigpen").append("<tr> \
         <td data-label='Length'> " + length + " </td> \
         <td data-label='Width'> " + width + " </td> \
@@ -59,6 +61,11 @@ function addPigPenRow() {
  
 }
 
+/**
+*   - Appends new activity row to activity table
+*   
+*   input-act = table body that the row will be appended to
+*/
 function addActivityRow() {
     const date = document.getElementById('date').innerHTML;
     const trip_type = document.getElementById('trip_type').innerHTML;
@@ -67,9 +74,6 @@ function addActivityRow() {
     const description = document.getElementById('description').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
-    // const row = document.getElementById("pigpen-row");
-    const table = document.getElementById("input-act");
- 
     $("#input-act").append("<tr> \
         <td data-label='Date'> " + date + " </td> \
         <td data-label='Trip Type'> " + trip_type + " </td> \

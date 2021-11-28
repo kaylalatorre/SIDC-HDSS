@@ -225,7 +225,7 @@ class PigpenMeasuresForm(ModelForm):
         model = Pigpen_Measures
         fields = ('__all__')
 
-class ActivityForm(ModelForm):
+class ActivityForm(forms.ModelForm):
     # date = ModelForm.DateField()
 
     def __init__(self, *args, **kwargs):
@@ -241,15 +241,15 @@ class ActivityForm(ModelForm):
            'id' : 'act-trip-type',
            'style' : 'margin-bottom: 0'
         })
-        self.fields['time_departure'].widget.attrs.update({
-            'type' : 'time', 
-            'aria-label' : 'Departure Time',
-            'class' : 'form-control',
-            'placeholder' : '18:00'
-        })
         self.fields['time_arrival'].widget.attrs.update({
             'input type' : 'time', 
             'aria-label' : 'Arrival Time',
+            'class' : 'form-control',
+            'placeholder' : '18:00'
+        })
+        self.fields['time_departure'].widget.attrs.update({
+            'type' : 'time', 
+            'aria-label' : 'Departure Time',
             'class' : 'form-control',
             'placeholder' : '18:00'
         })
@@ -274,6 +274,13 @@ class ActivityForm(ModelForm):
             'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),
             'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        time_arrival = cleaned_data.get("time_arrival")
+        time_departure = cleaned_data.get("time_departure")
+        if time_departure < time_arrival:
+            raise forms.ValidationError("Arrival time should be after departure time.")
 
 class MortalityForm(ModelForm):
     class Meta:

@@ -108,8 +108,7 @@ def selectedFarm(request, farmID):
 
 def techFarms(request):
     """
-    - Display all farms assigned to currently logged in technician. 
-    - Will only display the approved farms.
+    - Display all farms under areas assigned to currently logged in technician. 
     """
     
     # get all farms under the current technician 
@@ -119,16 +118,6 @@ def techFarms(request):
     areaQry = Area.objects.filter(tech_id=techID).all()
     print("TEST LOG areaQry: " + str(areaQry))
     
-        # area_num = 1
-    # # concatenate all areas into one string (for frontend purposes)
-    # for area in areaQry :
-    #     if area_num == len(areaQry):
-    #         areaList = Concat('area.area_name')
-    #     else :
-    #         areaList = Concat('area.area_name', Value(', '))
-
-    #     area_num += 1
-
     # collect number of areas assigned (for frontend purposes)
     areaNum = len(areaQry)
     print("TEST LOG areaNum: " + str(areaNum))
@@ -149,6 +138,7 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_updated")
+                            # "last_updated").order_by('-last_updated')
 
         print("TEST LOG techFarmQry: " + str(techFarmQry))
 
@@ -187,8 +177,7 @@ def techSelectedFarm(request, farmID):
                     bird_proof  = F("extbio__bird_proof"),
                     perim_fence = F("extbio__perim_fence"),
                     foot_dip    = F("intbio__foot_dip"),
-                    fiveh_m_dist = F("extbio__fiveh_m_dist"),
-                    )
+                    fiveh_m_dist = F("extbio__fiveh_m_dist"))
 
     # pass all data into an object
     selTechFarm = techFarmQry.values(
@@ -230,7 +219,6 @@ def techSelectedFarm(request, farmID):
         }
         
         pigpenList.append(pigpenObj)
-
         pen_no += 1
 
     # FOR TESTING
@@ -244,7 +232,7 @@ def techSelectedFarm(request, farmID):
 def addFarm(request):
     """
     - Redirect to Add Farm Page and render corresponding Django forms
-    - Add new farm to database (will be sent for approval by asst. manager)
+    - Add new farm to database 
     - Save details to hog_raiser, farm, pigpen_measure, and externalbiosec and internalbiosec tables
     - Django forms will first check the validity of input (based on the fields within models.py)
     """
@@ -277,33 +265,7 @@ def addFarm(request):
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)
-
-        # if request.POST.get("bird_proof") == 'on':
-        #     request.POST.update("bird_proof", 1)
-        # else :
-        #     request.POST.update("bird_proof")
-
-        # if request.POST.get("perim_fence") == 'on':
-        #     request.POST.update("perim_fence")
-        # else :
-        #     request.POST.update("perim_fence")
-
-        # if request.POST.get("fiveh_m_dist") == 'on':
-        #     request.POST.update("fiveh_m_dist")
-        # else :
-        #     request.POST.update("fiveh_m_dist")
-
-        # data = request.POST.copy()
-        # if data['bird_proof'] == 'on' : 
-        #     data['bird_proof'] = 0
-        # else :
-        #     data['bird_proof'] = 1
-
-        # request.POST = data
-
-        # print("TEST LOG externalBiosecForm: " + str(request.POST.get("bird_proof")))
-    
+        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
 
@@ -315,33 +277,14 @@ def addFarm(request):
 
             if externalBiosecForm.is_valid():
                 externalBiosec = externalBiosecForm.save(commit=False)
-
-                # if externalBiosec.bird_proof == 'on':
-                #     externalBiosec.bird_proof == 0
-                # else :
-                #     externalBiosec.bird_proof == 1
-
-                # if externalBiosec.perim_fence == 'on':
-                #     externalBiosec.perim_fence== 0
-                # else :
-                #     externalBiosec.perim_fence == 1
-
-                # if externalBiosec.fiveh_m_dist == 'on':
-                #     externalBiosec.fiveh_m_dist == 0
-                # else :
-                #     externalBiosec.fiveh_m_dist == 1
-
-                # print("TEST LOG externalBiosec.bird_proof: " + str(externalBiosec.bird_proof))
-                # print("TEST LOG externalBiosec.perim_fence: " + str(externalBiosec.perim_fence))
-                # print("TEST LOG externalBiosec.fiveh_m_dist: " + str(externalBiosec.fiveh_m_dist))
-
                 externalBiosec.save()
+
                 print("TEST LOG: Added new external biosec")
 
                 if internalBiosecForm.is_valid():
                     internalBiosec = internalBiosecForm.save(commit=False)
-
                     internalBiosec.save()
+                    
                     print("TEST LOG: Added new internal biosec")
                     
                     if farmForm.is_valid():
@@ -367,19 +310,15 @@ def addFarm(request):
 
                         if pigpenMeasuresForm.is_valid():
                             pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-
-                            # for num_heads in request.POST.get("num_heads") :
-                            #     pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-
-                            #     pigpenMeasures.ref_farm_id = farm.id
-
-                            #     print(str(pigpenMeasures.length))
                             
-                            pigpenMeasures.save()
-                            print("TEST LOG: Added new pigpen measure")
+                            # collect all pigpens added to farm               
 
+                            
                             # add all num_heads (pigpen measure) for total_pigs (farm)
 
+
+                            pigpenMeasures.save()
+                            print("TEST LOG: Added new pigpen measure")
 
                             # update total_pigs of newly added farm
 
@@ -1012,7 +951,7 @@ def addActivity(request, farmID):
     """
     - Redirect to Add Activity Page and render corresponding Django form
     - Add new activity to database (will be sent for approval by asst. manager)
-    - Save details to activity and current farm tables
+    - Save details to activity and current farm table
     """
 
     # collected farmID of selected tech farm
@@ -1023,6 +962,7 @@ def addActivity(request, farmID):
         print(request.POST)
 
         activityForm = ActivityForm(request.POST)
+        # print(activityForm)
 
         if activityForm.is_valid():
             activity = activityForm.save(commit=False)
@@ -1037,6 +977,8 @@ def addActivity(request, farmID):
         else:
             print("TEST LOG: activityForm is not valid")
             print(activityForm.errors)
+            
+            # pass errors to frontend
 
     else:
         print("TEST LOG: Form is not a POST method")
