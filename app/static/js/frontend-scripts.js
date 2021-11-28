@@ -1,4 +1,6 @@
-/* Tech assignment edit button */
+/* 
+* Tech assignment edit button 
+*/
 let edit = document.querySelectorAll('.assignEdit');
 for(var i = 0; i < edit.length; i++) { 
     edit[i].addEventListener("click", (e)=> {
@@ -27,6 +29,45 @@ for(var i = 0; i < save.length; i++) {
     })
 }
 
+/**
+ * Changing style of statuses
+ */
+let rowStatus = document.querySelectorAll('.status');
+console.log(rowStatus);
+for(var i = 0; i < rowStatus.length; i++) { 
+    let val = rowStatus[i].innerText;
+    if( val === "Resolved") {
+        rowStatus[i].classList.add("green");
+    }
+    else if ( val === "Active") {
+        rowStatus[i].classList.add("red");
+    }
+    else {
+        console.log("No status detected/status value invalid.")
+    }
+}   
+
+/**
+ * Toggling view to adding of area
+ */
+function toggleAreaView() {
+    const area = $('.add-new-area');
+    const addBtn = $('#add-area');
+    const cancelBtn = $('#cancel-area');
+    
+    if(area.hasClass('hide')) {
+        area.removeClass('hide').addClass('show');
+        addBtn.addClass('hide').removeClass('show');
+        cancelBtn.addClass('show').removeClass('hide');
+    }
+    else {
+        area.removeClass('show').addClass('hide');
+        addBtn.addClass('show').removeClass('hide');
+        cancelBtn.addClass('hide').removeClass('show');
+    }
+}
+
+// MGIHT BE BACKEND
 function viewFarm(farm) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data

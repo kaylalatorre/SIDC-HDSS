@@ -24,6 +24,10 @@
     font-family: 'Roboto';
 }
 
+#new-area .form-control {
+    margin-bottom: 0;
+}
+
 input[type="checkbox"]:checked {
     background-color: #006633;
     border-color: #006633;

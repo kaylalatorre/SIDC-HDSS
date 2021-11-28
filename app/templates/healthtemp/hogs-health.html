@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Hogs Health</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <div class="flex">
+        <h1 class="heading flex-item">Hogs Health</h1>
+        <div class="btn-group" style="justify-content: flex-end; padding: 0;">
+            <div class="input-group mb-3  flex-item" style="margin-right: 4px;">
+                <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" id="searchTextBoxid" onkeyup="filterSearch()">
+                <div class="input-group-append">
+                  <span class="input-group-text" id="basic-addon2"><i class='bx bx-search'></i></span>
+                </div>
+            </div>              
+            <div class="dropdown">
+                <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Filters
+                </button>
+                <ul class="dropdown-menu" style="padding: 8px;">
+                    <label style="font-weight: 600;">Area</label>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_TISS" onclick="filterSearch()"/>&nbsp;TSISI</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_EAST" onclick="filterSearch()"/>&nbsp;East</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_WEST" onclick="filterSearch()"/>&nbsp;West</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="box-style">
+        <table class="table" id="mainTableid">
+            <thead>
+                <tr>
+                    <th>Farm Code</th>
+                    <th>Raiser</th>
+                    <th>Area</th>
+                    <th>No. of Pigs</th>
+                    <th>Ave. Starter Weight</th>
+                    <th>Ave. Current Weight</th>
+                    <th>Mortality Rate</th>
+                    <th>Symptoms Reported</th>
+                    <th>Active Symptoms</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data -->
+                {% for farm in farms %}
+                <tr>
+                    <td data-label="Farm Code">{{farm.code}}</td>
+                    <td data-label="Raiser">{{farm.raiser}}</td>
+                    <td data-label="Area">{{farm.area}}</td>
+                    <td data-label="No. of Pigs">{{farm.pigs}}</td>
+                    <td data-label="Ave. Starter Weight"> 100 </td>
+                    <td data-label="Ave. Current Weight"> 100 </td>
+                    <td data-label="Mortality Rate"> 100 </td>
+                    <td data-label="Symptoms Reported"> 100 </td>
+                    <td data-label="Active Symptoms"> 19 </td>
+                    <td data-label="" class="td-btn">
+                        <button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button>
+                    </td>
+                    {% endfor %}
+                </tr>                
+            </tbody>            
+        </table>
+    </div>
+</div>
+{% endblock section %}

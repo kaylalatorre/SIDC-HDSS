@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Hogs Health</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="table-container main-div">
+    <h1 class="heading">Hogs Health & Symptoms</h1>
+    <div class="box-style">
+        <table class="table" id="mainTableid">
+            <thead>
+                <tr>
+                    <th>Farm Code</th>
+                    <th>Raiser</th>
+                    <th>No. of Pigs</th>
+                    <th>Ave. Starter Weight</th>
+                    <th>Ave. Current Weight</th>
+                    <th>Mortality Rate</th>
+                    <th>Symptoms Reported</th>
+                    <th>Active Symptoms</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data -->
+                {% for farm in farms %}
+                <tr>
+                    <td data-label="Farm Code">{{farm.code}}</td>
+                    <td data-label="Raiser">{{farm.raiser}}</td>
+                    <td data-label="No. of Pigs">{{farm.pigs}}</td>
+                    <td data-label="Ave. Starter Weight"> 100 </td>
+                    <td data-label="Ave. Current Weight"> 100 </td>
+                    <td data-label="Mortality Rate"> 100 </td>
+                    <td data-label="Symptoms Reported"> 100 </td>
+                    <td data-label="Active Symptoms"> 19 </td>
+                    <td data-label="" class="td-btn">
+                        <button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button>
+                    </td>
+                    {% endfor %}
+                </tr>                
+            </tbody>            
+        </table>
+    </div>
+</div>
+{% endblock section %}
