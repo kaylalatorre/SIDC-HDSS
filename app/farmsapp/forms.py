@@ -281,8 +281,6 @@ class ActivityForm(forms.ModelForm):
 
         date = cleaned_data.get("date")
         today = datetime.date.today()
-        # print(date)
-        # print(today)
 
         if date > today:
             raise forms.ValidationError("Date can not be later than today.")

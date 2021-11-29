@@ -977,9 +977,6 @@ def addActivity(request, farmID):
         else:
             print("TEST LOG: activityForm is not valid")
             print(activityForm.errors)
-            
-            # pass errors to frontend
-            messages.error(request, activityForm.errors)
 
     else:
         print("TEST LOG: Form is not a POST method")

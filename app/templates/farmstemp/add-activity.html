@@ -25,20 +25,9 @@
                 <p class="flex-item">Add all activity details here. </p>
                 <div><button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
             </div>
-
-            {% for message in messages %}
-            <!-- <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert"> -->
-                {{ message }}
-
-            <!-- </div> -->
-            {% endfor %}
             
             <!-- erorrs -->
             {{activityForm.non_field_errors}}
-
-            <!-- {% for key, value in messages.items %}
-            <li>{% if key != '__all__' %}{{ key }} {% endif %}{{ value }}</li>
-            {% endfor %} -->
 
             <div class="input-group" id="input-activity">
                 <table class="table">
