@@ -58,11 +58,12 @@
         left: 16px;
         right: 16px;
     }
+
 }
 
 /* Tables */
 @media (max-width: 848px) {
-    .table thead {
+    .table thead, .table th {
         display: none;
         border-bottom: none;
     }
