@@ -279,7 +279,7 @@ class ActivityForm(forms.ModelForm):
         cleaned_data = super().clean()
         time_arrival = cleaned_data.get("time_arrival")
         time_departure = cleaned_data.get("time_departure")
-        if time_departure < time_arrival:
+        if time_departure > time_arrival:
             raise forms.ValidationError("Arrival time should be after departure time.")
 
 class MortalityForm(ModelForm):

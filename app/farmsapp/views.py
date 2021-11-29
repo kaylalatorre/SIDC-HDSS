@@ -723,13 +723,13 @@ def biosec_view(request):
     techFarmsList = []
 
     for area in areaQry :
-        print(str(area.id) + str(area.area_name))
+        # print(str(area.id) + str(area.area_name))
 
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).values(
             "id"
         ).all()
-        debug("techFarmQry -- " + str(techFarmQry))
+        # debug("techFarmQry -- " + str(techFarmQry))
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -738,7 +738,7 @@ def biosec_view(request):
             }
             techFarmsList.append(farmObject)
 
-    debug("techFarmsList -- " + str(techFarmsList))
+    # debug("techFarmsList -- " + str(techFarmsList))
 
     # # Get ID of first farm under technician
     firstFarm = str(*techFarmsList[0].values())
@@ -822,19 +822,19 @@ def select_biosec(request, farmID):
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all()
-    print("TEST LOG areaQry: " + str(areaQry))
+    # print("TEST LOG areaQry: " + str(areaQry))
 
     # array to store all farms under each area
     techFarmsList = []
 
     for area in areaQry :
-        print(str(area.id) + str(area.area_name))
+        # print(str(area.id) + str(area.area_name))
 
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).values(
             "id"
         ).all()
-        debug("techFarmQry -- " + str(techFarmQry))
+        # debug("techFarmQry -- " + str(techFarmQry))
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -843,7 +843,7 @@ def select_biosec(request, farmID):
             }
             techFarmsList.append(farmObject)
 
-    debug("techFarmsList -- " + str(techFarmsList))
+    # debug("techFarmsList -- " + str(techFarmsList))
 
     # if not farmlistQry.exists() or farmID is None: # for checking Farms that have no Biosec records
     #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
@@ -979,6 +979,7 @@ def addActivity(request, farmID):
             print(activityForm.errors)
             
             # pass errors to frontend
+            # activityForm = ActivityForm(activityForm.errors)
 
     else:
         print("TEST LOG: Form is not a POST method")
