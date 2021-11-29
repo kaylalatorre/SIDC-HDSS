@@ -48,6 +48,24 @@ for(var i = 0; i < rowStatus.length; i++) {
 }   
 
 /**
+ * Toggling view to Member Announcement btn-grp
+ */
+ let checkbox = document.querySelectorAll('.announce-checkbox');
+ for(var i = 0; i < checkbox.length; i++) { 
+     checkbox[i].addEventListener('click', (e) => {
+        var isChecked = e.target.checked;
+        var btnGrp = document.querySelector('#announce-btn-grp');
+         console.log(isChecked);
+         if(isChecked) {
+             btnGrp.classList.remove('hide');
+         } else {
+             btnGrp.classList.add('hide');
+         }
+         
+     });
+ }   
+ 
+/**
  * Toggling view to adding of area
  */
 function toggleAreaView() {
