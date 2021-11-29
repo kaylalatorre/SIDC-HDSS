@@ -4,7 +4,7 @@
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
  */
- function ajaxCSRF(){
+function ajaxCSRF(){
     $.ajaxSetup({ 
         beforeSend: function(xhr, settings) {
             function getCookie(name) {
@@ -449,4 +449,3 @@ function addActivityPage(farmID) {
 //         }
 //     });
 // }
-

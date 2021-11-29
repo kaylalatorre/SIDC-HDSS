@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm, DateField, widgets
 from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
+import datetime
 
 class DateInput(ModelForm):
     input_type = 'date'
@@ -277,8 +278,18 @@ class ActivityForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        date = cleaned_data.get("date")
+        today = datetime.date.today()
+        # print(date)
+        # print(today)
+
+        if date > today:
+            raise forms.ValidationError("Date can not be later than today.")
+
         time_arrival = cleaned_data.get("time_arrival")
         time_departure = cleaned_data.get("time_departure")
+
         if time_departure > time_arrival:
             raise forms.ValidationError("Arrival time should be after departure time.")
 
