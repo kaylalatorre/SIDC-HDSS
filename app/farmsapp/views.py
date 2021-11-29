@@ -14,6 +14,7 @@ import json
 
 # for Forms
 from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm
+from django.forms import formset_factory
 
 # for storing error messages
 from django.contrib import messages
@@ -41,6 +42,22 @@ def debug(m):
     print("------------------------[DEBUG]------------------------")
     print(m)
     print("-------------------------------------------------------")
+
+# class ActivityFormView(View):
+#     # create a formset out of ActivityForm
+#     Activity_FormSet = formset_factory(ActivityForm)
+
+#     # render template were it will be displayed
+#     template_name = "add-activity.html"
+
+#     def get(self, request, *args, **kwargs):
+#         # create an instance of formset and put in context dict
+#         context = {
+#             'activityForm' : self.Activity_FormSet(),
+#         }
+
+#         return render(request, self.template_name, context)
+
 
 # Farms Management Module Views
 
@@ -954,6 +971,8 @@ def addActivity(request, farmID):
     - Save details to activity and current farm table
     """
 
+    Activity_FormSet = formset_factory(ActivityForm)
+
     # collected farmID of selected tech farm
     farmID = farmID
 
@@ -961,17 +980,17 @@ def addActivity(request, farmID):
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
-        activityForm = ActivityForm(request.POST)
-        # print(activityForm)
+        activityForm = Activity_FormSet(request.POST)
 
         if activityForm.is_valid():
-            activity = activityForm.save(commit=False)
+            # activity = Activity_FormSet.save(commit=False)
 
-            activity.ref_farm_id = farmID
+            for activity in activityForm:
+                activity.ref_farm_id = farmID
+                activity.save()
 
-            activity.save()
-
-            print("TEST LOG: Added new activty")
+                print("TEST LOG: Added new activty")
+            
             return redirect('/biosecurity/' + str(farmID))
         
         else:
@@ -982,8 +1001,10 @@ def addActivity(request, farmID):
         print("TEST LOG: Form is not a POST method")
 
         # if form has no input yet, only display an empty form
-        activityForm = ActivityForm()
-    
+        # activityForm = ActivityForm()
+        activityForm = Activity_FormSet()
+
+
     # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
