@@ -172,7 +172,15 @@ class Activity(models.Model):
 
     date                = models.DateField()
 
-    trip_type           = models.CharField(max_length=50)
+    TYPE_CHOICES        = [('Delivery of Feeds', 'Delivery of Feeds'),
+                            ('Delivery of Medicine', 'Delivery of Medicine'),
+                            ('Delivery of Pigs', 'Delivery of Pigs'),
+                            ('Vaccinations', 'Vaccinations'),
+                            ('Inspection', 'Inspection'),
+                            ('Trucking', 'Trucking'),
+                            ('Other', 'Other')]
+
+    trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
     description         = models.CharField(max_length=500, null=True, blank=True)

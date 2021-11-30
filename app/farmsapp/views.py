@@ -1005,7 +1005,7 @@ def addActivity(request, farmID):
         
         else:
             print("TEST LOG: activityForm is not valid")
-            print(activityForm.non_field_errors)
+            print(activityForm.errors)
 
     else:
         print("TEST LOG: Activity Form is not a POST method")

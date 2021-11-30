@@ -164,7 +164,6 @@ class FarmForm(ModelForm):
         self.fields['medic_tank'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'inout-medic-tank',
-           'choices' : 'MED_TANK_CHOICES'
         })
 
     class Meta:
@@ -267,10 +266,9 @@ class ActivityForm(forms.ModelForm):
         model = Activity
         fields = ('__all__')
         widgets = {
-            'date' : widgets.DateInput(attrs={'type' : 'date', 'required' : True}),
-            'time_departure' : widgets.TimeInput(attrs={'type' : 'time', 'required' : True}),
-            'time_arrival' : widgets.TimeInput(attrs={'type' : 'time', 'required' : True}),
-            # 'trip_type' : widgets.ChoiceField(attrs={'required' : True}, choices=TYPE_CHOICES)
+            'date' : widgets.DateInput(attrs={'type' : 'date'}),
+            'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),
+            'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
         }
 
     # def clean(self):
