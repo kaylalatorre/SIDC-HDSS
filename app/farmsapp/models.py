@@ -4,7 +4,6 @@ from django.utils.timezone import now
 
 # for importing Users
 from django.contrib.auth.models import User
-from django.conf import settings
 
 # for importing Users from
 from django.conf import settings
@@ -248,6 +247,6 @@ class Mem_Announcement(models.Model):
     category            = models.CharField(max_length=50)
     recip_area          = models.CharField(max_length=20)
     mssg                = models.CharField(max_length=500)
-    author              = models.ForeignKey('User', on_delete=models.CASCADE, related_name='author', null=True, blank=True)
+    author              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='author', null=True, blank=True)
     timestamp           = models.DateTimeField(default=now)
     is_approved         = models.BooleanField(default=False)

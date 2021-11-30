@@ -33,8 +33,8 @@
             </thead>
             <tbody>
                 <!-- Data (per area)-->
-                <tr>
-                    {% for area in areasData %}
+                {% for area in areasData %}
+                <tr>                    
                     <td>{{area.area_name}}</td>
                     <td>{{area.farm_count}}</td>
                     <td style="padding-bottom: 0; vertical-align: middle;" id="assign-technician">
@@ -42,7 +42,7 @@
                             <select aria-label="Technician Assigned" class="form-select" disabled>
                                 <option value="{{area.tech_id}}">{{area.curr_tech}}</option>
                                 {% for tech in technicians %}
-                                <option value="{{tech.id}}">{{tech.name}}</option>
+                                <option value={{tech.id}}>{{tech.name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -52,9 +52,9 @@
                             <button class="secondary-btn assignEdit"><span class="material-icons md-18">edit</span>Edit</button>
                             <button class="secondary-btn assignSave"><span class="material-icons md-18">save</span>Save</button>
                         </div>
-                    </td>
-                    {% endfor %}
+                    </td> 
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

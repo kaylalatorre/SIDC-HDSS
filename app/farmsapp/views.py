@@ -13,20 +13,19 @@ from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm, MemAnnouncementForm
 
 # for storing error messages
 from django.contrib import messages
 
 # for Model imports
-import psycopg2
-from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Mem_Announcement
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
 
-from datetime import date
+from datetime import datetime
 
 # for getting date today
 from django.utils.timezone import now 
@@ -46,7 +45,9 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    
+    """
+    Display all farms for assistant manager
+    """
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -64,8 +65,6 @@ def farms(request):
                 "last_updated"
                 )
     debug(qry)
-    # this_form = Form_DisplayFarm()
-    # Form_DisplayFarm.data
     farmsData = []
     for f in qry:
         farmObject = {
@@ -83,6 +82,12 @@ def farms(request):
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
+    """
+    Display information of selected farm for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
         contact=F("hog_raiser__contact_no"),
@@ -1015,7 +1020,7 @@ def techAssignment(request):
     areasData = []
     areas = Area.objects.select_related("tech_id").annotate(
         curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
-    ).values()
+    ).order_by('id').values()
     techs = User.objects.filter(groups__name="Field Technician").annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
     ).values(
@@ -1038,8 +1043,32 @@ def techAssignment(request):
     return render(request, 'farmstemp/assignment.html', context)
 
 def assign_technician(request):
+    """
+    Assign technician to area through ajax
+    """
+    areaQry = request.POST.get("area")
+    techQry = request.POST.get("technician")
+
+    # validate if input will be valid
+    ## check if area exists
+    ## check if technician exists
+    area = Area.objects.filter(area_name=areaQry)
+    technician = User.objects.filter(id=techQry)
+    debug(area.get())
+    if(area.exists() and technician.exists()):
+        # save changes
+        a = area.get()
+        a.tech_id = technician.get()
+        a.save()
+        debug(area.get())
+        # return output
+        return HttpResponse("message",status=200)
+    else:
+        # abort
+        # return output
+        return HttpResponseNotFound("Not Found",status=400)
     
-    return response()
+    
 
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
@@ -1088,10 +1117,36 @@ def addActivity(request, farmID):
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
 def memAnnouncements(request):
-    return render(request, 'farmstemp/mem-announce.html', {})
+    """
+    Display approved and unapproved announcements
+    """
+    announcements = Mem_Announcement.objects.select_related("author").annotate(
+        name = Concat('author__first_name', Value(' '), 'author__last_name')
+    ).values(
+        "id",
+        "timestamp",
+        "title",
+        "category",
+        "recip_area",
+        "name"
+    )
+    context = {
+        "approved": announcements.filter(is_approved = True),
+        "unapproved": announcements.filter(is_approved = False),
+    }
+    return render(request, 'farmstemp/mem-announce.html', context)
 
 def createAnnouncement(request):
-    return render(request, 'farmstemp/create-announcement.html', {})
+    """
+    Create announcment
+    Defaults to approved if assistant manager
+    """
+    if request.method == 'POST':
+        debug(request.POST)
+        debug(MemAnnouncementForm(request.POST))
+
+    announcementForm = MemAnnouncementForm()
+    return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
 
 def viewAnnouncement(request):
     return render(request, 'farmstemp/view-announcement.html', {})

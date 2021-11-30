@@ -1,7 +1,6 @@
-from django import forms
-from django.forms import ModelForm, DateField, widgets
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
-
+from django.forms import ModelForm, DateField, widgets, Select, Textarea
+from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
+# Mem_Announcement
 class DateInput(ModelForm):
     input_type = 'date'
 
@@ -279,3 +278,39 @@ class MortalityForm(ModelForm):
     class Meta:
         model = Mortality
         fields = ('__all__')
+
+class MemAnnouncementForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs.update({
+            'input type' : 'text', 
+            'aria-label' : 'Title',
+            'class' : 'form-control',
+            'placeholder' : 'ex. Biosecurity Check'
+        })
+        self.fields['category'].widget.attrs.update({ 
+            'aria-label' : 'Category',
+            'class' : 'form-select'
+        })
+        self.fields['recip_area'].widget.attrs.update({ 
+            'aria-label' : 'Recipient',
+            'class' : 'form-select',
+        })
+        self.fields['mssg'].widget.attrs.update({ 
+            'aria-label' : 'Message',
+            'class' : 'form-control',
+            'placeholder' : 'Construct your message here'
+        })
+
+    class Meta:
+        model = Mem_Announcement
+        fields = ('__all__')
+        widgets = {
+            'category': widgets.Select(
+                choices=(('Reminder','Reminder'), ('Announcement','Announcement'), ('Event','Event'), ('Other','Other'))
+            ),
+            'recip_area': widgets.Select(
+                choices=(('All Raisers','All Raisers'), ('TISISI Raisers','TISISI Raisers'), ('West Raisers','West Raisers'), ('East Raisers','East Raisers'))
+            ),
+            'mssg': widgets.Textarea()
+        }
