@@ -23,10 +23,14 @@
         <div class="box-style">
             <div class="flex subheading">
                 <p class="flex-item">Add all activity details here. </p>
-                <div><button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
+                <div>
+                    <button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row -->
+                </div>
             </div>
             <br>
             
+            {{pigpenMeasuresForm}}
+
             <!-- erorrs -->
             {{activityForm.non_field_errors}}
 

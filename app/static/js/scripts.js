@@ -48,7 +48,6 @@ function viewFarm(farm) {
 *   input-pgipen = table body that the row will be appended to
 */
 function addPigPenRow() {
-
     const length = document.getElementById('pigpen-length').innerHTML;
     const width = document.getElementById('pigpen-width').innerHTML;
     const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
@@ -58,7 +57,6 @@ function addPigPenRow() {
         <td data-label='Width'> " + width + " </td> \
         <td data-label='No. of Pigs'> " + num_heads + " </td> \
         </tr>");
- 
 }
 
 /**
