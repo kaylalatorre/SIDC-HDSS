@@ -133,7 +133,7 @@ def techFarms(request):
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all()
-    print("TEST LOG areaQry: " + str(areaQry))
+    # print("TEST LOG areaQry: " + str(areaQry))
     
     # collect number of areas assigned (for frontend purposes)
     areaNum = len(areaQry)
@@ -286,6 +286,21 @@ def addFarm(request):
         externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
 
+        # pass all pigpens values into array below
+        pigpenList = []
+
+        i = 0
+        for num_heads in request.POST.getlist('num_heads', default=None):
+            pigpenObj = {
+                "length" : request.POST.getlist('length', default=None)[i],
+                "width" : request.POST.getlist('width', default=None)[i],
+                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
+            }
+
+            pigpenList.append(pigpenObj)
+
+            i += 1
+
         if hogRaiserForm.is_valid():
             hogRaiser = hogRaiserForm.save(commit=False)
             hogRaiser.save()
@@ -326,21 +341,41 @@ def addFarm(request):
                         internalBiosec.save()
 
                         if pigpenMeasuresForm.is_valid():
-                            pigpenMeasures = pigpenMeasuresForm.save(commit=False)
-                            
-                            # collect all pigpens added to farm               
+                            # pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+                            # pass all pigpenList objects into Pigpen_Measures model
+                            x = 0
+                            numTotal = 0
+                            for pigpen in pigpenList:
+                                pigpen = pigpenList[x]
+                                print("TEST LOG Activity " + str(x) + ": " + str(pigpenList[x]))
 
+                                # create new instance of Pigpen_Measures model
+                                pigpen_measure = Pigpen_Measures.objects.create(
+                                    ref_farm = farm,
+                                    length = pigpen['length'],
+                                    width = pigpen['width'],
+                                    num_heads = pigpen['num_heads'],
+                                )
+                                
+                                # add all num_heads (pigpen measure) for total_pigs (farm)
+                                numTotal += int(pigpen_measure.num_heads)
+
+                                print(str(pigpen_measure))
+
+                                pigpen_measure.save()
+
+                                x += 1
                             
                             # add all num_heads (pigpen measure) for total_pigs (farm)
 
 
-                            pigpenMeasures.save()
-                            print("TEST LOG: Added new pigpen measure")
+                            # pigpenMeasures.save()
+                                print("TEST LOG: Added new pigpen measure")
 
                             # update total_pigs of newly added farm
 
                             # temporary
-                            farm.total_pigs = pigpenMeasures.num_heads
+                            farm.total_pigs = numTotal
                             farm.save()
                             
                             # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
@@ -1004,6 +1039,7 @@ def addActivity(request, farmID):
         # print("TEST LOG activityList: " + str(activityList))
 
         if activityForm.is_valid():
+            # pass all activityList objects into Activity model
             x = 0
             for act in activityList:
                 act = activityList[x]
@@ -1042,6 +1078,9 @@ def addActivity(request, farmID):
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
 def deleteActivity(request, farmID, activityID):
+    """
+    - Delete selected activity under current farm
+    """
     
     if request.method == 'POST':
         print("TEST LOG: Delete Activity is a POST Method")

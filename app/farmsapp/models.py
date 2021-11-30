@@ -100,7 +100,7 @@ class Hog_Symptoms(models.Model):
 class Hog_Raiser(models.Model):
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
-    contact_no          = models.CharField(max_length=15)
+    contact_no          = models.CharField(max_length=11)
 
     def __str__(self):
         return self.id
@@ -110,8 +110,8 @@ class Area(models.Model):
     area_name           = models.CharField(max_length=20, null=True, blank=True)
     tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
 
-    def __str__(self):
-        return self.id
+    # def __str__(self):
+    #     return self.id
 
 # FARM Table
 class Farm(models.Model): 
@@ -136,7 +136,7 @@ class Farm(models.Model):
     FEED_CHOICES        = [('Semi-automatic', 'Semi-automatic'),
                             ('Trough', 'Trough')]
 
-    feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES)
+    feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES, default='Semi-automatic')
 
     bldg_cap            = models.IntegerField(null=True, blank=True)
     bldg_curtain        = models.BooleanField(default=False)
@@ -144,7 +144,7 @@ class Farm(models.Model):
     MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
                             ('50 GAL', '50 GAL')]
 
-    medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES)
+    medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
     road_access         = models.BooleanField(default=False)
     
     extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
@@ -166,8 +166,8 @@ class Pigpen_Measures(models.Model):
     width               = models.FloatField()
     num_heads           = models.IntegerField()
 
-    def __str__(self):
-        return self.id
+    # def __str__(self):
+    #     return self.id
 
 # ACTIVITY Table
 class Activity(models.Model):
