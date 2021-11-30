@@ -129,18 +129,12 @@ class Farm(models.Model):
     num_pens            = models.IntegerField(null=True, blank=True, default=1)
     total_pigs          = models.IntegerField(null=True, blank=True)
     
-    FEED_CHOICES        = [('Semi-automatic', 'Semi-automatic'),
-                            ('Trough', 'Trough')]
 
-    feed_trough         = models.CharField(max_length=15, choices=FEED_CHOICES, default='Semi-automatic')
+    feed_trough         = models.CharField(max_length=20)
     bldg_cap            = models.IntegerField(null=True, blank=True)
     
     bldg_curtain        = models.BooleanField(default=False)
-
-    MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
-                            ('50 GAL', '50 GAL')]
-
-    medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
+    medic_tank          = models.CharField(max_length=10)
     road_access         = models.BooleanField(default=False)
     
     extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
@@ -171,15 +165,7 @@ class Activity(models.Model):
 
     date                = models.DateField()
 
-    TYPE_CHOICES        = [('Delivery of Feeds', 'Delivery of Feeds'),
-                            ('Delivery of Medicine', 'Delivery of Medicine'),
-                            ('Delivery of Pigs', 'Delivery of Pigs'),
-                            ('Vaccinations', 'Vaccinations'),
-                            ('Inspection', 'Inspection'),
-                            ('Trucking', 'Trucking'),
-                            ('Other', 'Other')]
-
-    trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
+    trip_type           = models.CharField(max_length=50)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
     description         = models.CharField(max_length=500, null=True, blank=True)

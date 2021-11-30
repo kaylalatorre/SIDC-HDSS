@@ -99,6 +99,11 @@ class AreaForm(ModelForm):
         model = Area
         fields = ('__all__')
 
+FEED_CHOICES = (('Semi-automatic', 'Semi-automatic'),
+                ('Trough', 'Trough'))
+
+MED_TANK_CHOICES = (('25 GAL', '25 GAL'),
+                    ('50 GAL', '50 GAL'))
 
 class FarmForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -141,7 +146,8 @@ class FarmForm(ModelForm):
         })
         self.fields['feed_trough'].widget.attrs.update({
            'select class' : 'form-select',
-           'id' : 'input-trough'
+           'id' : 'input-trough',
+           'choices' : 'FEED_CHOICES'
         })
         self.fields['bldg_cap'].widget.attrs.update({
             'input type' : 'number', 
@@ -165,6 +171,7 @@ class FarmForm(ModelForm):
         self.fields['medic_tank'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'inout-medic-tank',
+           'choices' : 'MED_TANK_CHOICES'
         })
 
     class Meta:
@@ -226,6 +233,15 @@ class PigpenMeasuresForm(ModelForm):
         model = Pigpen_Measures
         fields = ('__all__')
 
+
+TYPE_CHOICES = (('Delivery of Feeds', 'Delivery of Feeds'),
+                ('Delivery of Medicine', 'Delivery of Medicine'),
+                ('Delivery of Pigs', 'Delivery of Pigs'),
+                ('Vaccinations', 'Vaccinations'),
+                ('Inspection', 'Inspection'),
+                ('Trucking', 'Trucking'),
+                ('Other', 'Other'))
+
 class ActivityForm(forms.ModelForm):
     # date = ModelForm.DateField()
 
@@ -235,24 +251,28 @@ class ActivityForm(forms.ModelForm):
             'type' : 'date', 
             'aria-label' : 'Date',
             'class' : 'form-control',
-            'placeholder' : '01/01/2021'
+            'placeholder' : '01/01/2021',
+            'required' : 'True',
         })
         self.fields['trip_type'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'act-trip-type',
-           'style' : 'margin-bottom: 0'
+           'style' : 'margin-bottom: 0',
+           'choices' : 'TYPE_CHOICES',
+           'required' : 'True',
         })
         self.fields['time_arrival'].widget.attrs.update({
             'input type' : 'time', 
             'aria-label' : 'Arrival Time',
             'class' : 'form-control',
-            'placeholder' : '18:00'
+            'placeholder' : '18:00',
+            'required' : 'True',
         })
         self.fields['time_departure'].widget.attrs.update({
             'type' : 'time', 
             'aria-label' : 'Departure Time',
             'class' : 'form-control',
-            'placeholder' : '18:00'
+            'required' : 'True',
         })
         self.fields['description'].widget.attrs.update({
             'input type' : 'text', 
@@ -271,9 +291,10 @@ class ActivityForm(forms.ModelForm):
         model = Activity
         fields = ('__all__')
         widgets = {
-            'date' : widgets.DateInput(attrs={'type' : 'date'}),
-            'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),
-            'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
+            'date' : widgets.DateInput(attrs={'type' : 'date', 'required' : True}),
+            'time_departure' : widgets.TimeInput(attrs={'type' : 'time', 'required' : True}),
+            'time_arrival' : widgets.TimeInput(attrs={'type' : 'time', 'required' : True}),
+            # 'trip_type' : widgets.ChoiceField(attrs={'required' : True}, choices=TYPE_CHOICES)
         }
 
     def clean(self):
