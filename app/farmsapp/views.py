@@ -723,7 +723,10 @@ def post_addChecklist(request, farmID):
 
 def delete_bioChecklist(request, biosecID, farmID):
     """
-    (POST-AJAX) For deleting a biosecurity checklist based on biosecID and farmID from dropdowns
+    (POST-AJAX) For deleting a biosecurity checklist based on biosecID and farmID from dropdowns.
+        Handles two scenarios:
+        - (1) To be deleted Checklist is current Biosec in Farm
+        - (2) Not current checklist in Farm, simply delete record
     """
 
     if request.is_ajax and request.method == 'POST':
@@ -750,8 +753,9 @@ def delete_bioChecklist(request, biosecID, farmID):
             debug("intBio.id -- " + str(intBio.id))
             debug("extBio.id -- " + str(extBio.id))
 
+
             if str(intBio.id) == str(bioID) and str(extBio.id) == str(bioID):
-                
+                # (CASE 1) To be deleted Checklist is current Biosec in Farm
                 ExternalBiosec.objects.filter(id=bioID).delete()
                 InternalBiosec.objects.filter(id=bioID).delete()
 
@@ -778,7 +782,7 @@ def delete_bioChecklist(request, biosecID, farmID):
                 debug("save() farm.extbio -- " + str(farm.extbio.id))
 
             else:
-                # Not current checklist in Farm, simply delete record
+                # (CASE 2) Not current checklist in Farm, simply delete record
                 ExternalBiosec.objects.filter(id=bioID).delete()
                 InternalBiosec.objects.filter(id=bioID).delete()
 
