@@ -1096,8 +1096,65 @@ def createAnnouncement(request):
 def viewAnnouncement(request):
     return render(request, 'farmstemp/view-announcement.html', {})
 
+
+# REPORTS for Module 1
+
 def farmsAssessment(request):
-    return render(request, 'farmstemp/rep-farms-assessment.html', {})
+    debug("TEST LOG: in farmsAssessment Report/n")
+
+    """
+    Gets all Farm records within existing dates and all Areas due to no selected filters in dropdown
+
+    (1) earliest data, recent data of Farm 
+    (2) all Area records
+    (3) Farm details
+        - farm code, raiser full name, address, technician assigned, num pigs, num pens, 
+        - intbio score, extbio score, last_updated (in Farm/Biosec?)
+    """
+    # (1)
+    dateASC = Farm.objects.only("last_updated").order_by('last_updated').all()
+    dateDESC = Farm.objects.only("last_updated").order_by('-last_updated').all()
+
+    # (2) all Area records
+    areaQry = Area.objects.all()
+
+    # (3) Farm details 
+    # TODO: filter based on selected Date range & Area in dropdown --> for search/filter() function
+    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        # contact=F("hog_raiser__contact_no"),
+        farm_area = F("area__area_name")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "farm_address",
+            "farm_area",
+            "total_pigs",
+            "num_pens",
+            "last_updated"
+            )
+    debug(qry)
+
+    farmsData = []
+    for f in qry:
+        farmObject = {
+            "code":  str(f["id"]),
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "address": f["farm_address"],
+            "area": str(f["farm_area"]),
+            "pigs": str(f["total_pigs"]),
+            "pens": str(f["num_pens"]),
+            "updated": f["last_updated"]
+        }
+        farmsData.append(farmObject)
+    debug(farmsData)
+
+    # TODO: compute for
+    # total and ave columns
+
+    return render(request, 'farmstemp/rep-farms-assessment.html', {'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmList': farmsData})
 
 def intBiosecurity(request):
     return render(request, 'farmstemp/rep-int-biosec.html', {})
