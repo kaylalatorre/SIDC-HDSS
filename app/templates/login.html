@@ -17,9 +17,11 @@
         <input type="password" placeholder="Password" class="form-control" id="user-pass" name="user-pass">
             <!-- for LOGIN error message placeholder -->
             {% for mssg in messages %}
+                {% if "login" in mssg.tags %}
                 <div class="alert alert-{{ message.tags }} mb-0 fade show" role="alert">
                     <p class="errormssg">{{ mssg }}</p>
                 </div>
+                {% endif %}
             {% endfor %}
         <br>
         <button class="primary-btn center" type="submit">Log In</button>

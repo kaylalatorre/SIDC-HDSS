@@ -7,15 +7,34 @@
 {% endblock page_title %}
 
 {% block section %}
+
+    <!-- TEST: for biosecurity success-error message placeholder -->
+    {% for mssg in messages %}
+        {% if "add-checklist" in mssg.tags %}
+            <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+        {% if "view-biosec" in mssg.tags %}
+            <div style="color:blue;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+        
+    {% endfor %}
+
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
     <p>Select a farm to check its biosecurity records.</p>
     <div class="box-style">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
-            <select class="form-select" id="farm-code" style="margin-bottom: 0;">
-                <option value="001">001</option>
-            </select>
+                <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
+                    <option hidden value="{{ farmID }}"> {{ farmID }} </option>
+                    {% for farm in farmList %}
+                        <option value="{{ farm.id }}"> {{ farm.id }} </option>
+                    {% endfor %}
+                </select>
         </div>
     </div>
 
@@ -29,8 +48,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="/add-checklist">Biosecurity Checklist</a></li>
-                  <li><a class="dropdown-item" href="/add-activity">Activity Record</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
@@ -41,8 +60,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="/add-checklist">Biosecurity Checklist</a></li>
-                  <li><a class="dropdown-item" href="/add-activity">Activity Record</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
@@ -55,28 +74,56 @@
                     <p>All biosecurity measures in the farm. </p>
                 </div>
                 <div class="mb-3">
+                    <!-- <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label> -->
+
+                    {% if currBio.intbio.isol_pen == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked="checked" disabled> 
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    {% endif %}
                     <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.extbio.bird_proof == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-birdproof" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-birdproof" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.extbio.perim_fence == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-fence" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-fence" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.intbio.foot_dip == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-footdip" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
+
                 <div class="mb-3">
+                    {% if currBio.extbio.fiveh_m_dist == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-distance" checked="checked" disabled>
+                    {% else %}
                     <input type="checkbox" class="form-check-input" id="cb-distance" disabled>
+                    {% endif %}
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
+
                 <div class="flex">
                     <label for="input-trough" class="form-label">Waste Management:</label>
-                    <p style="font-weight: 600;">Septic Tank</p>
+                    <p style="font-weight: 600;"> {{ currBio.intbio.waste_mgt }}</p>
                 </div>
             </div>
         </section>
@@ -89,36 +136,34 @@
                     <div class="flex subheading">     
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-                            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                            <select class="form-select checklist-date desktop" id="checklist-date" style="margin-bottom: 0;">
+                                <option hidden value="{{ bioList.0.id }}"> {{ bioList.0.last_updated}} </option>
                                 {% for bio in bioList %}
-                                    {% load tz %}
-                                    <option value="{{ bio.id }}"> {{ bio.last_updated|localtime }}
-                                    </option>
+                                    <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
                                 {% endfor %}
                             </select>
 
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
-                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck()"><i class='bx bxs-save'></i>Save</button>
-                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="editBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
-                            <button id="delCheck-btn"class="secondary-btn-red"><i class='bx bxs-trash'></i>Delete</button>
+                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i>Save</button>
+                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
+                            <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)"><i class='bx bxs-trash' ></i>Delete</button>
                         </div>
                     </div>
                     <div class="flex mobile-subheading">     
                         <div class="input-group mb-3" style="width:90%; padding-right: 4px;">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-                            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                                {% for bio in bioList %}
-                                    {% load tz %}
-                                    <option value="{{ bio.id }}"> {{ bio.last_updated|localtime }}
-                                    </option>
-                                {% endfor %}
-                            </select>
+                                <select class="form-select checklist-date mobile" id="checklist-date" style="margin-bottom: 0;">
+                                    <option hidden value="{{ bioList.0.id }}"> {{ bioList.0.last_updated}} </option>
+                                    {% for bio in bioList %}
+                                        <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
+                                    {% endfor %}
+                                </select>
                         </div>
                         <div class="btn-group" style="justify-content: flex-end; padding: 0;">
-                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck()"><i class='bx bxs-save'></i><span class="text">Save</span></button>
-                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="editBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                            <button id="delCheck-btn"class="secondary-btn-red"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i><span class="text">Save</span></button>
+                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                            <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)" ><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                         </div>
                     </div>
                 </div>

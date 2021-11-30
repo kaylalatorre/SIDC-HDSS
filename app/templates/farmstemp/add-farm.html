@@ -8,7 +8,7 @@
 
 {% block section %}
 <div class="main-div">
-    <form action="" method="POST">
+    <form action="/add-farm" method="POST">
 
     {% csrf_token %}
 
@@ -25,7 +25,7 @@
             <div class="box-style">
                 <div class="mb-3">
                     <label for="input-code" class="form-label">Code</label>
-                    <input type="text" class="form-control" id="input-code" name="input-code" placeholder="ex. 001">
+                    <input type="text" class="form-control" required id="input-code" minlength="1" maxlength="3" name="input-code" placeholder="ex. 001">
                 </div>
 
                 <h3>Raiser</h3>
@@ -54,7 +54,12 @@
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
-                    {{areaForm.area_name}}
+                    <select class="form-select" id="input-area" name="input-area">
+                        {% for area in area %}
+                        <option>{{area.area_name}}</option>
+                        {% endfor %}
+                        <option>Others</option>
+                    </select>
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate which area.</label>
@@ -105,11 +110,11 @@
             
             <div class="flex subheading">
                 <h2 class="flex-item">Pig Pens</h2>
-                <div><button class="secondary-btn" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> <!-- Adds another row --></div>
+                <div><button class="secondary-btn" type="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> </div>
             </div>
             <div class="flex mobile-subheading">
-                <h2   style="width: 90%">Pig Pens</h2>
-                <div><button class="secondary-btn" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> <!-- Adds another row --></div>
+                <h2 style="width: 90%">Pig Pens</h2>
+                <div><button class="secondary-btn" type="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
             </div>
             <div class="box-style">
                 <br>
@@ -122,15 +127,26 @@
                                 <th>No. of Pigs</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody  id="input-pigpen">
                             <tr>
-                                <td data-label="Length">
+                                <td data-label="Length" id="pigpen-length">
                                     {{pigpenMeasuresForm.length}}
                                 </td>
-                                <td data-label="Width">
+                                <td data-label="Width" id="pigpen-width">
                                     {{pigpenMeasuresForm.width}}
                                 </td>
-                                <td data-label="No. of Pigs">
+                                <td data-label="No. of Pigs" id="pigpen-num-heads">
+                                    {{pigpenMeasuresForm.num_heads}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="Length" id="pigpen-length">
+                                    {{pigpenMeasuresForm.length}}
+                                </td>
+                                <td data-label="Width" id="pigpen-width">
+                                    {{pigpenMeasuresForm.width}}
+                                </td>
+                                <td data-label="No. of Pigs" id="pigpen-num-heads">
                                     {{pigpenMeasuresForm.num_heads}}
                                 </td>
                             </tr>

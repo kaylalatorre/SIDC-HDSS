@@ -1,20 +1,52 @@
 /* BACKEND-specific Functions */
 
+/**
+ * Helper function to prepare AJAX functions with CSRF middleware tokens.
+ * This avoids getting 403 (Forbidden) errors.
+ */
+function ajaxCSRF(){
+    $.ajaxSetup({ 
+        beforeSend: function(xhr, settings) {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                // Only send the token to relative URLs i.e. locally.
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        } 
+   });
+}
+
 /** 
  * on-change AJAX for Biochecklist search
  */
-$('#checklist-date').change(function() {
-    
+$('.checklist-date').change(function() {
+
+// function searchBiocheck(){
     disableCheck();
 
     // Get biosec ID of selected option tag
-    var biosecID = $("#checklist-date option:selected").val()
-    // alert("biosecID: " + biosecID);
+    var biosecID = $(this).val();
+    alert("in search_checklist() -- biosecID: " + biosecID);
+
+    ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/biosecurity/getchecklist',
-        data: {"biosecID": biosecID}, // pass biosec id here
+        url: '/biosecurity/getchecklist/' + biosecID,
         success: function (response){
 
             // alert("in AJAX success");
@@ -80,14 +112,26 @@ $('#checklist-date').change(function() {
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
 
         },
-        error: function (response){
-            alert("in AJAX error. ");
-            // alert(response);
+        error: function (res){
+            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
         }
     });
-
+// }
 });
 
+$('#farm-code').change(function() { 
+
+    farmID = $("#farm-code option:selected").val();
+    try{
+        url = "/biosecurity/" + farmID;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching biosec details failed.");
+        location.reload(true);
+    }
+
+});
 
 /**
  * functions for enabling/disabling Biochecklist btns; 
@@ -111,13 +155,13 @@ function disableCheck(){
 /**
  * on-click AJAX for save Biochecklist btn
  */
-function saveBiocheck(){
+function saveBiocheck(elem){
     // Get biosec ID of selected option tag
-    var biosecID = $("#checklist-date option:selected").val()
-    // alert("biosecID: " + biosecID);
+    var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
+    // alert("in saveBiocheck() biosecID: " + biosecID);
 
     // Put biosec fields in an array
-    var checkArr = []
+    var checkArr = [];
 
     // EXTERNAL biosec fields
     if ($('#prvdd_foot_dip_radio1').prop('checked') == true)
@@ -179,91 +223,199 @@ function saveBiocheck(){
         
     // alert("checkArr length: " + checkArr.length);
 
+    ajaxCSRF();
+
     $.ajax({
         type: 'POST',
-        url: '/biosecurity/edit-checklist',
-        data: {"biosecID": biosecID, "checkArr": checkArr}, // pass biosec id here
+        url: '/biosecurity/edit-checklist/' + biosecID,
+        data: {"checkArr": checkArr}, 
         success: function (response){
 
-            // alert("in AJAX edit success");
-            var biofields = JSON.parse(response["instance"]);
+            if (response.status == 200){
+                // alert("in AJAX edit success");
+                var biofields = JSON.parse(response["instance"]);
 
-            // select btn in btn group based on db value
-            // EXTERNAL biosec fields
-            if (biofields["prvdd_foot_dip"] == 0)
-                $('#prvdd_foot_dip_radio1').prop("checked", true);
-            else if (biofields["prvdd_foot_dip"] == 1)
-                $('#prvdd_foot_dip_radio2').prop("checked", true);
-            else
-                $('#prvdd_foot_dip_radio3').prop("checked", true);
+                // select btn in btn group based on db value
+                // EXTERNAL biosec fields
+                if (biofields["prvdd_foot_dip"] == 0)
+                    $('#prvdd_foot_dip_radio1').prop("checked", true);
+                else if (biofields["prvdd_foot_dip"] == 1)
+                    $('#prvdd_foot_dip_radio2').prop("checked", true);
+                else
+                    $('#prvdd_foot_dip_radio3').prop("checked", true);
 
-            if (biofields["prvdd_alco_soap"] == 0)
-                $('#prvdd_alco_soap_radio1').prop("checked", true);
-            else if (biofields["prvdd_alco_soap"] == 1)
-                $('#prvdd_alco_soap_radio2').prop("checked", true);
-            else
-                $('#prvdd_alco_soap_radio3').prop("checked", true);
+                if (biofields["prvdd_alco_soap"] == 0)
+                    $('#prvdd_alco_soap_radio1').prop("checked", true);
+                else if (biofields["prvdd_alco_soap"] == 1)
+                    $('#prvdd_alco_soap_radio2').prop("checked", true);
+                else
+                    $('#prvdd_alco_soap_radio3').prop("checked", true);
 
-            if (biofields["obs_no_visitors"] == 0)
-                $('#obs_no_visitors_radio1').prop("checked", true);
-            else if (biofields["obs_no_visitors"] == 1)
-                $('#obs_no_visitors_radio2').prop("checked", true);
-            else
-                $('#obs_no_visitors_radio3').prop("checked", true);
-            
-            if (biofields["prsnl_dip_footwear"] == 0)
-                $('#prsnl_dip_footwear_radio1').prop("checked", true);
-            else if (biofields["prsnl_dip_footwear"] == 1)
-                $('#prsnl_dip_footwear_radio2').prop("checked", true);
-            else
-                $('#prsnl_dip_footwear_radio3').prop("checked", true);
+                if (biofields["obs_no_visitors"] == 0)
+                    $('#obs_no_visitors_radio1').prop("checked", true);
+                else if (biofields["obs_no_visitors"] == 1)
+                    $('#obs_no_visitors_radio2').prop("checked", true);
+                else
+                    $('#obs_no_visitors_radio3').prop("checked", true);
+                
+                if (biofields["prsnl_dip_footwear"] == 0)
+                    $('#prsnl_dip_footwear_radio1').prop("checked", true);
+                else if (biofields["prsnl_dip_footwear"] == 1)
+                    $('#prsnl_dip_footwear_radio2').prop("checked", true);
+                else
+                    $('#prsnl_dip_footwear_radio3').prop("checked", true);
 
-            if (biofields["prsnl_sanit_hands"] == 0)
-                $('#prsnl_sanit_hands_radio1').prop("checked", true);
-            else if (biofields["prsnl_sanit_hands"] == 1)
-                $('#prsnl_sanit_hands_radio2').prop("checked", true);
-            else
-                $('#prsnl_sanit_hands_radio3').prop("checked", true);
+                if (biofields["prsnl_sanit_hands"] == 0)
+                    $('#prsnl_sanit_hands_radio1').prop("checked", true);
+                else if (biofields["prsnl_sanit_hands"] == 1)
+                    $('#prsnl_sanit_hands_radio2').prop("checked", true);
+                else
+                    $('#prsnl_sanit_hands_radio3').prop("checked", true);
 
-            if (biofields["chg_disinfect_daily"] == 0)
-                $('#cng_disinfect_daily_radio1').prop("checked", true);
-            else if (biofields["chg_disinfect_daily"] == 1)
-                $('#cng_disinfect_daily_radio2').prop("checked", true);
-            else
-                $('#cng_disinfect_daily_radio3').prop("checked", true);
+                if (biofields["chg_disinfect_daily"] == 0)
+                    $('#cng_disinfect_daily_radio1').prop("checked", true);
+                else if (biofields["chg_disinfect_daily"] == 1)
+                    $('#cng_disinfect_daily_radio2').prop("checked", true);
+                else
+                    $('#cng_disinfect_daily_radio3').prop("checked", true);
 
-            // INTERNAL biosec fields
-            if (biofields["disinfect_prem"] == 0)
-                $('#disinfect_prem_radio1').prop("checked", true);
-            else if (biofields["chg_disinfect_daily"] == 1)
-                $('#disinfect_prem_radio2').prop("checked", true);
-            else
-                $('#disinfect_prem_radio3').prop("checked", true);
+                // INTERNAL biosec fields
+                if (biofields["disinfect_prem"] == 0)
+                    $('#disinfect_prem_radio1').prop("checked", true);
+                else if (biofields["chg_disinfect_daily"] == 1)
+                    $('#disinfect_prem_radio2').prop("checked", true);
+                else
+                    $('#disinfect_prem_radio3').prop("checked", true);
 
-            if (biofields["disinfect_vet_supp"] == 0)
-                $('#disinfect_vet_supp_radio1').prop("checked", true);
-            else if (biofields["chg_disinfect_daily"] == 1)
-                $('#disinfect_vet_supp_radio2').prop("checked", true);
-            else
-                $('#disinfect_vet_supp_radio3').prop("checked", true);
-
+                if (biofields["disinfect_vet_supp"] == 0)
+                    $('#disinfect_vet_supp_radio1').prop("checked", true);
+                else if (biofields["chg_disinfect_daily"] == 1)
+                    $('#disinfect_vet_supp_radio2').prop("checked", true);
+                else
+                    $('#disinfect_vet_supp_radio3').prop("checked", true);
+            }
             // reload Biosec page to update dropdown of Biosec last_updated
-            window.location.reload(true);
+            // window.location.reload(true);
+            window.location.replace("/biosecurity");
+
         },
-        error: function (response){
-            alert("in AJAX error. ");
+        error: function (res){
+            // alert("in AJAX error. ");
+            // alert(res.status); // the status code
+            // alert(res.responseJSON.error); // the message
+
+            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
         }
     });
     
     disableCheck();
 }
 
-// VIEW SELECTED TECH FARM
+function deleteBiocheck(elem){
+
+    // Get biosec ID of selected option tag
+    var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
+    alert("in deleteBiocheck() -- biosecID: " + biosecID);
+
+    var farmID = $("#farm-code option:selected").val();
+    alert("in deleteBiocheck() -- farmID: " + farmID);
+
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
+        // data: {"checkArr": checkArr}, 
+        success: function (response){
+
+            if (response.status == 200){
+                alert("Biochecklist record deleted.");
+            }
+            // reload Biosec page to update dropdown of Biosec last_updated
+            // window.location.reload(true);
+            window.location.replace("/biosecurity/" + farmID);
+
+        },
+        error: function (res){
+            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+        }
+    });
+}
+
+/**
+*   - Redirects current user (technician) to the selected farm. 
+*   - Appends selected farm ID to url that will display farm details.
+*   
+*   techFarm = row of selected farm
+*/
 function viewTechFarm(techFarm) {
-    // var techFarm = document.getElementById("viewTechFarm");
 
     try{
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from selected farm page to designated biosecurity page.
+*   - Appends selected farm ID to url that will display biosecurity measure, checklists, and activities.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function viewBiosec(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/biosecurity/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
+*   - Appends selected farm ID to url that will display an empty biosecurity checklist.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addBiosecPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-checklist/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-activity page for selected farm.
+*   - Appends selected farm ID to url that will display an empty activity record.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addActivityPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-activity/" + techFarm;
         console.log(url);
         location.href = url;
     } catch (error){

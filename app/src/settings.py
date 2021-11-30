@@ -143,14 +143,17 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Manila'
+# TIME_ZONE = None
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
 
+
+# Date and Time Format
+# DATETIME_FORMAT = 'N j, Y, P'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -175,8 +178,16 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
 
-# for success to error messages
+# for Django success to error messages
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
-    messages.ERROR: 'danger'
-}
+        messages.DEBUG: 'alert-secondary',
+        messages.INFO: 'alert-info',
+        messages.SUCCESS: 'alert-success',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'alert-danger',
+ }
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True     # optional, will log out when browser is closed
+SESSION_COOKIE_AGE = 86400                 # will log out user after (n) sec. of inactivity; needs to set 3rd var to False
+SESSION_SAVE_EVERY_REQUEST = False         # If True, prevents from logging User out after (n) seconds

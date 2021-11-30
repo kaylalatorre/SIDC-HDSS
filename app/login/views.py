@@ -17,15 +17,21 @@ def debug(m):
     print(m)
     print("-------------------------------------------------------")
 
+def has_groups(user, group):
+    debug("in has_groups()/n")
+    debug("user -- " + str(user))
+
+    return user.groups.filter(name__in=group).exists()
+
 # LOGIN function
-""""
-Login function for SIDC users. 
-Error handling for:
-- Incorrect username and/or password
-- Empty either/or submitted fields 
-- Attempted user login but no belonging to a usertype/Group (e.g., admin)
-"""
 def login(request):
+    """"
+    Login function for SIDC users. Redirects already logged-in User to Home page.
+    Error handling for:
+    - Incorrect username and/or password
+    - Empty either/or submitted fields 
+    - Attempted user login but no belonging to a usertype/Group (e.g., admin)
+    """
     if request.method == 'POST':
         uname = request.POST['user-name']
         password = request.POST['user-pass']
@@ -41,7 +47,7 @@ def login(request):
             except IndexError: # for handling list index exception
                 # (ERROR) User has no group; None value
                 debug("in LOGIN ERROR: Unauth access")
-                messages.error(request, "Unauthorized access. Please login.")
+                messages.error(request, "Unauthorized access. Please login.", extra_tags='login')
                 return redirect('login')  
             else:
                 hasUsertype = False
@@ -57,14 +63,25 @@ def login(request):
                     if not hasUsertype:
                         # (ERROR) User came from attempted login, but with no usertype
                         debug("in LOGIN ERROR: Unauth access")
-                        messages.error(request, "Unauthorized access. Please login.")
+                        messages.error(request, "Unauthorized access. Please login.", extra_tags='login')
                         return redirect('login')  
         else:
             # (ERROR) User inputs have empty fields or are incorrect.
             debug("in LOGIN ERROR: Incorrect credentials")
-            messages.error(request, "Incorrect credentials. Please try again.")
+            messages.error(request, "Incorrect credentials. Please try again.", extra_tags='login')
             return redirect('login')
-            
+    
+    
+    if request.method == 'GET':
+        user = request.user
+
+        hasGroup = has_groups(user, list(Group.objects.all()))
+
+        if request.user.is_authenticated and hasGroup: # User is already logged in
+            return redirect('home')
+        else:
+            debug("AnonymousUser --  not logged in and does not have group")
+
     return render(request, 'login.html', {})
 
 

@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ModelForm, DateField, widgets
 from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
 
@@ -10,22 +11,38 @@ class ExternalBiosecForm(ModelForm):
         self.fields['bird_proof'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-isolation'         
+            'id': 'cb-birdproof',
+            # 'value' : '1'               
         })
         self.fields['perim_fence'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-fence'         
+            'id': 'cb-fence',
+            # 'value' : '1'               
         })
         self.fields['fiveh_m_dist'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-distance'         
+            'id': 'cb-distance',
+            # 'value' : '1'         
         })
+    
+    def clean_active(self):
+        return 0 if self.cleaned_data['active'] else 1
 
     class Meta:
         model = ExternalBiosec
         fields = ('__all__')
+        # widgets = {
+        #     'bird_proof' : widgets.CheckboxInput(),
+        #     'perim_fence' : widgets.CheckboxInput(),
+        #     'fiveh_m_dist' : widgets.CheckboxInput(),
+        # }
+
+# class ExternalBiosecForm(forms.Form):
+#     bird_proof = forms.CheckboxInput()
+#     perim_fence = forms.CheckboxInput()
+#     fiveh_m_dist = forms.CheckboxInput()
 
 class InternalBiosecForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -33,12 +50,14 @@ class InternalBiosecForm(ModelForm):
         self.fields['isol_pen'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-isolation'         
+            'id': 'cb-isolation',
+            # 'value' : '1'               
         })
         self.fields['foot_dip'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-footdip'         
+            'id': 'cb-footdip',
+            # 'value' : '1'         
         })
         self.fields['waste_mgt'].widget.attrs.update({
            'select class' : 'form-select',
@@ -48,6 +67,10 @@ class InternalBiosecForm(ModelForm):
     class Meta:
         model = InternalBiosec
         fields = ('__all__')
+        # widgets = {
+        #     'isol_pen' : widgets.CheckboxInput(),
+        #     'foot_dip' : widgets.CheckboxInput(),
+        # }
 
 class FarmWeightForm(ModelForm):
     class Meta:
@@ -197,7 +220,7 @@ class PigpenMeasuresForm(ModelForm):
             'class' : 'form-control',
             'placeholder' : 'ex. 100'
         })
-
+    
     class Meta:
         model = Pigpen_Measures
         fields = ('__all__')
@@ -246,11 +269,6 @@ class ActivityForm(ModelForm):
     class Meta:
         model = Activity
         fields = ('__all__')
-        # widgets = {
-        #     'date' : ModelForm.DateInput(format=('%d-%m-%Y'), 
-        #                                      attrs={'class':'myDateClass', 
-        #                                     'placeholder':'Select a date'})
-        # }
         widgets = {
             'date' : widgets.DateInput(attrs={'type' : 'date'}),
             'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),

@@ -11,9 +11,9 @@
     <form action="" method="POST">
 
     {% csrf_token %}
-    <h1 class="heading"><a href="/biosecurity">Biosecurity</a> > Add Activity</h1>
+    <h1 class="heading"><a href="/biosecurity/{{farmID}}">Biosecurity</a> > Add Activity</h1>
     <div class="flex subheading">
-        <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">001</p>
+        <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">{{ farmID }}</p>
         <div><button class="primary-btn" type="submit">Send for Approval</button></div>
     </div>
     
@@ -23,7 +23,7 @@
         <div class="box-style">
             <div class="flex subheading">
                 <p class="flex-item">Add all activity details here. </p>
-                <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
+                <div><button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
             </div>
             <br>
             <div class="input-group" id="input-activity">
@@ -38,14 +38,14 @@
                             <th>Remarks</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="input-act">
                         <tr>
-                            <td data-label="Date"> {{activityForm.date}} </td>
-                            <td data-label="Trip Type"> {{activityForm.trip_type}} </td>                            
-                            <td data-label="Departure Time"> {{activityForm.time_departure}} </td>
-                            <td data-label="Arrival Time"> {{activityForm.time_arrival}} </td>
-                            <td data-label="Description"> {{activityForm.description}} </td>
-                            <td data-label="Remarks"> {{activityForm.remarks}} </td>
+                            <td data-label="Date" id="date"> {{activityForm.date}} </td>
+                            <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>                            
+                            <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
+                            <td data-label="Arrival Time" id="time_arrival"> {{activityForm.time_arrival}} </td>
+                            <td data-label="Description" id="description"> {{activityForm.description}} </td>
+                            <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
                         </tr>
                     </tbody>
                 </table>

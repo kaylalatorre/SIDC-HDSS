@@ -101,6 +101,44 @@ function viewFarm(farm) {
     }
 }
 
+function addPigPenRow() {
+
+    const length = document.getElementById('pigpen-length').innerHTML;
+    const width = document.getElementById('pigpen-width').innerHTML;
+    const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
+
+    // const row = document.getElementById("pigpen-row");
+    const table = document.getElementById("input-pigpen");
+ 
+    $("#input-pigpen").append("<tr> \
+        <td data-label='Length'> " + length + " </td> \
+        <td data-label='Width'> " + width + " </td> \
+        <td data-label='No. of Pigs'> " + num_heads + " </td> \
+        </tr>");
+ 
+}
+
+function addActivityRow() {
+    const date = document.getElementById('date').innerHTML;
+    const trip_type = document.getElementById('trip_type').innerHTML;
+    const time_departure = document.getElementById('time_departure').innerHTML;
+    const time_arrival = document.getElementById('time_arrival').innerHTML;
+    const description = document.getElementById('description').innerHTML;
+    const remarks = document.getElementById('remarks').innerHTML;
+
+    // const row = document.getElementById("pigpen-row");
+    const table = document.getElementById("input-act");
+ 
+    $("#input-act").append("<tr> \
+        <td data-label='Date'> " + date + " </td> \
+        <td data-label='Trip Type'> " + trip_type + " </td> \
+        <td data-label='Departure Time'> " + time_departure + " </td> \
+        <td data-label='Arrival Time'> " + time_arrival + " </td> \
+        <td data-label='Description'> " + description + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
+        </tr>");
+}
+
 function viewForm() {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data

@@ -4,19 +4,23 @@ from django.utils.timezone import now
 
 # for importing Users
 from django.contrib.auth.models import User
+from django.conf import settings
+
+# for importing Users from
+from django.conf import settings
 
 class User(User):
     pass
 
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     # fields from Biomeasures
-    bird_proof          = models.IntegerField(null=True, blank=True)
-    perim_fence         = models.IntegerField(null=True, blank=True)
-    fiveh_m_dist        = models.IntegerField(null=True, blank=True)
+    bird_proof          = models.IntegerField(null=True, blank=True, default=1)
+    perim_fence         = models.IntegerField(null=True, blank=True, default=1)
+    fiveh_m_dist        = models.IntegerField(null=True, blank=True, default=1)
     
     # fields from Biochecklist
     prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
@@ -26,30 +30,30 @@ class ExternalBiosec(models.Model):
     prsnl_sanit_hands   = models.IntegerField(null=True, blank=True)
     chg_disinfect_daily = models.IntegerField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
 
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
     # fields from Biomeasures
-    isol_pen            = models.IntegerField(null=True, blank=True)
+    isol_pen            = models.IntegerField(null=True, blank=True, default=1)
+    foot_dip            = models.IntegerField(null=True, blank=True, default=1)
 
-    WASTE_MGT_CHOICES  = [('Septic Tank', 'Septic Tank'),
+    WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
                             ('Biogas', 'Biogas'),
                             ('Other', 'Other')]
 
     waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
-    foot_dip            = models.IntegerField(null=True, blank=True)
     
     # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)
     disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
 
 # FARM WEIGHT Table
 class Farm_Weight(models.Model):
@@ -64,7 +68,7 @@ class Farm_Weight(models.Model):
 
 # FARM SYMPTOMS Table
 class Hog_Symptoms(models.Model):
-    date_filed          = models.DateField(default=now)
+    date_filed          = models.DateTimeField(default=now)
 
     high_fever          = models.BooleanField(default=False)
     loss_appetite       = models.BooleanField(default=False)
@@ -103,19 +107,14 @@ class Hog_Raiser(models.Model):
 
 # AREA Table
 class Area(models.Model):
-    AREA_CHOICES        = [('TISISI', 'TISISI'),
-                        ('West', 'West'),
-                        ('East', 'East'),
-                        ('Other', 'Other')]
-
-    area_name           = models.CharField(max_length=20, choices=AREA_CHOICES, default='TISISI')
-    tech                = models.ForeignKey('User', on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+    area_name           = models.CharField(max_length=20, null=True, blank=True)
+    tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
 
 # FARM Table
 class Farm(models.Model): 
     hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
 
-    date_registered     = models.DateField(null=True, blank=True)
+    date_registered     = models.DateField(default=now, null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     area                = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True)
@@ -144,8 +143,8 @@ class Farm(models.Model):
     medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
     road_access         = models.BooleanField(default=False)
     
-    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
-    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
+    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
+    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
     hog_symptoms       = models.ForeignKey('Hog_Symptoms', on_delete=models.CASCADE, null=True, blank=True)
