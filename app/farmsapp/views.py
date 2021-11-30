@@ -283,10 +283,9 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
-        # externalBiosecForm  = ExternalBiosecForm(request.POST)
         internalBiosecForm  = InternalBiosecForm(request.POST)
 
-        # pass all pigpens values into array below
+        # pass all pigpens values into array pigpenList
         pigpenList = []
 
         i = 0
@@ -307,15 +306,9 @@ def addFarm(request):
 
             print("TEST LOG: Added new raiser")
 
-            # if externalBiosecForm.is_valid():
-            #     externalBiosec = externalBiosecForm.save(commit=False)
-            #     externalBiosec.save()
-
-            #     print("TEST LOG: Added new external biosec")
-
             if internalBiosecForm.is_valid():
-                # internalBiosec = internalBiosecForm.save(commit=False)
-
+                
+                # collect internal biosec checkbox inputs and convert to integer value
                 if request.POST.get("cb-isolation", None) == 'on':
                     isol_pen = 0
                 else :
@@ -325,7 +318,8 @@ def addFarm(request):
                     foot_dip = 0
                 else :
                     foot_dip = 1
-        
+
+                # create new instance of InternalBiosec model and pass converted checkbox inputs
                 internalBiosec = InternalBiosec.objects.create(
                     isol_pen = isol_pen,
                     foot_dip = foot_dip,
@@ -335,11 +329,10 @@ def addFarm(request):
                 print(str(internalBiosec))
         
                 internalBiosec.save()
-                
                 print("TEST LOG: Added new internal biosec")
                 
 
-                externalBiosec = ExternalBiosec()
+                # collect external biosec checkbox inputs and convert to integer value
                 if request.POST.get("cb-birdproof", None) == 'on':
                     bird_proof = 0
                 else :
@@ -355,6 +348,7 @@ def addFarm(request):
                 else :
                     fiveh_m_dist = 1
 
+                # create new instance of ExternalBiosec model and pass converted checkbox inputs
                 externalBiosec = ExternalBiosec.objects.create(
                     bird_proof = bird_proof,
                     perim_fence = perim_fence,
@@ -364,12 +358,12 @@ def addFarm(request):
                 print(str(externalBiosec))
 
                 externalBiosec.save()
-                
                 print("TEST LOG: Added new internal biosec")
                 
                 if farmForm.is_valid():
                     farm = farmForm.save(commit=False)
 
+                    # pass data as FKs for farm
                     farm.hog_raiser = hogRaiser
                     farm.extbio = externalBiosec
                     farm.intbio = internalBiosec
@@ -389,10 +383,13 @@ def addFarm(request):
                     internalBiosec.save()
 
                     if pigpenMeasuresForm.is_valid():
-                        # pigpenMeasures = pigpenMeasuresForm.save(commit=False)
+                        
+                        # temporary variable to store total of all num_heads
+                        numTotal = 0 
+                
                         # pass all pigpenList objects into Pigpen_Measures model
                         x = 0
-                        numTotal = 0
+                        
                         for pigpen in pigpenList:
                             pigpen = pigpenList[x]
                             print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
@@ -411,22 +408,15 @@ def addFarm(request):
                             print(str(pigpen_measure))
 
                             pigpen_measure.save()
+                            print("TEST LOG: Added new pigpen measure")
 
                             x += 1
                         
-                        # add all num_heads (pigpen measure) for total_pigs (farm)
-
-
-                        # pigpenMeasures.save()
-                            print("TEST LOG: Added new pigpen measure")
 
                         # update total_pigs of newly added farm
-
-                        # temporary
                         farm.total_pigs = numTotal
                         farm.save()
                         
-                        # print("TEST LOG pigpenMeasures.num_heads: " + str(pigpenMeasures.num_heads))
                         # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
                         return render(request, 'home.html', {})
@@ -443,10 +433,6 @@ def addFarm(request):
                 print("TEST LOG: Internal Biosec Form not valid")
                 print(internalBiosecForm.errors)
 
-            # else:
-            #     print("TEST LOG: External Biosec Form not valid")
-            #     print(externalBiosecForm.errors)
-            
         else:
             print("TEST LOG: Hog Raiser Form not valid")
             print(hogRaiserForm.errors)
@@ -466,7 +452,6 @@ def addFarm(request):
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,
-                                                        # 'externalBiosecForm' : externalBiosecForm,
                                                         'internalBiosecForm' : internalBiosecForm})
  
 
@@ -880,7 +865,7 @@ def biosec_view(request):
 
 
     # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-last_updated')
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
     actList = []
 
@@ -976,7 +961,7 @@ def select_biosec(request, farmID):
 
 
     # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-last_updated')
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
     actList = []
 
@@ -1066,7 +1051,7 @@ def addActivity(request, farmID):
 
         activityForm = ActivityForm(request.POST)
 
-        # pass all values into each of the array below
+        # pass all values into each of the array activityList
         activityList = []
 
         i = 0
@@ -1087,11 +1072,13 @@ def addActivity(request, farmID):
         # print("TEST LOG activityList: " + str(activityList))
 
         if activityForm.is_valid():
+
             # pass all activityList objects into Activity model
             x = 0
+
             for act in activityList:
                 act = activityList[x]
-                print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
+                # print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
 
                 # create new instance of Activity model
                 activity = Activity.objects.create(
@@ -1107,6 +1094,7 @@ def addActivity(request, farmID):
                 print(str(activity))
 
                 activity.save()
+                print("TEST LOG: Added new activity")
 
                 x += 1
             
