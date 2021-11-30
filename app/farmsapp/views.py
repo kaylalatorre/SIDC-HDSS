@@ -972,26 +972,34 @@ def addActivity(request, farmID):
     - Django forms will first check the validity of input (based on the fields within models.py)
     """
 
-    # Activity_FormSet = formset_factory(ActivityForm)
+    Activity_FormSet = formset_factory(ActivityForm)
 
     # collected farmID of selected tech farm
     farmID = farmID
 
     if request.method == 'POST':
-        print("TEST LOG: Form has POST method") 
+        print("TEST LOG: Activity Form has POST method") 
         print(request.POST)
 
-        activityForm = ActivityForm(request.POST)
+        activityForm = Activity_FormSet(request.POST)
         # activityForm = Activity_FormSet(request.POST)
+        # print(activityForm.cleaned_data)
 
         if activityForm.is_valid():
             # activity = Activity_FormSet.save(commit=False)
+            print(list(activityForm.cleaned_data.all()))
 
-            for activity in activityForm:
-                activity.ref_farm_id = farmID
+            for activity in list(activityForm.cleaned_data):
+                # print(activity.cleaned_data.ref_farm)
+
+                # print(activity.as_table())
+                print("hello")
+                print(activity)
+                # print(activity.cleaned_data.values()[0])
+
                 # activity.save()
 
-                print("TEST LOG: Added new activty")
+                print("TEST LOG: Added new activity")
             
             # return redirect('/biosecurity/' + str(farmID))
         
@@ -1000,11 +1008,11 @@ def addActivity(request, farmID):
             print(activityForm.non_field_errors)
 
     else:
-        print("TEST LOG: Form is not a POST method")
+        print("TEST LOG: Activity Form is not a POST method")
 
         # if form has no input yet, only display an empty form
-        activityForm = ActivityForm()
-        # activityForm = Activity_FormSet()
+        # activityForm = ActivityForm()
+        activityForm = Activity_FormSet()
 
     # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })

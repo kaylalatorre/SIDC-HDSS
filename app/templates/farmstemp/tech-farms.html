@@ -10,8 +10,8 @@
 <div class="table-container main-div">
     <h1 class="heading">Farms Assigned</h1>
     <div class="flex subheading">
-        {{areas}}
-            {% if areaCount == 0 %}
+
+        {% if areaCount == 0 %}
                 <label style="font-weight: 600;">No Areas Assigned.</label>
                 <p class="flex-item"> </p>
             {% elif areaCount == 1 %}
@@ -54,8 +54,8 @@
                 </tr>
             </thead>
             <tbody>
-            <!-- Data -->
             {% for techFarm in techFarms %}
+            
                 <tr>
                     <td data-label="Farm Code">{{techFarm.code}}</td>
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
@@ -65,7 +65,8 @@
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
-                </tr>    
+                </tr> 
+                   
             {% endfor %}
             </tbody>            
         </table>

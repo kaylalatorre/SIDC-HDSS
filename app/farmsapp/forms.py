@@ -99,12 +99,6 @@ class AreaForm(ModelForm):
         model = Area
         fields = ('__all__')
 
-FEED_CHOICES = (('Semi-automatic', 'Semi-automatic'),
-                ('Trough', 'Trough'))
-
-MED_TANK_CHOICES = (('25 GAL', '25 GAL'),
-                    ('50 GAL', '50 GAL'))
-
 class FarmForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -147,7 +141,6 @@ class FarmForm(ModelForm):
         self.fields['feed_trough'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'input-trough',
-           'choices' : 'FEED_CHOICES'
         })
         self.fields['bldg_cap'].widget.attrs.update({
             'input type' : 'number', 
@@ -233,40 +226,23 @@ class PigpenMeasuresForm(ModelForm):
         model = Pigpen_Measures
         fields = ('__all__')
 
-
-TYPE_CHOICES = (('Delivery of Feeds', 'Delivery of Feeds'),
-                ('Delivery of Medicine', 'Delivery of Medicine'),
-                ('Delivery of Pigs', 'Delivery of Pigs'),
-                ('Vaccinations', 'Vaccinations'),
-                ('Inspection', 'Inspection'),
-                ('Trucking', 'Trucking'),
-                ('Other', 'Other'))
-
 class ActivityForm(forms.ModelForm):
-    # date = ModelForm.DateField()
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].widget.attrs.update({
             'type' : 'date', 
             'aria-label' : 'Date',
             'class' : 'form-control',
-            'placeholder' : '01/01/2021',
-            'required' : 'True',
         })
         self.fields['trip_type'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'act-trip-type',
            'style' : 'margin-bottom: 0',
-           'choices' : 'TYPE_CHOICES',
-           'required' : 'True',
         })
         self.fields['time_arrival'].widget.attrs.update({
             'input type' : 'time', 
             'aria-label' : 'Arrival Time',
             'class' : 'form-control',
-            'placeholder' : '18:00',
-            'required' : 'True',
         })
         self.fields['time_departure'].widget.attrs.update({
             'type' : 'time', 
@@ -297,20 +273,26 @@ class ActivityForm(forms.ModelForm):
             # 'trip_type' : widgets.ChoiceField(attrs={'required' : True}, choices=TYPE_CHOICES)
         }
 
-    def clean(self):
-        cleaned_data = super().clean()
+    # def clean(self):
+    #     cleaned_data = super().clean()
 
-        date = cleaned_data.get("date")
-        today = datetime.date.today()
+    #     date = cleaned_data.get("date")
+    #     today = datetime.date.today()
 
-        if date > today:
-            raise forms.ValidationError("Date can not be later than today.")
+    #     print("Input Date: " + str(date))
+    #     print("Date today: " + str(today))
 
-        time_arrival = cleaned_data.get("time_arrival")
-        time_departure = cleaned_data.get("time_departure")
+    #     if date > today:
+    #         raise forms.ValidationError("Date can not be later than today.")
 
-        if time_departure > time_arrival:
-            raise forms.ValidationError("Arrival time should be after departure time.")
+    #     time_arrival = cleaned_data.get("time_arrival")
+    #     time_departure = cleaned_data.get("time_departure")
+
+    #     print("Arrival: " + str(time_arrival))
+    #     print("Departure: " + str(time_departure))
+
+    #     if time_departure > time_arrival:
+    #         raise forms.ValidationError("Arrival time should be after departure time.")
 
 class MortalityForm(ModelForm):
     class Meta:

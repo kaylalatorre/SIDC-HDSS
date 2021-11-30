@@ -27,10 +27,8 @@
             </div>
             <br>
             
-            <fieldset>
-
             <!-- erorrs -->
-            <p> {{activityForm.non_field_errors}} </p>
+            {{activityForm.non_field_errors}}
 
             <div class="input-group" id="input-activity">
                 <table class="table">
@@ -45,26 +43,22 @@
                         </tr>
                     </thead>
                     <tbody id="input-act">
-                        <!-- {{activityForm.management_form}} -->
+                        {{activityForm.management_form}}
 
-                        <!-- {% for activity in activityForm %} -->
+                        {% for activity in activityForm %}
                         <tr>
-                            <td data-label="Date" id="date"> {{activityForm.date}} </td>
-                            <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>                            
-                            <td data-label="Arrival Time" id="time_arrival"> {{activityForm.time_arrival}} </td>
-                            <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
-                            <td data-label="Description" id="description"> {{activityForm.description}} </td>
-                            <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
+                            <td data-label="Date" id="date"> {{activity.date}} </td>
+                            <td data-label="Trip Type" id="trip_type"> {{activity.trip_type}} </td>                            
+                            <td data-label="Arrival Time" id="time_arrival"> {{activity.time_arrival}} </td>
+                            <td data-label="Departure Time" id="time_departure"> {{activity.time_departure}} </td>
+                            <td data-label="Description" id="description"> {{activity.description}} </td>
+                            <td data-label="Remarks" id="remarks"> {{activity.remarks}} </td>
                         </tr>
-
-                        <!-- <tr> <td colspan="100%"> Warning: {{activityForm.non_field_errors}} </td></tr> -->
-                        <!-- {% endfor %} -->
+                        {% endfor %}
                         
                     </tbody>
                 </table>
 
-            </fieldset>
-            
             </div>
             <br>
             <!-- Hidden depending on user -->
