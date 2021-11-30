@@ -255,4 +255,4 @@ class Mem_Announcement(models.Model):
     mssg                = models.CharField(max_length=500)
     author              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='author', null=True, blank=True)
     timestamp           = models.DateTimeField(default=now)
-    is_approved         = models.BooleanField(default=False)
+    is_approved         = models.BooleanField(default=False, null=True)

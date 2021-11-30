@@ -92,13 +92,11 @@ function viewForm() {
     };
 }
 
-function viewAnnounce() {
+function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
-    let viewAnnounce = document.querySelector('#viewAnnounce');
-    viewAnnounce.onclick = function () {
-        location.href = "/view-announcement";
-    };
+    id = $(elem).attr('id');
+    location.href = "/view-announcement/"+id;
 }
 
 /** 
@@ -141,3 +139,10 @@ function filterSearch(){
         }    
     }
 } 
+/** 
+* Select all.
+*/
+$('#select_all').change(function() {
+    var checkboxes = $(this).closest('table').find(':checkbox');
+    checkboxes.prop('checked', $(this).is(':checked'));
+});

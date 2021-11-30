@@ -46,6 +46,7 @@ def farms(request):
     """
     Display all farms for assistant manager
     """
+    # TODO get areas for filter
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -671,12 +672,21 @@ def assign_technician(request):
         a.save()
         debug(area.get())
         # return output
-        return HttpResponse("message",status=200)
-    else:
-        # abort
-        # return output
-        return HttpResponseNotFound("Not Found",status=400)
+        return HttpResponse("Technician assigned",status=200)
+    # else abort
+    # return output
+    return HttpResponse("Area or Technician Not Found",status=404)
     
+def save_area(request):
+    """
+    Create a new area, abort if area with same string is found
+    """
+    areaName = request.POST.get("area")
+    is_exist = Area.objects.filter(area_name = areaName).exists()
+    if(not is_exist):
+        Area(area_name = areaName, tech_id = None).save()
+        return HttpResponse("Save success")
+    return HttpResponse("Save Fail", status=400)
     
 
 def formsApproval(request):
@@ -857,24 +867,81 @@ def memAnnouncements(request):
     )
     context = {
         "approved": announcements.filter(is_approved = True),
-        "unapproved": announcements.filter(is_approved = False),
+        "rejected": announcements.filter(is_approved = False),
+        "unapproved": announcements.filter(is_approved = None),
     }
     return render(request, 'farmstemp/mem-announce.html', context)
+
+def memAnnouncements_Approval(request, decision):
+    """
+    Approves or reject an announcement, sets [is_approved] to either [true] or [false]
+
+    :param decision: "approve" or "reject" depending on the ajax call
+    :type decision: String
+    """
+    idQry = request.POST.get("idList")
+    
+    idList = json.loads(idQry)
+    
+    Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+
+    return HttpResponse(status=200)
 
 def createAnnouncement(request):
     """
     Create announcment
     Defaults to approved if assistant manager
     """
+
     if request.method == 'POST':
-        debug(request.POST)
-        debug(MemAnnouncementForm(request.POST))
+        # debug(request.POST.get("title"))
+        # debug(request.POST.get("category"))
+        # debug(request.POST.get("recip_area"))
+        # debug(request.POST.get("mssg"))
+        # debug(request.user.id)
+        # debug(datetime.now())
+        # debug(request.user.groups.all()[0].name)
+        
+        autoApprove = ['Assistant Manager']
+        if request.user.groups.all()[0].name in autoApprove:
+            approvalState = True
+        else:
+            approvalState = None
+
+        announcement = Mem_Announcement(
+            title = request.POST.get("title"),
+            category = request.POST.get("category"),
+            recip_area = request.POST.get("recip_area"),
+            mssg = request.POST.get("mssg"),
+            author_id = request.user.id,
+            timestamp = now(),
+            is_approved = approvalState
+        )
+        # debug(announcement.title)
+        # debug(announcement.category)
+        # debug(announcement.recip_area)
+        # debug(announcement.mssg)
+        # debug(announcement.author)
+        # debug(announcement.timestamp)
+        # debug(announcement.is_approved)
+        announcement.save()
+        messages.success(request, "Announcement sent.", extra_tags='announcement')
 
     announcementForm = MemAnnouncementForm()
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
 
-def viewAnnouncement(request):
-    return render(request, 'farmstemp/view-announcement.html', {})
+def viewAnnouncement(request, id):
+    qry = Mem_Announcement.objects.filter(pk = id).values(
+        "title",
+        "category",
+        "recip_area",
+        "mssg"
+    ).first()
+    debug(qry)
+    context = {
+        "announcement":qry
+    }
+    return render(request, 'farmstemp/view-announcement.html', context)
 
 def farmsAssessment(request):
     return render(request, 'farmstemp/rep-farms-assessment.html', {})

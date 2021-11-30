@@ -12,6 +12,7 @@ urlpatterns = [
     # asst. manager - assign technicians
     path('technician-assignment', views.techAssignment, name="techAssignment"),
     path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
+    path('technician-assignment/savearea', views.save_area, name="save_area"),
 
     # asst. manager - forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
@@ -40,8 +41,9 @@ urlpatterns = [
 
     # announcements
     path('member-announcements', views.memAnnouncements, name="memAnnouncements"),
+    path('member-announcements/<str:decision>', views.memAnnouncements_Approval, name="memAnnouncements_Approval"),
     path('create-announcement', views.createAnnouncement, name="createAnnouncement"),
-    path('view-announcement', views.viewAnnouncement, name="viewAnnouncement"),
+    path('view-announcement/<int:id>', views.viewAnnouncement, name="viewAnnouncement"),
 
     # reports
     path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),

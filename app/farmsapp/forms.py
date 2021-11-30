@@ -287,13 +287,18 @@ class MemAnnouncementForm(ModelForm):
 
     class Meta:
         model = Mem_Announcement
+        AREA_CHOICES = [('All Raisers', 'All Raisers')]
+
+        for choice in Area.objects.distinct().values('area_name'):
+            AREA_CHOICES.append((choice['area_name'], choice['area_name']))
+
         fields = ('__all__')
         widgets = {
             'category': widgets.Select(
                 choices=(('Reminder','Reminder'), ('Announcement','Announcement'), ('Event','Event'), ('Other','Other'))
             ),
             'recip_area': widgets.Select(
-                choices=(('All Raisers','All Raisers'), ('TISISI Raisers','TISISI Raisers'), ('West Raisers','West Raisers'), ('East Raisers','East Raisers'))
+                choices=AREA_CHOICES
             ),
             'mssg': widgets.Textarea()
         }
