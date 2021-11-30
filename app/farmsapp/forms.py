@@ -228,7 +228,6 @@ class ActivityForm(forms.ModelForm):
             'type' : 'time', 
             'aria-label' : 'Departure Time',
             'class' : 'form-control',
-            'required' : 'True',
         })
         self.fields['description'].widget.attrs.update({
             'input type' : 'text', 

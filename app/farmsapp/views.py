@@ -992,6 +992,12 @@ def select_biosec(request, farmID):
             'remarks' : activity.remarks,
             'editable' : editable
         })
+    
+    # if request.method == 'POST' :
+    #     activityForm = ActivityForm(request.POST)
+    #     activity.save()
+    # else :
+    #     activityForm = ActivityForm()
 
     # print("TEST LOG actList: " + str(actList))
 
