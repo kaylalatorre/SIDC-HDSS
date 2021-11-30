@@ -192,8 +192,8 @@ class Activity(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     is_approved         = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.id
+    # def __str__(self):
+    #     return self.id
 
 # MORTALITY Table
 class Mortality(models.Model):

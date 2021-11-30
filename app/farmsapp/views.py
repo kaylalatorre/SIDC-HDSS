@@ -30,7 +30,8 @@ from django.shortcuts import render
 from datetime import date
 
 # for getting date today
-from django.utils.timezone import now 
+from django.utils.timezone import now
+from django.utils.timezone import localtime 
 
 def debug(m):
     """
@@ -181,6 +182,8 @@ def techSelectedFarm(request, farmID):
     """
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
+
+    farmID - selected farmID passed as parameter
     """
 
     ## get details of selected farm
@@ -879,7 +882,6 @@ def biosec_view(request):
             'time_arrival' : activity.time_arrival,
             'description' : activity.description,
             'remarks' : activity.remarks,
-            # 'last_updated' : last_updated,
         })
 
     # pass in context:
@@ -964,9 +966,22 @@ def select_biosec(request, farmID):
     actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
     actList = []
+    # print(str(now(settings.TIME_ZONE)))
 
     # store all data to an array
     for activity in actQuery:
+        # print(str((localtime() - activity.last_updated).days))
+        # print(str(localtime() - activity.last_updated))
+        
+        # check if activity record date is still within the 24 hour mark of current time
+        # if activity.last_updated >= localtime() :
+        # if (activity.last_updated - localtime()).total_seconds() > 86400 :
+        if (localtime() - activity.last_updated).days == 0:
+            # print(str(activity.last_updated))
+            editable = True
+        else : 
+            editable = False
+
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
@@ -975,8 +990,10 @@ def select_biosec(request, farmID):
             'time_arrival' : activity.time_arrival,
             'description' : activity.description,
             'remarks' : activity.remarks,
-            # 'last_updated' : last_updated,
+            'editable' : editable
         })
+
+    # print("TEST LOG actList: " + str(actList))
 
     # pass in context:
     # - (1) farmIDs under Technician user, 
@@ -1040,6 +1057,8 @@ def addActivity(request, farmID):
     - Add new activity to database (will be sent for approval by asst. manager)
     - Save details to activity and add FK of current farm table
     - Django forms will first check the validity of input (based on the fields within models.py)
+
+    farmID - selected farmID passed as parameter
     """
 
     # collected farmID of selected tech farm
@@ -1116,6 +1135,9 @@ def addActivity(request, farmID):
 def deleteActivity(request, farmID, activityID):
     """
     - Delete selected activity under current farm
+    
+    activityID - selected activityID passed as parameter
+    farmID - selected farmID passed as parameter
     """
     
     if request.method == 'POST':

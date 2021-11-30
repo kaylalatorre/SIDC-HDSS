@@ -434,10 +434,17 @@
                             <td data-label="Description">{{act.description}}</td>
                             <td data-label="Remarks">{{act.remarks}}</td>
                             <td>
+                                {% if act.editable == True %}
                                 <div class="btn-group" style="justify-content: end; padding: 0;">
                                     <button class="secondary-btn" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
                                     <button class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                                 </div>
+                                {% else %}                                
+                                <div class="btn-group" style="justify-content: end; padding: 0;">
+                                    <button style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                                </div>
+                                {% endif %}
                             </td>
                         </tr>
 
