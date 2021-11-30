@@ -51,7 +51,7 @@
 
 .block-grid {
     display: grid;
-    grid-template-columns: 20% auto;
+    grid-template-columns: 24.2% auto;
     grid-gap: 0 16px;
 }
 
@@ -88,4 +88,5 @@
 #map-containter {
     width: 100%;
     height: 600px;
+    z-index: 1;
 }

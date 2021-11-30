@@ -217,12 +217,19 @@ button:hover, .button:hover, .primary-btn:hover{
     padding-right: 4px;
 }
 
+.no-shadow {
+    box-shadow: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
 /* Save button for technician assignment */
-.assignSave, .assignEdit {
+.assignSave, .assignEdit, .biosecEdit, .biosecSave {
     margin-right: 4px;
 }
 
-.assignSave {
+.assignSave, .biosecSave {
     display: none;
 }
 

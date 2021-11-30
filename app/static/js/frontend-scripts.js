@@ -1,9 +1,9 @@
 /* 
 * Tech assignment edit button 
 */
-let edit = document.querySelectorAll('.assignEdit');
-for(var i = 0; i < edit.length; i++) { 
-    edit[i].addEventListener("click", (e)=> {
+let assignEdit = document.querySelectorAll('.assignEdit');
+for(var i = 0; i < assignEdit.length; i++) { 
+    assignEdit[i].addEventListener("click", (e)=> {
         let editParent = e.target.parentElement.parentElement.parentElement;
         let editDropdown = editParent.querySelector(".form-select");
         let assignSave = editParent.querySelector(".assignSave");
@@ -15,9 +15,9 @@ for(var i = 0; i < edit.length; i++) {
     })
 }
 
-let save = document.querySelectorAll('.assignSave');
-for(var i = 0; i < save.length; i++) { 
-    save[i].addEventListener("click", (e)=> {
+let assignSave = document.querySelectorAll('.assignSave');
+for(var i = 0; i < assignSave.length; i++) { 
+    assignSave[i].addEventListener("click", (e)=> {
         let saveParent = e.target.parentElement.parentElement.parentElement;
         let saveDropdown = saveParent.querySelector(".form-select");
         let assignSave = saveParent.querySelector(".assignSave");
@@ -26,6 +26,33 @@ for(var i = 0; i < save.length; i++) {
         saveDropdown.setAttribute("disabled", true);
         assignSave.setAttribute("style", "display: none");
         assignEdit.setAttribute("style", "display: block");
+    })
+}
+
+/* 
+* Biosecurity edit button 
+*/
+let biosecEdit = document.querySelectorAll('.biosecEdit');
+for(var i = 0; i < biosecEdit.length; i++) { 
+    biosecEdit[i].addEventListener("click", (e)=> {
+        let editParent = e.target.parentElement.parentElement.parentElement;
+        let biosecSave = editParent.querySelector(".biosecSave");
+        let biosecEdit = editParent.querySelector(".biosecEdit");
+        console.log(biosecEdit);
+        biosecSave.setAttribute("style", "display: block");
+        biosecEdit.setAttribute("style", "display: none");
+    })
+}
+
+let biosecSave = document.querySelectorAll('.biosecSave');
+for(var i = 0; i < biosecSave.length; i++) { 
+    biosecSave[i].addEventListener("click", (e)=> {
+        let saveParent = e.target.parentElement.parentElement.parentElement;
+        let biosecSave = saveParent.querySelector(".biosecSave");
+        let biosecEdit = saveParent.querySelector(".biosecEdit");
+
+        biosecSave.setAttribute("style", "display: none");
+        biosecEdit.setAttribute("style", "display: block");
     })
 }
 

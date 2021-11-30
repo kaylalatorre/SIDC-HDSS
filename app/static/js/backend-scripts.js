@@ -40,7 +40,6 @@ $('.checklist-date').change(function() {
 
     // Get biosec ID of selected option tag
     var biosecID = $(this).val();
-    alert("in search_checklist() -- biosecID: " + biosecID);
 
     ajaxCSRF();
 
@@ -293,6 +292,7 @@ function saveBiocheck(elem){
                     $('#disinfect_vet_supp_radio2').prop("checked", true);
                 else
                     $('#disinfect_vet_supp_radio3').prop("checked", true);
+                
             }
             // reload Biosec page to update dropdown of Biosec last_updated
             // window.location.reload(true);
