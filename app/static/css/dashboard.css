@@ -51,7 +51,7 @@
 
 .block-grid {
     display: grid;
-    grid-template-columns: 30% auto;
+    grid-template-columns: 20% auto;
     grid-gap: 0 16px;
 }
 
