@@ -972,34 +972,79 @@ def addActivity(request, farmID):
     - Django forms will first check the validity of input (based on the fields within models.py)
     """
 
-    Activity_FormSet = formset_factory(ActivityForm)
+    # Activity_FormSet = formset_factory(ActivityForm)
 
     # collected farmID of selected tech farm
-    farmID = farmID
-
+    # farmID = farmID
+    farmQuery = Farm.objects.get(pk=farmID)
+    
     if request.method == 'POST':
         print("TEST LOG: Activity Form has POST method") 
         print(request.POST)
 
-        activityForm = Activity_FormSet(request.POST)
+        activityForm = ActivityForm(request.POST)
+
+        # get number of activities
+        numActs = len(request.POST.getlist('date', default=None))
         # activityForm = Activity_FormSet(request.POST)
-        # print(activityForm.cleaned_data)
+        # print(activityForm.cleaned_data[0])
+
+        # pass all values into each of the array below
+        activityList = []
+
+        i = 0
+        for date in request.POST.getlist('date', default=None):
+            activityObject = {
+                # "ref_farm" : farmID,
+                "date" : request.POST.getlist('date', default=None)[i],
+                "trip_type" : request.POST.getlist('trip_type', default=None)[i],
+                "time_arrival" : request.POST.getlist('time_arrival', default=None)[i],
+                "time_departure" : request.POST.getlist('time_departure', default=None)[i],
+                "description" : request.POST.getlist('description', default=None)[i],
+                "remarks" : request.POST.getlist('remarks', default=None)[i],
+            }
+            
+            activityList.append(activityObject)
+
+            i += 1
+        
+        # print("TEST LOG activityList: " + str(activityList))
+
+        # activityList = req
+        # print(request.POST.getlist())
 
         if activityForm.is_valid():
-            # activity = Activity_FormSet.save(commit=False)
-            print(list(activityForm.cleaned_data.all()))
+            # activity = activityForm.save(commit=False)
+            activity = Activity()
 
-            for activity in list(activityForm.cleaned_data):
-                # print(activity.cleaned_data.ref_farm)
+            x = 0
+            for act in activityList:
+                act = activityList[x]
+                print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
 
-                # print(activity.as_table())
-                print("hello")
-                print(activity)
-                # print(activity.cleaned_data.values()[0])
+                # activity = activityForm.save(commit=False)
 
-                # activity.save()
+                activity.ref_farm = farmQuery
+                activity.date = act['date']
+                activity.trip_type = act['trip_type']
+                activity.time_arrival = act['time_arrival']
+                activity.time_departure = act['time_departure']
+                activity.description = act['description']
+                activity.remarks = act['remarks']
 
-                print("TEST LOG: Added new activity")
+                print(str(activity))
+                # add farmID as FK for activity
+                # print(activity.trip_type)
+
+                # activity.cleaned_data['ref_farm'] = farmID
+                # print(activity.cleaned_data)
+
+                activity.save()
+                activity = Activity()
+
+                # print("TEST LOG: Added new activity for Farm " + str(activity.ref_farm))
+
+                x += 1
             
             # return redirect('/biosecurity/' + str(farmID))
         
@@ -1011,8 +1056,8 @@ def addActivity(request, farmID):
         print("TEST LOG: Activity Form is not a POST method")
 
         # if form has no input yet, only display an empty form
-        # activityForm = ActivityForm()
-        activityForm = Activity_FormSet()
+        activityForm = ActivityForm()
+        # activityForm = Activity_FormSet()
 
     # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })

@@ -187,7 +187,7 @@ class Activity(models.Model):
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
-    is_approved         = models.BooleanField(default=False)
+    is_approved         = models.BooleanField(default=True)
 
     # def __str__(self)
     #     return self.

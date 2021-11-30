@@ -271,26 +271,26 @@ class ActivityForm(forms.ModelForm):
             'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
         }
 
-    # def clean(self):
-    #     cleaned_data = super().clean()
+    def clean(self):
+        cleaned_data = super().clean()
 
-    #     date = cleaned_data.get("date")
-    #     today = datetime.date.today()
+        date = cleaned_data.get("date")
+        today = datetime.date.today()
 
-    #     print("Input Date: " + str(date))
-    #     print("Date today: " + str(today))
+        # print("Input Date: " + str(date))
+        # print("Date today: " + str(today))
 
-    #     if date > today:
-    #         raise forms.ValidationError("Date can not be later than today.")
+        if date > today:
+            raise forms.ValidationError("Date can not be later than today.")
 
-    #     time_arrival = cleaned_data.get("time_arrival")
-    #     time_departure = cleaned_data.get("time_departure")
+        time_arrival = cleaned_data.get("time_arrival")
+        time_departure = cleaned_data.get("time_departure")
 
-    #     print("Arrival: " + str(time_arrival))
-    #     print("Departure: " + str(time_departure))
+        # print("Arrival: " + str(time_arrival))
+        # print("Departure: " + str(time_departure))
 
-    #     if time_departure > time_arrival:
-    #         raise forms.ValidationError("Arrival time should be after departure time.")
+        if time_departure > time_arrival:
+            raise forms.ValidationError("Arrival time should be after departure time.")
 
 class MortalityForm(ModelForm):
     class Meta:
