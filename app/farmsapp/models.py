@@ -102,13 +102,16 @@ class Hog_Raiser(models.Model):
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=15)
 
-    # def __str__(self)
-    #     return self.
+    def __str__(self):
+        return self.id
 
 # AREA Table
 class Area(models.Model):
     area_name           = models.CharField(max_length=20, null=True, blank=True)
     tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+
+    def __str__(self):
+        return self.id
 
 # FARM Table
 class Farm(models.Model): 
@@ -152,8 +155,8 @@ class Farm(models.Model):
 
     is_approved         = models.BooleanField(default=False)
 
-    # def __str__(self):
-    #     return self.raiser_ID
+    def __str__(self):
+        return self.id
 
 # PIGPEN MEASURES Table
 class Pigpen_Measures(models.Model):
@@ -163,12 +166,12 @@ class Pigpen_Measures(models.Model):
     width               = models.FloatField()
     num_heads           = models.IntegerField()
 
-    # def __str__(self)
-    #     return self.
+    def __str__(self):
+        return self.id
 
 # ACTIVITY Table
 class Activity(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     date                = models.DateField()
 
@@ -187,10 +190,10 @@ class Activity(models.Model):
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
-    is_approved         = models.BooleanField(default=True)
+    is_approved         = models.BooleanField(default=False)
 
-    # def __str__(self)
-    #     return self.
+    def __str__(self):
+        return self.id
 
 # MORTALITY Table
 class Mortality(models.Model):
@@ -206,7 +209,7 @@ class Mortality(models.Model):
     source              = models.CharField(max_length=200)
     remarks             = models.CharField(max_length=500)
     
-    # def __str__(self)
+    # def __str__(self):
     #     return self.
 
 # ACTIVITIES FORM Table

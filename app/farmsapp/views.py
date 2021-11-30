@@ -797,13 +797,14 @@ def biosec_view(request):
 
 
     # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-last_updated')
 
     actList = []
 
     # store all data to an array
     for activity in actQuery:
         actList.append({
+            'id' : activity.id,
             'date' : activity.date,
             'trip_type' : activity.trip_type,
             'time_departure' : activity.time_departure,
@@ -892,13 +893,14 @@ def select_biosec(request, farmID):
 
 
     # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-last_updated')
 
     actList = []
 
     # store all data to an array
     for activity in actQuery:
         actList.append({
+            'id' : activity.id,
             'date' : activity.date,
             'trip_type' : activity.trip_type,
             'time_departure' : activity.time_departure,
@@ -972,10 +974,7 @@ def addActivity(request, farmID):
     - Django forms will first check the validity of input (based on the fields within models.py)
     """
 
-    # Activity_FormSet = formset_factory(ActivityForm)
-
     # collected farmID of selected tech farm
-    # farmID = farmID
     farmQuery = Farm.objects.get(pk=farmID)
     
     if request.method == 'POST':
@@ -984,18 +983,12 @@ def addActivity(request, farmID):
 
         activityForm = ActivityForm(request.POST)
 
-        # get number of activities
-        numActs = len(request.POST.getlist('date', default=None))
-        # activityForm = Activity_FormSet(request.POST)
-        # print(activityForm.cleaned_data[0])
-
         # pass all values into each of the array below
         activityList = []
 
         i = 0
         for date in request.POST.getlist('date', default=None):
             activityObject = {
-                # "ref_farm" : farmID,
                 "date" : request.POST.getlist('date', default=None)[i],
                 "trip_type" : request.POST.getlist('trip_type', default=None)[i],
                 "time_arrival" : request.POST.getlist('time_arrival', default=None)[i],
@@ -1010,44 +1003,31 @@ def addActivity(request, farmID):
         
         # print("TEST LOG activityList: " + str(activityList))
 
-        # activityList = req
-        # print(request.POST.getlist())
-
         if activityForm.is_valid():
-            # activity = activityForm.save(commit=False)
-            activity = Activity()
-
             x = 0
             for act in activityList:
                 act = activityList[x]
                 print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
 
-                # activity = activityForm.save(commit=False)
-
-                activity.ref_farm = farmQuery
-                activity.date = act['date']
-                activity.trip_type = act['trip_type']
-                activity.time_arrival = act['time_arrival']
-                activity.time_departure = act['time_departure']
-                activity.description = act['description']
-                activity.remarks = act['remarks']
+                # create new instance of Activity model
+                activity = Activity.objects.create(
+                    ref_farm = farmQuery,
+                    date = act['date'],
+                    trip_type = act['trip_type'],
+                    time_arrival = act['time_arrival'],
+                    time_departure = act['time_departure'],
+                    description = act['description'],
+                    remarks = act['remarks']
+                )
 
                 print(str(activity))
-                # add farmID as FK for activity
-                # print(activity.trip_type)
-
-                # activity.cleaned_data['ref_farm'] = farmID
-                # print(activity.cleaned_data)
 
                 activity.save()
-                activity = Activity()
-
-                # print("TEST LOG: Added new activity for Farm " + str(activity.ref_farm))
 
                 x += 1
             
-            # return redirect('/biosecurity/' + str(farmID))
-        
+            return redirect('/biosecurity/' + str(farmID))
+            
         else:
             print("TEST LOG: activityForm is not valid")
             print(activityForm.errors)
@@ -1057,10 +1037,19 @@ def addActivity(request, farmID):
 
         # if form has no input yet, only display an empty form
         activityForm = ActivityForm()
-        # activityForm = Activity_FormSet()
 
     # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
+
+def deleteActivity(request, farmID, activityID):
+    
+    if request.method == 'POST':
+        print("TEST LOG: Delete Activity is a POST Method")
+    
+        Activity.objects.filter(id=activityID).delete()
+        return JsonResponse({"success": "Activity has Feen deleted."}, status=200)
+
+    return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def memAnnouncements(request):
     return render(request, 'farmstemp/mem-announce.html', {})

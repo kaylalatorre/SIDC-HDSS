@@ -415,6 +415,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <!-- <th>ID</th> -->
                             <th>Date</th>
                             <th style="width: 20%">Trip Type</th>
                             <th>Time</th>
@@ -426,6 +427,7 @@
                         {% for act in activity %}
                         
                         <tr>
+                            <!-- <td>{{act.id}}</td> -->
                             <td data-label="Date">{{act.date}}</td>
                             <td data-label="Trip Type">{{act.trip_type}}</td>
                             <td data-label="Time">{{act.time_departure}} - {{act.time_arrival}}</td>
@@ -433,8 +435,8 @@
                             <td data-label="Remarks">{{act.remarks}}</td>
                             <td>
                                 <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                                    <button class="secondary-btn-red"  onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                                    <button class="secondary-btn" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                                 </div>
                             </td>
                         </tr>

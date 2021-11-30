@@ -419,3 +419,79 @@ function addActivityPage(farmID) {
         location.reload(true);
     }
 }
+
+/**
+*   - Redirects current technician from biosecurity page to add-activity page for selected farm.
+*   - Appends selected farm ID to url that will display an empty activity record.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+// function deleteActivity(actID) {
+
+//     var activityID = $(actID).val(); 
+//     console.log(activityID)
+
+//     var farmID = $("#farm-code option:selected").val();
+//     console.log(farmID)
+    
+//     var confirm = confirm("Delete selected activity?")
+    
+//     if (confirm == true){
+//         try{
+//             url = "biosecurity/" + farmID + "/delete-activity/" + activityID ;
+//             console.log(url);
+//             location.href = url;
+//         } catch (error){
+//             alert("Failed to delete activity.")
+//             location.reload(true);
+//         }
+//     }
+// }
+function deleteActivity(actID) {
+
+    var activityID = $(actID).val(); 
+    console.log(activityID)
+
+    var farmID = $("#farm-code option:selected").val();
+    console.log(farmID)
+    
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/biosecurity/' + farmID + '/delete-activity/' + activityID,
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/biosecurity/" + farmID);
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+
+}
+
+
+function editActivity(actID) {
+
+    var activityID = $(actID).val(); 
+    console.log(activityID)
+
+    var farmID = $("#farm-code option:selected").val();
+    console.log(farmID)
+    
+    // disable other edit buttons and delete buttons
+
+    // display data inputs
+
+    // collect inputs
+
+    // replace
+
+    // save
+
+}
