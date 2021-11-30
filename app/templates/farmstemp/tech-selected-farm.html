@@ -134,15 +134,6 @@
             <h2>Biosecurity Measures</h2>
             <div class="box-style">
                 <div class="mb-3">
-                    {% if farm.isol_pen == 0 %}
-                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked disabled> 
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
-                    {% endif %}
-
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
-                </div>
-                <div class="mb-3">
                     {% if farm.bird_proof == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-birdproof" value="true" checked disabled> 
                     {% else %}
@@ -161,15 +152,6 @@
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    {% if farm.foot_dip == 0 %}
-                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" checked disabled> 
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" disabled> 
-                    {% endif %}
-
-                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
-                </div>
-                <div class="mb-3">
                     {% if farm.fiveh_m_dist == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-distance" value="true" checked disabled> 
                     {% else %}
@@ -177,6 +159,24 @@
                     {% endif %}
                     
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
+                </div>
+                <div class="mb-3">
+                    {% if farm.isol_pen == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    {% endif %}
+
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                </div>
+                <div class="mb-3">
+                    {% if farm.foot_dip == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" disabled> 
+                    {% endif %}
+
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
                 <div class="flex">
                     <label for="input-trough" class="form-label">Waste Management:</label>

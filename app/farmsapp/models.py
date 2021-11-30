@@ -102,8 +102,8 @@ class Hog_Raiser(models.Model):
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=11)
 
-    def __str__(self):
-        return self.id
+    # def __str__(self):
+    #     return self.id
 
 # AREA Table
 class Area(models.Model):

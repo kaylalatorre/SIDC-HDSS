@@ -13,19 +13,16 @@ class ExternalBiosecForm(ModelForm):
             'input type' : 'checkbox',
             'class' : 'form-check-input',
             'id': 'cb-birdproof',
-            # 'value' : '1'               
         })
         self.fields['perim_fence'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
             'id': 'cb-fence',
-            # 'value' : '1'               
         })
         self.fields['fiveh_m_dist'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
             'id': 'cb-distance',
-            # 'value' : '1'         
         })
     
     def clean_active(self):
@@ -34,16 +31,6 @@ class ExternalBiosecForm(ModelForm):
     class Meta:
         model = ExternalBiosec
         fields = ('__all__')
-        # widgets = {
-        #     'bird_proof' : widgets.CheckboxInput(),
-        #     'perim_fence' : widgets.CheckboxInput(),
-        #     'fiveh_m_dist' : widgets.CheckboxInput(),
-        # }
-
-# class ExternalBiosecForm(forms.Form):
-#     bird_proof = forms.CheckboxInput()
-#     perim_fence = forms.CheckboxInput()
-#     fiveh_m_dist = forms.CheckboxInput()
 
 class InternalBiosecForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -52,13 +39,11 @@ class InternalBiosecForm(ModelForm):
             'input type' : 'checkbox',
             'class' : 'form-check-input',
             'id': 'cb-isolation',
-            # 'value' : '1'               
         })
         self.fields['foot_dip'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
             'id': 'cb-footdip',
-            # 'value' : '1'         
         })
         self.fields['waste_mgt'].widget.attrs.update({
            'select class' : 'form-select',
@@ -68,10 +53,6 @@ class InternalBiosecForm(ModelForm):
     class Meta:
         model = InternalBiosec
         fields = ('__all__')
-        # widgets = {
-        #     'isol_pen' : widgets.CheckboxInput(),
-        #     'foot_dip' : widgets.CheckboxInput(),
-        # }
 
 class FarmWeightForm(ModelForm):
     class Meta:
