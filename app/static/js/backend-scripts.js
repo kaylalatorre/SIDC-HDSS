@@ -156,9 +156,6 @@ function disableCheck(){
  * on-click AJAX for save Biochecklist btn
  */
 function saveBiocheck(elem){
-    // Get farmID for biosec URL redirect
-    var farmID = $("#farm-code option:selected").val();
-    alert("in saveBiocheck() -- farmID: " +  farmID);
 
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
@@ -305,8 +302,23 @@ function saveBiocheck(elem){
                 alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
             }
 
+            // Get farmID for biosec URL redirect
+            var farmID = $("#farm-code option:selected").val();
+            alert("in saveBiocheck() -- farmID: " +  farmID);
+
             // reload Biosec page to update dropdown of Biosec last_updated
-            window.location.replace("/biosecurity" + farmID);
+            // window.location.reload(true);
+            // window.location.replace("/biosecurity");
+            // window.location.replace("/biosecurity/" + farmID);
+
+            try{
+                url = "/biosecurity/" + farmID;
+                console.log(url);
+                location.href = url;
+            } catch (error){
+                console.log("Fetching biosec details failed.");
+                location.reload(true);
+            }
 
 
         },
