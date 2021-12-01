@@ -228,8 +228,8 @@ function saveBiocheck(elem){
         type: 'POST',
         url: '/biosecurity/edit-checklist/' + biosecID,
         data: {"checkArr": checkArr}, 
-        success: function (response){
-
+        success: function (response) {
+            
             if (response.status == 200){
                 // alert("in AJAX edit success");
                 var biofields = JSON.parse(response["instance"]);
@@ -315,32 +315,35 @@ function deleteBiocheck(elem){
 
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
-    alert("in deleteBiocheck() -- biosecID: " + biosecID);
+    // alert("in deleteBiocheck() -- biosecID: " + biosecID);
 
     var farmID = $("#farm-code option:selected").val();
-    alert("in deleteBiocheck() -- farmID: " + farmID);
+    // alert("in deleteBiocheck() -- farmID: " + farmID);
 
+    if (confirm("Delete this checklist?")) {
+        ajaxCSRF();
 
-    ajaxCSRF();
-
-    $.ajax({
-        type: 'POST',
-        url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
-        // data: {"checkArr": checkArr}, 
-        success: function (response){
-
-            if (response.status == 200){
-                alert("Biochecklist record deleted.");
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
+            // data: {"checkArr": checkArr}, 
+            success: function (response){
+                //console.log(response);
+                // if (response.status === 200){
+                //     alert("Biochecklist record deleted.");
+                // }
+                // // reload Biosec page to update dropdown of Biosec last_updated
+                // // window.location.reload(true);
+                window.location.replace("/biosecurity/" + farmID);
+                alert(response.success);
+                
+            },
+            error: function (res){
+                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
             }
-            // reload Biosec page to update dropdown of Biosec last_updated
-            // window.location.reload(true);
-            window.location.replace("/biosecurity/" + farmID);
+        });
+    }
 
-        },
-        error: function (res){
-            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-        }
-    });
 }
 
 /**
