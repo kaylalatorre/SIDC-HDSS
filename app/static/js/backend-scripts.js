@@ -232,6 +232,14 @@ function saveBiocheck(elem){
         data: {"checkArr": checkArr}, 
         success: function (response){
 
+            if (response.status == 200){
+                alert("Biosec checklist successfully updated!");
+            }
+
+            if (response.status == 400){
+                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            }
+
             var biofields = JSON.parse(response["instance"]);
 
             // Always updates btn groups depending on AJAX response (1) update fields or (2) not-updated fields from db
@@ -292,16 +300,7 @@ function saveBiocheck(elem){
                 $('#disinfect_vet_supp_radio2').prop("checked", true);
             else
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
-
-
-            if (response.status == 200){
-                alert("Biosec checklist successfully updated!");
-            }
-
-            if (response.status == 400){
-                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-            }
-
+            
             // Get farmID for biosec URL redirect
             var farmID = $("#farm-code option:selected").val();
             alert("in saveBiocheck() -- farmID: " +  farmID);
