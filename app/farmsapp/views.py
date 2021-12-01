@@ -834,22 +834,20 @@ def biosec_view(request):
 
     debug("techFarmsList -- " + str(techFarmsList))
 
-    # Get ID of first farm under technician
-    firstFarm = str(*techFarmsList[0].values())
-    farmID = int(firstFarm)
 
     # (ERROR) for checking technician Areas that have no Farms and null farmID
-    debug("biosec_view() farmID -- " + str(farmID))
-
-    if not techFarmsList or farmID is None: 
+    if not techFarmsList: 
         messages.error(request, "Farm record/s not found.", extra_tags="view-biosec")
         return render(request, 'farmstemp/biosecurity.html', {})
     else: 
         # Get current internal and external FKs
         currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
         
-        # debug("in biosec_view(): currbioObj")
-        # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
+        # Get ID of first farm under technician
+        firstFarm = str(*techFarmsList[0].values())
+        farmID = int(firstFarm)
+
+        debug("biosec_view() farmID -- " + str(farmID))
 
         # (2) Get latest instance of Biochecklist
         currbioObj = currbioQuery.first()
@@ -939,7 +937,6 @@ def select_biosec(request, farmID):
 
     debug("techFarmsList -- " + str(techFarmsList))
 
-
     # Get farmID passed from URL param
     farmID = farmID
     debug("in select_biosec() farmID -- " + str(farmID))
@@ -952,8 +949,6 @@ def select_biosec(request, farmID):
         # Select Biochecklist with latest date
         currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
         
-        # debug("in select_biosec(): currbioObj")
-        # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
 
         # (2) Get latest instance of Biochecklist
         currbioObj = currbioQuery.first()
