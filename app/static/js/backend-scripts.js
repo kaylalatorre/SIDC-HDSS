@@ -156,6 +156,10 @@ function disableCheck(){
  * on-click AJAX for save Biochecklist btn
  */
 function saveBiocheck(elem){
+    // Get farmID for biosec URL redirect
+    var farmID = $("#farm-code option:selected").val();
+    alert("in saveBiocheck() -- farmID: " +  farmID);
+
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
     // alert("in saveBiocheck() biosecID: " + biosecID);
@@ -231,72 +235,79 @@ function saveBiocheck(elem){
         data: {"checkArr": checkArr}, 
         success: function (response){
 
+            var biofields = JSON.parse(response["instance"]);
+
+            // Always updates btn groups depending on AJAX response (1) update fields or (2) not-updated fields from db
+            // EXTERNAL biosec fields
+            if (biofields["prvdd_foot_dip"] == 0)
+                $('#prvdd_foot_dip_radio1').prop("checked", true);
+            else if (biofields["prvdd_foot_dip"] == 1)
+                $('#prvdd_foot_dip_radio2').prop("checked", true);
+            else
+                $('#prvdd_foot_dip_radio3').prop("checked", true);
+
+            if (biofields["prvdd_alco_soap"] == 0)
+                $('#prvdd_alco_soap_radio1').prop("checked", true);
+            else if (biofields["prvdd_alco_soap"] == 1)
+                $('#prvdd_alco_soap_radio2').prop("checked", true);
+            else
+                $('#prvdd_alco_soap_radio3').prop("checked", true);
+
+            if (biofields["obs_no_visitors"] == 0)
+                $('#obs_no_visitors_radio1').prop("checked", true);
+            else if (biofields["obs_no_visitors"] == 1)
+                $('#obs_no_visitors_radio2').prop("checked", true);
+            else
+                $('#obs_no_visitors_radio3').prop("checked", true);
+            
+            if (biofields["prsnl_dip_footwear"] == 0)
+                $('#prsnl_dip_footwear_radio1').prop("checked", true);
+            else if (biofields["prsnl_dip_footwear"] == 1)
+                $('#prsnl_dip_footwear_radio2').prop("checked", true);
+            else
+                $('#prsnl_dip_footwear_radio3').prop("checked", true);
+
+            if (biofields["prsnl_sanit_hands"] == 0)
+                $('#prsnl_sanit_hands_radio1').prop("checked", true);
+            else if (biofields["prsnl_sanit_hands"] == 1)
+                $('#prsnl_sanit_hands_radio2').prop("checked", true);
+            else
+                $('#prsnl_sanit_hands_radio3').prop("checked", true);
+
+            if (biofields["chg_disinfect_daily"] == 0)
+                $('#cng_disinfect_daily_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#cng_disinfect_daily_radio2').prop("checked", true);
+            else
+                $('#cng_disinfect_daily_radio3').prop("checked", true);
+
+            // INTERNAL biosec fields
+            if (biofields["disinfect_prem"] == 0)
+                $('#disinfect_prem_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#disinfect_prem_radio2').prop("checked", true);
+            else
+                $('#disinfect_prem_radio3').prop("checked", true);
+
+            if (biofields["disinfect_vet_supp"] == 0)
+                $('#disinfect_vet_supp_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#disinfect_vet_supp_radio2').prop("checked", true);
+            else
+                $('#disinfect_vet_supp_radio3').prop("checked", true);
+
+
             if (response.status == 200){
-                // alert("in AJAX edit success");
-                var biofields = JSON.parse(response["instance"]);
-
-                // select btn in btn group based on db value
-                // EXTERNAL biosec fields
-                if (biofields["prvdd_foot_dip"] == 0)
-                    $('#prvdd_foot_dip_radio1').prop("checked", true);
-                else if (biofields["prvdd_foot_dip"] == 1)
-                    $('#prvdd_foot_dip_radio2').prop("checked", true);
-                else
-                    $('#prvdd_foot_dip_radio3').prop("checked", true);
-
-                if (biofields["prvdd_alco_soap"] == 0)
-                    $('#prvdd_alco_soap_radio1').prop("checked", true);
-                else if (biofields["prvdd_alco_soap"] == 1)
-                    $('#prvdd_alco_soap_radio2').prop("checked", true);
-                else
-                    $('#prvdd_alco_soap_radio3').prop("checked", true);
-
-                if (biofields["obs_no_visitors"] == 0)
-                    $('#obs_no_visitors_radio1').prop("checked", true);
-                else if (biofields["obs_no_visitors"] == 1)
-                    $('#obs_no_visitors_radio2').prop("checked", true);
-                else
-                    $('#obs_no_visitors_radio3').prop("checked", true);
-                
-                if (biofields["prsnl_dip_footwear"] == 0)
-                    $('#prsnl_dip_footwear_radio1').prop("checked", true);
-                else if (biofields["prsnl_dip_footwear"] == 1)
-                    $('#prsnl_dip_footwear_radio2').prop("checked", true);
-                else
-                    $('#prsnl_dip_footwear_radio3').prop("checked", true);
-
-                if (biofields["prsnl_sanit_hands"] == 0)
-                    $('#prsnl_sanit_hands_radio1').prop("checked", true);
-                else if (biofields["prsnl_sanit_hands"] == 1)
-                    $('#prsnl_sanit_hands_radio2').prop("checked", true);
-                else
-                    $('#prsnl_sanit_hands_radio3').prop("checked", true);
-
-                if (biofields["chg_disinfect_daily"] == 0)
-                    $('#cng_disinfect_daily_radio1').prop("checked", true);
-                else if (biofields["chg_disinfect_daily"] == 1)
-                    $('#cng_disinfect_daily_radio2').prop("checked", true);
-                else
-                    $('#cng_disinfect_daily_radio3').prop("checked", true);
-
-                // INTERNAL biosec fields
-                if (biofields["disinfect_prem"] == 0)
-                    $('#disinfect_prem_radio1').prop("checked", true);
-                else if (biofields["chg_disinfect_daily"] == 1)
-                    $('#disinfect_prem_radio2').prop("checked", true);
-                else
-                    $('#disinfect_prem_radio3').prop("checked", true);
-
-                if (biofields["disinfect_vet_supp"] == 0)
-                    $('#disinfect_vet_supp_radio1').prop("checked", true);
-                else if (biofields["chg_disinfect_daily"] == 1)
-                    $('#disinfect_vet_supp_radio2').prop("checked", true);
-                else
-                    $('#disinfect_vet_supp_radio3').prop("checked", true);
+                alert("Biosec checklist successfully updated!");
             }
+
+            if (response.status == 400){
+                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            }
+
             // reload Biosec page to update dropdown of Biosec last_updated
-            // window.location.reload(true);
-            window.location.replace("/biosecurity");
+            window.location.replace("/biosecurity" + farmID);
+
 
         },
         error: function (res){

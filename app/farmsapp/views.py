@@ -26,7 +26,9 @@ from django.db.models.functions import Concat
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
 
+# for date and time fields in Models
 from datetime import date
+from datetime import datetime, timezone
 
 # for getting date today
 from django.utils.timezone import now 
@@ -550,42 +552,75 @@ def update_bioChecklist(request, biosecID):
                 intBio = InternalBiosec.objects.get(pk=bioID)
 
                 if extBio is not None and intBio is not None:
-                    # External Biosec
-                    extBio.prvdd_foot_dip       = chArr[0]
-                    extBio.prvdd_alco_soap      = chArr[1]
-                    extBio.obs_no_visitors      = chArr[2]
-                    extBio.prsnl_dip_footwear   = chArr[3]
-                    extBio.prsnl_sanit_hands    = chArr[4]
-                    extBio.chg_disinfect_daily  = chArr[5]
+
+                    # Check if bioChecklist is w/in a day
+                    extDateDiff = datetime.now(timezone.utc) - intBio.last_updated
+                    intDateDiff = datetime.now(timezone.utc) - intBio.last_updated
                     
-                    # Internal Biosec
-                    intBio.disinfect_prem       = chArr[6]
-                    intBio.disinfect_vet_supp   = chArr[7]
+                    debug("extDateDiff.days" + str(extDateDiff.days))
+                    debug("intDateDiff" + str(intDateDiff.days))
 
-                    # Save both biosec fields in db
-                    extBio.save()
-                    intBio.save()
+                    if extDateDiff.days > 1 or intDateDiff.days > 1:
+                        # Get biosec fields from not updated record in db
+                        bioDict = {
+                            # External bio
+                            'prvdd_foot_dip'        : extBio.prvdd_foot_dip,  
+                            'prvdd_alco_soap'       : extBio.prvdd_alco_soap,     
+                            'obs_no_visitors'       : extBio.obs_no_visitors,     
+                            'prsnl_dip_footwear'    : extBio.prsnl_dip_footwear,  
+                            'prsnl_sanit_hands'     : extBio.prsnl_sanit_hands,   
+                            'chg_disinfect_daily'   : extBio.chg_disinfect_daily,
 
-                    # Format biosec fields in a dict
-                    bioDict = {
-                        # External bio
-                        'prvdd_foot_dip'        : extBio.prvdd_foot_dip,  
-                        'prvdd_alco_soap'       : extBio.prvdd_alco_soap,     
-                        'obs_no_visitors'       : extBio.obs_no_visitors,     
-                        'prsnl_dip_footwear'    : extBio.prsnl_dip_footwear,  
-                        'prsnl_sanit_hands'     : extBio.prsnl_sanit_hands,   
-                        'chg_disinfect_daily'   : extBio.chg_disinfect_daily,
+                            # Internal bio
+                            'disinfect_prem'        : intBio.disinfect_prem,
+                            'disinfect_vet_supp'    : intBio.disinfect_vet_supp,   
+                        }
+                        # Serialize dictionary
+                        jsonStr = json.dumps(bioDict)
+                        
+                        # # (SUCCESS) Biochecklist updated. Send to client side (js)
+                        # return JsonResponse({"instance": jsonStr}, status=200)
 
-                        # Internal bio
-                        'disinfect_prem'        : intBio.disinfect_prem,
-                        'disinfect_vet_supp'    : intBio.disinfect_vet_supp,   
-                    }
+                        debug("(ERROR) Cannot edit. int-ext Biosec exceeds 1 day.")
 
-                    # Serialize dictionary
-                    jsonStr = json.dumps(bioDict)
-                    
-                    # (SUCCESS) Biochecklist updated. Send to client side (js)
-                    return JsonResponse({"instance": jsonStr}, status=200)
+                        return JsonResponse({"instance": jsonStr, "error": "Cannot edit Biosecurity Checklist because it exceeds 1 day."}, status=400)
+                    else:
+                        # External Biosec
+                        extBio.prvdd_foot_dip       = chArr[0]
+                        extBio.prvdd_alco_soap      = chArr[1]
+                        extBio.obs_no_visitors      = chArr[2]
+                        extBio.prsnl_dip_footwear   = chArr[3]
+                        extBio.prsnl_sanit_hands    = chArr[4]
+                        extBio.chg_disinfect_daily  = chArr[5]
+                        
+                        # Internal Biosec
+                        intBio.disinfect_prem       = chArr[6]
+                        intBio.disinfect_vet_supp   = chArr[7]
+
+                        # Save both biosec fields in db
+                        extBio.save()
+                        intBio.save()
+
+                        # Get updated biosec fields; then format biosec fields in a dict
+                        bioDict = {
+                            # External bio
+                            'prvdd_foot_dip'        : extBio.prvdd_foot_dip,  
+                            'prvdd_alco_soap'       : extBio.prvdd_alco_soap,     
+                            'obs_no_visitors'       : extBio.obs_no_visitors,     
+                            'prsnl_dip_footwear'    : extBio.prsnl_dip_footwear,  
+                            'prsnl_sanit_hands'     : extBio.prsnl_sanit_hands,   
+                            'chg_disinfect_daily'   : extBio.chg_disinfect_daily,
+
+                            # Internal bio
+                            'disinfect_prem'        : intBio.disinfect_prem,
+                            'disinfect_vet_supp'    : intBio.disinfect_vet_supp,   
+                        }
+
+                        # Serialize dictionary
+                        jsonStr = json.dumps(bioDict)
+                        
+                        # (SUCCESS) Biochecklist updated. Send to client side (js)
+                        return JsonResponse({"instance": jsonStr}, status=200)
 
                 else:
                     # (ERROR) Biosecurity record not found in db.
@@ -840,15 +875,17 @@ def biosec_view(request):
         messages.error(request, "Farm record/s not found.", extra_tags="view-biosec")
         return render(request, 'farmstemp/biosecurity.html', {})
     else: 
-        # Get current internal and external FKs
-        currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
-        
+
         # Get ID of first farm under technician
         firstFarm = str(*techFarmsList[0].values())
         farmID = int(firstFarm)
 
         debug("biosec_view() farmID -- " + str(farmID))
 
+        
+        # Get current internal and external FKs
+        currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+        
         # (2) Get latest instance of Biochecklist
         currbioObj = currbioQuery.first()
         # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
