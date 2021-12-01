@@ -7,6 +7,9 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
     <p>Select a farm to check its biosecurity records.</p>
@@ -126,19 +129,7 @@
                                     <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
                                 {% endfor %}
                             </select>
-                            <!-- TEST: for biosecurity success-error message placeholder -->
-                            {% for mssg in messages %}
-                                {% if "add-checklist" in mssg.tags %}
-                                    <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                                        {{ mssg }}
-                                    </div>
-                                {% endif %}
-                                {% if "view-biosec" in mssg.tags %}
-                                    <div style="color:blue;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                                        {{ mssg }}
-                                    </div>
-                                {% endif %}        
-                            {% endfor %}
+                            
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
                             <button id="saveCheck-btn" class="secondary-btn biosecSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i>Save</button>

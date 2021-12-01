@@ -8,16 +8,30 @@
 
 {% block section %}
 <div class="main-div">
-    <div class="flex">
-        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> >  {{ farm.id }}</h1>
+    <div class="flex subheading">
+        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               View
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><button class="dropdown-item viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
-              <li><button class="dropdown-item" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
+              <li><button class="dropdown-item no-shadow viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
+              <li><button class="dropdown-item no-shadow" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
             </ul>
+        </div>
+    </div>
+    <div class="flex mobile-subheading">
+        <div class="flex" style="width: 80%">
+            <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
+            <div class="dropdown flex-item">
+                <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                View
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><button class="dropdown-item no-shadow viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
+                <li><button class="dropdown-item no-shadow" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
+                </ul>
+            </div>
         </div>
     </div>
     <hr>
@@ -38,7 +52,7 @@
                             </tr>
                             <tr>
                                 <th>Directly Managed</td>
-                                <td data-label="Directly Managed>{{farm.directly_manage|yesno:"Yes,No"}}</td>
+                                <td data-label="Directly Managed">{{farm.directly_manage|yesno:'Yes,No'}}"</td>
                             </tr>
                             <tr>
                                 <th>Address</td>

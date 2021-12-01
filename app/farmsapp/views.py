@@ -29,6 +29,7 @@ from datetime import datetime
 
 # for getting date today
 from django.utils.timezone import now 
+import datetime
 
 def debug(m):
     """
@@ -640,10 +641,10 @@ def post_addChecklist(request, farmID):
                     checkComplete = False
 
                     messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-                    return redirect('/biosecurity/' + farmID)
+                    return redirect('/add-checklist/' + farmID)
 
-                int(value)
-                print(list((index, value)))
+                # int(value)
+                # print(list((index, value)))
 
             if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
 
@@ -705,16 +706,19 @@ def post_addChecklist(request, farmID):
                 farm.extbio = extBio
 
                 farm.save()
-
+                
+                ts = str(extBio.last_updated)
+                f = '%Y-%m-%d %H:%M:%S'
+                df = datetime.datetime.strptime(ts, f)
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "200", extra_tags='add-checklist')
+                messages.success(request, "Checklist made on " + "<strong>" + df + "</strong> has been successfully added!", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
                 # (ERROR) Incomplete input/s for Biosecurity Checklist
                 debug("ERROR: Incomplete input/s for Biosecurity Checklist.")
                 messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-                return redirect('/biosecurity/' + farmID)
+                return redirect('/add-checklist/' + farmID)
         else:
             # (ERROR) Invalid farmID
             debug("ERROR: Invalid/None-type farmID from parameter.")
@@ -724,7 +728,7 @@ def post_addChecklist(request, farmID):
     else:
         # (ERROR) not an AJAX Post request
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-        return redirect('/biosecurity/' + farmID)
+        return redirect('/add-checklist/' + farmID)
 
 def delete_bioChecklist(request, biosecID, farmID):
     """

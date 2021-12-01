@@ -189,7 +189,7 @@ button:hover, .button:hover, .primary-btn:hover{
     color:#FFF;
 }
 
-.primary-btn-red:hover {
+.primary-btn-red:hover, .secondary-btn-red:hover {
     background: #BB0A1E;
     color: #FFF;
 }
@@ -217,10 +217,10 @@ button:hover, .button:hover, .primary-btn:hover{
     padding-right: 4px;
 }
 
-.no-shadow {
+.no-shadow, no-shadow:hover {
     box-shadow: 0;
     border: none;
-    background: none;
+    background: none!important;
     box-shadow: none;
 }
 
