@@ -706,12 +706,14 @@ def post_addChecklist(request, farmID):
                 farm.extbio = extBio
 
                 farm.save()
+
+                # Format time to be passed on message.success
+                ts = extBio.last_updated 
+                df = ts.strftime("%m/%d/%Y, %H:%M")
+                debug(extBio.last_updated)
                 
-                ts = str(extBio.last_updated)
-                f = '%Y-%m-%d %H:%M:%S'
-                df = datetime.datetime.strptime(ts, f)
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "Checklist made on " + "<strong>" + df + "</strong> has been successfully added!", extra_tags='add-checklist')
+                messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
