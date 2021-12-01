@@ -14,27 +14,21 @@
     <br>
     <!-- Date range, etc -->
     <div style="max-width: 400px;">
-        <div class="flex subheading">
-            <div class="input-group mb-3" style="padding-right: 8px;">
-                <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
-                <select class="form-select" id="repfarm-date-start" style="margin-bottom: 0;">
-                    {% for dStart in dateStart %}
-                    <option value="{{dStart.last_updated}}"> {{dStart.last_updated}} </option>
-                    {% endfor %}
-                </select>
 
-                <select class="form-select" id="repfarm-date-end" style="margin-bottom: 0;">
-                    {% for dEnd in dateEnd %}
-                    <option value="{{dEnd.last_updated}}"> {{dEnd.last_updated}} </option>
-                    {% endfor %}
-                </select>
+        <div class="flex subheading date-range">
+            <div class="input-group mb-3" style="padding-right: 8px;">
+                    <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
+                    <input type="date" id="start-date" class="form-control">
+                    <input type="date" id="end-date" class="form-control">
             </div>
             <button class="primary-btn"><i class='bx bx-refresh'></i></button>
         </div>
+
         <div class="flex subheading">
             <div class="input-group mb-3" style="padding-right: 8px;">
                 <label class="form-label" style="font-weight: 600; width: 24%">Area</label>
                 <select class="form-select" id="farm-area" style="margin-bottom: 0;">
+                    <option value="All"> All </option>
                     {% for area in areaList %}
                     <option value="{{area.area_name}}">{{area.area_name}}</option>
                     {% endfor %}
@@ -68,56 +62,32 @@
             </thead>
             <tbody>
                 <!-- Data -->
-                {% for farm in farmList %}
+                {% for farm,tech in farmtechList %}
                 <tr>
                     <td data-label="Farm Code"> {{farm.code}} </td>
                     <td data-label="Raiser"> {{farm.raiser}} </td>
                     <td data-label="Address"> {{farm.address}} </td>
                     <td data-label="Area"> {{farm.area}} </td>
-                    <td data-label="Technician">David Archuleta</td>
+                    <td data-label="Technician"> {{tech.name}} </td>
                     <td data-label="No. of Pigs">{{farm.pigs}}</td>
                     <td data-label="No. of Pens">{{farm.pens}}</td>
                     <td data-label="Internal Biosecurity">10</td>
                     <td data-label="External Biosecurity">10</td>
                     <td data-label="Last Update">{{farm.updated}}</td>
                 </tr>
-                <!-- <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Address">Binictican Drive, Tanauan City 2200</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="No. of Pigs">1000</td>
-                    <td data-label="No. of Pens">10</td>
-                    <td data-label="Internal Biosecurity">10</td>
-                    <td data-label="External Biosecurity">10</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                </tr>
-                <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Address">Binictican Drive, Tanauan City 2200</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="No. of Pigs">1000</td>
-                    <td data-label="No. of Pens">10</td>
-                    <td data-label="Internal Biosecurity">10</td>
-                    <td data-label="External Biosecurity">10</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                </tr> -->
                 {% endfor %}
 
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="4">Total</td>
-                    <td class="bold-lbl">100</td>
-                    <td >100</td>
+                    <td class="bold-lbl"> {{farmTotalAve.total_pigs}} </td>
+                    <td > {{farmTotalAve.total_pens}} </td>
                 </tr>
                 <tr class="bold-lbl">
                     <td colspan="5">Average</td>
-                    <td>100</td>
-                    <td>100</td>
+                    <td>{{farmTotalAve.ave_pigs}}</td>
+                    <td>{{farmTotalAve.ave_pens}}</td>
                     <td>100</td>
                     <td>100</td>
                 </tr>

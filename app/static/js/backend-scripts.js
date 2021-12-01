@@ -322,7 +322,7 @@ function saveBiocheck(elem){
 
         },
         error: function (res){
-            // alert("in AJAX error. ");
+            alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
 

@@ -1150,6 +1150,26 @@ def farmsAssessment(request):
     # (2) all Area records
     areaQry = Area.objects.all()
 
+    # Get technician name assigned per Farm
+    # Farm > Area > User (tech)
+    # book = Book.objects.first().prefetch_related("parts","parts__chapters")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    debug("techQry -- " + str(farmQry.query))
+
+    # for part in book.parts.all():
+    #     print part.chapters.all()
+
+    debug("list for -- Farm > Area > User (tech)")
+    techList = []
+    for f in farmQry:
+        techObject = {
+            "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
+        }
+        print(techObject["name"])
+        techList.append(techObject)
+    debug(techList)    
+
+
     # (3) Farm details 
     # TODO: filter based on selected Date range & Area in dropdown --> for search/filter() function
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
@@ -1170,7 +1190,12 @@ def farmsAssessment(request):
     debug(qry)
 
     farmsData = []
+    total_pigs = 0
+    total_pens = 0
+    ave_pigs = 0
+    ave_pens = 0
     for f in qry:
+
         farmObject = {
             "code":  str(f["id"]),
             "raiser": " ".join((f["fname"],f["lname"])),
@@ -1178,15 +1203,36 @@ def farmsAssessment(request):
             "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
-            "updated": f["last_updated"]
+            "updated": f["last_updated"],
         }
         farmsData.append(farmObject)
+
+        total_pigs += f["total_pigs"]
+        total_pens += f["num_pens"]
     debug(farmsData)
 
-    # TODO: compute for
-    # total and ave columns
+    # combine farm + tech lists into one list
+    farmtechList = zip(farmsData, techList)
 
-    return render(request, 'farmstemp/rep-farms-assessment.html', {'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmList': farmsData})
+    # TODO: compute for
+    # total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
+    # for frm in farmsData:
+
+    ave_pigs = total_pigs / len(farmsData)
+    ave_pens = total_pens / len(farmsData)
+
+    debug("total pigs -- " + str(total_pigs))
+    debug("total pens -- " + str(total_pens))
+    debug("ave. pigs -- " + str(ave_pigs))
+    debug("ave. pens -- " + str(ave_pens))
+
+    farmTotalAve = {
+        "total_pigs": total_pigs,
+        "total_pens": total_pens,
+        "ave_pigs": ave_pigs,
+        "ave_pens": ave_pens,
+    }
+    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmtechList': farmtechList})
 
 def intBiosecurity(request):
     return render(request, 'farmstemp/rep-int-biosec.html', {})
