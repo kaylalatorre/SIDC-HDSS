@@ -1,5 +1,7 @@
-from django.forms import ModelForm
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Farm_Symptoms, Delivery, Activity, Mortality
+from django import forms
+from django.forms import ModelForm, DateField, widgets
+from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area
+import datetime
 
 class DateInput(ModelForm):
     input_type = 'date'
@@ -10,18 +12,21 @@ class ExternalBiosecForm(ModelForm):
         self.fields['bird_proof'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-isolation'         
+            'id': 'cb-birdproof',
         })
         self.fields['perim_fence'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-fence'         
+            'id': 'cb-fence',
         })
         self.fields['fiveh_m_dist'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-distance'         
+            'id': 'cb-distance',
         })
+    
+    def clean_active(self):
+        return 0 if self.cleaned_data['active'] else 1
 
     class Meta:
         model = ExternalBiosec
@@ -33,12 +38,16 @@ class InternalBiosecForm(ModelForm):
         self.fields['isol_pen'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-isolation'         
+            'id': 'cb-isolation',
         })
         self.fields['foot_dip'].widget.attrs.update({
             'input type' : 'checkbox',
             'class' : 'form-check-input',
-            'id': 'cb-footdip'         
+            'id': 'cb-footdip',
+        })
+        self.fields['waste_mgt'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-waste-mgt'
         })
 
     class Meta:
@@ -50,13 +59,25 @@ class FarmWeightForm(ModelForm):
         model = Farm_Weight
         fields = ('__all__')
 
-class FarmSymptomsForm(ModelForm):
+class HogSymptomsForm(ModelForm):
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     #     self.fields[''].widget.attrs.update({
    
     class Meta:
-        model = Farm_Symptoms
+        model = Hog_Symptoms
+        fields = ('__all__')
+
+class AreaForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['area_name'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'input-area'
+        })
+
+    class Meta:
+        model = Area
         fields = ('__all__')
 
 class FarmForm(ModelForm):
@@ -75,10 +96,6 @@ class FarmForm(ModelForm):
             'name' : 'input-address',
             'placeholder' : 'ex. Batangas, 4200 Batangas'
         })
-        self.fields['area'].widget.attrs.update({
-           'select class' : 'form-select',
-           'id' : 'input-area'
-        })
         self.fields['roof_height'].widget.attrs.update({
             'input type' : 'number', 
             'class' : 'form-control',
@@ -86,7 +103,7 @@ class FarmForm(ModelForm):
             'name' : 'input-roof',
             'placeholder' : 'ex. 100'
         })
-        self.fields['warehouse_length'].widget.attrs.update({
+        self.fields['wh_length'].widget.attrs.update({
             'input type' : 'number',
             'aria-label' : 'Length', 
             'class' : 'form-control',
@@ -94,7 +111,7 @@ class FarmForm(ModelForm):
             'name' : 'wh-length',
             'placeholder' : 'Length'
         })
-        self.fields['warehouse_width'].widget.attrs.update({
+        self.fields['wh_width'].widget.attrs.update({
             'input type' : 'number',
             'aria-label' : 'Width', 
             'class' : 'form-control',
@@ -104,7 +121,7 @@ class FarmForm(ModelForm):
         })
         self.fields['feed_trough'].widget.attrs.update({
            'select class' : 'form-select',
-           'id' : 'input-trough'
+           'id' : 'input-trough',
         })
         self.fields['bldg_cap'].widget.attrs.update({
             'input type' : 'number', 
@@ -112,6 +129,22 @@ class FarmForm(ModelForm):
             'id' : 'input-roof',
             'name' : 'input-roof',
             'placeholder' : 'ex. 100'
+        })
+        self.fields['bldg_curtain'].widget.attrs.update({
+            'input type' : 'checkbox',
+            'class' : 'form-check-input',
+            'id': 'cb-curtain', 
+            'name' : 'cb-curtain'            
+        })
+        self.fields['road_access'].widget.attrs.update({
+            'input type' : 'checkbox',
+            'class' : 'form-check-input',
+            'id': 'cb-road', 
+            'name' : 'cb-road'            
+        })
+        self.fields['medic_tank'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'inout-medic-tank',
         })
 
     class Meta:
@@ -168,36 +201,33 @@ class PigpenMeasuresForm(ModelForm):
             'class' : 'form-control',
             'placeholder' : 'ex. 100'
         })
-
+    
     class Meta:
         model = Pigpen_Measures
         fields = ('__all__')
 
-class DeliveryForm(ModelForm):
-    class Meta:
-        model = Delivery
-        fields = ('__all__')
-
-class ActivityForm(ModelForm):
+class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].widget.attrs.update({
             'type' : 'date', 
             'aria-label' : 'Date',
             'class' : 'form-control',
-            'placeholder' : '01/01/2021'
         })
-        self.fields['time_departure'].widget.attrs.update({
-            'type' : 'time', 
-            'aria-label' : 'Departure Time',
-            'class' : 'form-control',
-            'placeholder' : '18:00'
+        self.fields['trip_type'].widget.attrs.update({
+           'select class' : 'form-select',
+           'id' : 'act-trip-type',
+           'style' : 'margin-bottom: 0',
         })
         self.fields['time_arrival'].widget.attrs.update({
             'input type' : 'time', 
             'aria-label' : 'Arrival Time',
             'class' : 'form-control',
-            'placeholder' : '18:00'
+        })
+        self.fields['time_departure'].widget.attrs.update({
+            'type' : 'time', 
+            'aria-label' : 'Departure Time',
+            'class' : 'form-control',
         })
         self.fields['description'].widget.attrs.update({
             'input type' : 'text', 
@@ -215,6 +245,32 @@ class ActivityForm(ModelForm):
     class Meta:
         model = Activity
         fields = ('__all__')
+        widgets = {
+            'date' : widgets.DateInput(attrs={'type' : 'date'}),
+            'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),
+            'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        date = cleaned_data.get("date")
+        today = datetime.date.today()
+
+        # print("Input Date: " + str(date))
+        # print("Date today: " + str(today))
+
+        if date > today:
+            raise forms.ValidationError("Date can not be later than today.")
+
+        time_arrival = cleaned_data.get("time_arrival")
+        time_departure = cleaned_data.get("time_departure")
+
+        # print("Arrival: " + str(time_arrival))
+        # print("Departure: " + str(time_departure))
+
+        if time_departure > time_arrival:
+            raise forms.ValidationError("Arrival time should be after departure time.")
 
 class MortalityForm(ModelForm):
     class Meta:

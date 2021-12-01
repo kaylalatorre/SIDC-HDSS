@@ -18,13 +18,14 @@
         <div><button class="primary-btn" type="submit">Send for Approval</button></div>
     </div>
 
+    <hr>
     <div class="flex">
         <section class="flex-item" id="farm-details">
             <h2>Farm Details</h2>
             <div class="box-style">
                 <div class="mb-3">
                     <label for="input-code" class="form-label">Code</label>
-                    <input type="text" class="form-control" id="input-code" name="input-code" placeholder="ex. 001">
+                    <input type="text" class="form-control" required id="input-code" minlength="1" maxlength="3" name="input-code" placeholder="ex. 001">
                 </div>
 
                 <h3>Raiser</h3>
@@ -53,7 +54,11 @@
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
-                    {{farmForm.area}}
+                    <select class="form-select" id="input-area" name="input-area">
+                        {% for area in area %}
+                        <option>{{area.area_name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate which area.</label>
@@ -67,8 +72,8 @@
                 <div class="mb-3">
                     <label for="input-wharea" class="form-label">Warehouse Area</label>
                     <div class="input-group" id="input-wharea">
-                        {{farmForm.warehouse_length}}
-                        {{farmForm.warehouse_width}}
+                        {{farmForm.wh_length}}
+                        {{farmForm.wh_width}}
                     </div>
                 </div>
 
@@ -81,18 +86,36 @@
                     <label for="input-roof" class="form-label">Building Capacity</label>
                     {{farmForm.bldg_cap}}
                 </div>
+
+                <div class="mb-3">
+                    <label for="input-medic-tank" class="form-label">Medic Tank</label>
+                    {{farmForm.medic_tank}}
+                </div>
+
+                <div class="mb-3">
+                    {{farmForm.bldg_curtain}}
+                    <label class="form-check-label" for="cb-curtain">Building Curtain</label>
+                </div>
+                <div class="mb-3">
+                    {{farmForm.road_access}}
+                    <label class="form-check-label" for="cb-road">Road Access</label>
+                </div>
             </div>
         </section>
     </div>
 
-    <div class="flex">
+    <div class="flex flex-form">
         <section class="flex-item" id="pig-pens">
-            <h2>Pig Pens</h2>
+            
+            <div class="flex subheading">
+                <h2 class="flex-item">Pig Pens</h2>
+                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button></div>
+            </div>
+            <div class="flex mobile-subheading">
+                <h2 style="width: 90%">Pig Pens</h2>
+                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
+            </div>
             <div class="box-style">
-                <div class="flex subheading">
-                    <p class="flex-item">Add all pens and details here. </p>
-                    <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Pen</button> <!-- Adds another row --></div>
-                </div>
                 <br>
                 <div class="input-group" id="input-pen">
                     <table class="table">
@@ -103,18 +126,14 @@
                                 <th>No. of Pigs</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody  id="input-pigpen">
+
                             <tr>
-                                <td data-label="Length">
-                                    {{pigpenMeasuresForm.length}}
-                                </td>
-                                <td data-label="Width">
-                                    {{pigpenMeasuresForm.width}}
-                                </td>
-                                <td data-label="No. of Pigs">
-                                    {{pigpenMeasuresForm.num_heads}}
-                                </td>
+                                <td data-label="Length" id="pigpen-length"> {{pigpenMeasuresForm.length}} </td>
+                                <td data-label="Width" id="pigpen-width"> {{pigpenMeasuresForm.width}} </td>
+                                <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenMeasuresForm.num_heads}} </td>
                             </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -130,32 +149,28 @@
             <div class="box-style">
                 <p>Select all that apply.</p>
                 <div class="mb-3">
-                    {{internalBiosecForm.isol_pen}}
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
-                </div>
-                <div class="mb-3">
-                    {{externalBiosecForm.bird_proof}}
+                    <input type="checkbox" class="form-check-input" name="cb-birdproof" id="cb-birdproof">
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    {{externalBiosecForm.perim_fence}}
+                    <input type="checkbox" class="form-check-input" name="cb-fence" id="cb-fence">
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    {{internalBiosecForm.foot_dip}}
-                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
-                </div>
-                <div class="mb-3">
-                    {{externalBiosecForm.fiveh_m_dist}}
+                    <input type="checkbox" class="form-check-input" name="cb-distance" id="cb-distance">
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="mb-3">
-                    <label for="input-trough" class="form-label">Waste Management</label>
-                    <select class="form-select" id="input-trough">
-                        <option value="Semi-automatic">Septic Tank</option>
-                        <option value="Trough">Biogas</option>
-                        <option value="Trough">Other</option>
-                    </select>
+                    <input type="checkbox" class="form-check-input" name="cb-isolation" id="cb-isolation">
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" name="cb-footdip" id="cb-birdproof">
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
+                </div>
+                <div class="mb-3">
+                    <label for="input-waste-mgt" class="form-label">Waste Management</label>
+                    {{internalBiosecForm.waste_mgt}}
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
@@ -176,13 +191,13 @@
                     </div>
                     <div class="mb-3">
                         <input type="checkbox" class="form-check-input" id="cb-am">
-                        <label class="form-check-label" for="cb-am">Assistant Manager for Swine Business Unit</label>
+                        <label class="form-check-label" for="cb-am">Assistant Manager</label>
                     </div>
                 </div>
             </div>
         </section>
     </div>
-    
+    <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
     </form>
 </div>
 {% endblock section %}

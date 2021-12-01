@@ -27,23 +27,59 @@ for(var i = 0; i < save.length; i++) {
     })
 }
 
-// MGIHT BE BACKEND
-function viewTechFarm() {
+function viewFarm(farm) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
-    let viewFarm = document.querySelector('#viewTechFarm');
-    viewFarm.onclick = function () {
-        location.href = "/tech-selected-farm";
-    };
+
+    try{
+        url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log("reloading...");
+        location.reload(true);
+    }
 }
 
-function viewFarm() {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
-    let viewFarm = document.querySelector('#viewFarm');
-    viewFarm.onclick = function () {
-        location.href = "/selected-farm";
-    };
+/**
+*   - Appends new pigpen row for when adding a new farm
+*   
+*   input-pgipen = table body that the row will be appended to
+*/
+function addPigPenRow() {
+    const length = document.getElementById('pigpen-length').innerHTML;
+    const width = document.getElementById('pigpen-width').innerHTML;
+    const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
+
+    $("#input-pigpen").append("<tr> \
+        <td data-label='Length'> " + length + " </td> \
+        <td data-label='Width'> " + width + " </td> \
+        <td data-label='No. of Pigs'> " + num_heads + " </td> \
+        </tr>");
+}
+
+/**
+*   - Appends new activity row to activity table
+*   
+*   input-act = table body that the row will be appended to
+*/
+function addActivityRow() {
+    const date = document.getElementById('date').innerHTML;
+    const trip_type = document.getElementById('trip_type').innerHTML;
+    const time_arrival = document.getElementById('time_arrival').innerHTML;
+    const time_departure = document.getElementById('time_departure').innerHTML;
+    const description = document.getElementById('description').innerHTML;
+    const remarks = document.getElementById('remarks').innerHTML;
+
+    $("#input-act").append("<tr> \
+        <td data-label='Date'> " + date + " </td> \
+        <td data-label='Trip Type'> " + trip_type + " </td> \
+        <td data-label='Arrival Time'> " + time_arrival + " </td> \
+        <td data-label='Departure Time'> " + time_departure + " </td> \
+        <td data-label='Description'> " + description + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
+        </tr>");
 }
 
 function viewForm() {
@@ -64,8 +100,11 @@ function viewAnnounce() {
     };
 }
 
-function filterSearch(){
-    // modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/ 
+/** 
+* Filters and search farms client side. Only verified to works for assistant manager. Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
+* @summary Filters and searches farms for assistant manager.
+*/
+function filterSearch(){ 
     var input, filter, table, tr, raiser, address, area, i;        
     input   = document.getElementById("searchTextBoxid"); //to get typed in keyword    
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    

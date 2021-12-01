@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% extends 'base-logged-in.html' %} <!-- temporary -->
 {% load static %}
 
 {% block page_title %}
@@ -9,8 +10,36 @@
 <div class="table-container main-div">
     <h1 class="heading">Farms Assigned</h1>
     <div class="flex subheading">
-        <label style="font-weight: 600;">Area Assigned:</label><p class="flex-item">West</p>
+
+        {% if areaCount == 0 %}
+                <label style="font-weight: 600;">No Areas Assigned.</label>
+                <p class="flex-item"> </p>
+            {% elif areaCount == 1 %}
+                <label style="font-weight: 600;">Area Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}}{% endfor %}</p>
+            {% else %}
+                <label style="font-weight: 600;">Areas Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}} {% endfor %}</p>
+            {% endif %}
+
         <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a></div>
+    </div>
+    <div class="flex mobile-subheading">
+        <div class="flex" style="width: 90%">
+        
+            {% if areaCount == 0 %}
+                <label style="font-weight: 600;">No Areas Assigned.</label>
+                <p class="flex-item"> </p>
+            {% elif areaCount == 1 %}
+                <label style="font-weight: 600;">Area Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}}{% endfor %}</p>
+            {% else %}
+                <label style="font-weight: 600;">Areas Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}} {% endfor %}</p>
+            {% endif %}
+        
+        </div>
+        <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i><span class="text">Add Farm</span></a></div>
     </div>
     <div class="box-style">
         <table class="table">
@@ -25,18 +54,20 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
+            {% for techFarm in techFarms %}
+            
                 <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Contact No.">09112346578</td>
-                    <td data-label="Address">Binictican Drive, Tanauan City 2200</td>
-                    <td data-label="Last Update">06/06/2021</td>
+                    <td data-label="Farm Code">{{techFarm.code}}</td>
+                    <td data-label="Raiser">{{techFarm.raiser}}</td>
+                    <td data-label="Contact No.">{{techFarm.contact}}</td>
+                    <td data-label="Address">{{techFarm.address}}</td>
+                    <td data-label="Last Update">{{techFarm.updated|date:'N j, Y, P'}}</td>
                     <td data-label="" class="td-btn">
-                        <!-- Note: This links to a temporary navigation to template (code @ static/js/scripts.js) -->
-                        <button class="secondary-btn" id="viewTechFarm" onclick=viewTechFarm()><span class="material-icons md-18">visibility</span>View</button>
+                        <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
-                </tr>               
+                </tr> 
+                   
+            {% endfor %}
             </tbody>            
         </table>
     </div>

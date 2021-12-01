@@ -1,5 +1,9 @@
 # dependencies
 /venv
+__pycache__/
 *.pyc
 app/temp.txt
 migrations/
+scratch.py
+init.sh
+how commit-id
