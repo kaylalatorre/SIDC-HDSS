@@ -42,7 +42,7 @@
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item">All Farms Assessment Report for {{dateStart.0.last_updated}} to {{dateEnd.0.last_updated}}</p>
+        <p class="flex-item" id="farmrep-header">All Farms Assessment Report for {{dateStart.last_updated}} to {{dateEnd.last_updated}}</p>
         <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
@@ -82,7 +82,7 @@
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
-                    <td colspan="4">Total</td>
+                    <td colspan="5">Total</td>
                     <td class="bold-lbl"> {{farmTotalAve.total_pigs}} </td>
                     <td > {{farmTotalAve.total_pens}} </td>
                 </tr>

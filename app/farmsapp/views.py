@@ -1146,8 +1146,8 @@ def farmsAssessment(request):
         - intbio score, extbio score, last_updated (in Farm/Biosec?)
     """
     # (1)
-    dateASC = Farm.objects.only("last_updated").order_by('last_updated').all()
-    dateDESC = Farm.objects.only("last_updated").order_by('-last_updated').all()
+    dateASC = Farm.objects.only("last_updated").order_by('last_updated').first()
+    dateDESC = Farm.objects.only("last_updated").order_by('-last_updated').first()
 
     # (2) all Area records
     areaQry = Area.objects.all()
@@ -1174,10 +1174,9 @@ def farmsAssessment(request):
 
     # (3) Farm details 
     # TODO: filter based on selected Date range & Area in dropdown --> for search/filter() function
-    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+    qry = Farm.objects.select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
-        # contact=F("hog_raiser__contact_no"),
         farm_area = F("area__area_name")
         ).values(
             "id",
@@ -1187,7 +1186,8 @@ def farmsAssessment(request):
             "farm_area",
             "total_pigs",
             "num_pens",
-            "last_updated"
+            "last_updated",
+            "intbio"
             )
     debug(qry)
 
@@ -1211,6 +1211,10 @@ def farmsAssessment(request):
 
         total_pigs += f["total_pigs"]
         total_pens += f["num_pens"]
+
+        # TODO: compute int-extbio scores
+        debug("TRACE: f['intbio'] -- " + str(f["intbio"]))
+
     debug(farmsData)
 
     # combine farm + tech lists into one list
@@ -1218,7 +1222,6 @@ def farmsAssessment(request):
 
     # TODO: compute for
     # total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-    # for frm in farmsData:
 
     ave_pigs = total_pigs / len(farmsData)
     ave_pens = total_pens / len(farmsData)
@@ -1228,12 +1231,14 @@ def farmsAssessment(request):
     debug("ave. pigs -- " + str(ave_pigs))
     debug("ave. pens -- " + str(ave_pens))
 
+
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
         "ave_pigs": ave_pigs,
         "ave_pens": ave_pens,
     }
+
     return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmtechList': farmtechList})
 
 
@@ -1252,15 +1257,10 @@ Gets Farm records based on (1) date range and (2) area name filters.
 def filter_farmsAssessment(request, startDate, endDate, areaName):
     debug("TEST LOG: in filter_farmsAssessment Report()/n")
 
-
     debug("URL params:")
     debug("startDate -- " + startDate)
     debug("endDate -- " + endDate)
     debug("areaName -- " + areaName)
-
-    # filter Farm records by date range and area name
-    # samples = Sample.objects.filter(sampledate__gte=datetime.date(2011, 1, 1),
-    #                             sampledate__lte=datetime.date(2011, 1, 31))
 
 
     # convert str Dates to date type; then to a timezone-aware datetime
@@ -1270,36 +1270,20 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
     debug("converted sDate -- " + str(type(sDate)))
     debug("converted eDate -- " + str(type(eDate)))
 
-# ----------------------
 
-    # (2) all Area records
+    # (2) all Area records for dropdown
     areaQry = Area.objects.all()
 
 
-    # Get technician name assigned per Farm
-    # Farm > Area > User (tech)
-    farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
-    debug("techQry -- " + str(farmQry.query))
-
-
-# # .filter(area__area_name=areaName)
-
-
-    debug("list for -- Farm > Area > User (tech)")
-    techList = []
-    for f in farmQry:
-        techObject = {
-            "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
-        }
-        print(techObject["name"])
-        techList.append(techObject)
-    debug(techList)    
-
-
-    # (3) Farm details 
-    # TODO: filter based on selected Date range & Area in dropdown --> for search/filter() function
-    if areaName == "All": # search only by (1) date range
+    # (3) Farm details based on selected filters
+    if areaName == "All": # (CASE 1) search only by date range
         debug("TRACE: in areaName == 'All'")
+
+        # Get technician name assigned per Farm
+        # Farm > Area > User (tech)
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        # debug("techQry -- " + str(farmQry.query))
+
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
@@ -1315,8 +1299,14 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "num_pens",
                 "last_updated"
                 )
-    else:
+    else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
+
+        # Get technician name assigned per Farm
+        # Farm > Area > User (tech)
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        # debug("techQry -- " + str(farmQry.query))
+
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -1334,8 +1324,17 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
    
     debug(qry)
 
-    # qryDate = qry.first().last_updated
-    # debug("qry last_updated -- " + str(type(qryDate)))
+
+    debug("list for -- Farm > Area > User (tech)")
+    techList = []
+    for f in farmQry:
+        techObject = {
+            "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
+        }
+        print(techObject["name"])
+        techList.append(techObject)
+    debug(techList)   
+
 
     farmsData = []
     total_pigs = 0
@@ -1364,7 +1363,6 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
 
     # TODO: compute for
     # total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-    # for frm in farmsData:
 
     ave_pigs = total_pigs / len(farmsData)
     ave_pens = total_pens / len(farmsData)

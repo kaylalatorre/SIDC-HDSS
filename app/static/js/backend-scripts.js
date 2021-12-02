@@ -154,6 +154,8 @@ function filterFarmRep(){
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
         location.href = url;
+
+        $("#farmrep-header").text("All Farms Assessment Report for" + sDate + "to" + eDate);
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
