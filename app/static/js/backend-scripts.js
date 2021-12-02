@@ -31,7 +31,7 @@ function ajaxCSRF(){
 }
 
 /** 
- * on-change AJAX for Biochecklist search
+ * on-change AJAX for Biochecklist search dropdown
  */
 $('.checklist-date').change(function() {
 
@@ -119,6 +119,9 @@ $('.checklist-date').change(function() {
 // }
 });
 
+/** 
+ * on-change AJAX for Farm search dropdown
+ */
 $('#farm-code').change(function() { 
 
     farmID = $("#farm-code option:selected").val();
@@ -132,6 +135,31 @@ $('#farm-code').change(function() {
     }
 
 });
+
+/**
+ * function filtering Farm Assessment report based on (1) date range and (2) areaName
+ */
+function filterFarmRep(){
+
+    var sDate = $("#farm-start-date").val();
+    var eDate = $("#farm-end-date").val();
+    var arName = $("#farm-area option:selected").val();
+
+    alert("in filterFarmRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+    try{
+        url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
 
 /**
  * functions for enabling/disabling Biochecklist btns; 

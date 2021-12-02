@@ -28,7 +28,9 @@ from django.shortcuts import render
 
 # for date and time fields in Models
 from datetime import date
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from django.utils.timezone import make_aware
+
 
 # for getting date today
 from django.utils.timezone import now 
@@ -1233,6 +1235,157 @@ def farmsAssessment(request):
         "ave_pens": ave_pens,
     }
     return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmtechList': farmtechList})
+
+
+
+
+
+"""
+Gets Farm records based on (1) date range and (2) area name filters.
+
+(1) earliest data, recent data of Farm 
+(2) Area selected in dropdown (?)
+(3) Farm details
+    - farm code, raiser full name, address, technician assigned, num pigs, num pens, 
+    - intbio score, extbio score, last_updated (in Farm/Biosec?)
+"""
+def filter_farmsAssessment(request, startDate, endDate, areaName):
+    debug("TEST LOG: in filter_farmsAssessment Report()/n")
+
+
+    debug("URL params:")
+    debug("startDate -- " + startDate)
+    debug("endDate -- " + endDate)
+    debug("areaName -- " + areaName)
+
+    # filter Farm records by date range and area name
+    # samples = Sample.objects.filter(sampledate__gte=datetime.date(2011, 1, 1),
+    #                             sampledate__lte=datetime.date(2011, 1, 31))
+
+
+    # convert str Dates to date type; then to a timezone-aware datetime
+    sDate = make_aware(datetime.strptime(startDate, "%Y-%m-%d")) 
+    eDate = make_aware(datetime.strptime(endDate, "%Y-%m-%d")) + timedelta(1) # add 1 day to endDate
+
+    debug("converted sDate -- " + str(type(sDate)))
+    debug("converted eDate -- " + str(type(eDate)))
+
+# ----------------------
+
+    # (2) all Area records
+    areaQry = Area.objects.all()
+
+
+    # Get technician name assigned per Farm
+    # Farm > Area > User (tech)
+    farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+    debug("techQry -- " + str(farmQry.query))
+
+
+# # .filter(area__area_name=areaName)
+
+
+    debug("list for -- Farm > Area > User (tech)")
+    techList = []
+    for f in farmQry:
+        techObject = {
+            "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
+        }
+        print(techObject["name"])
+        techList.append(techObject)
+    debug(techList)    
+
+
+    # (3) Farm details 
+    # TODO: filter based on selected Date range & Area in dropdown --> for search/filter() function
+    if areaName == "All": # search only by (1) date range
+        debug("TRACE: in areaName == 'All'")
+
+        qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
+            fname=F("hog_raiser__fname"), 
+            lname=F("hog_raiser__lname"), 
+            farm_area = F("area__area_name")
+            ).values(
+                "id",
+                "fname",
+                "lname", 
+                "farm_address",
+                "farm_area",
+                "total_pigs",
+                "num_pens",
+                "last_updated"
+                )
+    else:
+        debug("TRACE: in else/")
+        qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).select_related('hog_raiser', 'area').annotate(
+            fname=F("hog_raiser__fname"), 
+            lname=F("hog_raiser__lname"), 
+            farm_area = F("area__area_name")
+            ).values(
+                "id",
+                "fname",
+                "lname", 
+                "farm_address",
+                "farm_area",
+                "total_pigs",
+                "num_pens",
+                "last_updated"
+                )
+   
+    debug(qry)
+
+    # qryDate = qry.first().last_updated
+    # debug("qry last_updated -- " + str(type(qryDate)))
+
+    farmsData = []
+    total_pigs = 0
+    total_pens = 0
+    ave_pigs = 0
+    ave_pens = 0
+    for f in qry:
+
+        farmObject = {
+            "code":  str(f["id"]),
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "address": f["farm_address"],
+            "area": str(f["farm_area"]),
+            "pigs": str(f["total_pigs"]),
+            "pens": str(f["num_pens"]),
+            "updated": f["last_updated"],
+        }
+        farmsData.append(farmObject)
+
+        total_pigs += f["total_pigs"]
+        total_pens += f["num_pens"]
+    debug(farmsData)
+
+    # combine farm + tech lists into one list
+    farmtechList = zip(farmsData, techList)
+
+    # TODO: compute for
+    # total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
+    # for frm in farmsData:
+
+    ave_pigs = total_pigs / len(farmsData)
+    ave_pens = total_pens / len(farmsData)
+
+    debug("total pigs -- " + str(total_pigs))
+    debug("total pens -- " + str(total_pens))
+    debug("ave. pigs -- " + str(ave_pigs))
+    debug("ave. pens -- " + str(ave_pens))
+
+    farmTotalAve = {
+        "total_pigs": total_pigs,
+        "total_pens": total_pens,
+        "ave_pigs": ave_pigs,
+        "ave_pens": ave_pens,
+    }
+
+
+    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve,'areaList': areaQry,'farmtechList': farmtechList})
+    # return render(request, 'farmstemp/rep-farms-assessment.html', {})
+
+
 
 def intBiosecurity(request):
     return render(request, 'farmstemp/rep-int-biosec.html', {})

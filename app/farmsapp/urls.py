@@ -44,6 +44,8 @@ urlpatterns = [
 
     # reports
     path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),
+    path('farms-assessment/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_farmsAssessment, name="filter_farmsAssessment"),
+
     path('int-biosecurity', views.intBiosecurity, name="intBiosecurity"),
     path('ext-biosecurity', views.extBiosecurity, name="extBiosecurity"),
 ]

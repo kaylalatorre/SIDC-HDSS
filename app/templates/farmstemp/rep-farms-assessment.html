@@ -15,13 +15,15 @@
     <!-- Date range, etc -->
     <div style="max-width: 400px;">
 
+        <!-- <button class="primary-btn" onclick="filterFarmRep()">Filter</button> -->
+
         <div class="flex subheading date-range">
             <div class="input-group mb-3" style="padding-right: 8px;">
                     <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
-                    <input type="date" id="start-date" class="form-control">
-                    <input type="date" id="end-date" class="form-control">
+                    <input type="date" id="farm-start-date" class="form-control">
+                    <input type="date" id="farm-end-date" class="form-control">
             </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+            <button class="primary-btn" onclick="filterFarmRep()"><i class='bx bx-refresh'></i></button>
         </div>
 
         <div class="flex subheading">
@@ -34,7 +36,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+            <!-- <button class="primary-btn"><i class='bx bx-refresh'></i></button> -->
         </div>
     </div>
     <hr>
