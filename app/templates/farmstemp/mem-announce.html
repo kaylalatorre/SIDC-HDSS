@@ -7,6 +7,8 @@
 {% endblock page_title %}
 
 {% block section %}
+{% load tz %}
+{% timezone "Asia/Manila" %}
 <div class="table-container main-div">
     <h1 class="heading">Member Announcements</h1>
     <div class="flex subheading">
@@ -30,7 +32,7 @@
         <div class="flex">
             <h2 class="heading flex-item">For Approval</h2>
             <!-- Only show button group when a checkbox/es is checked -->
-            <div class="btn-group" style="margin-bottom: 8px;"> 
+            <div class="btn-group hide" id="announce-btn-grp" style="margin-bottom: 8px;"> 
                 <button class="primary-btn" style="margin-right: 4px;"><i class='bx bx-check'></i></button>
                 <button class="primary-btn-red"><i class='bx bx-x'></i></button>
             </div>
@@ -44,7 +46,7 @@
                 <thead>
                     <tr>
                         {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <th><input type="checkbox" class="form-check-input" style="margin-bottom: 0!important;"></th>
+                        <th><input type="checkbox" class="form-check-input announce-checkbox" style="margin-bottom: 0!important;"></th>
                         {% endif %}
                         <th>Timestamp</th>
                         <th>Title</th>
@@ -55,17 +57,19 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for announcement in unapproved %}
                     <tr>
                         {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <td data-label=""><input type="checkbox" class="form-check-input" style="margin-bottom: 0!important;"></td>
+                        <td data-label=""><input type="checkbox" class="form-check-input announce-checkbox" style="margin-bottom: 0!important;"></td>
                         {% endif %}
-                        <td data-label="Timestamp">01/01/2021 8:00</td>
-                        <td data-label="Title">Biosecurity Check</td>
-                        <td data-label="Category">Reminder</td>
-                        <td data-label="Recipient">All</td>
-                        <td data-label="Author">David Archuletta</td>
+                        <td data-label="Timestamp">{{announcement.timestamp}}</td>
+                        <td data-label="Title">{{announcement.title}}</td>
+                        <td data-label="Category">{{announcement.category}}</td>
+                        <td data-label="Recipient">{{announcement.recip_area}}</td>
+                        <td data-label="Author">{{announcement.name}}</td>
                         <td data-label="" class="td-btn"><button class="secondary-btn" id="viewAnnounce" onclick="viewAnnounce()"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -86,17 +90,21 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for announcement in approved %}
                     <tr>
-                        <td data-label="Timestamp">01/01/2021 8:00</td>
-                        <td data-label="Title">Biosecurity Check</td>
-                        <td data-label="Category">Reminder</td>
-                        <td data-label="Recipient">All</td>
-                        <td data-label="Author">David Archuletta</td>
+                        <td data-label="Timestamp">{{announcement.timestamp}}</td>
+                        <td data-label="Title">{{announcement.title}}</td>
+                        <td data-label="Category">{{announcement.category}}</td>
+                        <td data-label="Recipient">{{announcement.recip_area}}</td>
+                        <td data-label="Author">{{announcement.name}}</td>
                         <td data-label="" class="td-btn"><button class="secondary-btn"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
                     </tr>
+                    {% endfor %}
+                    
                 </tbody>
             </table>
         </div>
     </section>
 </div>
+{% endtimezone %}
 {% endblock section %}

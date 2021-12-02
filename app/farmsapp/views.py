@@ -13,25 +13,25 @@ from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm, MemAnnouncementForm
 from django.forms import formset_factory
 
 # for storing error messages
 from django.contrib import messages
 
 # for Model imports
-import psycopg2
-from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity
+from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Mem_Announcement
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
 from django.shortcuts import render
 
-from datetime import date
+from datetime import datetime
 
 # for getting date today
 from django.utils.timezone import now
 from django.utils.timezone import localtime 
+import datetime
 
 def debug(m):
     """
@@ -64,7 +64,9 @@ def debug(m):
 
 ## Farms table for all users except Technicians
 def farms(request):
-    
+    """
+    Display all farms for assistant manager
+    """
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -82,8 +84,6 @@ def farms(request):
                 "last_updated"
                 )
     debug(qry)
-    # this_form = Form_DisplayFarm()
-    # Form_DisplayFarm.data
     farmsData = []
     for f in qry:
         farmObject = {
@@ -101,6 +101,12 @@ def farms(request):
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
+    """
+    Display information of selected farm for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
         contact=F("hog_raiser__contact_no"),
@@ -655,10 +661,10 @@ def post_addChecklist(request, farmID):
                     checkComplete = False
 
                     messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-                    return redirect('/biosecurity/' + farmID)
+                    return redirect('/add-checklist/' + farmID)
 
-                int(value)
-                print(list((index, value)))
+                # int(value)
+                # print(list((index, value)))
 
             if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
 
@@ -721,15 +727,20 @@ def post_addChecklist(request, farmID):
 
                 farm.save()
 
+                # Format time to be passed on message.success
+                ts = extBio.last_updated 
+                df = ts.strftime("%m/%d/%Y, %H:%M")
+                debug(extBio.last_updated)
+                
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "200", extra_tags='add-checklist')
+                messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
                 # (ERROR) Incomplete input/s for Biosecurity Checklist
                 debug("ERROR: Incomplete input/s for Biosecurity Checklist.")
                 messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-                return redirect('/biosecurity/' + farmID)
+                return redirect('/add-checklist/' + farmID)
         else:
             # (ERROR) Invalid farmID
             debug("ERROR: Invalid/None-type farmID from parameter.")
@@ -739,11 +750,14 @@ def post_addChecklist(request, farmID):
     else:
         # (ERROR) not an AJAX Post request
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
-        return redirect('/biosecurity/' + farmID)
+        return redirect('/add-checklist/' + farmID)
 
-def delete_bioChecklist(request, biosecID):
+def delete_bioChecklist(request, biosecID, farmID):
     """
-    (POST-AJAX) For deleting a biosecurity checklist based on biosecID
+    (POST-AJAX) For deleting a biosecurity checklist based on biosecID and farmID from dropdowns.
+        Handles two scenarios:
+        - (1) To be deleted Checklist is current Biosec in Farm
+        - (2) Not current checklist in Farm, simply delete record
     """
 
     if request.is_ajax and request.method == 'POST':
@@ -752,10 +766,6 @@ def delete_bioChecklist(request, biosecID):
 
         # Get biosecID from AJAX url param
         bioID = biosecID
-
-        # Get checkArr from AJAX data param
-        chArr = []
-        chArr = request.POST.getlist("checkArr[]")
 
         if bioID is None:
             # (ERROR) Invalid or null biosecID
@@ -766,15 +776,49 @@ def delete_bioChecklist(request, biosecID):
             
             debug("in delete_bioChecklist() -- bioID: " + str(bioID)) 
 
-            # TODO: check if this does DELETE-CASCADE
-            extBio = ExternalBiosec.objects.filter(id=bioID).delete()
-            intBio = InternalBiosec.objects.filter(id=bioID).delete()
+            # check if to be deleted Checklist is current int-extbio in Farm
+            currFarm = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').first()
+            intBio = currFarm.intbio
+            extBio = currFarm.extbio
 
-            # TODO: if to be deleted Biochecklist is the FK in Farms, replace Farm int-extbio FK w/ 
-            # 2nd latest biosec
+            debug("intBio.id -- " + str(intBio.id))
+            debug("extBio.id -- " + str(extBio.id))
+
+
+            if str(intBio.id) == str(bioID) and str(extBio.id) == str(bioID):
+                # (CASE 1) To be deleted Checklist is current Biosec in Farm
+                ExternalBiosec.objects.filter(id=bioID).delete()
+                InternalBiosec.objects.filter(id=bioID).delete()
+
+                # get 2nd latest biosec after deletion
+                lateExt = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+                    'last_updated',
+                ).order_by('-last_updated').first()
+
+                lateInt = InternalBiosec.objects.filter(ref_farm_id=farmID).only(
+                    'last_updated',
+                ).order_by('-last_updated').first()
+
+                debug("lateInt.id -- " + str(lateInt.id))
+                debug("lateExt.id -- " + str(lateExt.id))
+
+                # replace biosec FKs in Farm
+                farm = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').first()
+
+                farm.intbio = lateInt
+                farm.extbio = lateExt
+                farm.save()
+
+                debug("save() farm.intbio -- " + str(farm.intbio.id))
+                debug("save() farm.extbio -- " + str(farm.extbio.id))
+
+            else:
+                # (CASE 2) Not current checklist in Farm, simply delete record
+                ExternalBiosec.objects.filter(id=bioID).delete()
+                InternalBiosec.objects.filter(id=bioID).delete()
+
 
             # (SUCCESS) Biosec record has been deleted.
-            # return JsonResponse({"instance": jsonStr}, status=200)
             return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
@@ -793,7 +837,7 @@ def biosec_view(request):
 
     print("TEST LOG: in Biosec view/n")
 
-    # # (1) Get all Farms under the logged-in technician User
+    # (1) Get all Farms under the logged-in technician User
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
@@ -821,49 +865,47 @@ def biosec_view(request):
 
     # debug("techFarmsList -- " + str(techFarmsList))
 
-    # # Get ID of first farm under technician
+    # Get ID of first farm under technician
     firstFarm = str(*techFarmsList[0].values())
     farmID = int(firstFarm)
 
-    # # if not farmlistQry.exists() or farm.id is None: # for checking Farms that have no Biosec records
-    # #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
-    # #     return redirect('/biosecurity')
-    # # else: 
-    # farmID = farm.id
-    # farmID = 4
-
+    # (ERROR) for checking technician Areas that have no Farms and null farmID
     debug("biosec_view() farmID -- " + str(farmID))
-    # ------------------
 
-    # Get current internal and external FKs
-    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
-    
-    # debug("in biosec_view(): currbioObj")
-    # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
+    if not techFarmsList or farmID is None: 
+        messages.error(request, "Farm record/s not found.", extra_tags="view-biosec")
+        return render(request, 'farmstemp/biosecurity.html', {})
+    else: 
+        # Get current internal and external FKs
+        currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+        
+        # debug("in biosec_view(): currbioObj")
+        # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
 
-    # (2) Get latest instance of Biochecklist
-    currbioObj = currbioQuery.first()
-    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
-
-
-    # (3) Get all biosecID, last_updated in extbio under a Farm
-    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
-        'last_updated',
-    ).order_by('-last_updated')
-
-    if not extQuery.exists(): # for checking Farms that have no Biosec records
-        messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biochecklist")
-        return redirect('/biosecurity')
+        # (2) Get latest instance of Biochecklist
+        currbioObj = currbioQuery.first()
+        # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
-    # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-    print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
+        # (3) Get all biosecID, last_updated in extbio under a Farm
+        extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+            'last_updated',
+        ).order_by('-last_updated')
+
+        # (ERROR) for checking Farms that have no Biosec records
+        if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
+            messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biosec")
+            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList})
 
 
-    # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+        # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
+        print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
-    actList = []
+
+        # (4) GET ACTIVITIES
+        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+
+        actList = []
 
     # store all data to an array
     for activity in actQuery:
@@ -877,12 +919,14 @@ def biosec_view(request):
             'remarks' : activity.remarks,
         })
 
-    # pass in context:
-    # - (1) farmIDs under Technician user, 
-    # - (2) latest intbio-extbio Checklist, 
-    # - (3) all biocheck IDs and dates within that Farm, 
-    # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+        # pass in context:
+        # - (1) farmIDs under Technician user, 
+        # - (2) latest intbio-extbio Checklist, 
+        # - (3) all biocheck IDs and dates within that Farm, 
+        # - (4) activities
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    
+    return render(request, 'farmstemp/biosecurity.html', {}) 
 
 # For getting all Biosec checklist versions under a Farm based on farmID.
 def select_biosec(request, farmID):
@@ -926,37 +970,44 @@ def select_biosec(request, farmID):
 
     # debug("techFarmsList -- " + str(techFarmsList))
 
-    # if not farmlistQry.exists() or farmID is None: # for checking Farms that have no Biosec records
-    #     messages.error(request, "Farm record/s not found.", extra_tags="view-biochecklist")
-    #     return render(request, 'farmstemp/biosecurity.html', {})
-    # else: 
+
     # Get farmID passed from URL param
     farmID = farmID
     debug("in select_biosec() farmID -- " + str(farmID))
 
+    # (ERROR) for checking technician Areas that have no Farms and null farmID
+    if not techFarmsList or farmID is None: 
+        messages.error(request, "Farm record/s not found.", extra_tags="view-biosec")
+        return render(request, 'farmstemp/biosecurity.html', {})
+    else:
+        # Select Biochecklist with latest date
+        currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+        
+        # debug("in select_biosec(): currbioObj")
+        # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
 
-    # Select Biochecklist with latest date
-    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
-    
-    # debug("in select_biosec(): currbioObj")
-    # debug(Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').values())
-
-    # (2) Get latest instance of Biochecklist
-    currbioObj = currbioQuery.first()
-    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
-
-
-    # (3) Get all biosecID, last_updated in extbio under a Farm
-    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
-        'last_updated',
-    ).order_by('-last_updated')
-
-    # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-    print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
+        # (2) Get latest instance of Biochecklist
+        currbioObj = currbioQuery.first()
+        # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
-    # (4) GET ACTIVITIES
-    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+        # (3) Get all biosecID, last_updated in extbio under a Farm
+        extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+            'last_updated',
+        ).order_by('-last_updated')
+
+        # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
+        print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
+
+        # (ERROR) for checking Farms that have no Biosec records
+        if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
+            messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biosec")
+            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList})
+
+        # (4) GET ACTIVITIES
+        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+
+        actList = []
 
     actList = []
     # print(str(now(settings.TIME_ZONE)))
@@ -980,21 +1031,15 @@ def select_biosec(request, farmID):
             'remarks' : activity.remarks,
             'editable' : editable
         })
-    
-    # if request.method == 'POST' :
-    #     activityForm = ActivityForm(request.POST)
-    #     activity.save()
-    # else :
-    #     activityForm = ActivityForm()
 
-    # print("TEST LOG actList: " + str(actList))
+        # pass in context:
+        # - (1) farmIDs under Technician user, 
+        # - (2) latest intbio-extbio Checklist, 
+        # - (3) all biocheck IDs and dates within that Farm, 
+        # - (4) activities
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
-    # pass in context:
-    # - (1) farmIDs under Technician user, 
-    # - (2) latest intbio-extbio Checklist, 
-    # - (3) all biocheck IDs and dates within that Farm, 
-    # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    return render(request, 'farmstemp/biosecurity.html', {}) 
 
 def addChecklist_view(request, farmID):
     """
@@ -1012,7 +1057,7 @@ def techAssignment(request):
     areasData = []
     areas = Area.objects.select_related("tech_id").annotate(
         curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
-    ).values()
+    ).order_by('id').values()
     techs = User.objects.filter(groups__name="Field Technician").annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
     ).values(
@@ -1035,8 +1080,32 @@ def techAssignment(request):
     return render(request, 'farmstemp/assignment.html', context)
 
 def assign_technician(request):
+    """
+    Assign technician to area through ajax
+    """
+    areaQry = request.POST.get("area")
+    techQry = request.POST.get("technician")
+
+    # validate if input will be valid
+    ## check if area exists
+    ## check if technician exists
+    area = Area.objects.filter(area_name=areaQry)
+    technician = User.objects.filter(id=techQry)
+    debug(area.get())
+    if(area.exists() and technician.exists()):
+        # save changes
+        a = area.get()
+        a.tech_id = technician.get()
+        a.save()
+        debug(area.get())
+        # return output
+        return HttpResponse("message",status=200)
+    else:
+        # abort
+        # return output
+        return HttpResponseNotFound("Not Found",status=400)
     
-    return response()
+    
 
 def formsApproval(request):
     return render(request, 'farmstemp/forms-approval.html', {})
@@ -1143,10 +1212,36 @@ def deleteActivity(request, farmID, activityID):
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def memAnnouncements(request):
-    return render(request, 'farmstemp/mem-announce.html', {})
+    """
+    Display approved and unapproved announcements
+    """
+    announcements = Mem_Announcement.objects.select_related("author").annotate(
+        name = Concat('author__first_name', Value(' '), 'author__last_name')
+    ).values(
+        "id",
+        "timestamp",
+        "title",
+        "category",
+        "recip_area",
+        "name"
+    )
+    context = {
+        "approved": announcements.filter(is_approved = True),
+        "unapproved": announcements.filter(is_approved = False),
+    }
+    return render(request, 'farmstemp/mem-announce.html', context)
 
 def createAnnouncement(request):
-    return render(request, 'farmstemp/create-announcement.html', {})
+    """
+    Create announcment
+    Defaults to approved if assistant manager
+    """
+    if request.method == 'POST':
+        debug(request.POST)
+        debug(MemAnnouncementForm(request.POST))
+
+    announcementForm = MemAnnouncementForm()
+    return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
 
 def viewAnnouncement(request):
     return render(request, 'farmstemp/view-announcement.html', {})

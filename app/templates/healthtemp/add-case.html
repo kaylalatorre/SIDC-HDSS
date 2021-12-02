@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Add Case</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <form action="" method="POST">
+        <h1 class="heading"><a href="/selected-health-symptoms">Hogs Health & Symptoms</a> >  Add Incident Case</h1>
+        <div class="flex subheading">
+            <p class="flex-item">Add new incidents cases here. Record all symptoms observed. </p>
+            <div><button class="primary-btn" type="submit">Save</button></div>
+        </div>
+        <hr>
+
+        <div class="box-style small-table">
+            <section>
+                <div class="mb-3">
+                    <label for="input-code" class="form-label">No. of Pigs Affected</label>
+                    <input type="number" class="form-control" id="input-title" placeholder="ex. 10">
+                </div>
+            </section>
+            <section>
+                <ul class="symptoms-checklist" data-columns="2">
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="high_fever" value="true"> 
+                            <label class="form-check-label" for="high_fever">High Fever</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="loss_appetite" value="true"> 
+                            <label class="form-check-label" for="loss_appetite">Loss of Appetite</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="depression" value="true"> 
+                            <label class="form-check-label" for="depression">Depression</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="lethargic" value="true"> 
+                            <label class="form-check-label" for="lethargic">Lethargic</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="constipation" value="true"> 
+                            <label class="form-check-label" for="constipation">Constipation</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="vomiting_diarrhea" value="true"> 
+                            <label class="form-check-label" for="vomiting_diarrhea">Vomitting or diarrhea with bloody discharge</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="colored_pigs" value="true"> 
+                            <label class="form-check-label" for="colored_pigs">White-skinned or cyanotic</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="skin_lesions" value="true"> 
+                            <label class="form-check-label" for="skin_lesions">Red/blotchy skin lesions</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="hemorrhages" value="true"> 
+                            <label class="form-check-label" for="hemorrhages">Discrete hemorrhages</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="abn_breathing" value="true"> 
+                            <label class="form-check-label" for="abn_breathing">Abnormal breathing</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="discharge_eyesnose" value="true"> 
+                            <label class="form-check-label" for="discharge_eyesnose">Heavy discharge from eyes and/or nose</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="death_days" value="true"> 
+                            <label class="form-check-label" for="death_days">Death within 6-13 days</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="death_week" value="true"> 
+                            <label class="form-check-label" for="death_week">Death (in less than 1 week old)</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="cough" value="true"> 
+                            <label class="form-check-label" for="cough">Coughing</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="sneeze" value="true"> 
+                            <label class="form-check-label" for="sneeze">Sneezing</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="runny_nose" value="true"> 
+                            <label class="form-check-label" for="runny_nose">Runny nose</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="waste" value="true"> 
+                            <label class="form-check-label" for="waste">Wasting</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="boar_dec_libido" value="true"> 
+                            <label class="form-check-label" for="boar_dec_libido">Reduced libido (boars)</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="farrow_miscarriage" value="true"> 
+                            <label class="form-check-label" for="farrow_miscarriage">Miscarriage (farrows)</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="weight_loss" value="true"> 
+                            <label class="form-check-label" for="weight_loss">Weight loss</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="trembling" value="true"> 
+                            <label class="form-check-label" for="trembling">Trembling and incoordination</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="mb-3">
+                            <input type="checkbox" class="form-check-input" id="conjunctivitis" value="true"> 
+                            <label class="form-check-label" for="conjunctivitis">Conjunctivitis</label>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </form>
+</div>
+{% endblock section %}

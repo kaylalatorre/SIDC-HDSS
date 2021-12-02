@@ -40,7 +40,6 @@ $('.checklist-date').change(function() {
 
     // Get biosec ID of selected option tag
     var biosecID = $(this).val();
-    alert("in search_checklist() -- biosecID: " + biosecID);
 
     ajaxCSRF();
 
@@ -229,8 +228,8 @@ function saveBiocheck(elem){
         type: 'POST',
         url: '/biosecurity/edit-checklist/' + biosecID,
         data: {"checkArr": checkArr}, 
-        success: function (response){
-
+        success: function (response) {
+            
             if (response.status == 200){
                 // alert("in AJAX edit success");
                 var biofields = JSON.parse(response["instance"]);
@@ -293,6 +292,7 @@ function saveBiocheck(elem){
                     $('#disinfect_vet_supp_radio2').prop("checked", true);
                 else
                     $('#disinfect_vet_supp_radio3').prop("checked", true);
+                
             }
             // reload Biosec page to update dropdown of Biosec last_updated
             // window.location.reload(true);
@@ -315,28 +315,35 @@ function deleteBiocheck(elem){
 
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
-    alert("in deleteBiocheck() -- biosecID: " + biosecID);
+    // alert("in deleteBiocheck() -- biosecID: " + biosecID);
 
-    ajaxCSRF();
+    var farmID = $("#farm-code option:selected").val();
+    // alert("in deleteBiocheck() -- farmID: " + farmID);
 
-    $.ajax({
-        type: 'POST',
-        url: '/biosecurity/delete-checklist/' + biosecID,
-        // data: {"checkArr": checkArr}, 
-        success: function (response){
+    if (confirm("Delete this checklist?")) {
+        ajaxCSRF();
 
-            if (response.status == 200){
-                alert("Biochecklist record deleted.");
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
+            // data: {"checkArr": checkArr}, 
+            success: function (response){
+                //console.log(response);
+                // if (response.status === 200){
+                //     alert("Biochecklist record deleted.");
+                // }
+                // // reload Biosec page to update dropdown of Biosec last_updated
+                // // window.location.reload(true);
+                window.location.replace("/biosecurity/" + farmID);
+                alert(response.success);
+                
+            },
+            error: function (res){
+                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
             }
-            // reload Biosec page to update dropdown of Biosec last_updated
-            // window.location.reload(true);
-            window.location.replace("/biosecurity");
+        });
+    }
 
-        },
-        error: function (res){
-            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-        }
-    });
 }
 
 /**
@@ -481,3 +488,29 @@ function editActivity(actID) {
     // save
 
 }
+/** 
+* Used to assign technicians to area.
+*/
+$('.assignSave').on('click', function () {
+    var area = $(this).parent().parent().siblings(":eq(0)").text();
+    var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    ajaxCSRF();
+    if(technician){
+        $.ajax({
+            type:'POST',
+            url:'technician-assignment/assign',
+            data:{
+                "area":area,
+                "technician":technician
+            },
+            success: function(response){
+                console.log(response);
+                location.reload(true);
+            },
+            error: function(response){
+                console.log(response);
+                location.reload(true);
+            }
+        });
+    }
+});

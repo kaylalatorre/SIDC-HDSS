@@ -5,8 +5,8 @@
 }
 
 /* Error Messages */
-.error {
-    display: none;
+.errormssg {
+    display: block;
     color: #ED1E40;
     font-size: 12px;
     text-align: center;
