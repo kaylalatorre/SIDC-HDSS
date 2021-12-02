@@ -158,7 +158,7 @@ def techFarms(request):
                             "last_updated")
                             # "last_updated").order_by('-last_updated')
 
-        print("TEST LOG techFarmQry: " + str(techFarmQry))
+        # print("TEST LOG techFarmQry: " + str(techFarmQry))
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -286,7 +286,58 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
-        internalBiosecForm  = InternalBiosecForm(request.POST)
+
+        # collect internal biosec checkbox inputs and convert to integer value
+        if request.POST.get("cb-isolation", None) == 'on':
+            isol_pen = 0
+        else :
+            isol_pen = 1
+
+        if request.POST.get("cb-footdip", None) == 'on':
+            foot_dip = 0
+        else :
+            foot_dip = 1
+
+        # create new instance of InternalBiosec model and pass converted checkbox inputs
+        internalBiosec = InternalBiosec.objects.create(
+            isol_pen = isol_pen,
+            foot_dip = foot_dip,
+            waste_mgt = request.POST.get("input-waste-mgt", None)
+        )
+
+        print(str(internalBiosec))
+
+        internalBiosec.save()
+        print("TEST LOG: Added new internal biosec")
+        
+
+        # collect external biosec checkbox inputs and convert to integer value
+        if request.POST.get("cb-birdproof", None) == 'on':
+            bird_proof = 0
+        else :
+            bird_proof = 1
+
+        if request.POST.get("cb-fence", None) == 'on':
+            perim_fence = 0
+        else :
+            perim_fence = 1
+
+        if request.POST.get("cb-distance", None) == 'on':
+            fiveh_m_dist = 0
+        else :
+            fiveh_m_dist = 1
+
+        # create new instance of ExternalBiosec model and pass converted checkbox inputs
+        externalBiosec = ExternalBiosec.objects.create(
+            bird_proof = bird_proof,
+            perim_fence = perim_fence,
+            fiveh_m_dist = fiveh_m_dist
+        )
+
+        print(str(externalBiosec))
+
+        externalBiosec.save()
+        print("TEST LOG: Added new internal biosec")
 
         # pass all pigpens values into array pigpenList
         pigpenList = []
@@ -309,132 +360,74 @@ def addFarm(request):
 
             print("TEST LOG: Added new raiser")
 
-            if internalBiosecForm.is_valid():
-                
-                # collect internal biosec checkbox inputs and convert to integer value
-                if request.POST.get("cb-isolation", None) == 'on':
-                    isol_pen = 0
-                else :
-                    isol_pen = 1
+            if farmForm.is_valid():
+                farm = farmForm.save(commit=False)
 
-                if request.POST.get("cb-footdip", None) == 'on':
-                    foot_dip = 0
-                else :
-                    foot_dip = 1
+                # pass data as FKs for farm
+                farm.hog_raiser = hogRaiser
+                farm.extbio = externalBiosec
+                farm.intbio = internalBiosec
+                farm.area_id = areaID
+                farm.id = farmID
 
-                # create new instance of InternalBiosec model and pass converted checkbox inputs
-                internalBiosec = InternalBiosec.objects.create(
-                    isol_pen = isol_pen,
-                    foot_dip = foot_dip,
-                    waste_mgt = request.POST.get("waste_mgt", None)
-                )
+                # print("TEST LOG farm.area_id: " + str(farm.area_id))
 
-                print(str(internalBiosec))
-        
-                internalBiosec.save()
-                print("TEST LOG: Added new internal biosec")
-                
+                farm.save()
+                print("TEST LOG: Added new farm")
 
-                # collect external biosec checkbox inputs and convert to integer value
-                if request.POST.get("cb-birdproof", None) == 'on':
-                    bird_proof = 0
-                else :
-                    bird_proof = 1
-
-                if request.POST.get("cb-fence", None) == 'on':
-                    perim_fence = 0
-                else :
-                    perim_fence = 1
-
-                if request.POST.get("cb-distance", None) == 'on':
-                    fiveh_m_dist = 0
-                else :
-                    fiveh_m_dist = 1
-
-                # create new instance of ExternalBiosec model and pass converted checkbox inputs
-                externalBiosec = ExternalBiosec.objects.create(
-                    bird_proof = bird_proof,
-                    perim_fence = perim_fence,
-                    fiveh_m_dist = fiveh_m_dist
-                )
-
-                print(str(externalBiosec))
+                # get recently created internal and external biosec IDs and update ref_farm_id
+                externalBiosec.ref_farm_id = farm
+                internalBiosec.ref_farm_id = farm
 
                 externalBiosec.save()
-                print("TEST LOG: Added new internal biosec")
-                
-                if farmForm.is_valid():
-                    farm = farmForm.save(commit=False)
+                internalBiosec.save()
 
-                    # pass data as FKs for farm
-                    farm.hog_raiser = hogRaiser
-                    farm.extbio = externalBiosec
-                    farm.intbio = internalBiosec
-                    farm.area_id = areaID
-                    farm.id = farmID
+                if pigpenMeasuresForm.is_valid():
+                    
+                    # temporary variable to store total of all num_heads
+                    numTotal = 0 
+            
+                    # pass all pigpenList objects into Pigpen_Measures model
+                    x = 0
+                    
+                    for pigpen in pigpenList:
+                        pigpen = pigpenList[x]
+                        print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
 
-                    # print("TEST LOG farm.area_id: " + str(farm.area_id))
+                        # create new instance of Pigpen_Measures model
+                        pigpen_measure = Pigpen_Measures.objects.create(
+                            ref_farm = farm,
+                            length = pigpen['length'],
+                            width = pigpen['width'],
+                            num_heads = pigpen['num_heads'],
+                        )
+                        
+                        # add all num_heads (pigpen measure) for total_pigs (farm)
+                        numTotal += int(pigpen_measure.num_heads)
 
+                        print(str(pigpen_measure))
+
+                        pigpen_measure.save()
+                        print("TEST LOG: Added new pigpen measure")
+
+                        x += 1
+                    
+
+                    # update total_pigs of newly added farm
+                    farm.total_pigs = numTotal
                     farm.save()
-                    print("TEST LOG: Added new farm")
+                    
+                    # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
-                    # get recently created internal and external biosec IDs and update ref_farm_id
-                    externalBiosec.ref_farm_id = farm
-                    internalBiosec.ref_farm_id = farm
+                    return render(request, 'home.html', {})
 
-                    externalBiosec.save()
-                    internalBiosec.save()
-
-                    if pigpenMeasuresForm.is_valid():
-                        
-                        # temporary variable to store total of all num_heads
-                        numTotal = 0 
-                
-                        # pass all pigpenList objects into Pigpen_Measures model
-                        x = 0
-                        
-                        for pigpen in pigpenList:
-                            pigpen = pigpenList[x]
-                            print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
-
-                            # create new instance of Pigpen_Measures model
-                            pigpen_measure = Pigpen_Measures.objects.create(
-                                ref_farm = farm,
-                                length = pigpen['length'],
-                                width = pigpen['width'],
-                                num_heads = pigpen['num_heads'],
-                            )
-                            
-                            # add all num_heads (pigpen measure) for total_pigs (farm)
-                            numTotal += int(pigpen_measure.num_heads)
-
-                            print(str(pigpen_measure))
-
-                            pigpen_measure.save()
-                            print("TEST LOG: Added new pigpen measure")
-
-                            x += 1
-                        
-
-                        # update total_pigs of newly added farm
-                        farm.total_pigs = numTotal
-                        farm.save()
-                        
-                        # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
-
-                        return render(request, 'home.html', {})
-
-                    else:
-                        print("TEST LOG: Pigpen Measures Form not valid")
-                        print(pigpenMeasuresForm.errors)
-                
                 else:
-                    print("TEST LOG: Farm Form not valid")
-                    print(farmForm.errors)
-
+                    print("TEST LOG: Pigpen Measures Form not valid")
+                    print(pigpenMeasuresForm.errors)
+            
             else:
-                print("TEST LOG: Internal Biosec Form not valid")
-                print(internalBiosecForm.errors)
+                print("TEST LOG: Farm Form not valid")
+                print(farmForm.errors)
 
         else:
             print("TEST LOG: Hog Raiser Form not valid")
@@ -970,14 +963,9 @@ def select_biosec(request, farmID):
 
     # store all data to an array
     for activity in actQuery:
-        # print(str((localtime() - activity.last_updated).days))
-        # print(str(localtime() - activity.last_updated))
         
         # check if activity record date is still within the 24 hour mark of current time
-        # if activity.last_updated >= localtime() :
-        # if (activity.last_updated - localtime()).total_seconds() > 86400 :
         if (localtime() - activity.last_updated).days == 0:
-            # print(str(activity.last_updated))
             editable = True
         else : 
             editable = False
