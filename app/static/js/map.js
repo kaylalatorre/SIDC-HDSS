@@ -5,7 +5,7 @@
 // set view to batangas
 var lat =  13.882406389460293;
 var long = 121.23650234971542;
-var zoom = 10;
+var zoom = 11;
 
 // initialize map
 var map = L.map('map-containter').setView([lat, long], zoom);
@@ -45,11 +45,11 @@ for (var i = 0; i < dummyData.length; i++) {
     var farmLat = dummyData[i][0];
     var farmLong = dummyData[i][1];
     var numPigs = dummyData[i][2];
-    var radiusSize = numPigs*50;
+    var radiusSize = numPigs*100;
 
     allFarms.addLayer(new L.marker([farmLat, farmLong])
     .bindTooltip(   '<label class="bold-lbl">Farm Code:</label> 001 <br>' +
-                    '<label class="bold-lbl">Address:</label> address'));
+                    '<label class="bold-lbl">Address:</label> address')).addTo(map);
     
     pigsPerFarm.addLayer(new L.circle([farmLat, farmLong], {
         radius: radiusSize,
@@ -59,7 +59,7 @@ for (var i = 0; i < dummyData.length; i++) {
         fillOpacity: 0.6,
     }).bindTooltip( '<label class="bold-lbl">Farm Code:</label> 001 <br>' + 
                     '<label class="bold-lbl">No. of pigs: </label>' + numPigs +  '<br>' +
-                    '<label class="bold-lbl">Last Updated:</label> 1/1/201'));
+                    '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
     
     mortalityRates.addLayer(new L.circle([farmLat, farmLong], {
         radius: 500,
@@ -69,7 +69,7 @@ for (var i = 0; i < dummyData.length; i++) {
         fillOpacity: 0.6,
     }).bindTooltip( '<label class="bold-lbl">Farm Code:</label> 001 <br>' + 
                     '<label class="bold-lbl">Mortality Rate:</label> 10 <br>' +
-                    '<label class="bold-lbl">Last Updated:</label> 1/1/201'));
+                    '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
     
     symptomsRep.addLayer(new L.circle([farmLat, farmLong], {
         radius: 500,
@@ -80,7 +80,7 @@ for (var i = 0; i < dummyData.length; i++) {
     }).bindTooltip( '<label class="bold-lbl">Farm Code:</label> 001 <br>' + 
                     '<label class="bold-lbl">Symptoms Reported:</label> 10 <br>' +
                     '<label class="bold-lbl">Symptoms Active:</label> 10 <br>' +
-                    '<label class="bold-lbl">Last Updated:</label> 1/1/201'));
+                    '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
 }
 
 
@@ -98,4 +98,17 @@ var overlayMaps = {
     "Symptoms Reported" : symptomsRep,
 }
 
+var legend = L.control({ position: "bottomleft"});
+
+legend.onAdd = function(map) {
+    var div = L.DomUtil.create("div", "legend");
+    div.innerHTML += "<h4>Legend</h4>";
+    div.innerHTML += '<i style="background: violet"></i><span>No. of Pigs</span><br>';
+    div.innerHTML += '<i style="background: red"></i><span>Mortality Rates</span><br>';
+    div.innerHTML += '<i style="background: orange"></i><span>Symptoms Reported</span><br>';
+    
+    return div;
+};
+  
+legend.addTo(map);
 L.control.layers(baseMaps, overlayMaps).addTo(map);
