@@ -1144,12 +1144,13 @@ def computeBioscore(farmID, intbioID, extbioID):
     debug("param // intbioID -- " + str(intbioID))
     debug("param // extbioID -- " + str(extbioID))
 
+    intbio_score = 0
+    extbio_score = 0
+
+# -------
     total_measures = 0
     total_checks = 0
     total_NA = 0
-
-    intbio_score = 0
-    extbio_score = 0
 
     # (1) INTERNAL BIOSEC SCORE
 
@@ -1202,23 +1203,78 @@ def computeBioscore(farmID, intbioID, extbioID):
         elif check == 1:
             total_checks += 0
         else:
-            total_NA += 1
+            total_NA += 2
 
-    # debug("intbio_Measures -- total_measures -- " + str(total_measures))
-    # debug("intbio_Measures -- total_N/A -- " + str(total_NA))
-
-# BIOSCORE = ( (total measure points + total checklist points) / (total points - N/A))
     debug("intbio // total_measures -- " + str(total_measures))
     debug("intbio // total_checks -- " + str(total_checks))
     debug("intbio // total_NA -- " + str(total_NA))
 
-    intbio_score = (total_measures + total_checks) / ((total_measures + total_checks) - total_NA)
-    intbio_score *= 100
+    # compute BIOSCORE and round up to 2 decimal places
+    intbio_score = ((total_measures + total_checks) / (7 - total_NA)) * 100
+    intbio_score = round(intbio_score,2)
+    debug("INTBIO_SCORE -- " + str(intbio_score))
 
 
+# --------
     # (2) EXTERNAL BIOSEC SCORE
+    total_measures = 0
+    total_checks = 0
+    total_NA = 0
+
+    # Get Extbio record based in farmID & biosec IDs
     extBio = ExternalBiosec.objects.filter(id=extbioID, ref_farm_id=farmID).first()
-    debug("extBio.bird_proof -- " + str(extBio.bird_proof))
+
+    # total External Biomeasures
+    """
+    ----------------------------
+    int_val | equivalent | score
+    ----------------------------
+    0       | Yes        | +1 total_measures
+    1       | No         | 0  total_measures
+    2       | N/A        | +1 total_NA
+    ----------------------------
+    Total: /3 fields   
+    """
+    extmeasList = [extBio.bird_proof, extBio.perim_fence, extBio.fiveh_m_dist]
+
+    for measure in extmeasList:
+        if measure == 0:
+            total_measures += 1
+        elif measure == 1:
+            total_measures += 0
+        else:
+            total_NA += 1
+
+    
+    # total External Biochecklist
+    """
+    ----------------------------
+    int_val | equivalent | score
+    ----------------------------
+    0       | Yes        | +2 total_checks
+    1       | No         | 0  total_checks
+    2       | N/A        | +1 total_NA
+    ----------------------------
+    Total: /6 fields   
+    """
+    extcheckList = [extBio.prvdd_foot_dip, extBio.prvdd_alco_soap, extBio.obs_no_visitors, extBio.prsnl_dip_footwear, extBio.prsnl_sanit_hands, extBio.chg_disinfect_daily]
+
+    for check in extcheckList:
+        if check == 0:
+            total_checks += 2
+        elif check == 1:
+            total_checks += 0
+        else:
+            total_NA += 2
+
+    debug("extbio // total_measures -- " + str(total_measures))
+    debug("extbio // total_checks -- " + str(total_checks))
+    debug("extbio // total_NA -- " + str(total_NA))
+
+    # compute BIOSCORE and round up to 2 decimal places
+    extbio_score = ((total_measures + total_checks) / (15 - total_NA)) * 100
+    extbio_score = round(extbio_score,2)
+    debug("EXTBIO_SCORE -- " + str(extbio_score))
 
     # returns a tuple; access using "var_name[0]" and "var_name[1]"
     return intbio_score, extbio_score
@@ -1310,8 +1366,8 @@ def farmsAssessment(request):
 
         # TODO: compute int-extbio scores
         biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
-        debug("biosec_score[0] -- " + str(biosec_score[0])) # intbio_score
-        debug("biosec_score[1] -- " + str(biosec_score[1])) # extbio_score
+        # debug("biosec_score[0] -- " + str(biosec_score[0])) # intbio_score
+        # debug("biosec_score[1] -- " + str(biosec_score[1])) # extbio_score
 
 
     debug(farmsData)
