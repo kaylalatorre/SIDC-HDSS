@@ -73,8 +73,8 @@
                     <td data-label="Technician"> {{tech.name}} </td>
                     <td data-label="No. of Pigs">{{farm.pigs}}</td>
                     <td data-label="No. of Pens">{{farm.pens}}</td>
-                    <td data-label="Internal Biosecurity">10</td>
-                    <td data-label="External Biosecurity">10</td>
+                    <td data-label="Internal Biosecurity"> {{farm.intbio_score}} </td>
+                    <td data-label="External Biosecurity"> {{farm.extbio_score}} </td>
                     <td data-label="Last Update">{{farm.updated}}</td>
                 </tr>
                 {% endfor %}
@@ -90,8 +90,8 @@
                     <td colspan="5">Average</td>
                     <td>{{farmTotalAve.ave_pigs}}</td>
                     <td>{{farmTotalAve.ave_pens}}</td>
-                    <td>100</td>
-                    <td>100</td>
+                    <td>{{farmTotalAve.ave_intbio}}</td>
+                    <td>{{farmTotalAve.ave_extbio}}</td>
                 </tr>
                 
 

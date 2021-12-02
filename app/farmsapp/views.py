@@ -1205,9 +1205,9 @@ def computeBioscore(farmID, intbioID, extbioID):
         else:
             total_NA += 2
 
-    debug("intbio // total_measures -- " + str(total_measures))
-    debug("intbio // total_checks -- " + str(total_checks))
-    debug("intbio // total_NA -- " + str(total_NA))
+    # debug("intbio // total_measures -- " + str(total_measures))
+    # debug("intbio // total_checks -- " + str(total_checks))
+    # debug("intbio // total_NA -- " + str(total_NA))
 
     # compute BIOSCORE and round up to 2 decimal places
     intbio_score = ((total_measures + total_checks) / (7 - total_NA)) * 100
@@ -1267,9 +1267,9 @@ def computeBioscore(farmID, intbioID, extbioID):
         else:
             total_NA += 2
 
-    debug("extbio // total_measures -- " + str(total_measures))
-    debug("extbio // total_checks -- " + str(total_checks))
-    debug("extbio // total_NA -- " + str(total_NA))
+    # debug("extbio // total_measures -- " + str(total_measures))
+    # debug("extbio // total_checks -- " + str(total_checks))
+    # debug("extbio // total_NA -- " + str(total_NA))
 
     # compute BIOSCORE and round up to 2 decimal places
     extbio_score = ((total_measures + total_checks) / (15 - total_NA)) * 100
@@ -1348,7 +1348,12 @@ def farmsAssessment(request):
     total_pens = 0
     ave_pigs = 0
     ave_pens = 0
+    ave_intbio = 0
+    ave_extbio = 0
     for f in qry:
+
+        # compute int-extbio scores
+        biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
 
         farmObject = {
             "code":  str(f["id"]),
@@ -1358,40 +1363,35 @@ def farmsAssessment(request):
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
             "updated": f["last_updated"],
+            "intbio_score": str(biosec_score[0]),
+            "extbio_score": str(biosec_score[1])
         }
         farmsData.append(farmObject)
 
         total_pigs += f["total_pigs"]
         total_pens += f["num_pens"]
 
-        # TODO: compute int-extbio scores
-        biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
-        # debug("biosec_score[0] -- " + str(biosec_score[0])) # intbio_score
-        # debug("biosec_score[1] -- " + str(biosec_score[1])) # extbio_score
+        ave_intbio += biosec_score[0]
+        ave_extbio += biosec_score[1]
 
-
-    debug(farmsData)
+    # debug(farmsData)
 
     # combine farm + tech lists into one list
     farmtechList = zip(farmsData, techList)
 
-    # TODO: compute for
-    # total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-
+    # compute for -- total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
     ave_pigs = total_pigs / len(farmsData)
     ave_pens = total_pens / len(farmsData)
-
-    debug("total pigs -- " + str(total_pigs))
-    debug("total pens -- " + str(total_pens))
-    debug("ave. pigs -- " + str(ave_pigs))
-    debug("ave. pens -- " + str(ave_pens))
-
-
+    ave_intbio = ave_intbio / len(farmsData)
+    ave_extbio = ave_extbio / len(farmsData)
+    
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
-        "ave_pigs": ave_pigs,
-        "ave_pens": ave_pens,
+        "ave_pigs": round(ave_pigs, 2),
+        "ave_pens": round(ave_pens, 2),
+        "ave_intbio": round(ave_intbio, 2),
+        "ave_extbio": round(ave_extbio, 2),
     }
 
     return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmtechList': farmtechList})
