@@ -1177,7 +1177,10 @@ def farmsAssessment(request):
     qry = Farm.objects.select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
-        farm_area = F("area__area_name")
+        farm_area = F("area__area_name"),
+        intbio_waste_mgt = F("intbio__waste_mgt"),
+        intbio_disinfect_prem = F("intbio__disinfect_prem"),
+        intbio_disinfect_vet_supp = F("intbio__disinfect_vet_supp")
         ).values(
             "id",
             "fname",
@@ -1187,7 +1190,9 @@ def farmsAssessment(request):
             "total_pigs",
             "num_pens",
             "last_updated",
-            "intbio"
+            "intbio_waste_mgt",
+            "intbio_disinfect_prem",
+            "intbio_disinfect_vet_supp"
             )
     debug(qry)
 
@@ -1213,7 +1218,10 @@ def farmsAssessment(request):
         total_pens += f["num_pens"]
 
         # TODO: compute int-extbio scores
-        debug("TRACE: f['intbio'] -- " + str(f["intbio"]))
+        debug("TRACE: f['intbio_waste_mgt'] -- " + str(f["intbio_waste_mgt"]))
+        debug("TRACE: f['intbio_disinfect_vet_supp'] -- " + str(f["intbio_disinfect_vet_supp"]))
+        debug("TRACE: f['intbio_disinfect_prem'] -- " + str(f["intbio_disinfect_prem"]))
+
 
     debug(farmsData)
 
