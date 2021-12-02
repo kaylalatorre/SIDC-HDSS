@@ -1130,6 +1130,99 @@ def createAnnouncement(request):
 def viewAnnouncement(request):
     return render(request, 'farmstemp/view-announcement.html', {})
 
+# helper functions for Biosec
+def computeBioscore(farmID, intbioID, extbioID):
+    """
+    For calculating Internal and External biosec scores of a Farm.
+    
+    BIOSCORE = ( (total measure points + total checklist points) / (total points - N/A))
+    """
+
+    debug("in computeIntBio()/n")
+
+    debug("param // farmID -- " + str(farmID))
+    debug("param // intbioID -- " + str(intbioID))
+    debug("param // extbioID -- " + str(extbioID))
+
+    total_measures = 0
+    total_checks = 0
+    total_NA = 0
+
+    intbio_score = 0
+    extbio_score = 0
+
+    # (1) INTERNAL BIOSEC SCORE
+
+    # Get Intbio record based in farmID & biosec IDs
+    intBio = InternalBiosec.objects.filter(id=intbioID, ref_farm_id=farmID).first()
+
+    # total Internal Biomeasures
+    """
+    ----------------------------
+    int_val | equivalent | score
+    ----------------------------
+    0       | Yes        | +1 total_measures
+    1       | No         | 0  total_measures
+    2       | N/A        | +1 total_NA
+    ----------------------------
+    Total: /3 fields   
+    """
+    intmeasList = [intBio.isol_pen, intBio.foot_dip]
+
+    for measure in intmeasList:
+        if measure == 0:
+            total_measures += 1
+        elif measure == 1:
+            total_measures += 0
+        else:
+            total_NA += 1
+
+    waste_mgt_list = ['Septic Tank', 'Biogas', 'Other']
+    if intBio.waste_mgt in waste_mgt_list:
+        total_measures += 1
+    else:
+        total_NA += 1
+    
+    # total Internal Biochecklist
+    """
+    ----------------------------
+    int_val | equivalent | score
+    ----------------------------
+    0       | Yes        | +2 total_checks
+    1       | No         | 0  total_checks
+    2       | N/A        | +1 total_NA
+    ----------------------------
+    Total: /2 fields   
+    """
+    intcheckList = [intBio.disinfect_prem, intBio.disinfect_vet_supp]
+
+    for check in intcheckList:
+        if check == 0:
+            total_checks += 2
+        elif check == 1:
+            total_checks += 0
+        else:
+            total_NA += 1
+
+    # debug("intbio_Measures -- total_measures -- " + str(total_measures))
+    # debug("intbio_Measures -- total_N/A -- " + str(total_NA))
+
+# BIOSCORE = ( (total measure points + total checklist points) / (total points - N/A))
+    debug("intbio // total_measures -- " + str(total_measures))
+    debug("intbio // total_checks -- " + str(total_checks))
+    debug("intbio // total_NA -- " + str(total_NA))
+
+    intbio_score = (total_measures + total_checks) / ((total_measures + total_checks) - total_NA)
+    intbio_score *= 100
+
+
+    # (2) EXTERNAL BIOSEC SCORE
+    extBio = ExternalBiosec.objects.filter(id=extbioID, ref_farm_id=farmID).first()
+    debug("extBio.bird_proof -- " + str(extBio.bird_proof))
+
+    # returns a tuple; access using "var_name[0]" and "var_name[1]"
+    return intbio_score, extbio_score
+
 
 # REPORTS for Module 1
 
@@ -1178,9 +1271,8 @@ def farmsAssessment(request):
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        intbio_waste_mgt = F("intbio__waste_mgt"),
-        intbio_disinfect_prem = F("intbio__disinfect_prem"),
-        intbio_disinfect_vet_supp = F("intbio__disinfect_vet_supp")
+        intbioID = F("intbio__id"),
+        extbioID = F("extbio__id")
         ).values(
             "id",
             "fname",
@@ -1190,9 +1282,8 @@ def farmsAssessment(request):
             "total_pigs",
             "num_pens",
             "last_updated",
-            "intbio_waste_mgt",
-            "intbio_disinfect_prem",
-            "intbio_disinfect_vet_supp"
+            "intbioID",
+            "extbioID"
             )
     debug(qry)
 
@@ -1218,9 +1309,9 @@ def farmsAssessment(request):
         total_pens += f["num_pens"]
 
         # TODO: compute int-extbio scores
-        debug("TRACE: f['intbio_waste_mgt'] -- " + str(f["intbio_waste_mgt"]))
-        debug("TRACE: f['intbio_disinfect_vet_supp'] -- " + str(f["intbio_disinfect_vet_supp"]))
-        debug("TRACE: f['intbio_disinfect_prem'] -- " + str(f["intbio_disinfect_prem"]))
+        biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
+        debug("biosec_score[0] -- " + str(biosec_score[0])) # intbio_score
+        debug("biosec_score[1] -- " + str(biosec_score[1])) # extbio_score
 
 
     debug(farmsData)
