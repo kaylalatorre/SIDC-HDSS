@@ -7,6 +7,19 @@
 {% endblock page_title %}
 
 {% block section %}
+
+
+    <!-- TEST: for FARM ASSESSMENT REPORT success-error message placeholder -->
+    {% for mssg in messages %}
+        {% if "farmass-report" in mssg.tags %}
+            <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+        
+    {% endfor %}
+
+
 <div class="table-container main-div">   
     <div>
         <h1>Farms Assessment Reports</h1>

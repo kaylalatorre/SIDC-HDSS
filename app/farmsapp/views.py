@@ -1294,7 +1294,7 @@ def farmsAssessment(request):
         - farm code, raiser full name, address, technician assigned, num pigs, num pens, 
         - intbio score, extbio score, last_updated (in Farm/Biosec?)
     """
-    # (1)
+    # (1) earliest and most recent last_updated in Farm
     dateASC = Farm.objects.only("last_updated").order_by('last_updated').first()
     dateDESC = Farm.objects.only("last_updated").order_by('-last_updated').first()
 
@@ -1303,12 +1303,12 @@ def farmsAssessment(request):
 
     # Get technician name assigned per Farm
     # Farm > Area > User (tech)
-    # book = Book.objects.first().prefetch_related("parts","parts__chapters")
     farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
     debug("techQry -- " + str(farmQry.query))
 
-    # for part in book.parts.all():
-    #     print part.chapters.all()
+    if not farmQry.exists(): # (ERROR) No farm records found.
+        messages.error(request, "No farm records found.", extra_tags="farmass-report")
+        return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
     debug("list for -- Farm > Area > User (tech)")
     techList = []
@@ -1342,6 +1342,10 @@ def farmsAssessment(request):
             "extbioID"
             )
     debug(qry)
+
+    if not qry.exists(): 
+        messages.error(request, "No farm records found.", extra_tags="farmass-report")
+        return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
     farmsData = []
     total_pigs = 0
@@ -1388,8 +1392,8 @@ def farmsAssessment(request):
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
-        "ave_pigs": round(ave_pigs, 2),
-        "ave_pens": round(ave_pens, 2),
+        "ave_pigs": ave_pigs,
+        "ave_pens": ave_pens,
         "ave_intbio": round(ave_intbio, 2),
         "ave_extbio": round(ave_extbio, 2),
     }
@@ -1397,19 +1401,17 @@ def farmsAssessment(request):
     return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmtechList': farmtechList})
 
 
-
-
-
-"""
-Gets Farm records based on (1) date range and (2) area name filters.
-
-(1) earliest data, recent data of Farm 
-(2) Area selected in dropdown (?)
-(3) Farm details
-    - farm code, raiser full name, address, technician assigned, num pigs, num pens, 
-    - intbio score, extbio score, last_updated (in Farm/Biosec?)
-"""
 def filter_farmsAssessment(request, startDate, endDate, areaName):
+    """
+    Gets Farm records based on (1) date range and (2) area name filters.
+
+    (1) earliest data, recent data of Farm 
+    (2) Area selected in dropdown (?)
+    (3) Farm details
+        - farm code, raiser full name, address, technician assigned, num pigs, num pens, 
+        - intbio score, extbio score, last_updated (in Farm/Biosec?)
+    """
+
     debug("TEST LOG: in filter_farmsAssessment Report()/n")
 
     debug("URL params:")
@@ -1437,13 +1439,17 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
         farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
-        # debug("techQry -- " + str(farmQry.query))
 
+        if not farmQry.exists(): # (ERROR) No farm records found.
+            messages.error(request, "No farm records found.", extra_tags="farmass-report")
+            return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
-            farm_area = F("area__area_name")
+            farm_area = F("area__area_name"),
+            intbioID = F("intbio__id"),
+            extbioID = F("extbio__id")
             ).values(
                 "id",
                 "fname",
@@ -1452,7 +1458,9 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "farm_area",
                 "total_pigs",
                 "num_pens",
-                "last_updated"
+                "last_updated",
+                "intbioID",
+                "extbioID"
                 )
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
@@ -1460,12 +1468,17 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
         farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
-        # debug("techQry -- " + str(farmQry.query))
+
+        if not farmQry.exists(): # (ERROR) No farm records found.
+            messages.error(request, "No farm records found.", extra_tags="farmass-report")
+            return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
-            farm_area = F("area__area_name")
+            farm_area = F("area__area_name"),
+            intbioID = F("intbio__id"),
+            extbioID = F("extbio__id")
             ).values(
                 "id",
                 "fname",
@@ -1474,11 +1487,16 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "farm_area",
                 "total_pigs",
                 "num_pens",
-                "last_updated"
+                "last_updated",
+                "intbioID",
+                "extbioID"
                 )
    
     debug(qry)
 
+    if not qry.exists(): 
+        messages.error(request, "No farm records found.", extra_tags="farmass-report")
+        return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
     debug("list for -- Farm > Area > User (tech)")
     techList = []
@@ -1488,15 +1506,19 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         }
         print(techObject["name"])
         techList.append(techObject)
-    debug(techList)   
-
+    debug(techList)  
 
     farmsData = []
     total_pigs = 0
     total_pens = 0
     ave_pigs = 0
     ave_pens = 0
+    ave_intbio = 0
+    ave_extbio = 0
     for f in qry:
+
+        # compute int-extbio scores
+        biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
 
         farmObject = {
             "code":  str(f["id"]),
@@ -1506,37 +1528,38 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
             "updated": f["last_updated"],
+            "intbio_score": str(biosec_score[0]),
+            "extbio_score": str(biosec_score[1])
         }
         farmsData.append(farmObject)
 
         total_pigs += f["total_pigs"]
         total_pens += f["num_pens"]
-    debug(farmsData)
+
+        ave_intbio += biosec_score[0]
+        ave_extbio += biosec_score[1]
+
+    # debug(farmsData)
 
     # combine farm + tech lists into one list
     farmtechList = zip(farmsData, techList)
 
-    # TODO: compute for
-    # total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-
+    # compute for -- total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
     ave_pigs = total_pigs / len(farmsData)
     ave_pens = total_pens / len(farmsData)
-
-    debug("total pigs -- " + str(total_pigs))
-    debug("total pens -- " + str(total_pens))
-    debug("ave. pigs -- " + str(ave_pigs))
-    debug("ave. pens -- " + str(ave_pens))
-
+    ave_intbio = ave_intbio / len(farmsData)
+    ave_extbio = ave_extbio / len(farmsData)
+    
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
         "ave_pigs": ave_pigs,
         "ave_pens": ave_pens,
+        "ave_intbio": round(ave_intbio, 2),
+        "ave_extbio": round(ave_extbio, 2),
     }
 
-
     return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve,'areaList': areaQry,'farmtechList': farmtechList})
-    # return render(request, 'farmstemp/rep-farms-assessment.html', {})
 
 
 

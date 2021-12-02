@@ -1,5 +1,21 @@
 /* BACKEND-specific Functions */
 
+window.onload = function() {
+    setToday();
+};
+
+/**
+ * Helper function for setting date today for input tags of date-type
+ */
+function setToday() {
+    var startDate = document.getElementById("farm-start-date");
+    var endDate = document.getElementById("farm-end-date");
+
+    var today = new Date();
+    startDate.value = today.toISOString().substr(0, 10);
+    endDate.value = today.toISOString().substr(0, 10);
+}
+
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
