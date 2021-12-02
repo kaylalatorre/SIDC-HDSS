@@ -137,10 +137,10 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="flex subheading">
+                <!-- <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
                     <p> {{numTotalPigs}} pigs </p>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -170,12 +170,16 @@
                 </div>
                 <div class="mb-3">
                     <label for="input-waste-mgt" class="form-label">Waste Management</label>
-                    {{internalBiosecForm.waste_mgt}}
+                    <input class="form-control" palceholder="Select from dropdown or input new" id="input-waste-mgt" name="input-waste-mgt" type="text" list="waste-mgt">
+                    <datalist class="form-datalist" id="waste-mgt" name="waste-mgt">
+                        <option>Septic Tank</option>
+                        <option>Biogas</option>
+                    </datalist>
                 </div>
-                <div class="mb-3 option-other">
+                <!-- <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
                     <input type="text" id="input-other"class="form-control" placeholder="Other Waste Management">
-                </div>
+                </div> -->
             </div>
         </section>
     </div>

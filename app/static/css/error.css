@@ -11,3 +11,8 @@
     font-size: 12px;
     text-align: center;
 }
+
+.errorlist li {
+    color: #ED1E40!important;
+    font-size: 12px;
+}
