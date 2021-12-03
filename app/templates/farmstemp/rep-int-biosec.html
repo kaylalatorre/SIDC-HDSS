@@ -16,7 +16,6 @@
                 {{ mssg }}
             </div>
         {% endif %}
-        
     {% endfor %}
 
 
@@ -34,7 +33,7 @@
                 <input type="date" class="input-startDate" id="intbio-start-date" class="form-control">
                 <input type="date" class="input-endDate" id="intbio-end-date" class="form-control">
             </div>
-            <button class="primary-btn" ><i class='bx bx-refresh'></i></button>
+            <button class="primary-btn" onclick="filterIntBioRep()"><i class='bx bx-refresh'></i></button>
         </div>
 
         <div class="flex subheading">
@@ -53,7 +52,7 @@
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item">All Internal Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+        <p class="flex-item">All Internal Biosecurity Reports for {{dateStart}} to {{dateEnd}}</p>
         <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
@@ -101,7 +100,7 @@
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="10">Average Score</td>
-                    <td>{{ farmTotalAve.ave_intbio }}</td>
+                    <td> {{farmTotalAve.ave_intbio}} </td>
                 </tr>
             </tbody>            
         </table>

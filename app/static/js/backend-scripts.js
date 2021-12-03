@@ -200,7 +200,7 @@ function filterFarmRep(){
 
 
 /**
- * function filtering Internal Biosec report based on (1) date range and (2) areaName
+ * function for filtering Internal Biosec report based on (1) date range and (2) areaName
  */
  function filterIntBioRep(){
 
@@ -215,6 +215,35 @@ function filterFarmRep(){
 
     try{
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+        location.href = url;
+
+        // TODO: try separate str then pass to .text()
+        // var strHead = "All Farms Assessment Report for" + sDate + "to" + eDate + ".";
+        // $("#farmrep-header").text(strHead);
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+
+/**
+ * function for filtering External Biosec report based on (1) date range and (2) areaName
+ */
+ function filterExtBioRep(){
+
+    var sDate = $("#extbio-start-date").val();
+    var eDate = $("#extbio-end-date").val();
+    var arName = $("#extbio-area option:selected").val();
+
+    // alert("in filterExtBioRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+    try{
+        url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
         location.href = url;
 
