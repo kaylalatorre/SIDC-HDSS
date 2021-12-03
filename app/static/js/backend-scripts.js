@@ -1,5 +1,39 @@
 /* BACKEND-specific Functions */
 
+window.onload = function() {
+    setToday();
+};
+
+/**
+ * Helper function for setting date today for input tags of date-type
+ */
+function setToday() {
+    // var farm_sDate = document.getElementById("farm-start-date");
+    // var farm_eDate = document.getElementById("farm-end-date");
+
+    // var int_sDate = document.getElementById("intbio-start-date");
+    // var int_eDate = document.getElementById("intbio-end-date");
+
+    // var ext_sDate = document.getElementById("extbio-start-date");
+    // var ext_eDate = document.getElementById("extbio-end-date");
+
+    var today = new Date();
+    // farm_sDate.value = today.toISOString().substr(0, 10);
+    // farm_eDate.value = today.toISOString().substr(0, 10);
+
+    // set all input START DATE tags to date today 
+    var startDates = document.getElementsByClassName('input-startDate');
+    for(var i = 0; i < startDates.length; i++) {
+        startDates[i].value = today.toISOString().substr(0, 10);
+    }    
+
+    // set all input END DATE tags to date today 
+    var endDates = document.getElementsByClassName('input-endDate');
+    for(var i = 0; i < endDates.length; i++) {
+        endDates[i].value = today.toISOString().substr(0, 10);
+    } 
+}
+
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
@@ -30,8 +64,22 @@ function ajaxCSRF(){
    });
 }
 
+/**
+ * Function for preparing reports in pdf. 
+ * @param htmlID the string ID name of an HTML tag 
+ */
+function printReport(htmlID){
+    // get only Report portion of HTML page
+    var printCont = document.getElementById(htmlID).innerHTML;
+    var orig = document.body.innerHTML; // revert to whole HTML page
+
+    document.body.innerHTML = printCont;
+    window.print();
+    document.body.innerHTML = orig;
+}
+
 /** 
- * on-change AJAX for Biochecklist search
+ * on-change AJAX for Biochecklist search dropdown
  */
 $('.checklist-date').change(function() {
 
@@ -118,6 +166,9 @@ $('.checklist-date').change(function() {
 // }
 });
 
+/** 
+ * on-change AJAX for Farm search dropdown
+ */
 $('#farm-code').change(function() { 
 
     farmID = $("#farm-code option:selected").val();
@@ -131,6 +182,81 @@ $('#farm-code').change(function() {
     }
 
 });
+
+/**
+ * function filtering Farm Assessment report based on (1) date range and (2) areaName
+ */
+function filterFarmRep(){
+
+    var sDate = $("#farm-start-date").val();
+    var eDate = $("#farm-end-date").val();
+    var arName = $("#farm-area option:selected").val();
+
+    // alert("in filterFarmRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+    try{
+        url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+
+/**
+ * function for filtering Internal Biosec report based on (1) date range and (2) areaName
+ */
+ function filterIntBioRep(){
+
+    var sDate = $("#intbio-start-date").val();
+    var eDate = $("#intbio-end-date").val();
+    var arName = $("#intbio-area option:selected").val();
+
+    // alert("in filterIntBioRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+    try{
+        url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+
+/**
+ * function for filtering External Biosec report based on (1) date range and (2) areaName
+ */
+ function filterExtBioRep(){
+
+    var sDate = $("#extbio-start-date").val();
+    var eDate = $("#extbio-end-date").val();
+    var arName = $("#extbio-area option:selected").val();
+
+    // alert("in filterExtBioRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+    try{
+        url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
 
 /**
  * functions for enabling/disabling Biochecklist btns; 
@@ -155,6 +281,7 @@ function disableCheck(){
  * on-click AJAX for save Biochecklist btn
  */
 function saveBiocheck(elem){
+
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
     // alert("in saveBiocheck() biosecID: " + biosecID);
@@ -231,76 +358,96 @@ function saveBiocheck(elem){
         success: function (response) {
             
             if (response.status == 200){
-                // alert("in AJAX edit success");
-                var biofields = JSON.parse(response["instance"]);
-
-                // select btn in btn group based on db value
-                // EXTERNAL biosec fields
-                if (biofields["prvdd_foot_dip"] == 0)
-                    $('#prvdd_foot_dip_radio1').prop("checked", true);
-                else if (biofields["prvdd_foot_dip"] == 1)
-                    $('#prvdd_foot_dip_radio2').prop("checked", true);
-                else
-                    $('#prvdd_foot_dip_radio3').prop("checked", true);
-
-                if (biofields["prvdd_alco_soap"] == 0)
-                    $('#prvdd_alco_soap_radio1').prop("checked", true);
-                else if (biofields["prvdd_alco_soap"] == 1)
-                    $('#prvdd_alco_soap_radio2').prop("checked", true);
-                else
-                    $('#prvdd_alco_soap_radio3').prop("checked", true);
-
-                if (biofields["obs_no_visitors"] == 0)
-                    $('#obs_no_visitors_radio1').prop("checked", true);
-                else if (biofields["obs_no_visitors"] == 1)
-                    $('#obs_no_visitors_radio2').prop("checked", true);
-                else
-                    $('#obs_no_visitors_radio3').prop("checked", true);
-                
-                if (biofields["prsnl_dip_footwear"] == 0)
-                    $('#prsnl_dip_footwear_radio1').prop("checked", true);
-                else if (biofields["prsnl_dip_footwear"] == 1)
-                    $('#prsnl_dip_footwear_radio2').prop("checked", true);
-                else
-                    $('#prsnl_dip_footwear_radio3').prop("checked", true);
-
-                if (biofields["prsnl_sanit_hands"] == 0)
-                    $('#prsnl_sanit_hands_radio1').prop("checked", true);
-                else if (biofields["prsnl_sanit_hands"] == 1)
-                    $('#prsnl_sanit_hands_radio2').prop("checked", true);
-                else
-                    $('#prsnl_sanit_hands_radio3').prop("checked", true);
-
-                if (biofields["chg_disinfect_daily"] == 0)
-                    $('#cng_disinfect_daily_radio1').prop("checked", true);
-                else if (biofields["chg_disinfect_daily"] == 1)
-                    $('#cng_disinfect_daily_radio2').prop("checked", true);
-                else
-                    $('#cng_disinfect_daily_radio3').prop("checked", true);
-
-                // INTERNAL biosec fields
-                if (biofields["disinfect_prem"] == 0)
-                    $('#disinfect_prem_radio1').prop("checked", true);
-                else if (biofields["chg_disinfect_daily"] == 1)
-                    $('#disinfect_prem_radio2').prop("checked", true);
-                else
-                    $('#disinfect_prem_radio3').prop("checked", true);
-
-                if (biofields["disinfect_vet_supp"] == 0)
-                    $('#disinfect_vet_supp_radio1').prop("checked", true);
-                else if (biofields["chg_disinfect_daily"] == 1)
-                    $('#disinfect_vet_supp_radio2').prop("checked", true);
-                else
-                    $('#disinfect_vet_supp_radio3').prop("checked", true);
-                
+                alert("Biosec checklist successfully updated!");
             }
+
+            if (response.status == 400){
+                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            }
+
+            var biofields = JSON.parse(response["instance"]);
+
+            // Always updates btn groups depending on AJAX response (1) update fields or (2) not-updated fields from db
+            // EXTERNAL biosec fields
+            if (biofields["prvdd_foot_dip"] == 0)
+                $('#prvdd_foot_dip_radio1').prop("checked", true);
+            else if (biofields["prvdd_foot_dip"] == 1)
+                $('#prvdd_foot_dip_radio2').prop("checked", true);
+            else
+                $('#prvdd_foot_dip_radio3').prop("checked", true);
+
+            if (biofields["prvdd_alco_soap"] == 0)
+                $('#prvdd_alco_soap_radio1').prop("checked", true);
+            else if (biofields["prvdd_alco_soap"] == 1)
+                $('#prvdd_alco_soap_radio2').prop("checked", true);
+            else
+                $('#prvdd_alco_soap_radio3').prop("checked", true);
+
+            if (biofields["obs_no_visitors"] == 0)
+                $('#obs_no_visitors_radio1').prop("checked", true);
+            else if (biofields["obs_no_visitors"] == 1)
+                $('#obs_no_visitors_radio2').prop("checked", true);
+            else
+                $('#obs_no_visitors_radio3').prop("checked", true);
+            
+            if (biofields["prsnl_dip_footwear"] == 0)
+                $('#prsnl_dip_footwear_radio1').prop("checked", true);
+            else if (biofields["prsnl_dip_footwear"] == 1)
+                $('#prsnl_dip_footwear_radio2').prop("checked", true);
+            else
+                $('#prsnl_dip_footwear_radio3').prop("checked", true);
+
+            if (biofields["prsnl_sanit_hands"] == 0)
+                $('#prsnl_sanit_hands_radio1').prop("checked", true);
+            else if (biofields["prsnl_sanit_hands"] == 1)
+                $('#prsnl_sanit_hands_radio2').prop("checked", true);
+            else
+                $('#prsnl_sanit_hands_radio3').prop("checked", true);
+
+            if (biofields["chg_disinfect_daily"] == 0)
+                $('#cng_disinfect_daily_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#cng_disinfect_daily_radio2').prop("checked", true);
+            else
+                $('#cng_disinfect_daily_radio3').prop("checked", true);
+
+            // INTERNAL biosec fields
+            if (biofields["disinfect_prem"] == 0)
+                $('#disinfect_prem_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#disinfect_prem_radio2').prop("checked", true);
+            else
+                $('#disinfect_prem_radio3').prop("checked", true);
+
+            if (biofields["disinfect_vet_supp"] == 0)
+                $('#disinfect_vet_supp_radio1').prop("checked", true);
+            else if (biofields["chg_disinfect_daily"] == 1)
+                $('#disinfect_vet_supp_radio2').prop("checked", true);
+            else
+                $('#disinfect_vet_supp_radio3').prop("checked", true);
+            
+            // Get farmID for biosec URL redirect
+            var farmID = $("#farm-code option:selected").val();
+            alert("in saveBiocheck() -- farmID: " +  farmID);
+
             // reload Biosec page to update dropdown of Biosec last_updated
             // window.location.reload(true);
-            window.location.replace("/biosecurity");
+            // window.location.replace("/biosecurity");
+            // window.location.replace("/biosecurity/" + farmID);
+
+            try{
+                url = "/biosecurity/" + farmID;
+                console.log(url);
+                location.href = url;
+            } catch (error){
+                console.log("Fetching biosec details failed.");
+                location.reload(true);
+            }
+
 
         },
         error: function (res){
-            // alert("in AJAX error. ");
+            alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
 
