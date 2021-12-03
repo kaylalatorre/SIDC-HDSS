@@ -13,24 +13,21 @@
     </div>
     <br>
     <!-- Date range, etc -->
-    <div style="max-width: 500px;">
-        <div class="flex subheading date-range">
-            <div class="input-group mb-3" style="padding-right: 8px;">
-               <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
-               <input type="date" id="start-date" class="form-control">
-               <input type="date" id="end-date" class="form-control">
+    <div style="max-width: 400px; height: 100%;" class="filters">
+        <div class="mb-3">
+            <label class="form-label bold-lbl">Date Range</label>
+            <div class="input-group">
+                <input type="date" id="start-date" class="form-control">
+                <input type="date" id="end-date" class="form-control">
             </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
         </div>
-        <div class="flex subheading">
-            <div class="input-group mb-3" style="padding-right: 8px;">
-                <label class="form-label" style="font-weight: 600; width: 24%">Area</label>
-                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                    <option value="West">West</option>
-                </select>
-            </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+        <div class="mb-3" style="padding-bottom: 8px;">
+            <label class="form-label bold-lbl">Area</label>
+            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
+                <option value="West">West</option>
+            </select>
         </div>
+        <button class="primary-btn"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
     </div>
     <hr>
     <!-- Report description, print button -->

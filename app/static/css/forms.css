@@ -61,6 +61,9 @@ textarea {
     margin-bottom: 0!important;
 }
 
+.filters .form-label {
+    margin: 0!important;
+}
 /* Responsive Styles */
 @media (max-width: 848px) {
     .table .flex, .flex-item {

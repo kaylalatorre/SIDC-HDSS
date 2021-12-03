@@ -328,8 +328,9 @@ function deleteBiocheck(elem){
             url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
             // data: {"checkArr": checkArr}, 
             success: function (response){
-                //console.log(response);
-                // if (response.status === 200){
+
+                // console.log(response);
+                // if (response.status == 200){
                 //     alert("Biochecklist record deleted.");
                 // }
                 // // reload Biosec page to update dropdown of Biosec last_updated

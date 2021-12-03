@@ -799,7 +799,7 @@ def delete_bioChecklist(request, biosecID, farmID):
 
 
             # (SUCCESS) Biosec record has been deleted.
-            return JsonResponse({"success": "Biosecurity record has been deleted."}, status=200)
+            return JsonResponse({"success": "Biosecurity record has been deleted.", "status_code":"200"}, status=200)
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
