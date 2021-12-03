@@ -9,7 +9,7 @@
 
     <!-- IF Manager, Asst. Manager, ect: Dashboard -->
     {% else %}
-        {% include 'dashboard.html' %}
+        {% include 'dashboard.html' with fStats=farmStats %}
 
     {% endif %}
 {% endblock section %}

@@ -1147,7 +1147,6 @@ def computeBioscore(farmID, intbioID, extbioID):
     intbio_score = 0
     extbio_score = 0
 
-# -------
     total_measures = 0
     total_checks = 0
     total_NA = 0
@@ -1217,7 +1216,6 @@ def computeBioscore(farmID, intbioID, extbioID):
         debug("INTBIO_SCORE -- " + str(intbio_score))
 
 
-# --------
     # (2) EXTERNAL BIOSEC SCORE
     if extbioID is None: # (ERROR) no extbioID passed
         debug("(ERROR) extbioID is null.")
@@ -2140,3 +2138,64 @@ def filter_extBiosec(request, startDate, endDate, areaName):
     truEndDate = eDate - timedelta(1)
 
     return render(request, 'farmstemp/rep-ext-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
+
+# FOR MANAGER DASHBOARD
+def dashboard_view(request):
+    """
+    For rendering Farm-related statistics in dashboard.
+    """
+
+    # Get Farm details 
+    farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
+        intbioID = F("intbio__id"),
+        extbioID = F("extbio__id")
+        ).values(
+            "id",
+            "total_pigs",
+            "intbioID",
+            "extbioID"
+            )
+    debug(farmQry)
+
+    if not farmQry.exists(): 
+        messages.error(request, "No farm details found.", extra_tags="farm-dashboard")
+        return render(request, 'templates/dashboard.html', {})
+
+    total_farms = 0
+    total_pigs = 0
+    ave_intbio = 0
+    ave_extbio = 0
+
+    for f in farmQry:
+        # compute int-extbio scores per Farm
+        biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
+
+        # get total pigs of all Farms
+        total_pigs += f["total_pigs"]
+
+        ave_intbio += biosec_score[0]
+        ave_extbio += biosec_score[1]
+    # debug(farmsData)
+
+    total_farms = len(farmQry)
+    # compute for -- total (pigs) and ave columns (intbio, extbio)
+    ave_pigs = total_pigs / len(farmQry)
+    ave_intbio = round((ave_intbio / len(farmQry)), 2)
+    ave_extbio = round((ave_extbio / len(farmQry)), 2)
+    
+    debug("total_farms -- " + str(total_farms))
+
+    farmStats = {
+        "total_farms": total_farms,
+        "total_pigs": total_pigs,
+        "ave_intbio": ave_intbio,
+        "ave_extbio": ave_extbio,
+        "rem_intbio": 100 - ave_intbio,
+        "rem_extbio": 100 - ave_extbio,
+    }
+
+    # return render(request, 'dashboard.html', {"fStats": farmStats})
+    return farmStats
+
+
+

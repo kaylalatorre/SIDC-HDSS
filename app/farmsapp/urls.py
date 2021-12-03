@@ -52,4 +52,7 @@ urlpatterns = [
     path('ext-biosecurity', views.extBiosecurity, name="extBiosecurity"),
     path('ext-biosecurity/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_extBiosec, name="filter_extBiosec"),
 
+    # Farm detail dashboard
+    path('home/dash', views.dashboard_view, name="dashboard-view"),
+
 ]
