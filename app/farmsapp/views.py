@@ -263,6 +263,10 @@ def addFarm(request):
     - Django forms will first check the validity of input (based on the fields within models.py)
     """
     
+    # get all hog raisers to be passed as dropdown
+    hogRaiserQry = Hog_Raiser.objects.all()
+    # print("TEST LOG hogRaiserQry: " + str(hogRaiserQry))
+
     # get current user (technician) ID
     techID = request.user.id
 
@@ -451,6 +455,7 @@ def addFarm(request):
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'area' : areaQry,
+                                                        'raisers' : hogRaiserQry,
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,

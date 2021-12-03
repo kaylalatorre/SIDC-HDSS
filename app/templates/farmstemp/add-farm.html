@@ -29,21 +29,25 @@
                 </div>
 
                 <h3>Raiser</h3>
-                <div class="mb-3">
+                <div class="mb-3" id="div-raiser-name">
                     <label for="input-first-name" class="form-label"> First Name</label>
                     {{hogRaiserForm.fname}}
 
                     <label for="input-last-name" class="form-label"> Last Name</label>
                     {{hogRaiserForm.lname}}
                 </div>
+
                 <div class="mb-3">
                     <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose here:</label>
                     <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
-                        <option>Raiserz</option>
+                        <option disabled selected value> -- Select Raiser -- </option>
+                        {% for raiser in raisers %}
+                        <option>{{raiser.fname}} {{raiser.lname}} ({{raiser.contact_no}})</option>
+                        {% endfor %}
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="div-raiser-contact">
                     <label for="input-contact" class="form-label">Contact No.</label>
                     {{hogRaiserForm.contact_no}}
                 </div>
