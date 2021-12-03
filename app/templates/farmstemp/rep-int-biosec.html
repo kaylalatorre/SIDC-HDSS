@@ -7,6 +7,19 @@
 {% endblock page_title %}
 
 {% block section %}
+
+
+    <!-- TEST: for INTBIOSEC REPORT success-error message placeholder -->
+    {% for mssg in messages %}
+        {% if "intbio-report" in mssg.tags %}
+            <div style="color: orange;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
+                {{ mssg }}
+            </div>
+        {% endif %}
+        
+    {% endfor %}
+
+
 <div class="table-container main-div">   
     <div>
         <h1>Internal Biosecurity Reports</h1>
@@ -14,29 +27,33 @@
     <br>
     <!-- Date range, etc -->
     <div style="max-width: 400px;">
+
         <div class="flex subheading">
             <div class="input-group mb-3" style="padding-right: 8px;">
                 <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
-                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                    <option value="01/01/21">01/01/21</option>
-                </select>
+                <input type="date" class="input-startDate" id="intbio-start-date" class="form-control">
+                <input type="date" class="input-endDate" id="intbio-end-date" class="form-control">
             </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+            <button class="primary-btn" ><i class='bx bx-refresh'></i></button>
         </div>
+
         <div class="flex subheading">
             <div class="input-group mb-3" style="padding-right: 8px;">
                 <label class="form-label" style="font-weight: 600; width: 24%">Area</label>
-                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                    <option value="West">West</option>
+                <select class="form-select" id="intbio-area" style="margin-bottom: 0;">
+                    <option value="All"> All </option>
+                    {% for area in areaList %}
+                    <option value="{{area.area_name}}">{{area.area_name}}</option>
+                    {% endfor %}
                 </select>
             </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+            <!-- <button class="primary-btn"><i class='bx bx-refresh'></i></button> -->
         </div>
     </div>
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item">All Internal Biosecurity Report for March 22, 2021 to April 23, 2021</p>
+        <p class="flex-item">All Internal Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
         <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
@@ -65,49 +82,26 @@
             </thead>
             <tbody>
                 <!-- Data -->
+                {% for farm,tech in farmtechList %}
                 <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="Isolation Pen">Yes</td>
-                    <td data-label="Foot Dip">Yes</td>
-                    <td data-label="Waste Management">Septic Tank</td>
-                    <td data-label="Disinfect Premises">Yes</td>
-                    <td data-label="Disinfect Veterinary Supplies">Yes</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                    <td data-label="Total Score">10</td>
+                    <td data-label="Farm Code"> {{farm.code}} </td>
+                    <td data-label="Raiser"> {{farm.raiser}} </td>
+                    <td data-label="Area"> {{farm.area}} </td>
+                    <td data-label="Technician"> {{tech.name}} </td>
+                    <td data-label="Isolation Pen"> {{farm.intbio_isol_pen}} </td>
+                    <td data-label="Foot Dip"> {{farm.intbio_foot_dip}} </td>
+                    <td data-label="Waste Management"> {{farm.intbio_waste_mgt}} </td>
+                    <td data-label="Disinfect Premises"> {{farm.intbio_disinfect_prem}} </td>
+                    <td data-label="Disinfect Veterinary Supplies"> {{farm.intbio_disinfect_vet_supp}} </td>
+                    <td data-label="Last Update">{{farm.updated}}</td>
+                    <td data-label="Total Score">{{farm.intbio_score}}</td>
                 </tr>
-                <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="Isolation Pen">Yes</td>
-                    <td data-label="Foot Dip">Yes</td>
-                    <td data-label="Waste Management">Septic Tank</td>
-                    <td data-label="Disinfect Premises">Yes</td>
-                    <td data-label="Disinfect Veterinary Supplies">Yes</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                    <td data-label="Total Score">10</td>
-                </tr>
-                <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="Isolation Pen">Yes</td>
-                    <td data-label="Foot Dip">Yes</td>
-                    <td data-label="Waste Management">Septic Tank</td>
-                    <td data-label="Disinfect Premises">Yes</td>
-                    <td data-label="Disinfect Veterinary Supplies">Yes</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                    <td data-label="Total Score">10</td>
-                </tr>
+                {% endfor %}
+
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="10">Average Score</td>
-                    <td>10</td>
+                    <td>{{ farmTotalAve.ave_intbio }}</td>
                 </tr>
             </tbody>            
         </table>

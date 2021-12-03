@@ -28,13 +28,11 @@
     <!-- Date range, etc -->
     <div style="max-width: 400px;">
 
-        <!-- <button class="primary-btn" onclick="filterFarmRep()">Filter</button> -->
-
         <div class="flex subheading date-range">
             <div class="input-group mb-3" style="padding-right: 8px;">
                     <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
-                    <input type="date" id="farm-start-date" class="form-control">
-                    <input type="date" id="farm-end-date" class="form-control">
+                    <input type="date" class="input-startDate" id="farm-start-date" class="form-control">
+                    <input type="date" class="input-endDate" id="farm-end-date" class="form-control">
             </div>
             <button class="primary-btn" onclick="filterFarmRep()"><i class='bx bx-refresh'></i></button>
         </div>
@@ -55,7 +53,7 @@
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item" id="farmrep-header">All Farms Assessment Report for {{dateStart.last_updated}} to {{dateEnd.last_updated}}</p>
+        <p class="flex-item" id="farmrep-header">All Farms Assessment Report for {{dateStart}} to {{dateEnd}}</p>
         <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->

@@ -8,12 +8,30 @@ window.onload = function() {
  * Helper function for setting date today for input tags of date-type
  */
 function setToday() {
-    var startDate = document.getElementById("farm-start-date");
-    var endDate = document.getElementById("farm-end-date");
+    // var farm_sDate = document.getElementById("farm-start-date");
+    // var farm_eDate = document.getElementById("farm-end-date");
+
+    // var int_sDate = document.getElementById("intbio-start-date");
+    // var int_eDate = document.getElementById("intbio-end-date");
+
+    // var ext_sDate = document.getElementById("extbio-start-date");
+    // var ext_eDate = document.getElementById("extbio-end-date");
 
     var today = new Date();
-    startDate.value = today.toISOString().substr(0, 10);
-    endDate.value = today.toISOString().substr(0, 10);
+    // farm_sDate.value = today.toISOString().substr(0, 10);
+    // farm_eDate.value = today.toISOString().substr(0, 10);
+
+    // set all input START DATE tags to date today 
+    var startDates = document.getElementsByClassName('input-startDate');
+    for(var i = 0; i < startDates.length; i++) {
+        startDates[i].value = today.toISOString().substr(0, 10);
+    }    
+
+    // set all input END DATE tags to date today 
+    var endDates = document.getElementsByClassName('input-endDate');
+    for(var i = 0; i < endDates.length; i++) {
+        endDates[i].value = today.toISOString().substr(0, 10);
+    } 
 }
 
 /**
@@ -161,7 +179,7 @@ function filterFarmRep(){
     var eDate = $("#farm-end-date").val();
     var arName = $("#farm-area option:selected").val();
 
-    alert("in filterFarmRep()");
+    // alert("in filterFarmRep()");
     console.log("sDate -- " + sDate);
     console.log("eDate -- " + eDate);
     console.log("arName -- " + arName);
@@ -171,7 +189,38 @@ function filterFarmRep(){
         console.log(url);
         location.href = url;
 
-        $("#farmrep-header").text("All Farms Assessment Report for" + sDate + "to" + eDate);
+        // TODO: try separate str then pass to .text()
+        // var strHead = "All Farms Assessment Report for" + sDate + "to" + eDate + ".";
+        // $("#farmrep-header").text(strHead);
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+
+/**
+ * function filtering Internal Biosec report based on (1) date range and (2) areaName
+ */
+ function filterIntBioRep(){
+
+    var sDate = $("#intbio-start-date").val();
+    var eDate = $("#intbio-end-date").val();
+    var arName = $("#intbio-area option:selected").val();
+
+    // alert("in filterIntBioRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+    try{
+        url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+        location.href = url;
+
+        // TODO: try separate str then pass to .text()
+        // var strHead = "All Farms Assessment Report for" + sDate + "to" + eDate + ".";
+        // $("#farmrep-header").text(strHead);
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);

@@ -15,7 +15,7 @@ import json
 # for Forms
 from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm
 
-# for storing error messages
+# for storing success and error Django messages
 from django.contrib import messages
 
 # for Model imports
@@ -31,9 +31,9 @@ from datetime import date
 from datetime import datetime, timezone, timedelta
 from django.utils.timezone import make_aware
 
-
 # for getting date today
 from django.utils.timezone import now 
+
 
 def debug(m):
     """
@@ -1153,128 +1153,134 @@ def computeBioscore(farmID, intbioID, extbioID):
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
+    if intbioID is None: # (ERROR) no intbioID passed
+        debug("(ERROR) intbioID is null.")
+    else:
+        # Get Intbio record based in farmID & biosec IDs
+        intBio = InternalBiosec.objects.filter(id=intbioID, ref_farm_id=farmID).first()
 
-    # Get Intbio record based in farmID & biosec IDs
-    intBio = InternalBiosec.objects.filter(id=intbioID, ref_farm_id=farmID).first()
+        # total Internal Biomeasures
+        """
+        ----------------------------
+        int_val | equivalent | score
+        ----------------------------
+        0       | Yes        | +1 total_measures
+        1       | No         | 0  total_measures
+        2       | N/A        | +1 total_NA
+        ----------------------------
+        Total: /3 fields   
+        """
+        intmeasList = [intBio.isol_pen, intBio.foot_dip]
 
-    # total Internal Biomeasures
-    """
-    ----------------------------
-    int_val | equivalent | score
-    ----------------------------
-    0       | Yes        | +1 total_measures
-    1       | No         | 0  total_measures
-    2       | N/A        | +1 total_NA
-    ----------------------------
-    Total: /3 fields   
-    """
-    intmeasList = [intBio.isol_pen, intBio.foot_dip]
+        for measure in intmeasList:
+            if measure == 0:
+                total_measures += 1
+            elif measure == 1:
+                total_measures += 0
+            else:
+                total_NA += 1
 
-    for measure in intmeasList:
-        if measure == 0:
+        waste_mgt_list = ['Septic Tank', 'Biogas', 'Other']
+        if intBio.waste_mgt in waste_mgt_list:
             total_measures += 1
-        elif measure == 1:
-            total_measures += 0
         else:
             total_NA += 1
+        
+        # total Internal Biochecklist
+        """
+        ----------------------------
+        int_val | equivalent | score
+        ----------------------------
+        0       | Yes        | +2 total_checks
+        1       | No         | 0  total_checks
+        2       | N/A        | +1 total_NA
+        ----------------------------
+        Total: /2 fields   
+        """
+        intcheckList = [intBio.disinfect_prem, intBio.disinfect_vet_supp]
 
-    waste_mgt_list = ['Septic Tank', 'Biogas', 'Other']
-    if intBio.waste_mgt in waste_mgt_list:
-        total_measures += 1
-    else:
-        total_NA += 1
-    
-    # total Internal Biochecklist
-    """
-    ----------------------------
-    int_val | equivalent | score
-    ----------------------------
-    0       | Yes        | +2 total_checks
-    1       | No         | 0  total_checks
-    2       | N/A        | +1 total_NA
-    ----------------------------
-    Total: /2 fields   
-    """
-    intcheckList = [intBio.disinfect_prem, intBio.disinfect_vet_supp]
+        for check in intcheckList:
+            if check == 0:
+                total_checks += 2
+            elif check == 1:
+                total_checks += 0
+            else:
+                total_NA += 2
 
-    for check in intcheckList:
-        if check == 0:
-            total_checks += 2
-        elif check == 1:
-            total_checks += 0
-        else:
-            total_NA += 2
+        # debug("intbio // total_measures -- " + str(total_measures))
+        # debug("intbio // total_checks -- " + str(total_checks))
+        # debug("intbio // total_NA -- " + str(total_NA))
 
-    # debug("intbio // total_measures -- " + str(total_measures))
-    # debug("intbio // total_checks -- " + str(total_checks))
-    # debug("intbio // total_NA -- " + str(total_NA))
-
-    # compute BIOSCORE and round up to 2 decimal places
-    intbio_score = ((total_measures + total_checks) / (7 - total_NA)) * 100
-    intbio_score = round(intbio_score,2)
-    debug("INTBIO_SCORE -- " + str(intbio_score))
+        # compute BIOSCORE and round up to 2 decimal places
+        intbio_score = ((total_measures + total_checks) / (7 - total_NA)) * 100
+        intbio_score = round(intbio_score,2)
+        debug("INTBIO_SCORE -- " + str(intbio_score))
 
 
 # --------
     # (2) EXTERNAL BIOSEC SCORE
-    total_measures = 0
-    total_checks = 0
-    total_NA = 0
+    if extbioID is None: # (ERROR) no extbioID passed
+        debug("(ERROR) extbioID is null.")
+    else:
 
-    # Get Extbio record based in farmID & biosec IDs
-    extBio = ExternalBiosec.objects.filter(id=extbioID, ref_farm_id=farmID).first()
+        total_measures = 0
+        total_checks = 0
+        total_NA = 0
 
-    # total External Biomeasures
-    """
-    ----------------------------
-    int_val | equivalent | score
-    ----------------------------
-    0       | Yes        | +1 total_measures
-    1       | No         | 0  total_measures
-    2       | N/A        | +1 total_NA
-    ----------------------------
-    Total: /3 fields   
-    """
-    extmeasList = [extBio.bird_proof, extBio.perim_fence, extBio.fiveh_m_dist]
+        # Get Extbio record based in farmID & biosec IDs
+        extBio = ExternalBiosec.objects.filter(id=extbioID, ref_farm_id=farmID).first()
 
-    for measure in extmeasList:
-        if measure == 0:
-            total_measures += 1
-        elif measure == 1:
-            total_measures += 0
-        else:
-            total_NA += 1
+        # total External Biomeasures
+        """
+        ----------------------------
+        int_val | equivalent | score
+        ----------------------------
+        0       | Yes        | +1 total_measures
+        1       | No         | 0  total_measures
+        2       | N/A        | +1 total_NA
+        ----------------------------
+        Total: /3 fields   
+        """
+        extmeasList = [extBio.bird_proof, extBio.perim_fence, extBio.fiveh_m_dist]
 
-    
-    # total External Biochecklist
-    """
-    ----------------------------
-    int_val | equivalent | score
-    ----------------------------
-    0       | Yes        | +2 total_checks
-    1       | No         | 0  total_checks
-    2       | N/A        | +1 total_NA
-    ----------------------------
-    Total: /6 fields   
-    """
-    extcheckList = [extBio.prvdd_foot_dip, extBio.prvdd_alco_soap, extBio.obs_no_visitors, extBio.prsnl_dip_footwear, extBio.prsnl_sanit_hands, extBio.chg_disinfect_daily]
+        for measure in extmeasList:
+            if measure == 0:
+                total_measures += 1
+            elif measure == 1:
+                total_measures += 0
+            else:
+                total_NA += 1
 
-    for check in extcheckList:
-        if check == 0:
-            total_checks += 2
-        elif check == 1:
-            total_checks += 0
-        else:
-            total_NA += 2
+        
+        # total External Biochecklist
+        """
+        ----------------------------
+        int_val | equivalent | score
+        ----------------------------
+        0       | Yes        | +2 total_checks
+        1       | No         | 0  total_checks
+        2       | N/A        | +1 total_NA
+        ----------------------------
+        Total: /6 fields   
+        """
+        extcheckList = [extBio.prvdd_foot_dip, extBio.prvdd_alco_soap, extBio.obs_no_visitors, extBio.prsnl_dip_footwear, extBio.prsnl_sanit_hands, extBio.chg_disinfect_daily]
 
-    # debug("extbio // total_measures -- " + str(total_measures))
-    # debug("extbio // total_checks -- " + str(total_checks))
-    # debug("extbio // total_NA -- " + str(total_NA))
+        for check in extcheckList:
+            if check == 0:
+                total_checks += 2
+            elif check == 1:
+                total_checks += 0
+            else:
+                total_NA += 2
 
-    # compute BIOSCORE and round up to 2 decimal places
-    extbio_score = ((total_measures + total_checks) / (15 - total_NA)) * 100
-    extbio_score = round(extbio_score,2)
-    debug("EXTBIO_SCORE -- " + str(extbio_score))
+        # debug("extbio // total_measures -- " + str(total_measures))
+        # debug("extbio // total_checks -- " + str(total_checks))
+        # debug("extbio // total_NA -- " + str(total_NA))
+
+        # compute BIOSCORE and round up to 2 decimal places
+        extbio_score = ((total_measures + total_checks) / (15 - total_NA)) * 100
+        extbio_score = round(extbio_score,2)
+        debug("EXTBIO_SCORE -- " + str(extbio_score))
 
     # returns a tuple; access using "var_name[0]" and "var_name[1]"
     return intbio_score, extbio_score
@@ -1322,7 +1328,6 @@ def farmsAssessment(request):
 
 
     # (3) Farm details 
-    # TODO: filter based on selected Date range & Area in dropdown --> for search/filter() function
     qry = Farm.objects.select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
@@ -1398,7 +1403,7 @@ def farmsAssessment(request):
         "ave_extbio": round(ave_extbio, 2),
     }
 
-    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC,'dateEnd': dateDESC,'areaList': areaQry,'farmtechList': farmtechList})
+    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
 
 
 def filter_farmsAssessment(request, startDate, endDate, areaName):
@@ -1559,12 +1564,211 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         "ave_extbio": round(ave_extbio, 2),
     }
 
-    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve,'areaList': areaQry,'farmtechList': farmtechList})
+    # to revert endDate to same user date input
+    truEndDate = eDate - timedelta(1)
 
+    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve,'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
+
+
+def getBioStr(bioInt):
+    """
+    Helper function for converting an integer biosec field to corresponding string value.
+    """
+
+    if bioInt == 0:
+        return "Yes"
+    elif bioInt == 1:
+        return "No"
+    else:
+        return "N/A"
 
 
 def intBiosecurity(request):
-    return render(request, 'farmstemp/rep-int-biosec.html', {})
+    debug("TEST LOG: in intBiosecurity Report/n")
+
+    """
+    Gets current Biosecurity record for each Farm within existing dates and all Areas due to no selected filters in dropdown.
+
+    (1) earliest data, recent data of Farm 
+    (2) all Area records
+    (3) Farm details
+        - farm code, raiser full name, area, technician assigned 
+        - (IntBiosec) isol_pen, foot_dip, waste_mgt, disinfect_prem, disinfect_vet_supp, last_updated
+        - IntBiosec score
+    """
+
+    # (1) earliest and most recent last_updated in Farm
+    dateASC = Farm.objects.only("last_updated").order_by('last_updated').first()
+    dateDESC = Farm.objects.only("last_updated").order_by('-last_updated').first()
+
+    # (2) all Area records
+    areaQry = Area.objects.all()
+
+    # Get technician name assigned per Farm
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    # debug("techQry -- " + str(farmQry.query))
+
+    if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
+        messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
+        return render(request, 'farmstemp/rep-int-biosec.html', {})
+
+    debug("list for -- Field Technicians")
+    techList = []
+    for f in farmQry:
+        techObject = {
+            "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
+        }
+        print(techObject["name"])
+        techList.append(techObject)
+    debug(techList)    
+
+
+    # (3) Farm details
+    qry = Farm.objects.select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        farm_area = F("area__area_name"),
+        intbioID = F("intbio__id"),
+        intbio_isol_pen = F("intbio__isol_pen"),
+        intbio_foot_dip = F("intbio__foot_dip"),
+        intbio_waste_mgt = F("intbio__waste_mgt"),
+        intbio_disinfect_prem = F("intbio__disinfect_prem"),
+        intbio_disinfect_vet_supp = F("intbio__disinfect_vet_supp")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "farm_area",
+            "last_updated",
+            "intbioID",
+            "intbio_isol_pen",
+            "intbio_foot_dip",
+            "intbio_waste_mgt",
+            "intbio_disinfect_prem",
+            "intbio_disinfect_vet_supp"
+            )
+    debug(qry)
+
+    if not qry.exists(): #(ERROR) No Internal biosecurity records found.
+        messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
+        return render(request, 'farmstemp/rep-int-biosec.html', {})
+
+    farmsData = []
+    ave_intbio = 0
+
+    for f in qry:
+
+        # compute int-extbio scores
+        biosec_score = computeBioscore(f["id"], f["intbioID"], None)
+
+        farmObject = {
+            "code":  str(f["id"]),
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "area": str(f["farm_area"]),
+            "updated": f["last_updated"],
+            "intbio_score": str(biosec_score[0]),
+            "intbio_isol_pen": getBioStr(f["intbio_isol_pen"]),
+            "intbio_foot_dip": getBioStr(f["intbio_foot_dip"]),
+            "intbio_waste_mgt": f["intbio_waste_mgt"],
+            "intbio_disinfect_prem": getBioStr(f["intbio_disinfect_prem"]),
+            "intbio_disinfect_vet_supp": getBioStr(f["intbio_disinfect_vet_supp"]),
+        }
+        farmsData.append(farmObject)
+
+        ave_intbio += biosec_score[0]
+
+    # debug(farmsData)
+
+    # combine farm + tech lists into one list
+    farmtechList = zip(farmsData, techList)
+
+    # compute for -- ave column (intbio)
+    ave_intbio = ave_intbio / len(farmsData)
+    
+    farmTotalAve = {
+        "ave_intbio": round(ave_intbio, 2),
+    }
+
+    return render(request, 'farmstemp/rep-int-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
+
+
+def filter_intBiosec(request, startDate, endDate, areaName):
+    debug("TEST LOG: in filter_intBiosec Report/n")
+
+    """
+    Gets Internal Biosecurity records for each Farm based on (1) date range and (2) area name.
+
+    (2) all Area records
+    (3) Farm and Internal Biosec details
+        - farm code, raiser full name, area, technician assigned 
+        - (IntBiosec) isol_pen, foot_dip, waste_mgt, disinfect_prem, disinfect_vet_supp, last_updated
+        - IntBiosec score
+    """
+
+    debug("URL params:")
+    debug("startDate -- " + startDate)
+    debug("endDate -- " + endDate)
+    debug("areaName -- " + areaName)
+
+
+    # convert str Dates to date type; then to a timezone-aware datetime
+    sDate = make_aware(datetime.strptime(startDate, "%Y-%m-%d")) 
+    eDate = make_aware(datetime.strptime(endDate, "%Y-%m-%d")) + timedelta(1) # add 1 day to endDate
+
+    debug("converted sDate -- " + str(type(sDate)))
+    debug("converted eDate -- " + str(type(eDate)))
+
+
+    # (2) all Area records
+    areaQry = Area.objects.all()
+
+    if areaName == "All": # (CASE 1) search only by date range
+        debug("TRACE: in areaName == 'All'")
+
+        # Get technician name assigned per Farm
+        # Farm > Area > User (tech)
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+
+        if not farmQry.exists(): # (ERROR) No farm records found.
+            messages.error(request, "No farm records found.", extra_tags="farmass-report")
+            return render(request, 'farmstemp/rep-farms-assessment.html', {})
+
+        qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
+                fname=F("hog_raiser__fname"), 
+                lname=F("hog_raiser__lname"), 
+                farm_area = F("area__area_name"),
+                intbioID = F("intbio__id"),
+                intbio_isol_pen = F("intbio__isol_pen"),
+                intbio_foot_dip = F("intbio__foot_dip"),
+                intbio_waste_mgt = F("intbio__waste_mgt"),
+                intbio_disinfect_prem = F("intbio__disinfect_prem"),
+                intbio_disinfect_vet_supp = F("intbio__disinfect_vet_supp")
+                ).values(
+                    "id",
+                    "fname",
+                    "lname", 
+                    "farm_area",
+                    "last_updated",
+                    "intbioID",
+                    "intbio_isol_pen",
+                    "intbio_foot_dip",
+                    "intbio_waste_mgt",
+                    "intbio_disinfect_prem",
+                    "intbio_disinfect_vet_supp"
+                    )
+            debug(qry)
+
+            if not qry.exists(): #(ERROR) No Internal biosecurity records found.
+                messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
+                return render(request, 'farmstemp/rep-int-biosec.html', {})
+                
+        else: # (CASE 2) search by BOTH date range and areaName
+            debug("TRACE: in else/")
+
+
+
+    return render(request, 'farmstemp/rep-int-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
+
 
 def extBiosecurity(request):
     return render(request, 'farmstemp/rep-ext-biosec.html', {})
