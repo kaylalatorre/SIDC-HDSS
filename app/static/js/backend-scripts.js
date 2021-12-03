@@ -64,6 +64,20 @@ function ajaxCSRF(){
    });
 }
 
+/**
+ * Function for preparing reports in pdf. 
+ * @param htmlID the string ID name of an HTML tag 
+ */
+function printReport(htmlID){
+    // get only Report portion of HTML page
+    var printCont = document.getElementById(htmlID).innerHTML;
+    var orig = document.body.innerHTML; // revert to whole HTML page
+
+    document.body.innerHTML = printCont;
+    window.print();
+    document.body.innerHTML = orig;
+}
+
 /** 
  * on-change AJAX for Biochecklist search dropdown
  */

@@ -49,10 +49,10 @@
     <!-- Report description, print button -->
     <div class="flex subheading">
         <p class="flex-item">All External Biosecurity Reports for {{dateStart}} to {{dateEnd}}</p>
-        <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
+        <div><button class="primary-btn" onclick="printReport('rep-extbiosec')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
-    <div class="box-style">
+    <div class="box-style" id="rep-extbiosec">
         <table class="table">
             <thead>
                 <tr class="second-header">
