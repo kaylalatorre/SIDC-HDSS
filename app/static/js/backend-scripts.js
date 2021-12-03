@@ -188,10 +188,6 @@ function filterFarmRep(){
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
         location.href = url;
-
-        // TODO: try separate str then pass to .text()
-        // var strHead = "All Farms Assessment Report for" + sDate + "to" + eDate + ".";
-        // $("#farmrep-header").text(strHead);
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
@@ -217,10 +213,6 @@ function filterFarmRep(){
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
         location.href = url;
-
-        // TODO: try separate str then pass to .text()
-        // var strHead = "All Farms Assessment Report for" + sDate + "to" + eDate + ".";
-        // $("#farmrep-header").text(strHead);
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
@@ -246,10 +238,6 @@ function filterFarmRep(){
         url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
         location.href = url;
-
-        // TODO: try separate str then pass to .text()
-        // var strHead = "All Farms Assessment Report for" + sDate + "to" + eDate + ".";
-        // $("#farmrep-header").text(strHead);
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
