@@ -227,37 +227,14 @@ function filterSearch(){
     }
 } 
 
-// function hideRaiserDiv(fname, lname, contact){
-
-//     document.getElementById(contact).style.display = element.value == 1 ? 'block' : 'none';
-// }
-
 $(document).ready(function(){
-    // $("#input-exist-raiser").on('change', function() {
-    //     $(this).find("option:selected").each(function(){
-    //         // var optionValue = $(this).attr("value");
-    //         // if(optionValue){
-    //         //     $(".box").not("." + optionValue).hide();
-    //         //     $("." + optionValue).show();
-    //         // } else{
-    //         //     $(".box").hide();
-    //         // }
-
-    //         $("#div-raiser-name").hide();
-    //         $("#div-raiser-contact").hide();
-    //     });
-    // }).change();
-
-    // $('#input-exist-raiser').on('change', function() {
-    //     $('#div-raiser-name').val('').prop('disabled', true).hide();
-    // })
-    // .change();
-
-    
+    /**
+    *   Hides hog raiser fname, lname, and contact input when an existing raiser is selected
+    */
     $(function() {
         $('#input-exist-raiser').change(function(){
-            $("#div-raiser-name").hide();
-            $("#div-raiser-contact").hide();
+            $("#div-raiser-name").remove();
+            $("#div-raiser-contact").remove();
         });
     });
 });

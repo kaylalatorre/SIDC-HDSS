@@ -42,7 +42,7 @@
                     <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
                         <option disabled selected value> -- Select Raiser -- </option>
                         {% for raiser in raisers %}
-                        <option>{{raiser.fname}} {{raiser.lname}} ({{raiser.contact_no}})</option>
+                        <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})</option>
                         {% endfor %}
                     </select>
                 </div>
