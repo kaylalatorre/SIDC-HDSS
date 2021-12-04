@@ -19,8 +19,9 @@ urlpatterns = [
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),
-    path('tech-farms', views.techFarms, name="techFarms"),
-    path('home/view-farm', views.techFarms, name="techFarms"),
+    path('home/tech-farms', views.techFarms, name="techFarms"),
+    # path('tech-farms', views.techFarms, name="techFarms"),
+    # path('home/view-farm', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
 
     # technician - biosecurity

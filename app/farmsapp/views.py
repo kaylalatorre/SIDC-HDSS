@@ -183,9 +183,15 @@ def techFarms(request):
 
             techFarmsList.append(farmObject)
     
-    # pass techFarmsList array to template
-    # return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaCount' : areaNum, 'areaList' : areaQry, 'areas' : areaList })
-    return render(request, 'farmstemp/tech-farms.html', { 'techFarms' : techFarmsList, 'areaCount' : areaNum, 'areaList' : areaQry }) 
+    techData = {
+        "techFarms" : techFarmsList,
+        "areaCount" : areaNum,
+        "areaList" : areaQry
+    }
+
+    # debug(techData)
+
+    return techData
 
 
 def techSelectedFarm(request, farmID):
@@ -2369,6 +2375,3 @@ def dashboard_view(request):
 
     # return render(request, 'dashboard.html', {"fStats": farmStats})
     return farmStats
-
-
-

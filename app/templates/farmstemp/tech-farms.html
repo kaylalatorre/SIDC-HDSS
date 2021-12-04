@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-{% extends 'base-logged-in.html' %} <!-- temporary -->
 {% load static %}
 
 {% block page_title %}
@@ -11,15 +10,15 @@
     <h1 class="heading">Farms Assigned</h1>
     <div class="flex subheading">
 
-        {% if areaCount == 0 %}
+        {% if tFarms.areaCount == 0 %}
                 <label style="font-weight: 600;">No Areas Assigned.</label>
                 <p class="flex-item"> </p>
-            {% elif areaCount == 1 %}
+            {% elif tFarms.areaCount == 1 %}
                 <label style="font-weight: 600;">Area Assigned:</label>
-                <p class="flex-item">{% for area in areaList %} {{area.area_name}}{% endfor %}</p>
+                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}}{% endfor %}</p>
             {% else %}
                 <label style="font-weight: 600;">Areas Assigned:</label>
-                <p class="flex-item">{% for area in areaList %} {{area.area_name}} {% endfor %}</p>
+                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}} {% endfor %}</p>
             {% endif %}
 
         <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a></div>
@@ -27,15 +26,15 @@
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 90%">
         
-            {% if areaCount == 0 %}
+            {% if tFarms.areaCount == 0 %}
                 <label style="font-weight: 600;">No Areas Assigned.</label>
                 <p class="flex-item"> </p>
-            {% elif areaCount == 1 %}
+            {% elif tFarms.areaCount == 1 %}
                 <label style="font-weight: 600;">Area Assigned:</label>
-                <p class="flex-item">{% for area in areaList %} {{area.area_name}}{% endfor %}</p>
+                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}}{% endfor %}</p>
             {% else %}
                 <label style="font-weight: 600;">Areas Assigned:</label>
-                <p class="flex-item">{% for area in areaList %} {{area.area_name}} {% endfor %}</p>
+                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}} {% endfor %}</p>
             {% endif %}
         
         </div>
@@ -54,7 +53,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for techFarm in techFarms %}
+            {% for techFarm in tFarms.techFarms %}
             
                 <tr>
                     <td data-label="Farm Code">{{techFarm.code}}</td>
