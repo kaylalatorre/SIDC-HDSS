@@ -16,7 +16,7 @@
                     <i class='bx bx-home'></i>
                 </div>
                 <div class="ov-info">
-                    <h2 id="total-farms">1,999</h2>
+                    <h2 id="total-farms">{{ fStats.total_farms }}</h2>
                     <label for="total-farms">Total Farms</label>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                     <i class='bx bx-home-circle' ></i>
                 </div>
                 <div class="ov-info">
-                    <h2 id="total-farms">12,999</h2>
+                    <h2 id="total-farms">{{ fStats.total_pigs }}</h2>
                     <label for="total-farms">Total Hogs</label>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                     <i class='bx bx-intersect' ></i>
                 </div>
                 <div class="ov-info">
-                    <h2 id="total-farms">90% <small class="txt-positive">5%</small></h2>
+                    <h2 id="total-farms">{{ fStats.ave_intbio }}% <small class="txt-positive">{{ fStats.rem_intbio }}%</small></h2>
                     <label for="total-farms">Ave. Int. Biosecurity Score</label>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                     <i class='bx bx-exclude' ></i>
                 </div>
                 <div class="ov-info">
-                    <h2 id="total-farms">92% <small class="txt-negative">5%</small></h2>
+                    <h2 id="total-farms">{{ fStats.ave_extbio }}% <small class="txt-negative">{{ fStats.rem_extbio }}%</small></h2>
                     <label for="total-farms">Ave. Ext. Biosecurity Score</label>
                 </div>
             </div>
