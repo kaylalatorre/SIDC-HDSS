@@ -261,6 +261,8 @@ def addFarm(request):
     - Add new farm to database 
     - Save details to hog_raiser, pigpen_measure, and externalbiosec and internalbiosec tables
     - Django forms will first check the validity of input (based on the fields within models.py)
+    - Collect input for internal and external biosec and create new instance to be saved as FK for new farm
+    - Save new input for hog raiser but if raiser exists, collect existing raiser ID
     """
     
     # get all hog raisers to be passed as dropdown
@@ -296,6 +298,7 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
+
 
         # collect internal biosec checkbox inputs and convert to integer value
         if request.POST.get("cb-isolation", None) == 'on':
@@ -373,7 +376,7 @@ def addFarm(request):
 
             if raiserID == "" :
 
-                # if empty, new raiser is inputted; validate django form
+                # if empty, new raiser is inputted; validate django hog raiser form
                 if hogRaiserForm.is_valid():
                     hogRaiser = hogRaiserForm.save(commit=False)
                     hogRaiser.save()
@@ -390,12 +393,11 @@ def addFarm(request):
                 # find selected raiser id
                 hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
                 print(str(hogRaiser.values("id")))
+
+                # save raiser ID to farm
                 farm.hog_raiser_id = raiserID
 
-                # print(str(hogRaiser['fname']) + str(hogRaiser['lname']))
-
             # pass data as FKs for farm
-            # farm.hog_raiser = hogRaiser
             farm.extbio = externalBiosec
             farm.intbio = internalBiosec
             farm.area_id = areaID
@@ -477,7 +479,6 @@ def addFarm(request):
                                                         'farmForm' : farmForm,
                                                         'pigpenMeasuresForm' : pigpenMeasuresForm,
                                                         'internalBiosecForm' : internalBiosecForm})
- 
 
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request, biosecID):
