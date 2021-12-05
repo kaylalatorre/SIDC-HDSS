@@ -1,6 +1,10 @@
-function ajaxCSRF(){
-    $.ajaxSetup({ 
-        beforeSend: function(xhr, settings) {
+/**
+ * Helper function to prepare AJAX functions with CSRF middleware tokens.
+ * This avoids getting 403 (Forbidden) errors.
+ */
+function ajaxCSRF() {
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie != '') {
@@ -20,21 +24,21 @@ function ajaxCSRF(){
                 // Only send the token to relative URLs i.e. locally.
                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
-        } 
-   });
+        }
+    });
 }
 
 /** 
-* Ajax call for notification count.
-* @return {Integer} Count of all notifications.
-*/
-function getNotifsCount(){
+ * Ajax call for notification count.
+ * @return {Integer} Count of all notifications.
+ */
+function getNotifsCount() {
     // ajax call
     ajaxCSRF()
     return $.ajax({
         type: 'POST',
         url: '/notifications/count',
-        success:function(response){
+        success: function (response) {
             // console.log(count);
             return response;
             // console.log(count);
@@ -43,33 +47,33 @@ function getNotifsCount(){
 }
 
 /** 
-* Updates the notification icon badge to reflect current notification count.
-*/
-async function updateNotifBadge(){
+ * Updates the notification icon badge to reflect current notification count.
+ */
+async function updateNotifBadge() {
     // console.log(
     //     Boolean(await getNotifsCount())+
     //     Boolean($('.notif-icon').children('span').length)*2
     // );
     var notifCount = await getNotifsCount();
-    switch(
-        Boolean(parseInt(notifCount))+                                   // 1 or 0
-        Boolean($('.notif-icon').children('span').length)*2    // 2 or 0
-    ){
-        case 0: 
+    switch (
+        Boolean(parseInt(notifCount)) + // 1 or 0
+        Boolean($('.notif-icon').children('span').length) * 2 // 2 or 0
+    ) {
+        case 0:
             // do nothing
             console.log('case0');
             break; // no notifs and no span
-        case 1: 
+        case 1:
             // create span
             console.log('case1');
-            $('.notif-icon').append('<span>'+notifCount+'</span>');
+            $('.notif-icon').append('<span>' + notifCount + '</span>');
             break; // with notifs and no span
-        case 2: 
+        case 2:
             // remove span
             console.log('case2');
             $('.notif-icon').children('span').remove();
             break; // no notifs and with span
-        case 3: 
+        case 3:
             // update span
             console.log('case3');
             $('.notif-icon').children('span').text(notifCount);
@@ -80,8 +84,8 @@ async function updateNotifBadge(){
 }
 
 /*
-*   Toggling to show notif-box
-*/
+ *   Toggling to show notif-box
+ */
 var box = document.getElementById('notification-box');
 var down = false;
 
@@ -92,7 +96,7 @@ function toggleNotif() {
         box.style.opacity = 0;
         down = false;
     } else {
-        $('.notif-list').load('/notifications .notif-list', function(){
+        $('.notif-list').load('/notifications .notif-list', function () {
             $(this).children().unwrap();
         });
         box.style.height = "auto";
@@ -101,8 +105,8 @@ function toggleNotif() {
     }
 }
 
-$(document).ready(function(){
-    if($('.notif-icon').length){
+$(document).ready(function () {
+    if ($('.notif-icon').length) {
         updateNotifBadge();
     }
 });

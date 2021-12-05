@@ -4,6 +4,8 @@ from . import views
 # Farms Management Module URLS
 # r'^selected-farm/(?P<parameter>[0-9]+)$'
 urlpatterns = [
+    # Map
+    path('map-data', views.getMapData, name="getMapData"),
 
     # asst. manager - view farms
     path('farms', views.farms, name="farms"),

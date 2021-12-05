@@ -75,6 +75,34 @@ def debug(m):
 
 # Farms Management Module Views
 
+def getMapData(request):
+    if request.is_ajax and request.method == 'POST':
+        data = []
+        qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+                fname=F("hog_raiser__fname"), 
+                lname=F("hog_raiser__lname"), 
+                contact=F("hog_raiser__contact_no"),
+                farm_area = F("area__area_name")
+                ).values(
+                    "id", 
+                    "loc_lat",
+                    "loc_long", 
+                    "total_pigs",
+                    "farm_address",
+                    "last_updated"
+                    )
+        for f in qry:
+            farmObject = {
+                "code":  str(f["id"]),
+                "latitude": f["loc_lat"],
+                "longitude": f["loc_long"],
+                "numPigs": str(f["total_pigs"]),
+                "address": f["farm_address"],
+                "latest": f["last_updated"]
+            }
+            data.append(farmObject)
+    return JsonResponse(data, safe=False)
+
 ## Farms table for all users except Technicians
 def farms(request):
     """
