@@ -15,7 +15,7 @@ tr {
     border-collapse: collapse;
 }
 
-.table tbody tr hd button {
+.table tbody tr td button {
     display: inline-block;
     text-align: right;
     vertical-align: middle;

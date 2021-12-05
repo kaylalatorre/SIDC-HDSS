@@ -357,7 +357,7 @@ function saveBiocheck(elem){
         data: {"checkArr": checkArr}, 
         success: function (response) {
             
-            if (response.status == 200){
+            if (response.status_code == '200'){
                 alert("Biosec checklist successfully updated!");
             }
 
@@ -428,7 +428,7 @@ function saveBiocheck(elem){
             
             // Get farmID for biosec URL redirect
             var farmID = $("#farm-code option:selected").val();
-            alert("in saveBiocheck() -- farmID: " +  farmID);
+            // alert("in saveBiocheck() -- farmID: " +  farmID);
 
             // reload Biosec page to update dropdown of Biosec last_updated
             // window.location.reload(true);
@@ -447,7 +447,7 @@ function saveBiocheck(elem){
 
         },
         error: function (res){
-            alert("in AJAX error. ");
+            // alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
 

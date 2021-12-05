@@ -627,7 +627,7 @@ def update_bioChecklist(request, biosecID):
                         jsonStr = json.dumps(bioDict)
                         
                         # (SUCCESS) Biochecklist updated. Send to client side (js)
-                        return JsonResponse({"instance": jsonStr}, status=200)
+                        return JsonResponse({"instance": jsonStr, "status_code":"200"}, status=200)
 
                 else:
                     # (ERROR) Biosecurity record not found in db.
