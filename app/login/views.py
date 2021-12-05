@@ -88,7 +88,18 @@ def login(request):
 
 def home_view(request):
     print("TEST LOG: in Home view/n")
-    return render(request, 'home.html', {})
+    if request.method == 'GET':
+        user = request.user
+
+        hasGroup = has_groups(user, list(Group.objects.all()))
+
+        if request.user.is_authenticated and hasGroup: # User is already logged in
+            return render(request, 'home.html', {})
+        else:
+            debug("AnonymousUser --  not logged in and does not have group")
+            return redirect('login')
+    
+    
 
 # LOGOUT function
 def logout_view(request):
