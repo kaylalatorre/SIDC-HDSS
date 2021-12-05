@@ -973,26 +973,37 @@ def biosec_view(request):
 
         actList = []
 
-    # store all data to an array
-    for activity in actQuery:
-        actList.append({
-            'id' : activity.id,
-            'date' : activity.date,
-            'trip_type' : activity.trip_type,
-            'time_departure' : activity.time_departure,
-            'time_arrival' : activity.time_arrival,
-            'description' : activity.description,
-            'remarks' : activity.remarks,
-        })
+        # store all data to an array
+        for activity in actQuery:
+                        
+            # check if activity record date is still within the 24 hour mark of current time
+            if (localtime() - activity.last_updated).days <= 7:
+                editable = True
+            else : 
+                editable = False
 
-    # pass in context:
-    # - (1) farmIDs under Technician user, 
-    # - (2) latest intbio-extbio Checklist, 
-    # - (3) all biocheck IDs and dates within that Farm, 
-    # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+            actList.append({
+                'id' : activity.id,
+                'date' : activity.date,
+                'format_date' : (activity.date).strftime('%Y-%m-%d'),
+                'trip_type' : activity.trip_type,
+                'time_arrival' : activity.time_arrival,
+                'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
+                'time_departure' : activity.time_departure,
+                'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
+                'description' : activity.description,
+                'remarks' : activity.remarks,
+                'editable' : editable
+            })
+
+        # pass in context:
+        # - (1) farmIDs under Technician user, 
+        # - (2) latest intbio-extbio Checklist, 
+        # - (3) all biocheck IDs and dates within that Farm, 
+        # - (4) activities
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
     
-    # return render(request, 'farmstemp/biosecurity.html', {}) 
+    return render(request, 'farmstemp/biosecurity.html', {}) 
 
 # For getting all Biosec checklist versions under a Farm based on farmID.
 def select_biosec(request, farmID):
@@ -1072,37 +1083,37 @@ def select_biosec(request, farmID):
 
         actList = []
 
-    actList = []
-    # print(str(now(settings.TIME_ZONE)))
+        # store all data to an array
+        for activity in actQuery:
+            
+            # check if activity record date is still within the 24 hour mark of current time
+            if (localtime() - activity.last_updated).days <= 7:
+                editable = True
+            else : 
+                editable = False
 
-    # store all data to an array
-    for activity in actQuery:
-        
-        # check if activity record date is still within the 24 hour mark of current time
-        if (localtime() - activity.last_updated).days <= 7:
-            editable = True
-        else : 
-            editable = False
+            actList.append({
+                'id' : activity.id,
+                'date' : activity.date,
+                'format_date' : (activity.date).strftime('%Y-%m-%d'),
+                'trip_type' : activity.trip_type,
+                'time_arrival' : activity.time_arrival,
+                'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
+                'time_departure' : activity.time_departure,
+                'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
+                'description' : activity.description,
+                'remarks' : activity.remarks,
+                'editable' : editable
+            })
 
-        actList.append({
-            'id' : activity.id,
-            'date' : activity.date,
-            'trip_type' : activity.trip_type,
-            'time_departure' : activity.time_departure,
-            'time_arrival' : activity.time_arrival,
-            'description' : activity.description,
-            'remarks' : activity.remarks,
-            'editable' : editable
-        })
+        # pass in context:
+        # - (1) farmIDs under Technician user, 
+        # - (2) latest intbio-extbio Checklist, 
+        # - (3) all biocheck IDs and dates within that Farm, 
+        # - (4) activities
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
-    # pass in context:
-    # - (1) farmIDs under Technician user, 
-    # - (2) latest intbio-extbio Checklist, 
-    # - (3) all biocheck IDs and dates within that Farm, 
-    # - (4) activities
-    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
-
-    # return render(request, 'farmstemp/biosecurity.html', {}) 
+    return render(request, 'farmstemp/biosecurity.html', {}) 
 
 def addChecklist_view(request, farmID):
     """
@@ -1258,6 +1269,45 @@ def addActivity(request, farmID):
     # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
+def editActivity(request, farmID, activityID):
+    """
+    - Update selected activity under current farm
+    - Collect data from backend-scripts.js
+    
+    activityID - selected activityID passed as parameter
+    farmID - selected farmID passed as parameter
+    """
+
+    if request.method == 'POST':
+        print("TEST LOG: Edit Activity is a POST Method")
+        
+        # collect data from inputs
+        date = request.POST.get("date", None)
+        trip_type = request.POST.get("trip_type", None)
+        time_departure = request.POST.get("time_departure", None)
+        time_arrival = request.POST.get("time_arrival", None)
+        description = request.POST.get("description", None)
+        remarks = request.POST.get("remarks", None)
+
+        # get activity to be updated
+        activity = Activity.objects.get(pk=activityID)
+        print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+
+        # assign new values
+        activity.date = date
+        activity.trip_type = trip_type
+        activity.time_departure = time_departure
+        activity.time_arrival = time_arrival
+        activity.description = description
+        activity.remarks = remarks
+        
+        activity.save()
+        print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+
+        return JsonResponse({"success": "Activity has been updated."}, status=200)
+
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
 def deleteActivity(request, farmID, activityID):
     """
     - Delete selected activity under current farm
@@ -1267,10 +1317,10 @@ def deleteActivity(request, farmID, activityID):
     """
     
     if request.method == 'POST':
-        print("TEST LOG: Delete Activity is a POST Method")
+        # print("TEST LOG: Delete Activity is a POST Method")
     
         Activity.objects.filter(id=activityID).delete()
-        return JsonResponse({"success": "Activity has Feen deleted."}, status=200)
+        return JsonResponse({"success": "Activity has been deleted."}, status=200)
 
     return JsonResponse({"error": "Not a POST method"}, status=400)
 

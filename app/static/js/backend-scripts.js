@@ -610,10 +610,9 @@ function deleteActivity(actID) {
 }
 
 /**
-*   - Updates selected activity row.
-*   - Disable all other edit buttons and delete buttons.
-*   - Display data inputs and save to database.   
-*   - Send data to backend function
+*   - Updates selected activity row
+*   - Disable all other edit buttons and delete buttons
+*   - Display data inputs and send to saveActivity() function
 *
 *   actID = button value (carries ID of selected activity)
 */
@@ -626,25 +625,104 @@ function editActivity(actID) {
     var activityID = $(actID).val(); 
     console.log("Activity ID: " + activityID);
 
-    var farmID = $("#farm-code option:selected").val();
-    console.log("Farm ID: " + farmID);
-
-    // hide displayed data of current row
-    var divsToHide = document.getElementsByClassName("activity"); //divsToHide is an array
-    for(var i = 0; i < divsToHide.length; i++){
-        divsToHide[i].style.display = "none";
+    var toShow = row.getElementsByClassName("activity-input");
+    var toHide = row.getElementsByClassName("activity-data");
+    console.log(toHide.length);
+    for(var i = 0; i <= toHide.length; i++){
+        // hide displayed data of current row
+        toHide[i].style.display = "none";
+        
+        // display data inputs
+        toShow[i].style.display = "block";
     }
-    
+
     // disable other edit buttons and delete buttons
+    var disableEdit = document.getElementsByName("editActBtn");
+    var disableDelete = document.getElementsByName("deleteActBtn");
+    for(var i = 0; i < disableEdit.length; i++){
+        disableEdit[i].disabled = true;
+        disableDelete[i].disabled = true;
+    }
 
-    // display data inputs
+}
 
-    // collect inputs
+/**
+*   - Send data to backend function save to database
+*   - Check if date input is not later than today
+*   - Check if arrival time is after departure time
+*
+*   actID = button value (carries ID of selected activity)   
+*/
+function saveActivity(actID) {
 
-    // replace
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1
+    console.log("Row ID: " + rowIndex);
 
-    // save
+    var activityID = $(actID).val(); 
+    console.log("Activity ID: " + activityID);
 
+    var farmID = $("#farm-code option:selected").val();
+    console.log(farmID)
+
+    // var activityInput = row.getElementsByClassName("activity-input");
+    // for(var i = 0; i <= activityInput.length; i++){
+    //     console.log(activityInput.value);
+    // }
+    var checkTrue = 2;
+    var today = new Date(); // date today
+    var date = document.getElementById("input-date").value;
+    var type = document.getElementById("input-type").value;
+    var departure = document.getElementById("input-departure").value;
+    var arrival = document.getElementById("input-arrival").value;
+    var description = document.getElementById("input-description").value;
+    var remarks = document.getElementById("input-remarks").value;
+
+    // check if date is not later than today
+    if (new Date(date) > today){
+        checkTrue -= 1;
+        console.log("Date should not be later than today.");
+    }
+
+    // check if arrival is after departure
+    if (arrival < departure){
+        checkTrue -= 1;
+        console.log("Departure time should be before arrival time.");
+    }
+
+    // console.log(today);
+    // console.log(date);
+    // console.log(type);
+    // console.log(departure);
+    // console.log(arrival);
+    // console.log(description);
+    // console.log(remarks);
+
+    if(checkTrue == 2){
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/' + farmID + '/edit-activity/' + activityID,
+            data: {"date" : date,
+                    "trip_type" : type,
+                    "time_departure" : departure,
+                    "time_arrival" : arrival,
+                    "description" : description,
+                    "remarks" : remarks},
+
+            success: function(response){
+                if (response.status == 200){
+                    console.log(response.responseJSON.success)
+                }
+
+                window.location.replace("/biosecurity/" + farmID);
+            },
+            error: function (res){
+                console.log(res.responseJSON.error)
+            }
+        })
+    }
 }
 
 /** 
