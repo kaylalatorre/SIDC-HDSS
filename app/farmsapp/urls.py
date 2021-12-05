@@ -45,6 +45,10 @@ urlpatterns = [
     path('create-announcement', views.createAnnouncement, name="createAnnouncement"),
     path('view-announcement/<int:id>', views.viewAnnouncement, name="viewAnnouncement"),
 
+    # notifications
+    path('notifications', views.getNotifications, name='getNotifications'),
+    path('notifications/count', views.countNotifications, name='countNotifications'),
+
     # reports
     path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),
     path('int-biosecurity', views.intBiosecurity, name="intBiosecurity"),

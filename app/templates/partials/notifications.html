@@ -5,53 +5,22 @@
     </div>
     <!-- All notifs -->
     <div class="notif-list">
-        <div class="notif-item">
-            <label class="notif-label notif-urgent"> Lorem, ipsum. </label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet. </p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label"> Lorem, ipsum dolor.</label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet consectetur.</p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label notif-urgent"> Lorem, ipsum. </label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet. </p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label"> Lorem, ipsum dolor.</label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet consectetur.</p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label notif-urgent"> Lorem, ipsum. </label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet. </p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label"> Lorem, ipsum dolor.</label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet consectetur.</p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label notif-urgent"> Lorem, ipsum. </label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet. </p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label"> Lorem, ipsum dolor.</label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet consectetur.</p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label"> Lorem, ipsum dolor.</label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet consectetur.</p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label notif-urgent"> Lorem, ipsum. </label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet. </p>
-        </div>
-        <div class="notif-item">
-            <label class="notif-label"> Lorem, ipsum dolor.</label>
-            <p class="notif-content"> Lorem ipsum dolor sit amet consectetur.</p>
-        </div>
+        {% if notifList %}
+            {% for item in notifList %}
+            {% if item.href %}
+            <a href="{{item.href}}">
+            {% endif %}
+                <div class="notif-item">
+                    <label class="notif-label {{item.label_class}}"> {{item.label}} </label>
+                    <p class="notif-content"> {{item.p | truncatewords:10}} </p>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
         <!-- When there are 0 notifications-->
-        <div class="notif-item" style="display:none">
+        <div class="notif-item">
             <p> You have no notifications. </p>
         </div>
+        {% endif %}
     </div>  
 </div>

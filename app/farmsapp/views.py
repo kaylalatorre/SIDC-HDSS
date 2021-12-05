@@ -3,8 +3,8 @@ from django.db.models.expressions import F, Value
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseNotFound, response
-
+from django.template.loader import render_to_string
+from django.http import HttpResponse, response
 # for AJAX functions
 from django.http import JsonResponse
 from django.core import serializers
@@ -21,9 +21,7 @@ from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigp
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
-from django.shortcuts import render
-
-from datetime import datetime
+# from django.shortcuts import render
 
 # for getting date today
 from django.utils.timezone import now 
@@ -36,8 +34,13 @@ def debug(m):
     :type m: String
     """
     print("------------------------[DEBUG]------------------------")
-    print(m)
-    print("-------------------------------------------------------")
+    try:
+        print(m)
+    except:
+        print("---------------------[Print_ERROR]---------------------")
+    else:     
+        print("--------------------[Print_SUCCESS]--------------------")
+    
 
 # Farms Management Module Views
 
@@ -46,6 +49,7 @@ def farms(request):
     """
     Display all farms for assistant manager
     """
+    # debug("hello")
     # TODO get areas for filter
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
@@ -942,6 +946,33 @@ def viewAnnouncement(request, id):
         "announcement":qry
     }
     return render(request, 'farmstemp/view-announcement.html', context)
+
+def getNotifications(request):
+
+    notifList = [] # will contain ist of notifications to be displayed
+
+    # Generate notifications to be displayed
+    ## Current tags:
+    # string label_class: Classes that will be appended to notif-label. e.g. "notif-urgent"
+    # string label: Title of the notification
+    # string p: Message of the notification
+    # string href: link to the page the user will be sent to if they click on the notification  
+    pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+    for item in pendingAnnouncements:
+        notif = {
+            # "label_class": "notif-urgent test",
+            "label": item["title"],
+            "p": item["mssg"],
+            "href": "/member-announcements"
+        }
+        notifList.append(notif)
+    
+    debug(notifList)
+    return render(request, 'partials/notifications.html', {"notifList": notifList})
+
+def countNotifications(request):
+    totalNotifs = Mem_Announcement.objects.filter(is_approved=None).count()
+    return HttpResponse(str(totalNotifs), status=200)
 
 def farmsAssessment(request):
     return render(request, 'farmstemp/rep-farms-assessment.html', {})

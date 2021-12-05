@@ -5,9 +5,12 @@
         <span class="rp-text">SIDC-HDSS</span>
     </div>
     <div class="notif-icon" onclick="toggleNotif()">
-       <i class='bx bx-bell notification'></i>
-       <span>10</span> 
-    </div>
-    <!-- Notif box -->
-    {% include 'partials/notifications.html' %}
+        <i class='bx bx-bell notification'></i>
+        <!-- {% if notifCount %} -->
+        <!-- <span>{{notifCount}}</span> -->
+        <!-- {% endif %} -->
+
+        </div>
+        <!-- Notif box -->
+        {% include 'partials/notifications.html' %}
 </div>
