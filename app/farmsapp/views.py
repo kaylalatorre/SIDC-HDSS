@@ -977,7 +977,7 @@ def biosec_view(request):
         for activity in actQuery:
                         
             # check if activity record date is still within the 24 hour mark of current time
-            if (localtime() - activity.last_updated).days <= 7:
+            if (localtime() - activity.last_updated).days <= 1:
                 editable = True
             else : 
                 editable = False
@@ -1087,7 +1087,7 @@ def select_biosec(request, farmID):
         for activity in actQuery:
             
             # check if activity record date is still within the 24 hour mark of current time
-            if (localtime() - activity.last_updated).days <= 7:
+            if (localtime() - activity.last_updated).days <= 1:
                 editable = True
             else : 
                 editable = False
