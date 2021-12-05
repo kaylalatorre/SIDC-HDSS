@@ -69,3 +69,7 @@ textarea {
         vertical-align: middle;
     }
 }
+
+.activity-input {
+    display: none;
+}

@@ -402,7 +402,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <!-- <th>ID</th> -->
                             <th>Date</th>
                             <th style="width: 20%">Trip Type</th>
                             <th>Time</th>
@@ -411,37 +410,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for act in activity %}
-                        
-                        <tr>
-                            <!-- <td>{{act.id}}</td> -->
-                            <td data-label="Date">{{act.date}}</td>
-                            <td data-label="Trip Type">{{act.trip_type}}</td>
-                            <td data-label="Time">{{act.time_departure}} - {{act.time_arrival}}</td>
-                            <td data-label="Description">{{act.description}}</td>
-                            <td data-label="Remarks">{{act.remarks}}</td>
-                            <td>
-                                {% if act.editable == True %}
-                                <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button class="secondary-btn" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                                    <button class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
-                                </div>
-                                {% else %}                                
-                                <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                                    <button><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
-                                </div>
-                                {% endif %}
-                            </td>
-                        </tr>
+                    {% for act in activity %}
 
-
-                        <tr>
-                            <!-- <td data-label="Date" id="date"> 
-                                <input type='date' aria-label="Date" class="form-control" onfocus="{{act.date}}">
+                        {% if act.editable == True %}
+                        <tr id="{{ act.id }}" value="{{ act.id }}">
+                            <td data-label="Date">
+                                <p class="activity-data">{{act.date}}</p>
+                                <input type='date' aria-label="Date" class="form-control activity-input" onfocus="{{act.date}}">
                             </td>
-                            <td data-label="Trip Type" id="trip_type"> 
-                                <select class="form-select" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
+                            <td data-label="Trip Type">
+                                <p class="activity-data">{{act.trip_type}}</p>
+                                <select class="form-select activity-input" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
                                     <option>Delivery of Feeds</option>
                                     <option>Delivery of Medicine</option>
                                     <option>Delivery of Pigs</option>
@@ -450,26 +429,48 @@
                                     <option>Trucking</option>
                                     <option>Other</option>
                                 </select>
-                            </td>                            
-                            <td data-label="Time" id="time"> 
-                                <input type="time" aria-label="Arrival Time" placeholder="{{act.time_arrival}}" class="form-control"> -
-                                <input type="time" aria-label="Arrival Time" placeholder="{{act.time_departure}}" class="form-control">
                             </td>
-                            <td data-label="Description" id="description"> 
-                                <input type="text" aria-label="Description" class="form-control" placeholder="{{act.description}}">
+                            <td data-label="Time">
+                                <p class="activity-data">{{act.time_departure}} - {{act.time_arrival}}</p>
+                                <input type="time" aria-label="Arrival Time" placeholder="{{act.time_arrival}}" class="form-control activity-input"> -
+                                <input type="time" aria-label="Arrival Time" placeholder="{{act.time_departure}}" class="form-control activity-input">
                             </td>
-                            <td data-label="Remarks" id="remarks">
-                                <input type="text" aria-label="Remarks" class="form-control" placeholder="{{act.remarks}}">
+                            <td data-label="Description">
+                                <p class="activity-data">{{act.description}}</p>
+                                <input type="text" aria-label="Description" class="form-control activity-input" placeholder="{{act.description}}">
+                            </td>
+                            <td data-label="Remarks">
+                                <p class="activity-data">{{act.remarks}}</p>
+                                <input type="text" aria-label="Remarks" class="form-control activity-input" placeholder="{{act.remarks}}">
                             </td>
                             <td>
-                                <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button class="secondary-btn" value="{{ act.id }}" onclick="saveActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Save</span></button>
-                                    <button class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                                <div class="btn-group activity-data" style="justify-content: end; padding: 0;">
+                                    <button id="editActBtn" class="secondary-btn" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button id="deleteActBtn" class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                                </div>
+                                <div class="btn-group activity-input" style="justify-content: end; padding: 0;">
+                                    <button id="editActBtn" class="secondary-btn" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button id="deleteActBtn" class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                                 </div>
                             </td>
-                        </tr> -->
+                        </tr>
+                        {% else %}
+                        <tr id="{{ act.id }}" value="{{ act.id }}">
+                            <td data-label="Date">{{act.date}}</td>
+                            <td data-label="Trip Type">{{act.trip_type}}</td>
+                            <td data-label="Time">{{act.time_departure}} - {{act.time_arrival}}</td>
+                            <td data-label="Description">{{act.description}}</td>
+                            <td data-label="Remarks">{{act.remarks}}</td>
+                            <td>
+                                <div class="btn-group" style="justify-content: end; padding: 0;">
+                                    <button id="editBtn" class="secondary-btn" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button id="deleteBtn" class="secondary-btn-red" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
 
-                        {% endfor %}
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>

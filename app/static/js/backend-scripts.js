@@ -613,16 +613,27 @@ function deleteActivity(actID) {
 *   - Updates selected activity row.
 *   - Disable all other edit buttons and delete buttons.
 *   - Display data inputs and save to database.   
+*   - Send data to backend function
 *
 *   actID = button value (carries ID of selected activity)
 */
 function editActivity(actID) {
 
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1
+    console.log("Row ID: " + rowIndex);
+
     var activityID = $(actID).val(); 
-    console.log(activityID)
+    console.log("Activity ID: " + activityID);
 
     var farmID = $("#farm-code option:selected").val();
-    console.log(farmID)
+    console.log("Farm ID: " + farmID);
+
+    // hide displayed data of current row
+    var divsToHide = document.getElementsByClassName("activity"); //divsToHide is an array
+    for(var i = 0; i < divsToHide.length; i++){
+        divsToHide[i].style.display = "none";
+    }
     
     // disable other edit buttons and delete buttons
 
@@ -635,6 +646,7 @@ function editActivity(actID) {
     // save
 
 }
+
 /** 
 * Used to assign technicians to area.
 */

@@ -985,14 +985,14 @@ def biosec_view(request):
             'remarks' : activity.remarks,
         })
 
-        # pass in context:
-        # - (1) farmIDs under Technician user, 
-        # - (2) latest intbio-extbio Checklist, 
-        # - (3) all biocheck IDs and dates within that Farm, 
-        # - (4) activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    # pass in context:
+    # - (1) farmIDs under Technician user, 
+    # - (2) latest intbio-extbio Checklist, 
+    # - (3) all biocheck IDs and dates within that Farm, 
+    # - (4) activities
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
     
-    return render(request, 'farmstemp/biosecurity.html', {}) 
+    # return render(request, 'farmstemp/biosecurity.html', {}) 
 
 # For getting all Biosec checklist versions under a Farm based on farmID.
 def select_biosec(request, farmID):
@@ -1079,7 +1079,7 @@ def select_biosec(request, farmID):
     for activity in actQuery:
         
         # check if activity record date is still within the 24 hour mark of current time
-        if (localtime() - activity.last_updated).days == 0:
+        if (localtime() - activity.last_updated).days <= 7:
             editable = True
         else : 
             editable = False
@@ -1095,14 +1095,14 @@ def select_biosec(request, farmID):
             'editable' : editable
         })
 
-        # pass in context:
-        # - (1) farmIDs under Technician user, 
-        # - (2) latest intbio-extbio Checklist, 
-        # - (3) all biocheck IDs and dates within that Farm, 
-        # - (4) activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+    # pass in context:
+    # - (1) farmIDs under Technician user, 
+    # - (2) latest intbio-extbio Checklist, 
+    # - (3) all biocheck IDs and dates within that Farm, 
+    # - (4) activities
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
-    return render(request, 'farmstemp/biosecurity.html', {}) 
+    # return render(request, 'farmstemp/biosecurity.html', {}) 
 
 def addChecklist_view(request, farmID):
     """
