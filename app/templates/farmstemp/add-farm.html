@@ -25,7 +25,7 @@
             <div class="box-style">
                 <div class="mb-3">
                     <label for="input-code" class="form-label">Code</label>
-                    <input type="text" class="form-control" id="input-code" name="input-code" placeholder="ex. 001">
+                    <input type="text" class="form-control" required id="input-code" minlength="1" maxlength="3" name="input-code" placeholder="ex. 001">
                 </div>
 
                 <h3>Raiser</h3>
@@ -54,7 +54,11 @@
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
-                    {{areaForm.area_name}}
+                    <select class="form-select" id="input-area" name="input-area">
+                        {% for area in area %}
+                        <option>{{area.area_name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate which area.</label>
@@ -105,11 +109,11 @@
             
             <div class="flex subheading">
                 <h2 class="flex-item">Pig Pens</h2>
-                <div><button class="secondary-btn" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> <!-- Adds another row --></div>
+                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button></div>
             </div>
             <div class="flex mobile-subheading">
-                <h2   style="width: 90%">Pig Pens</h2>
-                <div><button class="secondary-btn" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> <!-- Adds another row --></div>
+                <h2 style="width: 90%">Pig Pens</h2>
+                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
             </div>
             <div class="box-style">
                 <br>
@@ -122,25 +126,21 @@
                                 <th>No. of Pigs</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody  id="input-pigpen">
+
                             <tr>
-                                <td data-label="Length">
-                                    {{pigpenMeasuresForm.length}}
-                                </td>
-                                <td data-label="Width">
-                                    {{pigpenMeasuresForm.width}}
-                                </td>
-                                <td data-label="No. of Pigs">
-                                    {{pigpenMeasuresForm.num_heads}}
-                                </td>
+                                <td data-label="Length" id="pigpen-length"> {{pigpenMeasuresForm.length}} </td>
+                                <td data-label="Width" id="pigpen-width"> {{pigpenMeasuresForm.width}} </td>
+                                <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenMeasuresForm.num_heads}} </td>
                             </tr>
+
                         </tbody>
                     </table>
                 </div>
-                <div class="flex subheading">
+                <!-- <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
                     <p> {{numTotalPigs}} pigs </p>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -149,33 +149,37 @@
             <div class="box-style">
                 <p>Select all that apply.</p>
                 <div class="mb-3">
-                    {{internalBiosecForm.isol_pen}}
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
-                </div>
-                <div class="mb-3">
-                    {{externalBiosecForm.bird_proof}}
+                    <input type="checkbox" class="form-check-input" name="cb-birdproof" id="cb-birdproof">
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    {{externalBiosecForm.perim_fence}}
+                    <input type="checkbox" class="form-check-input" name="cb-fence" id="cb-fence">
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    {{internalBiosecForm.foot_dip}}
-                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
-                </div>
-                <div class="mb-3">
-                    {{externalBiosecForm.fiveh_m_dist}}
+                    <input type="checkbox" class="form-check-input" name="cb-distance" id="cb-distance">
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="mb-3">
-                    <label for="input-waste-mgt" class="form-label">Waste Management</label>
-                    {{internalBiosecForm.waste_mgt}}
+                    <input type="checkbox" class="form-check-input" name="cb-isolation" id="cb-isolation">
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
                 </div>
-                <div class="mb-3 option-other">
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" name="cb-footdip" id="cb-birdproof">
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
+                </div>
+                <div class="mb-3">
+                    <label for="input-waste-mgt" class="form-label">Waste Management</label>
+                    <input class="form-control" palceholder="Select from dropdown or input new" id="input-waste-mgt" name="input-waste-mgt" type="text" list="waste-mgt">
+                    <datalist class="form-datalist" id="waste-mgt" name="waste-mgt">
+                        <option>Septic Tank</option>
+                        <option>Biogas</option>
+                    </datalist>
+                </div>
+                <!-- <div class="mb-3 option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
                     <input type="text" id="input-other"class="form-control" placeholder="Other Waste Management">
-                </div>
+                </div> -->
             </div>
         </section>
     </div>

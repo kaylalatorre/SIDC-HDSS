@@ -17,9 +17,9 @@ class ExternalBiosec(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     # fields from Biomeasures
-    bird_proof          = models.IntegerField(null=True, blank=True)
-    perim_fence         = models.IntegerField(null=True, blank=True)
-    fiveh_m_dist        = models.IntegerField(null=True, blank=True)
+    bird_proof          = models.IntegerField(null=True, blank=True, default=1)
+    perim_fence         = models.IntegerField(null=True, blank=True, default=1)
+    fiveh_m_dist        = models.IntegerField(null=True, blank=True, default=1)
     
     # fields from Biochecklist
     prvdd_foot_dip      = models.IntegerField(null=True, blank=True)
@@ -38,14 +38,9 @@ class InternalBiosec(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
     # fields from Biomeasures
-    isol_pen            = models.IntegerField(null=True, blank=True)
-
-    WASTE_MGT_CHOICES   = [('Septic Tank', 'Septic Tank'),
-                            ('Biogas', 'Biogas'),
-                            ('Other', 'Other')]
-
-    waste_mgt           = models.CharField(max_length=50, choices=WASTE_MGT_CHOICES, default='Septic Tank')
-    foot_dip            = models.IntegerField(null=True, blank=True)
+    isol_pen            = models.IntegerField(null=True, blank=True, default=1)
+    foot_dip            = models.IntegerField(null=True, blank=True, default=1)
+    waste_mgt           = models.CharField(max_length=50)
     
     # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)
@@ -99,27 +94,24 @@ class Hog_Symptoms(models.Model):
 class Hog_Raiser(models.Model):
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
-    contact_no          = models.CharField(max_length=15)
+    contact_no          = models.CharField(max_length=11)
 
-    # def __str__(self)
-    #     return self.
+    # def __str__(self):
+    #     return self.id
 
 # AREA Table
 class Area(models.Model):
-    AREA_CHOICES        = [('TISISI', 'TISISI'),
-                        ('West', 'West'),
-                        ('East', 'East'),
-                        ('Other', 'Other')]
-
-    area_name           = models.CharField(max_length=20, choices=AREA_CHOICES, default='TISISI')
-    # tech                = models.ForeignKey('User', on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+    area_name           = models.CharField(max_length=20, null=True, blank=True)
     tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+
+    # def __str__(self):
+    #     return self.id
 
 # FARM Table
 class Farm(models.Model): 
     hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
 
-    date_registered     = models.DateField(null=True, blank=True)
+    date_registered     = models.DateField(default=now, null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     area                = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True)
@@ -134,12 +126,13 @@ class Farm(models.Model):
     num_pens            = models.IntegerField(null=True, blank=True, default=1)
     total_pigs          = models.IntegerField(null=True, blank=True)
     
+    
     FEED_CHOICES        = [('Semi-automatic', 'Semi-automatic'),
                             ('Trough', 'Trough')]
 
-    feed_trough         = models.CharField(max_length=15, choices=FEED_CHOICES, default='Semi-automatic')
+    feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES, default='Semi-automatic')
+
     bldg_cap            = models.IntegerField(null=True, blank=True)
-    
     bldg_curtain        = models.BooleanField(default=False)
 
     MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
@@ -156,8 +149,8 @@ class Farm(models.Model):
 
     is_approved         = models.BooleanField(default=False)
 
-    # def __str__(self):
-    #     return self.raiser_ID
+    def __str__(self):
+        return self.id
 
 # PIGPEN MEASURES Table
 class Pigpen_Measures(models.Model):
@@ -167,12 +160,12 @@ class Pigpen_Measures(models.Model):
     width               = models.FloatField()
     num_heads           = models.IntegerField()
 
-    # def __str__(self)
-    #     return self.
+    # def __str__(self):
+    #     return self.id
 
 # ACTIVITY Table
 class Activity(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     date                = models.DateField()
 
@@ -193,8 +186,8 @@ class Activity(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     is_approved         = models.BooleanField(default=False)
 
-    # def __str__(self)
-    #     return self.
+    # def __str__(self):
+    #     return self.id
 
 # MORTALITY Table
 class Mortality(models.Model):
@@ -210,7 +203,7 @@ class Mortality(models.Model):
     source              = models.CharField(max_length=200)
     remarks             = models.CharField(max_length=500)
     
-    # def __str__(self)
+    # def __str__(self):
     #     return self.
 
 # ACTIVITIES FORM Table

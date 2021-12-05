@@ -23,32 +23,41 @@
         <div class="box-style">
             <div class="flex subheading">
                 <p class="flex-item">Add all activity details here. </p>
-                <div><button class="secondary-btn" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
+                <div>
+                    <button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row -->
+                </div>
             </div>
             <br>
+            
+            <!-- erorrs -->
+            {{activityForm.non_field_errors}}
+
             <div class="input-group" id="input-activity">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Trip Type</th>
-                            <th>Departure Time</th>
                             <th>Arrival Time</th>
+                            <th>Departure Time</th>
                             <th>Description</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="input-act">
+
                         <tr>
-                            <td data-label="Date"> {{activityForm.date}} </td>
-                            <td data-label="Trip Type"> {{activityForm.trip_type}} </td>                            
-                            <td data-label="Departure Time"> {{activityForm.time_departure}} </td>
-                            <td data-label="Arrival Time"> {{activityForm.time_arrival}} </td>
-                            <td data-label="Description"> {{activityForm.description}} </td>
-                            <td data-label="Remarks"> {{activityForm.remarks}} </td>
+                            <td data-label="Date" id="date"> {{activityForm.date}} </td>
+                            <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>                            
+                            <td data-label="Arrival Time" id="time_arrival"> {{activityForm.time_arrival}} </td>
+                            <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
+                            <td data-label="Description" id="description"> {{activityForm.description}} </td>
+                            <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
                         </tr>
+                        
                     </tbody>
                 </table>
+
             </div>
             <br>
             <!-- Hidden depending on user -->

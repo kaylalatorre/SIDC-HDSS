@@ -10,11 +10,35 @@
 <div class="table-container main-div">
     <h1 class="heading">Farms Assigned</h1>
     <div class="flex subheading">
-        <label style="font-weight: 600;">Area Assigned:</label><p class="flex-item">West</p>
+
+        {% if areaCount == 0 %}
+                <label style="font-weight: 600;">No Areas Assigned.</label>
+                <p class="flex-item"> </p>
+            {% elif areaCount == 1 %}
+                <label style="font-weight: 600;">Area Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}}{% endfor %}</p>
+            {% else %}
+                <label style="font-weight: 600;">Areas Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}} {% endfor %}</p>
+            {% endif %}
+
         <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a></div>
     </div>
     <div class="flex mobile-subheading">
-        <div class="flex" style="width: 90%"><label style="font-weight: 600;">Area Assigned:</label><p>West</p></div>
+        <div class="flex" style="width: 90%">
+        
+            {% if areaCount == 0 %}
+                <label style="font-weight: 600;">No Areas Assigned.</label>
+                <p class="flex-item"> </p>
+            {% elif areaCount == 1 %}
+                <label style="font-weight: 600;">Area Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}}{% endfor %}</p>
+            {% else %}
+                <label style="font-weight: 600;">Areas Assigned:</label>
+                <p class="flex-item">{% for area in areaList %} {{area.area_name}} {% endfor %}</p>
+            {% endif %}
+        
+        </div>
         <div><a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i><span class="text">Add Farm</span></a></div>
     </div>
     <div class="box-style">
@@ -30,19 +54,19 @@
                 </tr>
             </thead>
             <tbody>
-            <!-- Data -->
             {% for techFarm in techFarms %}
-                <!-- {% load tz %} -->
+            
                 <tr>
                     <td data-label="Farm Code">{{techFarm.code}}</td>
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
                     <td data-label="Contact No.">{{techFarm.contact}}</td>
                     <td data-label="Address">{{techFarm.address}}</td>
-                    <td data-label="Last Update">{{techFarm.updated}}</td>
+                    <td data-label="Last Update">{{techFarm.updated|date:'N j, Y, P'}}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
-                </tr>    
+                </tr> 
+                   
             {% endfor %}
             </tbody>            
         </table>
