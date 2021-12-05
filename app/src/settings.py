@@ -191,3 +191,7 @@ MESSAGE_TAGS = {
         messages.WARNING: 'alert-warning',
         messages.ERROR: 'alert-danger',
  }
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True     # optional, will log out when browser is closed
+SESSION_COOKIE_AGE = 86400                 # will log out user after (n) sec. of inactivity; needs to set 3rd var to False
+SESSION_SAVE_EVERY_REQUEST = False         # If True, prevents from logging User out after (n) seconds

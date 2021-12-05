@@ -35,6 +35,7 @@ a { text-decoration: none; color: #333;}
 a:hover { color: #006633}
 ul, li { list-style: none;}
 
+.print-header { display: none; }
 
 /* General Styles */
 .main-div {
@@ -45,7 +46,7 @@ ul, li { list-style: none;}
     background: #FFF;
     box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
     border-radius: 4px;
-    padding: 24px;
+    padding: 24px!important;
     margin-bottom: 24px;
     position: relative;
 }
@@ -189,7 +190,7 @@ button:hover, .button:hover, .primary-btn:hover{
     color:#FFF;
 }
 
-.primary-btn-red:hover {
+.primary-btn-red:hover, .secondary-btn-red:hover {
     background: #BB0A1E;
     color: #FFF;
 }
@@ -217,13 +218,19 @@ button:hover, .button:hover, .primary-btn:hover{
     padding-right: 4px;
 }
 
+.no-shadow, no-shadow:hover {
+    box-shadow: 0;
+    border: none;
+    background: none!important;
+    box-shadow: none;
+}
 
 /* Save button for technician assignment */
-.assignSave, .assignEdit {
+.assignSave, .assignEdit, .biosecEdit, .biosecSave {
     margin-right: 4px;
 }
 
-.assignSave {
+.assignSave, .biosecSave {
     display: none;
 }
 

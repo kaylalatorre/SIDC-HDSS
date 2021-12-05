@@ -7,50 +7,57 @@
 {% endblock page_title %}
 
 {% block section %}
+{% include 'partials/messages.html' %}
 <div class="table-container main-div">   
     <div>
         <h1>Internal Biosecurity Reports</h1>
     </div>
     <br>
     <!-- Date range, etc -->
-    <div style="max-width: 400px;">
-        <div class="flex subheading">
-            <div class="input-group mb-3" style="padding-right: 8px;">
-                <label class="form-label" style="font-weight: 600; width: 24%">Date Range</label>
-                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                    <option value="01/01/21">01/01/21</option>
-                </select>
+    <div style="max-width: 400px; height: 100%;" class="filters">
+        <div class="mb-3">
+            <label class="form-label bold-lbl">Date Range</label>
+            <div class="input-group">
+                <input type="date" class="form-control input-startDate" id="intbio-start-date">
+                <input type="date" class="form-control input-endDate" id="intbio-end-date">
             </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
         </div>
-        <div class="flex subheading">
-            <div class="input-group mb-3" style="padding-right: 8px;">
-                <label class="form-label" style="font-weight: 600; width: 24%">Area</label>
-                <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                    <option value="West">West</option>
-                </select>
-            </div>
-            <button class="primary-btn"><i class='bx bx-refresh'></i></button>
+
+        <div class="mb-3" style="padding-bottom: 8px;">
+            <label class="form-label bold-lbl">Area</label>
+            <select class="form-select" id="intbio-area" style="margin-bottom: 0;">
+                <option value="All"> All </option>
+                {% for area in areaList %}
+                <option value="{{area.area_name}}">{{area.area_name}}</option>
+                {% endfor %}
+            </select>
         </div>
+
+        <button class="primary-btn" onclick="filterIntBioRep()"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
     </div>
+
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item">All Internal Biosecurity Report for March 22, 2021 to April 23, 2021</p>
-        <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
+        <p class="flex-item">All Internal Biosecurity Report for {{dateStart}} to {{dateEnd}} </p>
+        <div><button class="primary-btn" onclick="printReport('rep-intbiosec')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
-    <div class="box-style">
+    <div class="box-style" id="rep-intbiosec">
+        <div class="print-header">
+            <h1>SIDC | Hogs Disease Surveillance System</h1>
+            <p class="flex-item">All Internal Biosecurity Report for {{dateStart}} to {{dateEnd}} </p>
+        </div>
         <table class="table">
             <thead>
                 <tr class="second-header">
                     <th colspan="4">Farm Details</th>
                     <th colspan="3">Biosecurity Measures</th>
                     <th colspan="3">Biosecurity Checklist</th>
-                    <th>Total Score</th>
+                    <th style="text-align: right;">Total Score</th>
                 </tr>
                 <tr>
-                    <th>Farm Code</th>
+                    <th style="text-align: center;">Farm Code</th>
                     <th>Raiser</th>
                     <th>Area</th>
                     <th>Technician</th>
@@ -64,50 +71,28 @@
                 </tr>
             </thead>
             <tbody>
+                
                 <!-- Data -->
+                {% for farm,tech in farmtechList %}
                 <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="Isolation Pen">Yes</td>
-                    <td data-label="Foot Dip">Yes</td>
-                    <td data-label="Waste Management">Septic Tank</td>
-                    <td data-label="Disinfect Premises">Yes</td>
-                    <td data-label="Disinfect Veterinary Supplies">Yes</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                    <td data-label="Total Score">10</td>
+                    <td data-label="Farm Code" style="text-align: center;"> {{farm.code}} </td>
+                    <td data-label="Raiser"> {{farm.raiser}} </td>
+                    <td data-label="Area"> {{farm.area}} </td>
+                    <td data-label="Technician"> {{tech.name}} </td>
+                    <td data-label="Isolation Pen"> {{farm.intbio_isol_pen}} </td>
+                    <td data-label="Foot Dip"> {{farm.intbio_foot_dip}} </td>
+                    <td data-label="Waste Management"> {{farm.intbio_waste_mgt}} </td>
+                    <td data-label="Disinfect Premises"> {{farm.intbio_disinfect_prem}} </td>
+                    <td data-label="Disinfect Veterinary Supplies"> {{farm.intbio_disinfect_vet_supp}} </td>
+                    <td data-label="Last Update">{{farm.updated}}</td>
+                    <td data-label="Total Score" style="text-align: right;">{{farm.intbio_score}}</td>
                 </tr>
-                <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="Isolation Pen">Yes</td>
-                    <td data-label="Foot Dip">Yes</td>
-                    <td data-label="Waste Management">Septic Tank</td>
-                    <td data-label="Disinfect Premises">Yes</td>
-                    <td data-label="Disinfect Veterinary Supplies">Yes</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                    <td data-label="Total Score">10</td>
-                </tr>
-                <tr>
-                    <td data-label="Farm Code">001</td>
-                    <td data-label="Raiser">JM Bartolome</td>
-                    <td data-label="Area">West</td>
-                    <td data-label="Technician">David Archuleta</td>
-                    <td data-label="Isolation Pen">Yes</td>
-                    <td data-label="Foot Dip">Yes</td>
-                    <td data-label="Waste Management">Septic Tank</td>
-                    <td data-label="Disinfect Premises">Yes</td>
-                    <td data-label="Disinfect Veterinary Supplies">Yes</td>
-                    <td data-label="Last Update">06/06/2021</td>
-                    <td data-label="Total Score">10</td>
-                </tr>
+                {% endfor %}
+
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="10">Average Score</td>
-                    <td>10</td>
+                    <td style="text-align: right;"> {{farmTotalAve.ave_intbio}} </td>
                 </tr>
             </tbody>            
         </table>

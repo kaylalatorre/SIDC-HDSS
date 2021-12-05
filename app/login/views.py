@@ -17,10 +17,16 @@ def debug(m):
     print(m)
     print("-------------------------------------------------------")
 
+def has_groups(user, group):
+    debug("in has_groups()/n")
+    debug("user -- " + str(user))
+
+    return user.groups.filter(name__in=group).exists()
+
 # LOGIN function
 def login(request):
     """"
-    Login function for SIDC users. 
+    Login function for SIDC users. Redirects already logged-in User to Home page.
     Error handling for:
     - Incorrect username and/or password
     - Empty either/or submitted fields 
@@ -64,7 +70,18 @@ def login(request):
             debug("in LOGIN ERROR: Incorrect credentials")
             messages.error(request, "Incorrect credentials. Please try again.", extra_tags='login')
             return redirect('login')
-            
+    
+    
+    if request.method == 'GET':
+        user = request.user
+
+        hasGroup = has_groups(user, list(Group.objects.all()))
+
+        if request.user.is_authenticated and hasGroup: # User is already logged in
+            return redirect('home')
+        else:
+            debug("AnonymousUser --  not logged in and does not have group")
+
     return render(request, 'login.html', {})
 
 

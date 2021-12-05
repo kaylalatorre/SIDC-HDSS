@@ -1,0 +1,35 @@
+@media print {
+    * {
+        font-family:Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 4px;
+        text-align: left;
+        vertical-align: text-top;
+    }
+
+    th {
+        background-color: #00a854!important;
+        color: #FFF;
+    }
+
+    .bold-lbl {
+        font-weight: 600;
+    }
+
+    .print-header {
+        display: block;
+        text-align: center;
+        margin: 16px;
+    }
+
+    .second-header th {
+        background-color: #006633!important;
+    }
+}

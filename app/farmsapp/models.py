@@ -13,7 +13,7 @@ class User(User):
 
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     # fields from Biomeasures
@@ -29,12 +29,12 @@ class ExternalBiosec(models.Model):
     prsnl_sanit_hands   = models.IntegerField(null=True, blank=True)
     chg_disinfect_daily = models.IntegerField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
 
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     
     # fields from Biomeasures
@@ -46,8 +46,8 @@ class InternalBiosec(models.Model):
     disinfect_prem      = models.IntegerField(null=True, blank=True)
     disinfect_vet_supp  = models.IntegerField(null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
+    def __str__(self):
+        return self.id
 
 # FARM WEIGHT Table
 class Farm_Weight(models.Model):
@@ -114,7 +114,7 @@ class Farm(models.Model):
     date_registered     = models.DateField(default=now, null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    area                = models.ForeignKey('Area', on_delete=models.CASCADE, null=True, blank=True)
+    area                = models.ForeignKey('Area', related_name="area", on_delete=models.CASCADE, null=True, blank=True)
     farm_address        = models.CharField(max_length=200)
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
@@ -141,8 +141,8 @@ class Farm(models.Model):
     medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
     road_access         = models.BooleanField(default=False)
     
-    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
-    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.CASCADE, null=True, blank=True)
+    extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
+    intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
     hog_symptoms       = models.ForeignKey('Hog_Symptoms', on_delete=models.CASCADE, null=True, blank=True)

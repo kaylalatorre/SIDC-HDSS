@@ -8,20 +8,7 @@
 
 {% block section %}
 
-    <!-- TEST: for ADD-CHECKLIST success-error message placeholder -->
-    {% for mssg in messages %}
-        {% if "add-checklist" in mssg.tags %}
-            <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                {{ mssg }}
-            </div>
-        {% endif %}
-        {% if "view-biochecklist" in mssg.tags %}
-            <div style="color:blue;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                {{ mssg }}
-            </div>
-        {% endif %}
-        
-    {% endfor %}
+{% include 'partials/messages.html' %}
 
 <div class="table-container main-div">
     <h1 class="heading">Biosecurity</h1>
@@ -48,8 +35,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
-                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
@@ -60,8 +47,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
-                  <li><button class="dropdown-item" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
@@ -142,11 +129,11 @@
                                     <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
                                 {% endfor %}
                             </select>
-
+                            
                         </div>
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
-                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i>Save</button>
-                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
+                            <button id="saveCheck-btn" class="secondary-btn biosecSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i>Save</button>
+                            <button id="editCheck-btn" class="secondary-btn biosecEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
                             <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)"><i class='bx bxs-trash' ></i>Delete</button>
                         </div>
                     </div>
@@ -161,8 +148,8 @@
                                 </select>
                         </div>
                         <div class="btn-group" style="justify-content: flex-end; padding: 0;">
-                            <button id="saveCheck-btn" class="secondary-btn assignSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i><span class="text">Save</span></button>
-                            <button id="editCheck-btn" class="secondary-btn assignEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                            <button id="saveCheck-btn" class="secondary-btn biosecSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i><span class="text">Save</span></button>
+                            <button id="editCheck-btn" class="secondary-btn biosecEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
                             <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)" ><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                         </div>
                     </div>

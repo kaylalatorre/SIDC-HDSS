@@ -31,7 +31,7 @@ urlpatterns = [
     # technician - biosecurity checklist
     path('biosecurity/getchecklist/<str:biosecID>', views.search_bioChecklist, name="search_biochecklist"),
     path('biosecurity/edit-checklist/<str:biosecID>', views.update_bioChecklist, name="update_biochecklist"),
-    path('biosecurity/delete-checklist/<str:biosecID>', views.delete_bioChecklist, name="delete_biochecklist"),
+    path('biosecurity/delete-checklist/<str:biosecID>/<str:farmID>', views.delete_bioChecklist, name="delete_biochecklist"),
     path('add-checklist/<str:farmID>', views.addChecklist_view, name="addChecklist"),
     path('post-addchecklist/<str:farmID>', views.post_addChecklist, name="post-addChecklist"), # not working even without param
 
@@ -51,6 +51,12 @@ urlpatterns = [
 
     # reports
     path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),
+    path('farms-assessment/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_farmsAssessment, name="filter_farmsAssessment"),
+
     path('int-biosecurity', views.intBiosecurity, name="intBiosecurity"),
+    path('int-biosecurity/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_intBiosec, name="filter_intBiosec"),
+
     path('ext-biosecurity', views.extBiosecurity, name="extBiosecurity"),
+    path('ext-biosecurity/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_extBiosec, name="filter_extBiosec"),
+
 ]

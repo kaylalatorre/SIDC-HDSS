@@ -32,9 +32,9 @@
         <div class="flex">
             <h2 class="heading flex-item">For Approval</h2>
             <!-- Only show button group when a checkbox/es is checked -->
-            <div class="btn-group" style="margin-bottom: 8px;"> 
+            <div class="btn-group hide" id="announce-btn-grp" style="margin-bottom: 8px;"> 
                 <button class="primary-btn" id="approveChecked" style="margin-right: 4px;"><i class='bx bx-check'></i></button>
-                <button class="primary-btn-red" id="rejectChecked""><i class='bx bx-x'></i></button>
+                <button class="primary-btn-red" id="rejectChecked"><i class='bx bx-x'></i></button>
             </div>
         </div>
         {% elif user.groups.all.0.name == 'Field Technician' %}
@@ -46,7 +46,7 @@
                 <thead>
                     <tr>
                         {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <th><input type="checkbox" class="form-check-input" id="select_all" style="margin-bottom: 0!important;"></th>
+                        <th><input type="checkbox" class="form-check-input announce-checkbox" id="select_all" style="margin-bottom: 0!important;"></th>
                         {% endif %}
                         <th>Timestamp</th>
                         <th>Title</th>
@@ -61,7 +61,7 @@
                     {% for announcement in unapproved %}
                     <tr>
                         {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <td data-label=""><input type="checkbox" class="form-check-input" style="margin-bottom: 0!important;" id={{announcement.id}}></td>
+                        <td data-label=""><input type="checkbox" class="form-check-input announce-checkbox" style="margin-bottom: 0!important;" id={{announcement.id}}></td>
                         {% endif %}
                         <td data-label="Timestamp">{{announcement.timestamp}}</td>
                         <td data-label="Title">{{announcement.title}}</td>
