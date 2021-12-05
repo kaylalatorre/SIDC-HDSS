@@ -149,25 +149,24 @@ function filterSearch(){
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
     table   = document.getElementById("mainTableid"); //to get the html table    
     tr      = table.getElementsByTagName("tr"); //to access rows in the table    
-    
-    var 
-    tiss = document.getElementById("ch_TISS").checked,
-    east = document.getElementById("ch_EAST").checked,
-    west = document.getElementById("ch_WEST").checked;
+
+    var checkedValues = $('input:checkbox:checked.ch_area').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
 
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
         address=tr[i].getElementsByTagName("td")[3];
         area = tr[i].getElementsByTagName("td")[4];
+        
         if(raiser && address && area){    
             if(
-                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) && 
-                (
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) 
+                &&(
                     (
-                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
-                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
-                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
-                        (!tiss && !east && !west)
+                        ($.inArray(area.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
                     ) 
                 )
             ){    

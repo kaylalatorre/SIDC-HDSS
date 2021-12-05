@@ -16,6 +16,9 @@ import json
 from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm, MemAnnouncementForm
 from django.forms import formset_factory
 
+# Geocoding
+from geopandas.tools import geocode, reverse_geocode
+
 # for storing error messages
 from django.contrib import messages
 
@@ -101,8 +104,11 @@ def farms(request):
             "updated": f["last_updated"]
         }
         farmsData.append(farmObject)
+    areaList = []
+    for choice in Area.objects.distinct().order_by('area_name').values('area_name'):
+            areaList.append({"area_name": choice['area_name']})
     debug(farmsData)
-    return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
+    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
     """
@@ -379,6 +385,14 @@ def addFarm(request):
                 farm.intbio = internalBiosec
                 farm.area_id = areaID
                 farm.id = farmID
+
+                # get longitude and latitude using geocoding
+                try:
+                    farmLoc = geocode([farm.farm_address]).geometry.iloc[0]
+                    farm.loc_long = farmLoc.x
+                    farm.loc_lat = farmLoc.y
+                except:
+                    debug("farmLoc not obtained")
 
                 # print("TEST LOG farm.area_id: " + str(farm.area_id))
 
@@ -1022,7 +1036,7 @@ def techAssignment(request):
     areasData = []
     areas = Area.objects.select_related("tech_id").annotate(
         curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
-    ).order_by('id').values()
+    ).order_by('area_name').values()
     techs = User.objects.filter(groups__name="Field Technician").annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
     ).values(

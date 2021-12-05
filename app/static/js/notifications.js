@@ -36,7 +36,7 @@ function getNotifsCount(){
         url: '/notifications/count',
         success:function(response){
             // console.log(count);
-            return parseInt(response);
+            return response;
             // console.log(count);
         }
     });
@@ -50,26 +50,30 @@ async function updateNotifBadge(){
     //     Boolean(await getNotifsCount())+
     //     Boolean($('.notif-icon').children('span').length)*2
     // );
-    var notifCount = await getNotifsCount(); 
+    var notifCount = await getNotifsCount();
     switch(
-        Boolean(notifCount)+                                   // 1 or 0
+        Boolean(parseInt(notifCount))+                                   // 1 or 0
         Boolean($('.notif-icon').children('span').length)*2    // 2 or 0
     ){
         case 0: 
-        // do nothing
-        break; // no notifs and no span
+            // do nothing
+            console.log('case0');
+            break; // no notifs and no span
         case 1: 
-        // create span
-        $('.notif-icon').append('<span>'+notifCount+'</span>');
-        break; // with notifs and no span
+            // create span
+            console.log('case1');
+            $('.notif-icon').append('<span>'+notifCount+'</span>');
+            break; // with notifs and no span
         case 2: 
-        // remove span
-        $('.notif-icon').children('span').remove();
-        break; // no notifs and with span
+            // remove span
+            console.log('case2');
+            $('.notif-icon').children('span').remove();
+            break; // no notifs and with span
         case 3: 
-        // update span
-        $('.notif-icon').children('span').text(notifCount);
-        break; // with notifs and with span
+            // update span
+            console.log('case3');
+            $('.notif-icon').children('span').text(notifCount);
+            break; // with notifs and with span
         default:
             location.reload(true);
     }
