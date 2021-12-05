@@ -43,7 +43,7 @@
                 <div class="mb-3">
                     <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose here:</label>
                     <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
-                        <option disabled selected value> -- Select Raiser -- </option>
+                        <option disabled selected value> - - Select Raiser - - </option>
                         {% for raiser in raisers %}
                         <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})</option>
                         {% endfor %}
@@ -184,16 +184,16 @@
                 </div>
                 <div class="mb-3">
                     <label for="input-waste-mgt" class="form-label">Waste Management</label>
-                    <input class="form-control" palceholder="Select from dropdown or input new" id="input-waste-mgt" name="input-waste-mgt" type="text" list="waste-mgt">
-                    <datalist class="form-datalist" id="waste-mgt" name="waste-mgt">
-                        <option>Septic Tank</option>
-                        <option>Biogas</option>
-                    </datalist>
+                    <select class="form-select" id="waste-mgt" name="waste-mgt" onchange="wasteMgtOther(this);">
+                        <option value="Septic Tank">Septic Tank</option>
+                        <option value="Biogas">Biogas</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
-                <!-- <div class="mb-3 option-other">
+                <div class="mb-3 option-other" id="option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
-                    <input type="text" id="input-other"class="form-control" placeholder="Other Waste Management">
-                </div> -->
+                    <input type="text" id="input-other" name="waste-mgt" class="form-control" placeholder="Other Waste Management">
+                </div>
             </div>
         </section>
     </div>

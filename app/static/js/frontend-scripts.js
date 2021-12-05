@@ -168,6 +168,17 @@ function addActivityRow() {
         </tr>");
 }
 
+/**
+*   - Displays input field when waste mgt option is "Others"
+*   
+*   option = value of option waste mgt selected (Others)
+*/
+function wasteMgtOther(option){
+    if (option.value == "Other"){
+        document.getElementById("option-other").style.display = "block";
+    }
+}
+
 function viewForm() {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data

@@ -9,7 +9,7 @@
 {% block section %}
 <div class="main-div">
     <div class="flex subheading">
-        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
+        <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{ farm.id }}</h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               View
@@ -22,7 +22,7 @@
     </div>
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 80%">
-            <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{ farm.id }}</h1>
             <div class="dropdown flex-item">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                 View
@@ -52,7 +52,7 @@
                             </tr>
                             <tr>
                                 <th>Directly Managed</td>
-                                <td data-label="Directly Managed">{{farm.directly_manage|yesno:'Yes,No'}}"</td>
+                                <td data-label="Directly Managed">{{farm.directly_manage|yesno:'Yes,No'}}</td>
                             </tr>
                             <tr>
                                 <th>Address</td>

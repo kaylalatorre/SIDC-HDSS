@@ -94,7 +94,7 @@ class Hog_Symptoms(models.Model):
 class Hog_Raiser(models.Model):
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
-    contact_no          = models.CharField(max_length=11)
+    contact_no          = models.CharField(max_length=12)
 
     # def __str__(self):
     #     return self.id
@@ -184,8 +184,8 @@ class Activity(models.Model):
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
-    # date_added          = models.DateTimeField(auto_now=True, editable=False)
-    # date_approved       = models.DateTimeField()
+    date_added          = models.DateTimeField(auto_now=True, editable=False)
+    date_approved       = models.DateTimeField()
 
     is_approved         = models.BooleanField(default=False)
 
