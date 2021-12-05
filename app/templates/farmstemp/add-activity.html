@@ -7,6 +7,9 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="main-div">
     <form action="" method="POST">
 
@@ -30,7 +33,15 @@
             <br>
             
             <!-- erorrs -->
-            {{activityForm.non_field_errors}}
+            <!-- {{activityForm.non_field_errors}} -->
+            <!-- {% for field in activityForm %} -->
+                <!-- <div class="alert {{ field.non_field_errors }} alert-dismissible fade show overlay" role="alert">
+                    <div class="msg flex-item">{{ activityForm.non_field_errors }}</div>
+                    <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div> -->
+            <!-- {% endfor %} -->
 
             <div class="input-group" id="input-activity">
                 <table class="table">

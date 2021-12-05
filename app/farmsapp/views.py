@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models.expressions import F, Value
 from django.db.models import Q
 from django.forms.formsets import formset_factory
+import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -418,6 +419,8 @@ def addFarm(request):
             farm.save()
             print("TEST LOG: Added new farm")
 
+            messages.success(request, "Farm " + str(farm.id) + " has been succesfully sent for approval!", extra_tags='add-farm')
+
             # get recently created internal and external biosec IDs and update ref_farm_id
             externalBiosec.ref_farm_id = farm
             internalBiosec.ref_farm_id = farm
@@ -462,7 +465,7 @@ def addFarm(request):
                 
                 # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
-                return render(request, 'home.html', {})
+                return redirect('/')
 
             else:
                 print("TEST LOG: Pigpen Measures Form not valid")
@@ -1254,11 +1257,19 @@ def addActivity(request, farmID):
 
                 x += 1
             
+            messages.success(request, "Activity made on " + activity.date + " has been succesfully sent for approval!", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
         else:
             print("TEST LOG: activityForm is not valid")
-            print(activityForm.errors)
+            
+            print(activityForm.errors.as_text)
+            print(activityForm.non_field_errors().as_text)
+
+            formError = str(activityForm.non_field_errors().as_text)
+            print(re.split("\'.*?",formError)[1])
+
+            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Activity Form is not a POST method")

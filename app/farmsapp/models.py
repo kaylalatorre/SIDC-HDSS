@@ -120,10 +120,10 @@ class Farm(models.Model):
     loc_lat             = models.FloatField(null=True, blank=True)
 
     directly_manage     = models.BooleanField(default=False)
-    wh_length           = models.FloatField(null=True, blank=True)
-    wh_width            = models.FloatField(null=True, blank=True)
-    roof_height         = models.FloatField(null=True, blank=True)
-    num_pens            = models.IntegerField(null=True, blank=True, default=1)
+    wh_length           = models.FloatField()
+    wh_width            = models.FloatField()
+    roof_height         = models.FloatField()
+    num_pens            = models.IntegerField(null=True, blank=True)
     total_pigs          = models.IntegerField(null=True, blank=True)
     
     
@@ -132,7 +132,7 @@ class Farm(models.Model):
 
     feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES, default='Semi-automatic')
 
-    bldg_cap            = models.IntegerField(null=True, blank=True)
+    bldg_cap            = models.IntegerField()
     bldg_curtain        = models.BooleanField(default=False)
 
     MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
