@@ -512,6 +512,7 @@
                                 </div>
                             </td>
                         </tr>
+
                         {% else %}
                         <tr id="{{ act.id }}" value="{{ act.id }}">
                             <td data-label="Date">
@@ -529,12 +530,7 @@
                             <td data-label="Remarks">
                                 <p class="activity-data">{{act.remarks}}</p>
                             </td>
-                            <td>
-                                <!-- <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button name="editActBtn" class="secondary-btn activity-data" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                                    <button name="deleteActBtn" class="secondary-btn-red activity-data" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
-                                </div> -->
-                            </td>
+                            <td> </td>
                         </tr>
                         {% endif %}
 

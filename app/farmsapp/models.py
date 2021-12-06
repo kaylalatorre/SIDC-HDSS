@@ -40,7 +40,7 @@ class InternalBiosec(models.Model):
     # fields from Biomeasures
     isol_pen            = models.IntegerField(null=True, blank=True, default=1)
     foot_dip            = models.IntegerField(null=True, blank=True, default=1)
-    waste_mgt           = models.CharField(max_length=50)
+    waste_mgt           = models.CharField(null=True, blank=True, max_length=50)
     
     # fields from Biochecklist
     disinfect_prem      = models.IntegerField(null=True, blank=True)

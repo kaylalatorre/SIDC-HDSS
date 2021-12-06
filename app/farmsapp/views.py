@@ -326,7 +326,7 @@ def addFarm(request):
         internalBiosec = InternalBiosec.objects.create(
             isol_pen = isol_pen,
             foot_dip = foot_dip,
-            waste_mgt = request.POST.get("input-waste-mgt", None)
+            waste_mgt = request.POST.get("waste-mgt", None)
         )
 
         print(str(internalBiosec.id))
