@@ -1,38 +1,38 @@
 /* BACKEND-specific Functions */
 
-window.onload = function() {
-    setToday();
-};
+// window.onload = function() {
+//     setToday();
+// };
 
 /**
  * Helper function for setting date today for input tags of date-type
  */
-function setToday() {
-    // var farm_sDate = document.getElementById("farm-start-date");
-    // var farm_eDate = document.getElementById("farm-end-date");
+// function setToday() {
+//     // var farm_sDate = document.getElementById("farm-start-date");
+//     // var farm_eDate = document.getElementById("farm-end-date");
 
-    // var int_sDate = document.getElementById("intbio-start-date");
-    // var int_eDate = document.getElementById("intbio-end-date");
+//     // var int_sDate = document.getElementById("intbio-start-date");
+//     // var int_eDate = document.getElementById("intbio-end-date");
 
-    // var ext_sDate = document.getElementById("extbio-start-date");
-    // var ext_eDate = document.getElementById("extbio-end-date");
+//     // var ext_sDate = document.getElementById("extbio-start-date");
+//     // var ext_eDate = document.getElementById("extbio-end-date");
 
-    var today = new Date();
-    // farm_sDate.value = today.toISOString().substr(0, 10);
-    // farm_eDate.value = today.toISOString().substr(0, 10);
+//     var today = new Date();
+//     // farm_sDate.value = today.toISOString().substr(0, 10);
+//     // farm_eDate.value = today.toISOString().substr(0, 10);
 
-    // set all input START DATE tags to date today 
-    var startDates = document.getElementsByClassName('input-startDate');
-    for(var i = 0; i < startDates.length; i++) {
-        startDates[i].value = today.toISOString().substr(0, 10);
-    }    
+//     // set all input START DATE tags to date today 
+//     var startDates = document.getElementsByClassName('input-startDate');
+//     for(var i = 0; i < startDates.length; i++) {
+//         startDates[i].value = today.toISOString().substr(0, 10);
+//     }    
 
-    // set all input END DATE tags to date today 
-    var endDates = document.getElementsByClassName('input-endDate');
-    for(var i = 0; i < endDates.length; i++) {
-        endDates[i].value = today.toISOString().substr(0, 10);
-    } 
-}
+//     // set all input END DATE tags to date today 
+//     var endDates = document.getElementsByClassName('input-endDate');
+//     for(var i = 0; i < endDates.length; i++) {
+//         endDates[i].value = today.toISOString().substr(0, 10);
+//     } 
+// }
 
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
