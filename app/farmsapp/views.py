@@ -14,7 +14,7 @@ from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm, MemAnnouncementForm
+from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, ActivityForm, AreaForm, MemAnnouncementForm
 from django.forms import formset_factory
 
 # for storing success and error Django messages
@@ -331,8 +331,8 @@ def addFarm(request):
 
         print(str(internalBiosec.id))
 
-        internalBiosec.save()
-        print("TEST LOG: Added new internal biosec")
+        # internalBiosec.save()
+        # print("TEST LOG: Added new internal biosec")
         
 
         # collect external biosec checkbox inputs and convert to integer value
@@ -360,8 +360,8 @@ def addFarm(request):
 
         print(str(externalBiosec.id))
 
-        externalBiosec.save()
-        print("TEST LOG: Added new internal biosec")
+        # externalBiosec.save()
+        # print("TEST LOG: Added new internal biosec")
 
         # pass all pigpens values into array pigpenList
         pigpenList = []
@@ -425,8 +425,11 @@ def addFarm(request):
             externalBiosec.ref_farm_id = farm
             internalBiosec.ref_farm_id = farm
 
-            externalBiosec.save()
             internalBiosec.save()
+            print("TEST LOG: Added new internal biosec")
+
+            externalBiosec.save()
+            print("TEST LOG: Added new internal biosec")
 
             if pigpenMeasuresForm.is_valid():
                 
@@ -482,16 +485,13 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
         pigpenMeasuresForm  = PigpenMeasuresForm()
-        externalBiosecForm  = ExternalBiosecForm()
-        internalBiosecForm  = InternalBiosecForm()
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'area' : areaQry,
                                                         'raisers' : hogRaiserQry,
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
-                                                        'pigpenMeasuresForm' : pigpenMeasuresForm,
-                                                        'internalBiosecForm' : internalBiosecForm})
+                                                        'pigpenMeasuresForm' : pigpenMeasuresForm})
 
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request, biosecID):

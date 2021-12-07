@@ -145,7 +145,7 @@ class Farm(models.Model):
     intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
-    hog_symptoms       = models.ForeignKey('Hog_Symptoms', on_delete=models.CASCADE, null=True, blank=True)
+    hog_symptoms        = models.ForeignKey('Hog_Symptoms', on_delete=models.CASCADE, null=True, blank=True)
 
     is_approved         = models.BooleanField(default=False)
 

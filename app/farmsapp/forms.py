@@ -1,58 +1,10 @@
 from django import forms
 from django.forms import ModelForm, DateField, widgets, Select, Textarea
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
+from .models import Farm, Hog_Raiser, Pigpen_Measures, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
 import datetime
 
 class DateInput(ModelForm):
     input_type = 'date'
-
-class ExternalBiosecForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['bird_proof'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-birdproof',
-        })
-        self.fields['perim_fence'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-fence',
-        })
-        self.fields['fiveh_m_dist'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-distance',
-        })
-    
-    def clean_active(self):
-        return 0 if self.cleaned_data['active'] else 1
-
-    class Meta:
-        model = ExternalBiosec
-        fields = ('__all__')
-
-class InternalBiosecForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['isol_pen'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-isolation',
-        })
-        self.fields['foot_dip'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-footdip',
-        })
-        self.fields['waste_mgt'].widget.attrs.update({
-           'select class' : 'form-select',
-           'id' : 'input-waste-mgt'
-        })
-
-    class Meta:
-        model = InternalBiosec
-        fields = ('__all__')
 
 class FarmWeightForm(ModelForm):
     class Meta:
