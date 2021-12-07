@@ -52,7 +52,11 @@
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item" id="farmrep-header">All Farms Assessment Report for {{dateStart}} to {{dateEnd}}</p>
+        {% if not isFiltered %}
+            <p class="flex-item" id="farmrep-header">All Farms Assessment Report.</p>
+        {% else %}
+            <p class="flex-item" id="farmrep-header">{{areaName}} Farms Assessment Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}
         <div><button class="primary-btn" onclick="printReport('rep-farmAssess')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->

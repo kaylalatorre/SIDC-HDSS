@@ -1312,7 +1312,7 @@ def farmsAssessment(request):
 
     if not farmQry.exists(): # (ERROR) No farm records found.
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
-        return render(request, 'farmstemp/rep-farms-assessment.html', {})
+        return render(request, 'farmstemp/rep-farms-assessment.html', {'areaList': areaQry})
 
     debug("list for -- Farm > Area > User (tech)")
     techList = []
@@ -1348,7 +1348,7 @@ def farmsAssessment(request):
 
     if not qry.exists(): 
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
-        return render(request, 'farmstemp/rep-farms-assessment.html', {})
+        return render(request, 'farmstemp/rep-farms-assessment.html', {'areaList': areaQry})
 
     farmsData = []
     total_pigs = 0
@@ -1401,7 +1401,10 @@ def farmsAssessment(request):
         "ave_extbio": round(ave_extbio, 2),
     }
 
-    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
+    # for checking if filters were used in the displayed Report
+    isFiltered = False
+
+    return render(request, 'farmstemp/rep-farms-assessment.html', {"isFiltered": isFiltered,"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
 
 
 def filter_farmsAssessment(request, startDate, endDate, areaName):
@@ -1445,7 +1448,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
 
         if not farmQry.exists(): # (ERROR) No farm records found.
             messages.error(request, "No farm records found.", extra_tags="farmass-report")
-            return render(request, 'farmstemp/rep-farms-assessment.html', {})
+            return render(request, 'farmstemp/rep-farms-assessment.html', {'areaList': areaQry})
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
@@ -1499,7 +1502,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
 
     if not qry.exists(): 
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
-        return render(request, 'farmstemp/rep-farms-assessment.html', {})
+        return render(request, 'farmstemp/rep-farms-assessment.html', {'areaList': areaQry})
 
     debug("list for -- Farm > Area > User (tech)")
     techList = []
@@ -1565,7 +1568,10 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
     # to revert endDate to same user date input
     truEndDate = eDate - timedelta(1)
 
-    return render(request, 'farmstemp/rep-farms-assessment.html', {"farmTotalAve": farmTotalAve,'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
+    # for checking if filters were used in the displayed Report
+    isFiltered = True
+
+    return render(request, 'farmstemp/rep-farms-assessment.html', {"areaName": areaName, "isFiltered": isFiltered,"farmTotalAve": farmTotalAve,'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
 
 
 def getBioStr(bioInt):
@@ -1608,7 +1614,7 @@ def intBiosecurity(request):
 
     if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
-        return render(request, 'farmstemp/rep-int-biosec.html', {})
+        return render(request, 'farmstemp/rep-int-biosec.html', {'areaList': areaQry})
 
     debug("list for -- Field Technicians")
     techList = []
@@ -1649,7 +1655,7 @@ def intBiosecurity(request):
 
     if not qry.exists(): #(ERROR) No Internal biosecurity records found.
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
-        return render(request, 'farmstemp/rep-int-biosec.html', {})
+        return render(request, 'farmstemp/rep-int-biosec.html', {'areaList': areaQry})
 
     farmsData = []
     ave_intbio = 0
@@ -1687,7 +1693,10 @@ def intBiosecurity(request):
         "ave_intbio": round(ave_intbio, 2),
     }
 
-    return render(request, 'farmstemp/rep-int-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
+    # for checking if filters were used in the displayed Report
+    isFiltered = False
+
+    return render(request, 'farmstemp/rep-int-biosec.html', {"isFiltered": isFiltered,"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
 
 
 def filter_intBiosec(request, startDate, endDate, areaName):
@@ -1729,7 +1738,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
         if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
             messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
-            return render(request, 'farmstemp/rep-int-biosec.html', {})
+            return render(request, 'farmstemp/rep-int-biosec.html', {'areaList': areaQry})
 
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
@@ -1764,7 +1773,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
         if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
             messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
-            return render(request, 'farmstemp/rep-int-biosec.html', {})
+            return render(request, 'farmstemp/rep-int-biosec.html', {'areaList': areaQry})
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
@@ -1793,7 +1802,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
     if not qry.exists(): # (ERROR) No Internal biosecurity records found.
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
-        return render(request, 'farmstemp/rep-int-biosec.html', {})
+        return render(request, 'farmstemp/rep-int-biosec.html', {'areaList': areaQry})
         
     # format Technician names per Farm
     debug("list for -- Field Technicians")
@@ -1844,7 +1853,10 @@ def filter_intBiosec(request, startDate, endDate, areaName):
     # to revert endDate to same user date input
     truEndDate = eDate - timedelta(1)
 
-    return render(request, 'farmstemp/rep-int-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
+    # for checking if filters were used in the displayed Report
+    isFiltered = True
+
+    return render(request, 'farmstemp/rep-int-biosec.html', {"areaName": areaName, "isFiltered": isFiltered, "farmTotalAve": farmTotalAve, 'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
 
 
 def extBiosecurity(request):
@@ -1873,7 +1885,7 @@ def extBiosecurity(request):
 
     if not farmQry.exists(): # (ERROR) No External biosecurity records found.
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
-        return render(request, 'farmstemp/rep-ext-biosec.html', {})
+        return render(request, 'farmstemp/rep-ext-biosec.html', {'areaList': areaQry})
 
     debug("list for -- Field Technicians")
     techList = []
@@ -1922,7 +1934,7 @@ def extBiosecurity(request):
 
     if not qry.exists(): #(ERROR) No External biosecurity records found.
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
-        return render(request, 'farmstemp/rep-ext-biosec.html', {})
+        return render(request, 'farmstemp/rep-ext-biosec.html', {'areaList': areaQry})
 
     farmsData = []
     ave_extbio = 0
@@ -1963,7 +1975,10 @@ def extBiosecurity(request):
         "ave_extbio": round(ave_extbio, 2),
     }
 
-    return render(request, 'farmstemp/rep-ext-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
+    # for checking if filters were used in the displayed Report
+    isFiltered = False
+
+    return render(request, 'farmstemp/rep-ext-biosec.html', {"isFiltered": isFiltered, "farmTotalAve": farmTotalAve, 'dateStart': dateASC.last_updated,'dateEnd': dateDESC.last_updated,'areaList': areaQry,'farmtechList': farmtechList})
 
 
 def filter_extBiosec(request, startDate, endDate, areaName):
@@ -2003,7 +2018,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
 
         if not farmQry.exists(): # (ERROR) No External biosecurity records found.
             messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
-            return render(request, 'farmstemp/rep-ext-biosec.html', {})
+            return render(request, 'farmstemp/rep-ext-biosec.html', {'areaList': areaQry})
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area').annotate(
                 fname=F("hog_raiser__fname"), 
@@ -2045,7 +2060,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
 
         if not farmQry.exists(): # (ERROR) No External biosecurity records found.
             messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
-            return render(request, 'farmstemp/rep-ext-biosec.html', {})
+            return render(request, 'farmstemp/rep-ext-biosec.html', {'areaList': areaQry})
 
         qry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).select_related('hog_raiser', 'area').annotate(
                 fname=F("hog_raiser__fname"), 
@@ -2082,7 +2097,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
 
     if not qry.exists(): # (ERROR) No External biosecurity records found.
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
-        return render(request, 'farmstemp/rep-ext-biosec.html', {})
+        return render(request, 'farmstemp/rep-ext-biosec.html', {'areaList': areaQry})
         
     # format Technician names per Farm
     debug("list for -- Field Technicians")
@@ -2137,7 +2152,10 @@ def filter_extBiosec(request, startDate, endDate, areaName):
     # to revert endDate to same user date input
     truEndDate = eDate - timedelta(1)
 
-    return render(request, 'farmstemp/rep-ext-biosec.html', {"farmTotalAve": farmTotalAve, 'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
+    # for checking if filters were used in the displayed Report
+    isFiltered = True
+
+    return render(request, 'farmstemp/rep-ext-biosec.html', {"areaName": areaName, "isFiltered": isFiltered, "farmTotalAve": farmTotalAve, 'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
 
 # FOR MANAGER DASHBOARD
 def dashboard_view(request):
@@ -2148,12 +2166,14 @@ def dashboard_view(request):
     # Get Farm details 
     farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
         intbioID = F("intbio__id"),
-        extbioID = F("extbio__id")
+        extbioID = F("extbio__id"),
+        last_update = F("extbio__last_updated")
         ).values(
             "id",
             "total_pigs",
             "intbioID",
-            "extbioID"
+            "extbioID",
+            "last_update"
             )
     debug(farmQry)
 
@@ -2163,6 +2183,7 @@ def dashboard_view(request):
 
     total_farms = 0
     total_pigs = 0
+    total_needInspect = 0
     ave_intbio = 0
     ave_extbio = 0
 
@@ -2175,6 +2196,15 @@ def dashboard_view(request):
 
         ave_intbio += biosec_score[0]
         ave_extbio += biosec_score[1]
+
+        # check if Checklist has not been updated for > 7 days
+        bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
+        
+        debug("bioDateDiff.days" + str(bioDateDiff.days))
+
+        if bioDateDiff.days > 7:
+            total_needInspect += 1
+
     # debug(farmsData)
 
     total_farms = len(farmQry)
@@ -2188,6 +2218,7 @@ def dashboard_view(request):
     farmStats = {
         "total_farms": total_farms,
         "total_pigs": total_pigs,
+        "total_needInspect": total_needInspect,
         "ave_intbio": ave_intbio,
         "ave_extbio": ave_extbio,
         "rem_intbio": 100 - ave_intbio,

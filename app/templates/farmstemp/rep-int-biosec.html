@@ -50,7 +50,12 @@
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading">
-        <p class="flex-item">All Internal Biosecurity Reports for {{dateStart}} to {{dateEnd}}</p>
+        {% if not isFiltered %}
+            <p class="flex-item" id="intrep-header">All Internal Biosecurity Report.</p>
+        {% else %}
+            <p class="flex-item" id="intrep-header">{{areaName}} Internal Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}
+
         <div><button class="primary-btn" onclick="printReport('rep-intbiosec')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
