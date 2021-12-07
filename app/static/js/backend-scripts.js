@@ -1,8 +1,28 @@
 /* BACKEND-specific Functions */
 
-// window.onload = function() {
-//     setToday();
-// };
+/**
+ * Helper function for setting dropdown acc. to selected option
+ */
+function setSelectedValue(selectObj, valueToSet) {
+    for (var i = 0; i < selectObj.options.length; i++) {
+        if (selectObj.options[i].text == valueToSet) {
+            selectObj.options[i].selected = true;
+            return;
+        }
+    }
+}
+
+window.onload = function() {
+    // setToday();
+    var arName = $("#farm-area option:selected").val();
+
+    // Get dropdown & assign to var
+    var dropObj = document.getElementById("farm-area");
+    alert("optSelectID -- " + optSelect.options[0].text);
+    
+    // Set selected option in dropdown after filtering
+    setSelectedValue(dropObj, arName);
+};
 
 /**
  * Helper function for setting date today for input tags of date-type
@@ -184,6 +204,8 @@ $('#farm-code').change(function() {
 
 });
 
+
+
 /**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
  */
@@ -204,6 +226,7 @@ function filterFarmRep(){
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
         location.href = url;
+
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
