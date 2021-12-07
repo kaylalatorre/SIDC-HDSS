@@ -7,3 +7,4 @@ migrations/
 scratch.py
 init.sh
 how commit-id
+.env

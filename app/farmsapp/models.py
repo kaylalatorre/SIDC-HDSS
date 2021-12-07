@@ -185,7 +185,7 @@ class Activity(models.Model):
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     date_added          = models.DateTimeField(auto_now=True, editable=False)
-    date_approved       = models.DateTimeField()
+    date_approved       = models.DateTimeField(null=True, blank=True)
 
     is_approved         = models.BooleanField(default=False)
 
@@ -213,34 +213,34 @@ class Mortality(models.Model):
 class Activities_Form(models.Model):
     ref_activity        = models.ForeignKey('Activity', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
     
-    act_tech            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_tech', null=True, blank=True)
-    act_liveop          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_liveop', null=True, blank=True)
+    act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_tech', null=True, blank=True)
+    act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_liveop', null=True, blank=True)
     is_checked          = models.BooleanField(default=False)
-    act_extvet          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_extvet',  null=True, blank=True)
+    act_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_extvet', null=True, blank=True)
     is_reported         = models.BooleanField(default=False)
-    act_asm             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='act_asm',  null=True, blank=True)
+    act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_asm', null=True, blank=True)
     is_noted            = models.BooleanField(default=False)
 
 # PPE FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
-    ppe_tech            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
-    ppe_extvet          = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
+    ppe_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
+    ppe_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
     is_checked          = models.BooleanField(default=False)
-    ppe_asm             = models.ForeignKey('User', on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
+    ppe_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
     is_approved         = models.BooleanField(default=False)
 
 # MORTALITY FORM Table
 class Mortality_Form(models.Model):
     ref_mortality       = models.ForeignKey('Mortality', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
-    mort_tech           = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
-    mort_mgtStaff       = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
+    mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
+    mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
     is_posted           = models.BooleanField(default=False)
-    mort_extvet         = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
+    mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
     is_reported         = models.BooleanField(default=False)
-    mort_asm            = models.ForeignKey('User', on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
+    mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
     is_noted            = models.BooleanField(default=False)
 
 # MEMBER ANNOUNCEMENT Table

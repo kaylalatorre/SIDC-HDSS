@@ -490,9 +490,9 @@
                                 </select>
                             </td>
                             <td data-label="Time">
-                                <p class="activity-data">{{act.time_departure}} - {{act.time_arrival}}</p>
-                                <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input"> -
+                                <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
                                 <input type="time" id="input-arrival" aria-label="Arrival Time" value="{{act.format_arrival}}" class="form-control activity-input">
+                                <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input">
                             </td>
                             <td data-label="Description">
                                 <p class="activity-data">{{act.description}}</p>
@@ -522,7 +522,7 @@
                                 <p class="activity-data">{{act.trip_type}}</p>
                             </td>
                             <td data-label="Time">
-                                <p class="activity-data">{{act.time_departure}} - {{act.time_arrival}}</p>
+                                <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
                             </td>
                             <td data-label="Description">
                                 <p class="activity-data">{{act.description}}</p>

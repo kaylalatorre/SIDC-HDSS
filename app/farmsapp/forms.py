@@ -269,8 +269,8 @@ class ActivityForm(forms.ModelForm):
         # print("Arrival: " + str(time_arrival))
         # print("Departure: " + str(time_departure))
 
-        if time_departure > time_arrival:
-            raise forms.ValidationError("Arrival time should be after departure time.")
+        if time_departure < time_arrival:
+            raise forms.ValidationError("Arrival time should be before departure time.")
 
 class MortalityForm(ModelForm):
     class Meta:
