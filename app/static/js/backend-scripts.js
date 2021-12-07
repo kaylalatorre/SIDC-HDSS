@@ -120,6 +120,16 @@ $('.checklist-date').change(function() {
             // alert("in AJAX success");
             var biofields = JSON.parse(response["instance"]);
 
+            // check if Checklist can still be editable
+            if (biofields["isEditable"] === false){
+                $('#edit-grp-desktop').hide();
+                $('#edit-grp-mobile').hide();
+            }
+            else {
+                $('#edit-grp-desktop').show();
+                $('#edit-grp-mobile').show();                
+            }
+
             // select btn in btn group based on db value
             // EXTERNAL biosec fields
             if (biofields["prvdd_foot_dip"] == 0)

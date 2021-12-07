@@ -476,13 +476,26 @@ def search_bioChecklist(request, biosecID):
                 'disinfect_vet_supp',     
             )
 
+            isEditable = False
+
             if ext.exists() and inter.exists():
                 # Get first instance in biosec queries
                 ext = ext.first()
                 inter = inter.first()
 
+                # for checking if Checklist is w/in 1 day
+                checkDateDiff = datetime.now(timezone.utc) - ext.last_updated
+
+                debug("checkDateDiff.days -- " + str(checkDateDiff.days))
+
+                if not checkDateDiff.days > 1: # (SUCCESS) Checklist is w/in 1 day. Can still be editable
+                    isEditable = True
+
                 # Format int-ext biosec fields in a dictionary
                 bioDict = {
+
+                    'isEditable'            : isEditable,
+
                     # External bio
                     'prvdd_foot_dip'        : ext.prvdd_foot_dip,  
                     'prvdd_alco_soap'       : ext.prvdd_alco_soap,     
@@ -556,7 +569,7 @@ def update_bioChecklist(request, biosecID):
                 if extBio is not None and intBio is not None:
 
                     # Check if bioChecklist is w/in a day
-                    extDateDiff = datetime.now(timezone.utc) - intBio.last_updated
+                    extDateDiff = datetime.now(timezone.utc) - extBio.last_updated
                     intDateDiff = datetime.now(timezone.utc) - intBio.last_updated
                     
                     debug("extDateDiff.days" + str(extDateDiff.days))

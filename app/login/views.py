@@ -98,9 +98,10 @@ def home_view(request):
     if userGroup == "Assistant Manager":
         debug("User is a Field Technician. Render dashboard.")
         farmStats = dashboard_view(request)
+        return render(request, 'home.html', {"farmStats": farmStats})
 
-
-    return render(request, 'home.html', {"farmStats": farmStats})
+    return render(request, 'home.html', {})
+    
 
 # LOGOUT function
 def logout_view(request):
