@@ -980,7 +980,7 @@ def biosec_view(request):
         for activity in actQuery:
                         
             # check if activity record date is still within the 24 hour mark of current time
-            if (localtime() - activity.date_added).days <= 1:
+            if (localtime() - activity.date_approved).days <= 1:
                 editable = True
             else : 
                 editable = False
@@ -1090,7 +1090,7 @@ def select_biosec(request, farmID):
         for activity in actQuery:
             
             # check if activity record date is still within the 24 hour mark of current time
-            if (localtime() - activity.date_added).days <= 1:
+            if (localtime() - activity.date_approved).days <= 1:
                 editable = True
             else : 
                 editable = False
@@ -1257,7 +1257,11 @@ def addActivity(request, farmID):
 
                 x += 1
             
-            messages.success(request, "Activity made on " + activity.date + " has been succesfully sent for approval!", extra_tags='add-activity')
+            if x == 1:
+                messages.success(request, "Activity made on " + activity.date + " has been succesfully sent for approval!", extra_tags='add-activity')
+            else:
+                messages.success(request, "Activities have been succesfully sent for approval!", extra_tags='add-activity')
+            
             return redirect('/biosecurity/' + str(farmID))
             
         else:
@@ -1314,6 +1318,7 @@ def editActivity(request, farmID, activityID):
         
         activity.save()
         print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+        messages.success(request, "Activity has been updated.", extra_tags='update-activity')
 
         return JsonResponse({"success": "Activity has been updated."}, status=200)
 
@@ -1331,6 +1336,7 @@ def deleteActivity(request, farmID, activityID):
         # print("TEST LOG: Delete Activity is a POST Method")
     
         Activity.objects.filter(id=activityID).delete()
+        messages.success(request, "Activity has been deleted.", extra_tags='update-activity')
         return JsonResponse({"success": "Activity has been deleted."}, status=200)
 
     return JsonResponse({"error": "Not a POST method"}, status=400)

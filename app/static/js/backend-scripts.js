@@ -699,10 +699,6 @@ function saveActivity(actID) {
     var farmID = $("#farm-code option:selected").val();
     console.log(farmID)
 
-    // var activityInput = row.getElementsByClassName("activity-input");
-    // for(var i = 0; i <= activityInput.length; i++){
-    //     console.log(activityInput.value);
-    // }
     var checkTrue = 2;
     var today = new Date(); // date today
     var date = document.getElementById("input-date").value;
@@ -719,18 +715,10 @@ function saveActivity(actID) {
     }
 
     // check if arrival is after departure
-    if (arrival < departure){
+    if (arrival > departure){
         checkTrue -= 1;
-        console.log("Departure time should be before arrival time.");
+        console.log("Departure time should be after arrival time.");
     }
-
-    // console.log(today);
-    // console.log(date);
-    // console.log(type);
-    // console.log(departure);
-    // console.log(arrival);
-    // console.log(description);
-    // console.log(remarks);
 
     if(checkTrue == 2){
         ajaxCSRF();

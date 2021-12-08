@@ -146,6 +146,22 @@ function addPigPenRow() {
         </tr>");
 }
 
+/*
+*   - Deletes pigpen row input in Add Farm
+*   
+*   currRow = selected pigpen row
+*   pigpen-table = table body that the row will be deleted from
+*/
+function removePigpenRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('pigpen-table');
+    table.deleteRow(rowIndex);
+}
+
 /**
 *   - Appends new activity row to activity table
 *   
@@ -168,6 +184,22 @@ function addActivityRow() {
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
+}
+
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeActivityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-table');
+    table.deleteRow(rowIndex);
 }
 
 /**
@@ -240,42 +272,6 @@ function filterSearch(){
     }
 } 
 
-/*
-*   - Deletes pigpen row input in Add Farm
-*   
-*   currRow = selected pigpen row
-*   pigpen-table = table body that the row will be deleted from
-*/
-function removePigpenRow(currRow){
-
-    var row = currRow.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
-
-    var table = document.getElementById('pigpen-table');
-    // console.log(toHide.length);
-    
-    table.deleteRow(rowIndex);
-}
-
-/*
-*   - Deletes activity row input in Add Activity
-*   
-*   currRow = selected activity row
-*   activity-table = table body that the row will be deleted from
-*/
-function removeActivityRow(currRow){
-
-    var row = currRow.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
-
-    var table = document.getElementById('activity-table');
-    // console.log(toHide.length);
-    
-    table.deleteRow(rowIndex);
-}
-
 $(document).ready(function(){
     /**
     *   Hides hog raiser fname, lname, and contact input when an existing raiser is selected
@@ -284,12 +280,5 @@ $(document).ready(function(){
         $("#div-raiser-name").remove();
         $("#div-raiser-contact").remove();
     });
-
-    // $('#remove-pigpen').click(function(){
-    //     $("#pigpen-length").remove();
-    //     $("#pigpen-width").remove();
-    //     $("#pigpen-num-heads").remove();
-    //     $("#remove-pigpen").remove();
-    // });
 
 });
