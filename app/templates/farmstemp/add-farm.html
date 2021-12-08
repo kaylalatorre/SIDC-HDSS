@@ -131,21 +131,24 @@
             </div>
             <div class="box-style">
                 <br>
-                <div class="input-group" id="input-pen">
+                <div class="input-group">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Length</th>
                                 <th>Width</th>
                                 <th>No. of Pigs</th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <tbody  id="input-pigpen">
+                        <tbody  id="pigpen-table">
 
-                            <tr>
+                            <tr id="pigpen-row">
                                 <td data-label="Length" id="pigpen-length"> {{pigpenMeasuresForm.length}} </td>
                                 <td data-label="Width" id="pigpen-width"> {{pigpenMeasuresForm.width}} </td>
                                 <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenMeasuresForm.num_heads}} </td>
+                                <td></td>
+                                <!-- <td><button id="remove-pigpen-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
                             </tr>
 
                         </tbody>

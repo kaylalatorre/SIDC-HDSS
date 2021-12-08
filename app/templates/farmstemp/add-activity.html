@@ -32,7 +32,7 @@
             </div>
             <br>
             
-            <div class="input-group" id="input-activity">
+            <div class="input-group">
                 <table class="table">
                     <thead>
                         <tr>
@@ -42,9 +42,10 @@
                             <th>Departure Time</th>
                             <th>Description</th>
                             <th>Remarks</th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody id="input-act">
+                    <tbody id="activity-table">
 
                         <tr>
                             <td data-label="Date" id="date"> {{activityForm.date}} </td>
@@ -53,6 +54,8 @@
                             <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
                             <td data-label="Description" id="description"> {{activityForm.description}} </td>
                             <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
+                            <td></td>
+                            <!-- <td><button id="remove-activity-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
                         </tr>
                         
                     </tbody>

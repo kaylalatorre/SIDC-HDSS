@@ -619,7 +619,7 @@ function deleteActivity(actID) {
 function editActivity(actID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1
+    var rowIndex = row.rowIndex;
     console.log("Row ID: " + rowIndex);
 
     var activityID = $(actID).val(); 
