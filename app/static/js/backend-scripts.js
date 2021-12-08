@@ -626,22 +626,56 @@ function editActivity(actID) {
     console.log("Activity ID: " + activityID);
 
     var toShow = row.getElementsByClassName("activity-input");
+    console.log(toShow.length);
+   
     var toHide = row.getElementsByClassName("activity-data");
     console.log(toHide.length);
-    for(var i = 0; i <= toHide.length; i++){
-        // hide displayed data of current row
+    for(var i = 0; i < toHide.length; i++){
+        // show displayed data of current row
         toHide[i].style.display = "none";
         
-        // display data inputs
+        // hide data inputs
         toShow[i].style.display = "block";
+    }
+
+    // enable other edit buttons and delete buttons
+    var disableEdit = document.getElementsByName("editActBtn");
+    var disableDelete = document.getElementsByName("deleteActBtn");
+    for(var i = 0; i < disableEdit.length; i++){
+        disableEdit[i].disabled = true;
+        disableDelete[i].disabled = true;
+    }
+
+}
+
+/**
+*   - Cancels edit of selected activity
+*
+*   actID = button value (carries ID of selected activity)
+*/
+function cancelActivity(actID) {
+
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex;
+    console.log("Row ID: " + rowIndex);
+
+    var toShow = row.getElementsByClassName("activity-input");
+    var toHide = row.getElementsByClassName("activity-data");
+
+    for(var i = 0; i < toHide.length; i++){
+        // hide displayed data of current row
+        toHide[i].style.display = "block";
+        
+        // display data inputs
+        toShow[i].style.display = "none";
     }
 
     // disable other edit buttons and delete buttons
     var disableEdit = document.getElementsByName("editActBtn");
     var disableDelete = document.getElementsByName("deleteActBtn");
     for(var i = 0; i < disableEdit.length; i++){
-        disableEdit[i].disabled = true;
-        disableDelete[i].disabled = true;
+        disableEdit[i].disabled = false;
+        disableDelete[i].disabled = false;
     }
 
 }
