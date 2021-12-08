@@ -200,12 +200,13 @@
             </div>
         </section>
     </div>
+
+    <!-- Hidden depending on user -->
+
+    {% if user.groups.all.0.name == 'Extension Veterinarian' %}
     <div class="flex" >
         <section class="flex-item">
             <div class="box-style">
-                
-                <!-- Hidden depending on user -->
-                {% if user.groups.all.0.name == 'Extension Veterinarian' %}
                 <div id="farm-approvals">
                     <h3> Checked by: </h3>
                     <div class="mb-3">
@@ -217,7 +218,14 @@
                         <label class="form-check-label" for="cb-am">Assistant Manager</label>
                     </div>
                 </div>
-                {% elif user.groups.all.0.name == 'Assistant Manager' %}
+            </div>
+        </section>
+    </div>
+
+    {% elif user.groups.all.0.name == 'Assistant Manager' %}
+    <div class="flex" >
+        <section class="flex-item">
+            <div class="box-style">
                 <div id="farm-approvals">
                     <h3> Checked by: </h3>
                     <div class="mb-3">
@@ -229,23 +237,12 @@
                         <label class="form-check-label" for="cb-am">Assistant Manager</label>
                     </div>
                 </div>
-                {% else %}
-                <div id="farm-approvals">
-                    <h3> Checked by: </h3>
-                    <div class="mb-3">
-                        <input disabled type="checkbox" class="form-check-input" id="cb-ext-vet">
-                        <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                    </div>
-                    <div class="mb-3">
-                        <input disabled type="checkbox" class="form-check-input" id="cb-am">
-                        <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                    </div>
-                </div>
-                {% endif %}
-
             </div>
         </section>
     </div>
+
+    {% endif %}
+    
     <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
     </form>
 </div>
