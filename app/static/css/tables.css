@@ -5,7 +5,7 @@ table, thead {
 }
 
 tr {
-    vertical-align: middle;
+    vertical-align: text-top;
     border-bottom-width: 0.5px;
     border-color: #AAAAAA;
 }
@@ -15,8 +15,7 @@ tr {
     border-collapse: collapse;
 }
 
-.table tbody tr hd button {
-    display: inline-block;
+.table tbody tr td button {
     text-align: right;
     vertical-align: middle;
 }
@@ -34,4 +33,10 @@ tr {
 
 .small-table {
     max-width: 920px;
+}
+
+.symptoms-checklist {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
 }

@@ -1,7 +1,7 @@
 /* All Responsive Styles */
 
 /* General, Typography, etc */
-@media (max-width: 848px) {
+@media screen and (max-width: 848px) {
     body {
         font-family: 'Roboto'; 
         font-size: 14px;
@@ -27,7 +27,7 @@
     }
 }
 
-@media (max-width: 420px) {
+@media screen and (max-width: 420px) {
     /* Sidebar */
     .sidebar {
         position: fixed;
@@ -58,11 +58,12 @@
         left: 16px;
         right: 16px;
     }
+
 }
 
 /* Tables */
-@media (max-width: 848px) {
-    .table thead {
+@media screen and (max-width: 848px) {
+    .table thead, .table th {
         display: none;
         border-bottom: none;
     }

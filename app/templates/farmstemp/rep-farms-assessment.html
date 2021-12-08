@@ -7,19 +7,7 @@
 {% endblock page_title %}
 
 {% block section %}
-
-
-    <!-- TEST: for FARM ASSESSMENT REPORT success-error message placeholder -->
-    {% for mssg in messages %}
-        {% if "farmass-report" in mssg.tags %}
-            <div style="color:red;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                {{ mssg }}
-            </div>
-        {% endif %}
-        
-    {% endfor %}
-
-
+{% include 'partials/messages.html' %}
 <div class="table-container main-div">   
     <div>
         <h1>Farms Assessment Reports</h1>
@@ -59,20 +47,25 @@
         {% endif %}
         <div><button class="primary-btn" onclick="printReport('rep-farmAssess')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
+    
     <!-- Report content -->
     <div class="box-style" id="rep-farmAssess">
+        <div class="print-header">
+            <h1>SIDC | Hogs Disease Surveillance System</h1>
+            <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p>
+        </div>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Farm Code</th>
+                    <th style="text-align: center;">Farm Code</th>
                     <th>Raiser</th>
                     <th>Address</th>
                     <th>Area</th>
                     <th>Technician</th>
-                    <th>No. of Pigs</th>
-                    <th>No. of Pens</th>
-                    <th>Internal Biosecurity</th>
-                    <th>External Biosecurity</th>
+                    <th style="text-align: right;">No. of Pigs</th>
+                    <th style="text-align: right;">No. of Pens</th>
+                    <th style="text-align: right;">Internal Biosecurity</th>
+                    <th style="text-align: right;">External Biosecurity</th>
                     <th>Last Updated</th>
                 </tr>
             </thead>
@@ -80,15 +73,15 @@
                 <!-- Data -->
                 {% for farm,tech in farmtechList %}
                 <tr>
-                    <td data-label="Farm Code"> {{farm.code}} </td>
+                    <td data-label="Farm Code" style="text-align: center;"> {{farm.code}} </td>
                     <td data-label="Raiser"> {{farm.raiser}} </td>
                     <td data-label="Address"> {{farm.address}} </td>
                     <td data-label="Area"> {{farm.area}} </td>
                     <td data-label="Technician"> {{tech.name}} </td>
-                    <td data-label="No. of Pigs">{{farm.pigs}}</td>
-                    <td data-label="No. of Pens">{{farm.pens}}</td>
-                    <td data-label="Internal Biosecurity"> {{farm.intbio_score}} </td>
-                    <td data-label="External Biosecurity"> {{farm.extbio_score}} </td>
+                    <td data-label="No. of Pigs" style="text-align: right;">{{farm.pigs}}</td>
+                    <td data-label="No. of Pens" style="text-align: right;">{{farm.pens}}</td>
+                    <td data-label="Internal Biosecurity" style="text-align: right;"> {{farm.intbio_score}} </td>
+                    <td data-label="External Biosecurity" style="text-align: right;"> {{farm.extbio_score}} </td>
                     <td data-label="Last Update">{{farm.updated}}</td>
                 </tr>
                 {% endfor %}
@@ -97,18 +90,18 @@
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="5">Total</td>
-                    <td class="bold-lbl"> {{farmTotalAve.total_pigs}} </td>
-                    <td > {{farmTotalAve.total_pens}} </td>
+                    <td style="text-align: right;"> {{farmTotalAve.total_pigs}} </td>
+                    <td style="text-align: right;"> {{farmTotalAve.total_pens}} </td>
+                    <td colspan="3"></td>
                 </tr>
                 <tr class="bold-lbl">
                     <td colspan="5">Average</td>
-                    <td>{{farmTotalAve.ave_pigs}}</td>
-                    <td>{{farmTotalAve.ave_pens}}</td>
-                    <td>{{farmTotalAve.ave_intbio}}</td>
-                    <td>{{farmTotalAve.ave_extbio}}</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_pigs}}</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_pens}}</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_intbio}}</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_extbio}}</td>
+                    <td></td>
                 </tr>
-                
-
             </tbody>            
         </table>
     </div>

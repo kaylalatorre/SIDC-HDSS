@@ -108,7 +108,6 @@ $('.checklist-date').change(function() {
 
     // Get biosec ID of selected option tag
     var biosecID = $(this).val();
-    alert("in search_checklist() -- biosecID: " + biosecID);
 
     ajaxCSRF();
 
@@ -391,9 +390,9 @@ function saveBiocheck(elem){
         type: 'POST',
         url: '/biosecurity/edit-checklist/' + biosecID,
         data: {"checkArr": checkArr}, 
-        success: function (response){
-
-            if (response.status == 200){
+        success: function (response) {
+            
+            if (response.status_code == '200'){
                 alert("Biosec checklist successfully updated!");
             }
 
@@ -464,7 +463,7 @@ function saveBiocheck(elem){
             
             // Get farmID for biosec URL redirect
             var farmID = $("#farm-code option:selected").val();
-            alert("in saveBiocheck() -- farmID: " +  farmID);
+            // alert("in saveBiocheck() -- farmID: " +  farmID);
 
             // reload Biosec page to update dropdown of Biosec last_updated
             // window.location.reload(true);
@@ -483,7 +482,7 @@ function saveBiocheck(elem){
 
         },
         error: function (res){
-            alert("in AJAX error. ");
+            // alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
 
@@ -498,32 +497,36 @@ function deleteBiocheck(elem){
 
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
-    alert("in deleteBiocheck() -- biosecID: " + biosecID);
+    // alert("in deleteBiocheck() -- biosecID: " + biosecID);
 
     var farmID = $("#farm-code option:selected").val();
-    alert("in deleteBiocheck() -- farmID: " + farmID);
+    // alert("in deleteBiocheck() -- farmID: " + farmID);
 
+    if (confirm("Delete this checklist?")) {
+        ajaxCSRF();
 
-    ajaxCSRF();
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
+            // data: {"checkArr": checkArr}, 
+            success: function (response){
 
-    $.ajax({
-        type: 'POST',
-        url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
-        // data: {"checkArr": checkArr}, 
-        success: function (response){
-
-            if (response.status == 200){
-                alert("Biochecklist record deleted.");
+                // console.log(response);
+                // if (response.status == 200){
+                //     alert("Biochecklist record deleted.");
+                // }
+                // // reload Biosec page to update dropdown of Biosec last_updated
+                // // window.location.reload(true);
+                window.location.replace("/biosecurity/" + farmID);
+                alert(response.success);
+                
+            },
+            error: function (res){
+                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
             }
-            // reload Biosec page to update dropdown of Biosec last_updated
-            // window.location.reload(true);
-            window.location.replace("/biosecurity/" + farmID);
+        });
+    }
 
-        },
-        error: function (res){
-            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-        }
-    });
 }
 
 /**
@@ -606,3 +609,30 @@ function addActivityPage(farmID) {
         location.reload(true);
     }
 }
+
+/** 
+* Used to assign technicians to area.
+*/
+$('.assignSave').on('click', function () {
+    var area = $(this).parent().parent().siblings(":eq(0)").text();
+    var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    ajaxCSRF();
+    if(technician){
+        $.ajax({
+            type:'POST',
+            url:'technician-assignment/assign',
+            data:{
+                "area":area,
+                "technician":technician
+            },
+            success: function(response){
+                console.log(response);
+                location.reload(true);
+            },
+            error: function(response){
+                console.log(response);
+                location.reload(true);
+            }
+        });
+    }
+});

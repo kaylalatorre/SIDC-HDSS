@@ -7,11 +7,22 @@
 {% endblock page_title %}
 
 {% block section %}
-<div class="table-container main-div">
+<div class="table-container main-div small-table">
     <h1 class="heading">Technician Assignment</h1>
-    <p>Reassign technicians here.</p>
-    <div class="box-style small-table">
-        <table class="table">
+    <div class="flex subheading">
+        <p class="flex-item">Reassign technicians here.</p>
+        <div>
+            <button class="primary-btn" id="add-area" style="justify-content: flex-end;" onclick="toggleAreaView();"><i class='bx bx-plus'></i> Add Area</button> 
+            <button class="secondary-btn hide" id="cancel-area" style="justify-content: flex-end;" onclick="toggleAreaView();"></i> Cancel</button> 
+        </div>
+    </div>
+    <div class="box-style add-new-area hide">
+        <div class="input-group mb-3" id="new-area">
+            <input type="text" class="form-control" placeholder="Area"><button class="btn btn-outline-secondary" type="button" id="save-area"> Save Area </button>
+        </div>
+    </div>
+    <div class="box-style">
+        <table class="table" id="assign-table">
             <thead>
                 <tr>
                     <th>Area</th>
@@ -22,28 +33,28 @@
             </thead>
             <tbody>
                 <!-- Data (per area)-->
-                <tr>
-                    {% for area in areasData %}
+                {% for area in areasData %}
+                <tr>                    
                     <td>{{area.area_name}}</td>
                     <td>{{area.farm_count}}</td>
-                    <td style="padding-bottom: 0; vertical-align: middle;">
+                    <td style="padding-bottom: 0; vertical-align: middle;" id="assign-technician">
                         <div class="mb-3">
                             <select aria-label="Technician Assigned" class="form-select" disabled>
                                 <option value="{{area.tech_id}}">{{area.curr_tech}}</option>
                                 {% for tech in technicians %}
-                                <option value="{{tech.id}}">{{tech.name}}</option>
+                                <option value={{tech.id}}>{{tech.name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
                     </td>
-                    <td>
+                    <td class="assign-btn-grp">
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn assignEdit"><span class="material-icons md-18">edit</span>Edit</button>
                             <button class="secondary-btn assignSave"><span class="material-icons md-18">save</span>Save</button>
                         </div>
-                    </td>
-                    {% endfor %}
+                    </td> 
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

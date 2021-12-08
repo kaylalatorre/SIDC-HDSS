@@ -10,43 +10,50 @@
 <div class="main-div">
     <h1 class="heading flex-item"><a href="/member-announcements">Announcements</a> >  Create Announcement </h1>   
     <hr>
-    <div class="box-style small-table">
-        <div class="mb-3">
-            <label for="input-code" class="form-label">Title</label>
-            <input type="text" class="form-control" id="input-title" placeholder="ex. Biosecurity Check">
+    <form action="/create-announcement" method="POST">
+        {% csrf_token %}
+        <div class="box-style small-table">
+            <div class="mb-3">
+                <label for="input-code" class="form-label">Title</label>
+                {{announcementForm.title}}
+                <!-- <input type="text" class="form-control" id="input-title" placeholder="ex. Biosecurity Check"> -->
+            </div>
+            <div class="mb-3">
+                <label for="input-area" class="form-label">Category</label>
+                {{announcementForm.category}}
+                <!-- <select class="form-select" id="input-categ">
+                    <option value="Reminder">Reminder</option>
+                    <option value="Announcement">Announcement</option>
+                    <option value="Event">Event</option>
+                    <option value="Other">Other</option>
+                </select> -->
+            </div>
+            <div class="mb-3">
+                <label for="input-area" class="form-label">Recipient</label>
+                {{announcementForm.recip_area}}
+                <!-- <select class="form-select" id="input-recipient">
+                    <option value="All Raisers">All Raisers</option>
+                    <option value="TISISI Raisers">TISISI Raisers</option>
+                    <option value="West Raisers">West Raisers</option>
+                    <option value="East Raisers">East Raisers</option>
+                </select> -->
+            </div>
+            <div class="mb-3">
+                <label for="input-code" class="form-label">Message</label>
+                {{announcementForm.mssg}}
+                <!-- <textarea class="form-control" placeholder="Construct your message here."></textarea> -->
+            </div>
+            <div class="flex">
+                <p class=" flex-item"></p>
+                {% if user.groups.all.0.name == 'Assistant Manager' %}
+                <div><button class="primary-btn" type="submit">Send Message</button></div>
+    
+                {% elif user.groups.all.0.name == 'Field Technician' %}
+                <div><button class="primary-btn" type="submit">Send for Approval</button></div>
+    
+                {% endif %}
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="input-area" class="form-label">Category</label>
-            <select class="form-select" id="input-categ">
-                <option value="Reminder">Reminder</option>
-                <option value="Announcement">Announcement</option>
-                <option value="Event">Event</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="input-area" class="form-label">Recipient</label>
-            <select class="form-select" id="input-recipient">
-                <option value="All Raisers">All Raisers</option>
-                <option value="TISISI Raisers">TISISI Raisers</option>
-                <option value="West Raisers">West Raisers</option>
-                <option value="East Raisers">East Raisers</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="input-code" class="form-label">Message</label>
-            <textarea class="form-control" placeholder="Construct your message here."></textarea>
-        </div>
-        <div class="flex">
-            <p class=" flex-item"></p>
-            {% if user.groups.all.0.name == 'Assistant Manager' %}
-            <div><button class="primary-btn">Send Message</button></div>
-
-            {% elif user.groups.all.0.name == 'Field Technician' %}
-            <div><button class="primary-btn">Send for Approval</button></div>
-
-            {% endif %}
-        </div>
-    </div>
+    </form>
 </div>
 {% endblock section %}

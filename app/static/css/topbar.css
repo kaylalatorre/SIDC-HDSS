@@ -1,3 +1,5 @@
+.content-section { height: 100% }
+
 .content-section .topbar {
     height: 60px;
     display: flex;
@@ -77,7 +79,7 @@ div.sticky {
     opacity: 0;
     height: 0;
     max-height: 480px;
-    max-width: 300px;
+    width: 300px;
     position: absolute !important;
     top: 72px;
     right: 24px;
@@ -108,7 +110,7 @@ div.sticky {
     border-color: transparent transparent #fff transparent;
 }
 
-.notif-header {
+.notif-box .notif-header {
     background: #FFF;
     margin: 0;
     padding: 16px 24px;
@@ -117,13 +119,13 @@ div.sticky {
     border-color: #333;
 }
 
-.notif-item {
+.notif-box .notif-item {
     padding: 24px;
     border-bottom: solid 0.5px;
     border-color: #F2F2F2;
 }
 
-.notif-item:hover {
+.notif-box .notif-item:hover {
     background: #FAFAFA;
 }
 

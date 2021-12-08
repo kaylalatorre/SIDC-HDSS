@@ -14,20 +14,13 @@
     <form action="login" method="POST">
         {% csrf_token %}
         <input type="text" placeholder="Username" class="form-control" id="user-name" name="user-name">
-            <p id="emailError" class="error"> Sample error message. </p> <!-- temporarily hidden (code @ static/css/error.css)-->
-        <!-- <input type="email" placeholder="Email Address" class="form-control" id="user-email" name="user-email" aria-describedby="emailHelp"> -->
         <input type="password" placeholder="Password" class="form-control" id="user-pass" name="user-pass">
-            <p id="pwError" class="error"> Sample error message. </p> <!-- temporarily hidden (code @ static/css/error.css)-->
-
             <!-- for LOGIN error message placeholder -->
             {% for mssg in messages %}
                 {% if "login" in mssg.tags %}
-                    <div class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                        {{ mssg }}
-                        <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button> -->
-                    </div>
+                <div class="alert alert-{{ message.tags }} mb-0 fade show" role="alert">
+                    <p class="errormssg">{{ mssg }}</p>
+                </div>
                 {% endif %}
             {% endfor %}
         <br>

@@ -8,50 +8,64 @@
 
 {% block section %}
 <div class="main-div">
-    <div class="flex">
-        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> >  {{ farm.id }}</h1>
+    <div class="flex subheading">
+        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               View
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><button class="dropdown-item viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
-              <li><button class="dropdown-item" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
+              <li><button class="dropdown-item no-shadow viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
+              <li><button class="dropdown-item no-shadow" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
             </ul>
         </div>
     </div>
+    <div class="flex mobile-subheading">
+        <div class="flex" style="width: 80%">
+            <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
+            <div class="dropdown flex-item">
+                <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                View
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><button class="dropdown-item no-shadow viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
+                <li><button class="dropdown-item no-shadow" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
+                </ul>
+            </div>
+        </div>
+    </div>
     <hr>
-    <div class="flex">
+    <div class="flex flex-form">
         <section class="flex-item" id="farm-details">
             <h2>Farm Details</h2>
-            <div class="box-style flex">
+            <div class="box-style flex flex-form">
                 <div class="flex-item">
                     <table class="table">
                         <tbody>
                             <tr>
                                 <th>Raiser</td>
-                                <td>{{farm.raiser}}</td>
+                                <td data-label="Raiser">{{farm.raiser}}</td>
                             </tr>
                             <tr>
                                 <th>Contact No.</td>
-                                <td>{{farm.contact}}</td>
+                                <td data-label="Contact No.">{{farm.contact}}</td>
                             </tr>
                             <tr>
                                 <th>Directly Managed</td>
-                                <td>{{farm.directly_manage|yesno:"Yes,No"}}</td>
+                                <td data-label="Directly Managed">{{farm.directly_manage|yesno:'Yes,No'}}"</td>
                             </tr>
                             <tr>
                                 <th>Address</td>
-                                <td>{{farm.farm_address}}</td>
+                                <td data-label="Address">{{farm.farm_address}}</td>
                             </tr>
                             <tr>
                                 <th>Area</td>
-                                <td>{{farm.farm_area}}</td>
+                                <td data-label="Area">{{farm.farm_area}}</td>
                             </tr>
                             <tr>
                             <tr>
                                 <th>Road Access</td>
-                                <td>{{farm.road_access|yesno:"Yes,No"}}</td>
+                                <td data-label="Road Access">{{farm.road_access|yesno:"Yes,No"}}</td>
                             </tr>
                             </tr>
                         </tbody>
@@ -62,27 +76,27 @@
                         <tbody>
                             <tr>
                                 <th>Roof Height (in ft.)</td>
-                                <td>{{farm.roof_height|floatformat:"-2"}}</td>
+                                <td data-label="Roof Height">{{farm.roof_height|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Warehouse Area</td>
-                                <td>{{farm.wh_length|floatformat:"-2"}} x {{farm.wh_width|floatformat:"-2"}}</td>
+                                <td data-label="Warehouse Area">{{farm.wh_length|floatformat:"-2"}} x {{farm.wh_width|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Feeding Trough</td>
-                                <td>{{farm.feed_trough}}</td>
+                                <td data-label="Feeding Trough">{{farm.feed_trough}}</td>
                             </tr>
                             <tr>
                                 <th>Building Capacity</td>
-                                <td>{{farm.bldg_cap}}</td>
+                                <td data-label="Building Capacity">{{farm.bldg_cap}}</td>
                             </tr>
                             <tr>
                                 <th>Building Curtain</td>
-                                <td>{{farm.bldg_curtain|yesno:"Yes,No"}}</td>
+                                <td data-label="Building Curtain">{{farm.bldg_curtain|yesno:"Yes,No"}}</td>
                             </tr>
                             <tr>
                                 <th>Medic Tank</td>
-                                <td>{{farm.medic_tank}}</td>
+                                <td data-label="Medic Tank">{{farm.medic_tank}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -90,7 +104,7 @@
             </div>
         </section>
     </div>
-    <div class="flex">
+    <div class="flex flex-form">
         <section class="flex-item" id="pig-pens">
             <h2>Pig Pens</h2>
             <div class="box-style">

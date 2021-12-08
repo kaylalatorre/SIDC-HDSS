@@ -7,18 +7,7 @@
 {% endblock page_title %}
 
 {% block section %}
-
-
-    <!-- TEST: for INTBIOSEC REPORT success-error message placeholder -->
-    {% for mssg in messages %}
-        {% if "intbio-report" in mssg.tags %}
-            <div style="color: orange;" class="alert alert-{{ message.tags }} mb-0 alert-dismissible fade show" role="alert">
-                {{ mssg }}
-            </div>
-        {% endif %}
-    {% endfor %}
-
-
+{% include 'partials/messages.html' %}
 <div class="table-container main-div">   
     <div>
         <h1>Internal Biosecurity Reports</h1>
@@ -60,16 +49,20 @@
     </div>
     <!-- Report content -->
     <div class="box-style" id="rep-intbiosec">
+        <div class="print-header">
+            <h1>SIDC | Hogs Disease Surveillance System</h1>
+            <p class="flex-item">All Internal Biosecurity Report for {{dateStart}} to {{dateEnd}} </p>
+        </div>
         <table class="table">
             <thead>
                 <tr class="second-header">
                     <th colspan="4">Farm Details</th>
                     <th colspan="3">Biosecurity Measures</th>
                     <th colspan="3">Biosecurity Checklist</th>
-                    <th>Total Score</th>
+                    <th style="text-align: right;">Total Score</th>
                 </tr>
                 <tr>
-                    <th>Farm Code</th>
+                    <th style="text-align: center;">Farm Code</th>
                     <th>Raiser</th>
                     <th>Area</th>
                     <th>Technician</th>
@@ -83,10 +76,11 @@
                 </tr>
             </thead>
             <tbody>
+                
                 <!-- Data -->
                 {% for farm,tech in farmtechList %}
                 <tr>
-                    <td data-label="Farm Code"> {{farm.code}} </td>
+                    <td data-label="Farm Code" style="text-align: center;"> {{farm.code}} </td>
                     <td data-label="Raiser"> {{farm.raiser}} </td>
                     <td data-label="Area"> {{farm.area}} </td>
                     <td data-label="Technician"> {{tech.name}} </td>
@@ -96,14 +90,14 @@
                     <td data-label="Disinfect Premises"> {{farm.intbio_disinfect_prem}} </td>
                     <td data-label="Disinfect Veterinary Supplies"> {{farm.intbio_disinfect_vet_supp}} </td>
                     <td data-label="Last Update">{{farm.updated}}</td>
-                    <td data-label="Total Score">{{farm.intbio_score}}</td>
+                    <td data-label="Total Score" style="text-align: right;">{{farm.intbio_score}}</td>
                 </tr>
                 {% endfor %}
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="10">Average Score</td>
-                    <td> {{farmTotalAve.ave_intbio}} </td>
+                    <td style="text-align: right;"> {{farmTotalAve.ave_intbio}} </td>
                 </tr>
             </tbody>            
         </table>

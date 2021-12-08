@@ -1,7 +1,9 @@
-/* Tech assignment edit button */
-let edit = document.querySelectorAll('.assignEdit');
-for(var i = 0; i < edit.length; i++) { 
-    edit[i].addEventListener("click", (e)=> {
+/* 
+* Tech assignment edit button 
+*/
+let assignEdit = document.querySelectorAll('.assignEdit');
+for(var i = 0; i < assignEdit.length; i++) { 
+    assignEdit[i].addEventListener("click", (e)=> {
         let editParent = e.target.parentElement.parentElement.parentElement;
         let editDropdown = editParent.querySelector(".form-select");
         let assignSave = editParent.querySelector(".assignSave");
@@ -13,9 +15,9 @@ for(var i = 0; i < edit.length; i++) {
     })
 }
 
-let save = document.querySelectorAll('.assignSave');
-for(var i = 0; i < save.length; i++) { 
-    save[i].addEventListener("click", (e)=> {
+let assignSave = document.querySelectorAll('.assignSave');
+for(var i = 0; i < assignSave.length; i++) { 
+    assignSave[i].addEventListener("click", (e)=> {
         let saveParent = e.target.parentElement.parentElement.parentElement;
         let saveDropdown = saveParent.querySelector(".form-select");
         let assignSave = saveParent.querySelector(".assignSave");
@@ -27,6 +29,90 @@ for(var i = 0; i < save.length; i++) {
     })
 }
 
+/* 
+* Biosecurity edit button 
+*/
+let biosecEdit = document.querySelectorAll('.biosecEdit');
+for(var i = 0; i < biosecEdit.length; i++) { 
+    biosecEdit[i].addEventListener("click", (e)=> {
+        let editParent = e.target.parentElement.parentElement.parentElement;
+        let biosecSave = editParent.querySelector(".biosecSave");
+        let biosecEdit = editParent.querySelector(".biosecEdit");
+        console.log(biosecEdit);
+        biosecSave.setAttribute("style", "display: block");
+        biosecEdit.setAttribute("style", "display: none");
+    })
+}
+
+let biosecSave = document.querySelectorAll('.biosecSave');
+for(var i = 0; i < biosecSave.length; i++) { 
+    biosecSave[i].addEventListener("click", (e)=> {
+        let saveParent = e.target.parentElement.parentElement.parentElement;
+        let biosecSave = saveParent.querySelector(".biosecSave");
+        let biosecEdit = saveParent.querySelector(".biosecEdit");
+
+        biosecSave.setAttribute("style", "display: none");
+        biosecEdit.setAttribute("style", "display: block");
+    })
+}
+
+/**
+ * Changing style of statuses
+ */
+let rowStatus = document.querySelectorAll('.status');
+console.log(rowStatus);
+for(var i = 0; i < rowStatus.length; i++) { 
+    let val = rowStatus[i].innerText;
+    if( val === "Resolved") {
+        rowStatus[i].classList.add("green");
+    }
+    else if ( val === "Active") {
+        rowStatus[i].classList.add("red");
+    }
+    else {
+        console.log("No status detected/status value invalid.")
+    }
+}   
+
+/**
+ * Toggling view to Member Announcement btn-grp
+ */
+ let checkbox = document.querySelectorAll('.announce-checkbox');
+ for(var i = 0; i < checkbox.length; i++) { 
+     checkbox[i].addEventListener('click', (e) => {
+        var isChecked = e.target.checked;
+        var btnGrp = document.querySelector('#announce-btn-grp');
+         console.log(isChecked);
+         if(isChecked) {
+             btnGrp.classList.remove('hide');
+         } else {
+             btnGrp.classList.add('hide');
+         }
+         
+     });
+ }   
+ 
+/**
+ * Toggling view to adding of area
+ */
+function toggleAreaView() {
+    const area = $('.add-new-area');
+    const addBtn = $('#add-area');
+    const cancelBtn = $('#cancel-area');
+    
+    if(area.hasClass('hide')) {
+        area.removeClass('hide').addClass('show');
+        addBtn.addClass('hide').removeClass('show');
+        cancelBtn.addClass('show').removeClass('hide');
+    }
+    else {
+        area.removeClass('show').addClass('hide');
+        addBtn.addClass('show').removeClass('hide');
+        cancelBtn.addClass('hide').removeClass('show');
+    }
+}
+
+// MGIHT BE BACKEND
 function viewFarm(farm) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data

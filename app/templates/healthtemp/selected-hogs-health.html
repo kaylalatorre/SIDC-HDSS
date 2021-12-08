@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Hogs Health 001 </title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <div class="flex">
+        <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  001</h1>
+        <div><a class="button primary-btn" href="#">View Farm Details</a></div> <!-- Redirect to assigned farm's page -->
+    </div>
+    <hr>
+    <div class="flex">
+        <section style="width: 40%; margin-right: 16px;">
+            <h2>Farm Details</h2>
+            <div class="box-style">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Raiser</td>
+                            <td>John Doe</td>
+                        </tr>
+                        <tr>
+                            <th>Area</td>
+                            <td>West</td>
+                        </tr>
+                        <tr>
+                            <th>No. of Pigs</td>
+                            <td>1000</td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Starter Weight</td>
+                            <td>1000</td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Current Weight</td>
+                            <td>1000</td>
+                        </tr>
+                        <tr>
+                            <th>Mortality Rate</td>
+                            <td>28228</td>
+                        </tr>
+                        <tr>
+                            <th>Symptoms Reported</td>
+                            <td>44</td>
+                        </tr>
+                        <tr>
+                            <th>Active Symptoms</td>
+                            <td>44</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section style="width: 60%">
+            <h2>Symptoms Reported</h2>
+            <div class="box-style">
+                <table class="table" id="symptoms-reported">
+                    <thead>
+                        <tr>
+                            <th>Incident Code</th>
+                            <th>Date Reported</th>
+                            <th>No. of Pigs Affected</th>
+                            <th>Symptoms Observed</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="Incident Code">1</td>
+                            <td data-label="Date Reported"> 50000 </td>
+                            <td data-label="No. of Pigs Affected"> 50000 </td>
+                            <td data-label="Symptoms Observed">  
+                                <ul>
+                                    <li>hi</li>
+                                    <li>hello</li>
+                                </ul>
+                            </td>
+                            <td data-label="Status" class="status"> Resolved </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock section %}
