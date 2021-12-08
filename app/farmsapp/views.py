@@ -1552,7 +1552,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "extbioID"
                 )
     else: # (CASE 2) search by BOTH date range and areaName
-        debug("TRACE: in else/")
+        debug("TRACE: in else/ filter_farmsAssessment")
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)

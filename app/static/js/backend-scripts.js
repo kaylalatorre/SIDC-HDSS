@@ -1,58 +1,28 @@
 /* BACKEND-specific Functions */
 
-/**
- * Helper function for setting dropdown acc. to selected option
- */
-function setSelectedValue(selectObj, valueToSet) {
-    for (var i = 0; i < selectObj.options.length; i++) {
-        if (selectObj.options[i].text == valueToSet) {
-            selectObj.options[i].selected = true;
-            return;
-        }
-    }
-}
 
-window.onload = function() {
-    // setToday();
-    var arName = $("#farm-area option:selected").val();
+// window.onload = function() {
+//     // setToday();
+//     var arName = $("#farm-area option:selected").val();
 
-    // Get dropdown & assign to var
-    var dropObj = document.getElementById("farm-area");
-    alert("optSelectID -- " + optSelect.options[0].text);
+//     // Get dropdown & assign to var
+//     var dropObj = document.getElementById("farm-area");
+//     alert("optSelectID -- " + optSelect.options[0].text);
     
-    // Set selected option in dropdown after filtering
-    setSelectedValue(dropObj, arName);
-};
+//     // Set selected option in dropdown after filtering
+//     setSelectedValue(dropObj, arName);
+// };
 
-/**
- * Helper function for setting date today for input tags of date-type
- */
-// function setToday() {
-//     // var farm_sDate = document.getElementById("farm-start-date");
-//     // var farm_eDate = document.getElementById("farm-end-date");
+// $(document).ready(function() {
 
-//     // var int_sDate = document.getElementById("intbio-start-date");
-//     // var int_eDate = document.getElementById("intbio-end-date");
+//     // On refresh check if there are values selected
+//     if (sessionStorage.farmArea) {
+//         // Get the value stored from localStorage and select in dropdown
+//         var dropObj = document.getElementById("farm-area");
+//         setSelectedValue(dropObj, sessionStorage.farmArea);
+//     }
+// });
 
-//     // var ext_sDate = document.getElementById("extbio-start-date");
-//     // var ext_eDate = document.getElementById("extbio-end-date");
-
-//     var today = new Date();
-//     // farm_sDate.value = today.toISOString().substr(0, 10);
-//     // farm_eDate.value = today.toISOString().substr(0, 10);
-
-//     // set all input START DATE tags to date today 
-//     var startDates = document.getElementsByClassName('input-startDate');
-//     for(var i = 0; i < startDates.length; i++) {
-//         startDates[i].value = today.toISOString().substr(0, 10);
-//     }    
-
-//     // set all input END DATE tags to date today 
-//     var endDates = document.getElementsByClassName('input-endDate');
-//     for(var i = 0; i < endDates.length; i++) {
-//         endDates[i].value = today.toISOString().substr(0, 10);
-//     } 
-// }
 
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
@@ -214,9 +184,22 @@ $('#farm-code').change(function() {
 });
 
 
+/**
+ * Helper function for setting dropdown acc. to selected option
+ */
+ function setSelectedValue(selectObj, valueToSet) {
+    for (var i = 0; i < selectObj.options.length; i++) {
+        if (selectObj.options[i].text == valueToSet) {
+            selectObj.options[i].selected = true;
+            console.log("option [" + selectObj.options[i].text + "] is selected.");
+            return;
+        }
+    }
+}
 
 /**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
+ * Note: also contains a .load() for updating table contents upon filter.
  */
 function filterFarmRep(){
 
@@ -229,12 +212,28 @@ function filterFarmRep(){
     console.log("eDate -- " + eDate);
     console.log("arName -- " + arName);
 
-    // TODO: set Date range acc. to sDate and eDate
 
     try{
+
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
-        location.href = url;
+
+        $('#rep-farmAssess').load(url + ' #rep-farmAssess', function () {
+            $(this).children().unwrap();
+            
+        });
+
+        $('.farmrep-subheading').load(url + ' .farmrep-subheading', function () {
+            $(this).children().unwrap();
+            
+        });
+
+        $('.farmass-report').load(url + ' .farmass-report', function () {
+            $(this).children().unwrap();
+            
+        });
+
+        
 
     } catch (error){
         console.log("Fetching farm details failed.");
