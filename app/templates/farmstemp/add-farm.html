@@ -132,6 +132,7 @@
                                 <th>Length</th>
                                 <th>Width</th>
                                 <th>No. of Pigs</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody  id="input-pigpen">
@@ -145,16 +146,9 @@
                                 <td data-label="No. of Pigs" id="pigpen-num-heads">
                                     {{pigpenMeasuresForm.num_heads}}
                                 </td>
-                            </tr>
-                            <tr>
-                                <td data-label="Length" id="pigpen-length">
-                                    {{pigpenMeasuresForm.length}}
-                                </td>
-                                <td data-label="Width" id="pigpen-width">
-                                    {{pigpenMeasuresForm.width}}
-                                </td>
-                                <td data-label="No. of Pigs" id="pigpen-num-heads">
-                                    {{pigpenMeasuresForm.num_heads}}
+                                <!-- Removes pigpen row -->  
+                                <td data-label="">
+                                    <button class="text-btn-red" style="padding-left: 80%;"><i class='bx bx-x'></i></button>
                                 </td>
                             </tr>
                         </tbody>
