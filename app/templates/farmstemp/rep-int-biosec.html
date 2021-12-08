@@ -8,7 +8,7 @@
 
 {% block section %}
 {% include 'partials/messages.html' %}
-<div class="table-container main-div">   
+<div class="table-container main-div" id="intbioRep-container">   
     <div>
         <h1>Internal Biosecurity Reports</h1>
     </div>
@@ -38,7 +38,7 @@
 
     <hr>
     <!-- Report description, print button -->
-    <div class="flex subheading">
+    <div class="flex subheading intbioRep-subheading">
         {% if not isFiltered %}
             <p class="flex-item" id="intrep-header">All Internal Biosecurity Report.</p>
         {% else %}
@@ -51,7 +51,11 @@
     <div class="box-style" id="rep-intbiosec">
         <div class="print-header">
             <h1>SIDC | Hogs Disease Surveillance System</h1>
-            <p class="flex-item">All Internal Biosecurity Report for {{dateStart}} to {{dateEnd}} </p>
+            {% if not isFiltered %}
+                <p class="flex-item">All Internal Biosecurity Report.</p>
+            {% else %}
+                <p class="flex-item">{{areaName}} Internal Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+            {% endif %}
         </div>
         <table class="table">
             <thead>

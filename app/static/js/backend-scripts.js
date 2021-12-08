@@ -1,29 +1,6 @@
 /* BACKEND-specific Functions */
 
 
-// window.onload = function() {
-//     // setToday();
-//     var arName = $("#farm-area option:selected").val();
-
-//     // Get dropdown & assign to var
-//     var dropObj = document.getElementById("farm-area");
-//     alert("optSelectID -- " + optSelect.options[0].text);
-    
-//     // Set selected option in dropdown after filtering
-//     setSelectedValue(dropObj, arName);
-// };
-
-// $(document).ready(function() {
-
-//     // On refresh check if there are values selected
-//     if (sessionStorage.farmArea) {
-//         // Get the value stored from localStorage and select in dropdown
-//         var dropObj = document.getElementById("farm-area");
-//         setSelectedValue(dropObj, sessionStorage.farmArea);
-//     }
-// });
-
-
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
@@ -199,7 +176,8 @@ $('#farm-code').change(function() {
 
 /**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
- * Note: also contains a .load() for updating table contents upon filter.
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
 function filterFarmRep(){
 
@@ -218,21 +196,22 @@ function filterFarmRep(){
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
 
-        $('#rep-farmAssess').load(url + ' #rep-farmAssess', function () {
+        // for loading report table data
+        $('#rep-farmAssess').load(url + ' #rep-farmAssess', function (response) {
             $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.farmass-report');
+            // console.log(alertHTML);
+            $('#farmrep-container').prepend(alertHTML);
             
         });
 
+        // for loading report subheader
         $('.farmrep-subheading').load(url + ' .farmrep-subheading', function () {
             $(this).children().unwrap();
             
         });
-
-        $('.farmass-report').load(url + ' .farmass-report', function () {
-            $(this).children().unwrap();
-            
-        });
-
         
 
     } catch (error){
@@ -244,6 +223,8 @@ function filterFarmRep(){
 
 /**
  * function for filtering Internal Biosec report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
  function filterIntBioRep(){
 
@@ -259,7 +240,24 @@ function filterFarmRep(){
     try{
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
-        location.href = url;
+
+        // for loading report table data
+        $('#rep-intbiosec').load(url + ' #rep-intbiosec', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.intbio-report');
+            // console.log(alertHTML);
+            $('#intbioRep-container').prepend(alertHTML);
+            
+        });
+
+        // for loading report subheader
+        $('.intbioRep-subheading').load(url + ' .intbioRep-subheading', function () {
+            $(this).children().unwrap();
+            
+        });
+        
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
@@ -269,6 +267,8 @@ function filterFarmRep(){
 
 /**
  * function for filtering External Biosec report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
  function filterExtBioRep(){
 
@@ -284,7 +284,23 @@ function filterFarmRep(){
     try{
         url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
-        location.href = url;
+
+        // for loading report table data
+        $('#rep-extbiosec').load(url + ' #rep-extbiosec', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.extbio-report');
+            // console.log(alertHTML);
+            $('#extbioRep-container').prepend(alertHTML);
+            
+        });
+
+        // for loading report subheader
+        $('.extbioRep-subheading').load(url + ' .extbioRep-subheading', function () {
+            $(this).children().unwrap();
+            
+        });
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
