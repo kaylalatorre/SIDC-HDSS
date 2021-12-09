@@ -186,7 +186,7 @@ function viewAnnounce() {
 
 /** 
 * Filters and search farms client side. Only verified to works for assistant manager. Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
-* @summary Filters and searches farms for assistant manager.
+* @summary Filters and searches farms for assistant manager. (farms.html)
 */
 function filterSearch(){ 
     var input, filter, table, tr, raiser, address, area, i;        
@@ -207,6 +207,47 @@ function filterSearch(){
         if(raiser && address && area){    
             if(
                 (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) && 
+                (
+                    (
+                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
+                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
+                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
+                        (!tiss && !east && !west)
+                    ) 
+                )
+            ){    
+                tr[i].style.display="";        
+            }    
+            else{    
+                tr[i].style.display = "none";   
+            }    
+        }    
+    }
+} 
+
+//---- MODULE 2 functions ----//
+/** 
+* Filters and search farms client side. Only verified to works for assistant manager. Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
+* @summary Filters and searches farms for assistant manager (hogs-health.html)
+*/
+function filterHogsHealth(){ 
+    var input, filter, table, tr, raiser, address, area, i;        
+    input   = document.getElementById("hog_searchTextBoxid"); //to get typed in keyword    
+    filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
+    table   = document.getElementById("hog_mainTableid"); //to get the html table    
+    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+    
+    var 
+    tiss = document.getElementById("ch_hog_TISS").checked,
+    east = document.getElementById("ch_hog_EAST").checked,
+    west = document.getElementById("ch_hog_WEST").checked;
+
+    for(i=0;i<tr.length;i++){    
+        raiser=tr[i].getElementsByTagName("td")[1];
+        area = tr[i].getElementsByTagName("td")[2];
+        if(raiser && area){    
+            if(
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) && 
                 (
                     (
                         (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 

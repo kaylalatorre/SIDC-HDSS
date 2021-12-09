@@ -45,6 +45,8 @@ function printReport(htmlID){
     document.body.innerHTML = orig;
 }
 
+//---- MODULE 1 functions ----//
+
 /** 
  * on-change AJAX for Biochecklist search dropdown
  */
@@ -651,3 +653,5 @@ $('.assignSave').on('click', function () {
         });
     }
 });
+
+//---- MODULE 2 functions ----//

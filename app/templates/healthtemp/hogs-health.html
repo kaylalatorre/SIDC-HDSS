@@ -12,7 +12,7 @@
         <h1 class="heading flex-item">Hogs Health</h1>
         <div class="btn-group" style="justify-content: flex-end; padding: 0;">
             <div class="input-group mb-3  flex-item" style="margin-right: 4px;">
-                <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" id="searchTextBoxid" onkeyup="filterSearch()">
+                <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2" id="hog_searchTextBoxid" onkeyup="filterHogsHealth()">
                 <div class="input-group-append">
                   <span class="input-group-text" id="basic-addon2"><i class='bx bx-search'></i></span>
                 </div>
@@ -23,15 +23,15 @@
                 </button>
                 <ul class="dropdown-menu" style="padding: 8px;">
                     <label style="font-weight: 600;">Area</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_TISS" onclick="filterSearch()"/>&nbsp;TSISI</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_EAST" onclick="filterSearch()"/>&nbsp;East</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_WEST" onclick="filterSearch()"/>&nbsp;West</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_TISS" onclick="filterHogsHealth()"/>&nbsp;TSISI</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_EAST" onclick="filterHogsHealth()"/>&nbsp;East</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_WEST" onclick="filterHogsHealth()"/>&nbsp;West</a></li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="box-style">
-        <table class="table" id="mainTableid">
+        <table class="table" id="hog_mainTableid">
             <thead>
                 <tr>
                     <th>Farm Code</th>
