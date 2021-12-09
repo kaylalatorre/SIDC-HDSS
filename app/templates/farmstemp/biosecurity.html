@@ -19,7 +19,13 @@
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
                     <option hidden value="{{ farmID }}"> {{ farmID }} </option>
                     {% for farm in farmList %}
-                        <option value="{{ farm.id }}"> {{ farm.id }} </option>
+                        {% if techFarm.code < 10 %}
+                            <option value="{{ farm.id }}">00{{farm.id}}</option>
+                        {% elif techFarm.code < 100 %}
+                            <option value="{{ farm.id }}">0{{farm.id}}</option>
+                        {% else %}
+                            <option value="{{ farm.id }}">{{farm.id}}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
         </div>

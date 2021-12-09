@@ -75,7 +75,13 @@
             {% for techFarm in tFarms.techFarms %}
             
                 <tr>
-                    <td data-label="Farm Code">{{techFarm.code}}</td>
+                    {% if techFarm.code < 10 %}
+                        <td data-label="Farm Code">00{{techFarm.code}}</td>
+                    {% elif techFarm.code < 100 %}
+                        <td data-label="Farm Code">0{{techFarm.code}}</td>
+                    {% else %}
+                        <td data-label="Farm Code">{{techFarm.code}}</td>
+                    {% endif %}
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
                     <td data-label="Contact No.">{{techFarm.contact}}</td>
                     <td data-label="Address">{{techFarm.address}}</td>

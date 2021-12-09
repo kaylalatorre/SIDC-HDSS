@@ -3,7 +3,13 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Farm {{ farm.id }} </title>
+    {% if farm.id < 10 %}
+    <title>SIDC-HDSS | Farm 00{{farm.id}} </title>
+    {% elif farm.id < 100 %}
+    <title>SIDC-HDSS | Farm 0{{farm.id}} </title>
+    {% else %}
+    <title>SIDC-HDSS | Farm {{farm.id}} </title>
+    {% endif %}
 {% endblock page_title %}
 
 {% block section %}
@@ -22,7 +28,15 @@
     </div>
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 80%">
-            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{ farm.id }}</h1>
+
+            {% if farm.id < 10 %}
+                <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 00{{farm.id}} </h1>
+            {% elif farm.id < 100 %}
+                <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 0{{farm.id}} </h1>
+            {% else %}
+                <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{farm.id}} </h1>
+            {% endif %}
+
             <div class="dropdown flex-item">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                 View

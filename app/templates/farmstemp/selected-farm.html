@@ -3,13 +3,27 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Farm 001 </title>
+    {% if id < 10 %}
+    <title>SIDC-HDSS | Farm 00{{id}} </title>
+    {% elif id < 100 %}
+    <title>SIDC-HDSS | Farm 0{{id}} </title>
+    {% else %}
+    <title>SIDC-HDSS | Farm {{id}} </title>
+    {% endif %}
 {% endblock page_title %}
 
 {% block section %}
 <div class="main-div">
-    <div class="flex">
-        <h1 class="heading flex-item"><a href="/farms">Farms </a> >  {{id}}</h1>
+    <div class="flex"> 
+
+        {% if id < 10 %}
+            <h1 class="heading flex-item"><a href="/farms">Farms </a> >  00{{id}}</h1>
+        {% elif id < 100 %}
+            <h1 class="heading flex-item"><a href="/farms">Farms </a> >  0{{id}}</h1>
+        {% else %}
+            <h1 class="heading flex-item"><a href="/farms">Farms </a> >  {{id}}</h1>
+        {% endif %}
+
         <div><a class="button primary-btn" href="#">View Hogs Health</a></div> <!-- Redirect to assigned farm's hogs health details -->
     </div>
     <hr>

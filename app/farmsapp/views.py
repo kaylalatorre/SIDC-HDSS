@@ -87,12 +87,12 @@ def farms(request):
                 "total_pigs",
                 "num_pens",
                 "last_updated"
-                )
+                ).order_by('id')
     debug(qry)
     farmsData = []
     for f in qry:
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "contact": f["contact"],
             "address": f["farm_address"],
@@ -166,7 +166,7 @@ def techFarms(request):
                             "lname", 
                             "contact", 
                             "farm_address",
-                            "last_updated")
+                            "last_updated").order_by('id')
                             # "last_updated").order_by('-last_updated')
 
         # print("TEST LOG techFarmQry: " + str(techFarmQry))
@@ -175,7 +175,7 @@ def techFarms(request):
         for farm in techFarmQry:
             
             farmObject = {
-                "code": str(farm["id"]),
+                "code": farm["id"],
                 "raiser": " ".join((farm["fname"],farm["lname"])),
                 "contact": farm["contact"],
                 "address": farm["farm_address"],
@@ -240,6 +240,8 @@ def techSelectedFarm(request, farmID):
         "foot_dip",
         "fiveh_m_dist",
     ).first()
+
+    # print(str(selTechFarm))
 
     # collect the corresponding pigpens for selected farm
     pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
@@ -928,7 +930,7 @@ def biosec_view(request):
         # pass all data into an array
         for farm in techFarmQry:
             farmObject = {
-                "id": str(farm["id"]),
+                "id": farm["id"],
             }
             techFarmsList.append(farmObject)
 
