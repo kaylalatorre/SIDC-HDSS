@@ -35,6 +35,22 @@ def count_activeIncidents(farmID):
 
     return total_active
 
+def compute_MortRate(farmID):
+    """
+    Computes for the mortality rate of a Farm.
+    mortality % = num_toDate / num_begInv
+    """
+    mortality_rate = 0
+
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID)
+
+    if mortQry.exists():
+        m = mortQry.first()
+
+        mortality_rate = (m.num_toDate / m.num_begInv) * 100
+
+    return mortality_rate
+
 def hogsHealth(request):
     """
     Gets Hogs Health records for all Farms in all Areas due to no selected filters.
@@ -80,6 +96,10 @@ def hogsHealth(request):
 
         farmID = f["id"]
 
+        # for computing Mortality %
+        mortality_rate = compute_MortRate(farmID)
+
+        # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
         total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
         farmObject = {
@@ -91,15 +111,12 @@ def hogsHealth(request):
             "ave_currWeight": str(f["ave_currWeight"]),
             "is_starterWeight": str(f["is_starterWeight"]),
 
-            "total_incidents": total_incidents
+            "mortality_rate": mortality_rate,
+            "total_incidents": total_incidents,
         }
         farmsData.append(farmObject)
 
         total_pigs += f["total_pigs"]
-
-
-
-
 
     debug(farmsData)
 
@@ -109,8 +126,7 @@ def hogsHealth(request):
     # Naka-FK hogs symptoms sa farm, so para siyang 'yung intbio and extbio na 
     # 'yung latest ang naka-FK (so lahat ng True sa naka-FK na record, ayun 'yung Active Symptoms)
     # 
-    # TODO: for "Incidents Reported" column
-    # How many Symptoms record FK-ed to a Farm
+
 
 
     return render(request, 'healthtemp/hogs-health.html', {"farmList": farmsData})
