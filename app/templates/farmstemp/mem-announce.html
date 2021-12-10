@@ -71,7 +71,7 @@
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
                         <td data-label="Author">{{announcement.name}}</td>
-                        <td class="text-warning" data-label="Author">Pending</td>
+                        <td class="text-warning" data-label="Status">Pending</td>
                         <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}" onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
                     </tr>
                     {% endfor %}
@@ -85,7 +85,7 @@
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
                         <td data-label="Author">{{announcement.name}}</td>
-                        <td class="text-danger" data-label="Author">Rejected</td>
+                        <td class="text-danger" data-label="Status">Rejected</td>
                         <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}" onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
                     </tr>
                     {% endfor %}

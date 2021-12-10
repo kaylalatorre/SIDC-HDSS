@@ -57,6 +57,39 @@ for(var i = 0; i < biosecSave.length; i++) {
 }
 
 /**
+ * Symptoms edit button 
+ */
+ let symptomsEdit = document.querySelectorAll('.symptomsEdit');
+ for(var i = 0; i < symptomsEdit.length; i++) { 
+    symptomsEdit[i].addEventListener("click", (e)=> {
+         let editParent = e.target.parentElement.parentElement.parentElement.parentElement;
+         
+         let dropdown = editParent.querySelector(".form-select");
+         console.log(dropdown);
+         let symptomsSave = editParent.querySelector(".symptomsSave");
+         let symptomsEdit = editParent.querySelector(".symptomsEdit");
+         
+         dropdown.removeAttribute("disabled");
+         symptomsSave.setAttribute("style", "display: block");
+         symptomsEdit.setAttribute("style", "display: none");
+     })
+ }
+ 
+ let symptomsSave = document.querySelectorAll('.symptomsSave');
+ for(var i = 0; i < symptomsSave.length; i++) { 
+    symptomsSave[i].addEventListener("click", (e)=> {
+         let saveParent = e.target.parentElement.parentElement.parentElement.parentElement;
+         let dropdown = saveParent.querySelector(".form-select");
+         let symptomsSave = saveParent.querySelector(".symptomsSave");
+         let symptomsEdit = saveParent.querySelector(".symptomsEdit");
+ 
+         dropdown.setAttribute("disabled", true);
+         symptomsSave.setAttribute("style", "display: none");
+         symptomsEdit.setAttribute("style", "display: block");
+     })
+ }
+
+/**
  * Changing style of statuses
  */
 let rowStatus = document.querySelectorAll('.status');
@@ -68,6 +101,9 @@ for(var i = 0; i < rowStatus.length; i++) {
     }
     else if ( val === "Active") {
         rowStatus[i].classList.add("red");
+    }
+    else if ( val === "Pending") {
+        rowStatus[i].classList.add("yellow");
     }
     else {
         console.log("No status detected/status value invalid.")
