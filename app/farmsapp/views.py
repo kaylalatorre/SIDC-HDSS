@@ -72,6 +72,7 @@ def farms(request):
     """
     Display all farms for assistant manager
     """
+    # get all farm data
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -88,7 +89,8 @@ def farms(request):
                 "num_pens",
                 "last_updated"
                 ).order_by('id')
-    debug(qry)
+    # debug(qry)
+    
     farmsData = []
     for f in qry:
         farmObject = {
@@ -102,7 +104,8 @@ def farms(request):
             "updated": f["last_updated"]
         }
         farmsData.append(farmObject)
-    debug(farmsData)
+    # debug(farmsData)
+
     return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
@@ -112,14 +115,22 @@ def selectedFarm(request, farmID):
     :param farmID: PK of selected farm
     :type farmID: integer
     """
-    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'extbio', 'area').annotate(
+    # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
         contact=F("hog_raiser__contact_no"),
         length=F("wh_length"),
         width=F("wh_width"),
-        farm_area = F("area__area_name")
-    )
-    context = qry.values(
+        farm_area   = F("area__area_name"),
+        waste_mgt   = F("intbio__waste_mgt"),
+        isol_pen    = F("intbio__isol_pen"),
+        bird_proof  = F("extbio__bird_proof"),
+        perim_fence = F("extbio__perim_fence"),
+        foot_dip    = F("intbio__foot_dip"),
+        fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selectedFarm = qry.values(
         "id",
         "raiser",
         "contact",
@@ -127,13 +138,40 @@ def selectedFarm(request, farmID):
         "farm_address",
         "farm_area",
         "roof_height",
-        "length",
-        "width",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
         "feed_trough",
-        "bldg_cap"    
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
     ).first()
    
-    return render(request, 'farmstemp/selected-farm.html', context)
+    # collect pigpens
+    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList})
 
 def techFarms(request):
     """
