@@ -17,9 +17,7 @@ import json
 from .forms import (
     HogRaiserForm, 
     FarmForm, 
-    PigpenMeasuresForm, 
-    InternalBiosecForm, 
-    ExternalBiosecForm, 
+    PigpenMeasuresForm,
     ActivityForm, 
     AreaForm, 
     MemAnnouncementForm
@@ -163,10 +161,12 @@ def farms(request):
             "updated": f["last_updated"]
         }
         farmsData.append(farmObject)
+
     areaList = []
     for choice in Area.objects.distinct().order_by('area_name').values('area_name'):
             areaList.append({"area_name": choice['area_name']})
-    debug(farmsData)
+
+    # debug(farmsData)
     return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
@@ -232,7 +232,40 @@ def selectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList})
+    # collect activities
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+
+    actList = []
+
+    # store all data to an array
+    for activity in actQuery:
+        actList.append({
+            'id' : activity.id,
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_arrival' : activity.time_arrival,
+            'time_departure' : activity.time_departure,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+        })
+
+    # collect biosecurity checklists
+    # Select Biochecklist with latest date
+    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    
+
+    # Get latest instance of Biochecklist
+    currbioObj = currbioQuery.first()
+    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
+
+
+    # Get all biosecID, last_updated in extbio under a Farm
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+        'last_updated',
+    ).order_by('-last_updated')
+
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
+                                                            'currBio': currbioObj, 'bioList': extQuery})
 
 def techFarms(request):
     """
@@ -248,14 +281,14 @@ def techFarms(request):
     
     # collect number of areas assigned (for frontend purposes)
     areaNum = len(areaQry)
-    print("TEST LOG areaNum: " + str(areaNum))
+    # print("TEST LOG areaNum: " + str(areaNum))
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
-        print(str(area.id) + str(area.area_name))
+        # print(str(area.id) + str(area.area_name))
 
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
@@ -266,7 +299,6 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_updated").order_by('id')
-                            # "last_updated").order_by('-last_updated')
 
         # print("TEST LOG techFarmQry: " + str(techFarmQry))
 
@@ -404,7 +436,7 @@ def addFarm(request):
         # print("TEST LOG areaIDQry: " + str(areaIDQry))
 
         areaID = areaIDQry.id
-        print("TEST LOG areaID: " + str(areaID))
+        # print("TEST LOG areaID: " + str(areaID))
 
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
@@ -430,7 +462,7 @@ def addFarm(request):
             waste_mgt = request.POST.get("waste-mgt", None)
         )
 
-        print(str(internalBiosec.id))
+        # print(str(internalBiosec.id))
 
         # internalBiosec.save()
         # print("TEST LOG: Added new internal biosec")
@@ -459,7 +491,7 @@ def addFarm(request):
             fiveh_m_dist = fiveh_m_dist
         )
 
-        print(str(externalBiosec.id))
+        # print(str(externalBiosec.id))
 
         # externalBiosec.save()
         # print("TEST LOG: Added new internal biosec")
@@ -512,7 +544,7 @@ def addFarm(request):
             else:
                 # find selected raiser id
                 hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
-                print(str(hogRaiser.values("id")))
+                # print(str(hogRaiser.values("id")))
 
                 # save raiser ID to farm
                 farm.hog_raiser_id = raiserID
@@ -528,7 +560,7 @@ def addFarm(request):
             farm.save()
             print("TEST LOG: Added new farm")
 
-            messages.success(request, "Farm " + str(farm.id) + " has been succesfully sent for approval!", extra_tags='add-farm')
+            messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
 
             # get recently created internal and external biosec IDs and update ref_farm_id
             externalBiosec.ref_farm_id = farm
@@ -550,7 +582,7 @@ def addFarm(request):
                 
                 for pigpen in pigpenList:
                     pigpen = pigpenList[x]
-                    print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
+                    # print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
 
                     # create new instance of Pigpen_Measures model
                     pigpen_measure = Pigpen_Measures.objects.create(
@@ -563,15 +595,16 @@ def addFarm(request):
                     # add all num_heads (pigpen measure) for total_pigs (farm)
                     numTotal += int(pigpen_measure.num_heads)
 
-                    print(str(pigpen_measure))
+                    # print(str(pigpen_measure))
 
                     pigpen_measure.save()
-                    print("TEST LOG: Added new pigpen measure")
+                    # print("TEST LOG: Added new pigpen measure")
 
                     x += 1
                 
 
-                # update total_pigs of newly added farm
+                # update num_pens and total_pigs of newly added farm
+                farm.num_pens = len(pigpenList)
                 farm.total_pigs = numTotal
                 farm.save()
                 
@@ -653,7 +686,7 @@ def search_bioChecklist(request, biosecID):
                 # for checking if Checklist is w/in 1 day
                 checkDateDiff = datetime.now(timezone.utc) - ext.last_updated
 
-                debug("checkDateDiff.days -- " + str(checkDateDiff.days))
+                # debug("checkDateDiff.days -- " + str(checkDateDiff.days))
 
                 if not checkDateDiff.days > 1: # (SUCCESS) Checklist is w/in 1 day. Can still be editable
                     isEditable = True
@@ -739,8 +772,8 @@ def update_bioChecklist(request, biosecID):
                     extDateDiff = datetime.now(timezone.utc) - extBio.last_updated
                     intDateDiff = datetime.now(timezone.utc) - intBio.last_updated
                     
-                    debug("extDateDiff.days" + str(extDateDiff.days))
-                    debug("intDateDiff" + str(intDateDiff.days))
+                    # debug("extDateDiff.days" + str(extDateDiff.days))
+                    # debug("intDateDiff" + str(intDateDiff.days))
 
                     if extDateDiff.days > 1 or intDateDiff.days > 1:
                         # Get biosec fields from not updated record in db
@@ -1126,7 +1159,7 @@ def biosec_view(request):
         # - (2) latest intbio-extbio Checklist, 
         # - (3) all biocheck IDs and dates within that Farm, 
         # - (4) activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
     
     return render(request, 'farmstemp/biosecurity.html', {}) 
 
@@ -1236,7 +1269,7 @@ def select_biosec(request, farmID):
         # - (2) latest intbio-extbio Checklist, 
         # - (3) all biocheck IDs and dates within that Farm, 
         # - (4) activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList,'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
     return render(request, 'farmstemp/biosecurity.html', {}) 
 
@@ -1683,11 +1716,11 @@ def computeBioscore(farmID, intbioID, extbioID):
     BIOSCORE = ( (total measure points + total checklist points) / (total points - N/A))
     """
 
-    debug("in computeIntBio()/n")
+    # debug("in computeIntBio()/n")
 
-    debug("param // farmID -- " + str(farmID))
-    debug("param // intbioID -- " + str(intbioID))
-    debug("param // extbioID -- " + str(extbioID))
+    # debug("param // farmID -- " + str(farmID))
+    # debug("param // intbioID -- " + str(intbioID))
+    # debug("param // extbioID -- " + str(extbioID))
 
     intbio_score = 0
     extbio_score = 0
@@ -1758,7 +1791,7 @@ def computeBioscore(farmID, intbioID, extbioID):
         # compute BIOSCORE and round up to 2 decimal places
         intbio_score = ((total_measures + total_checks) / (7 - total_NA)) * 100
         intbio_score = round(intbio_score,2)
-        debug("INTBIO_SCORE -- " + str(intbio_score))
+        # debug("INTBIO_SCORE -- " + str(intbio_score))
 
 
     # (2) EXTERNAL BIOSEC SCORE
@@ -1823,7 +1856,7 @@ def computeBioscore(farmID, intbioID, extbioID):
         # compute BIOSCORE and round up to 2 decimal places
         extbio_score = ((total_measures + total_checks) / (15 - total_NA)) * 100
         extbio_score = round(extbio_score,2)
-        debug("EXTBIO_SCORE -- " + str(extbio_score))
+        # debug("EXTBIO_SCORE -- " + str(extbio_score))
 
     # returns a tuple; access using "var_name[0]" and "var_name[1]"
     return intbio_score, extbio_score
@@ -2731,7 +2764,7 @@ def dashboard_view(request):
             "extbioID",
             "last_update"
             )
-    debug(farmQry)
+    # debug(farmQry)
 
     if not farmQry.exists(): 
         messages.error(request, "No farm details found.", extra_tags="farm-dashboard")
@@ -2756,7 +2789,7 @@ def dashboard_view(request):
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
         
-        debug("bioDateDiff.days -- " + str(bioDateDiff.days))
+        # debug("bioDateDiff.days -- " + str(bioDateDiff.days))
 
         if bioDateDiff.days > 7:
             total_needInspect += 1
@@ -2769,7 +2802,7 @@ def dashboard_view(request):
     ave_intbio = round((ave_intbio / len(farmQry)), 2)
     ave_extbio = round((ave_extbio / len(farmQry)), 2)
     
-    debug("total_farms -- " + str(total_farms))
+    # debug("total_farms -- " + str(total_farms))
 
     farmStats = {
         "total_farms": total_farms,
@@ -2777,8 +2810,8 @@ def dashboard_view(request):
         "total_needInspect": total_needInspect,
         "ave_intbio": ave_intbio,
         "ave_extbio": ave_extbio,
-        "rem_intbio": 100 - ave_intbio,
-        "rem_extbio": 100 - ave_extbio,
+        "rem_intbio": round((100 - ave_intbio), 2),
+        "rem_extbio": round((100 - ave_extbio), 2),
     }
 
     # return render(request, 'dashboard.html', {"fStats": farmStats})

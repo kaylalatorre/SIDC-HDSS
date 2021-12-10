@@ -70,7 +70,7 @@
                             </tr>
                             <tr>
                                 <th>Warehouse Area</td>
-                                <td>{{farm.length|floatformat:"-2"}} x {{farm.width|floatformat:"-2"}}</td>
+                                <td>{{farm.wh_length|floatformat:"-2"}} x {{farm.wh_width|floatformat:"-2"}}</td>
                             </tr>
                             <tr>
                                 <th>Feeding Trough</td>
@@ -202,14 +202,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data -->
-                        <tr>
-                            <td>01/01/21</td>
-                            <td>Delivery of Medicine</td>
-                            <td>16:00 - 18:00</td>
-                            <td>Very good</td>
-                            <td>N/A</td>
+                    {% for act in activity %}
+
+                        <tr id="{{ act.id }}" value="{{ act.id }}">
+                            <td data-label="Date">
+                                <p class="activity-data">{{act.date}}</p>
+                            </td>
+                            <td data-label="Trip Type">
+                                <p class="activity-data">{{act.trip_type}}</p>
+                            </td>
+                            <td data-label="Time">
+                                <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
+                            </td>
+                            <td data-label="Description">
+                                <p class="activity-data">{{act.description}}</p>
+                            </td>
+                            <td data-label="Remarks">
+                                <p class="activity-data">{{act.remarks}}</p>
+                            </td>
+                            <td> </td>
                         </tr>
+
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
@@ -221,8 +235,11 @@
                     <div class="flex subheading">
                         <div class="input-group mb-3" style="width:40%">
                             <label class="form-label" style="font-weight: 600;">Date</label>
-                            <select class="form-select" id="checklist-date" style="margin-bottom: 0;">
-                                <option value="01/01/21">01/01/21</option>
+                            <select class="form-select checklist-date mobile" id="checklist-date" style="margin-bottom: 0;">
+                                <option hidden value="{{ bioList.0.id }}"> {{ bioList.0.last_updated}} </option>
+                                {% for bio in bioList %}
+                                    <option value="{{ bio.id }}"> {{ bio.last_updated}} </option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -236,128 +253,230 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody>  
                         <tr>
                             <td>Disinfected farm premises?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.intbio.disinfect_prem == 0 %}
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.intbio.disinfect_prem == 1 %}
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio2">No</label>
-                                  
+
+                                    {% if currBio.intbio.disinfect_prem == 2 %}
+                                    <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="disinfect_prem" id="disinfect_prem_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="disinfect_prem_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Provided foot dip specifically for haulers/drivers/truck helpers?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" disabled>
+                                    {% if currBio.extbio.prvdd_foot_dip == 0 %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" checked="checked" disabled>                                    
+                                    {% else %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio1" disabled>                                    
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.extbio.prvdd_foot_dip == 1 %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio2">No</label>
-                                  
+
+                                    {% if currBio.extbio.prvdd_foot_dip == 2 %}
+                                    <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_foot_dip" id="prvdd_foot_dip_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_foot_dip_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Provided alcohol/soap for truck helper/driver for their hand sanitation?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.extbio.prvdd_alco_soap == 0 %}
+                                    <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_alco_soap_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.extbio.prvdd_alco_soap == 1 %}
+                                    <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_alco_soap_radio2">No</label>
-                                  
+
+                                    {% if currBio.extbio.prvdd_alco_soap == 2 %}
+                                    <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prvdd_alco_soap" id="prvdd_alco_soap_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prvdd_alco_soap_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Observed "no visitor/s" policy?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.extbio.obs_no_visitors == 0 %}
+                                    <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="obs_no_visitors_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.extbio.obs_no_visitors == 1 %}
+                                    <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="obs_no_visitors_radio2">No</label>
-                                  
+
+                                    {% if currBio.extbio.obs_no_visitors == 2 %}
+                                    <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="obs_no_visitors" id="obs_no_visitors_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="obs_no_visitors_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Disinfected veterinary supplies like antibiotics by misting or blotting with clothes soaked with disinfectant before storing?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.intbio.disinfect_vet_supp == 0 %}
+                                    <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="disinfect_vet_supp_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.intbio.disinfect_vet_supp == 1 %}
+                                    <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="disinfect_vet_supp_radio2">No</label>
-                                  
+
+                                    {% if currBio.intbio.disinfect_vet_supp == 2 %}
+                                    <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="disinfect_vet_supp" id="disinfect_vet_supp_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="disinfect_vet_supp_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Personnel dipped their footwear in the foot bath before entering each building?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.extbio.prsnl_dip_footwear == 0 %}
+                                    <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prsnl_dip_footwear_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.extbio.prsnl_dip_footwear == 1 %}
+                                    <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prsnl_dip_footwear_radio2">No</label>
-                                  
+
+                                    {% if currBio.extbio.prsnl_dip_footwear == 2 %}
+                                    <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prsnl_dip_footwear" id="prsnl_dip_footwear_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prsnl_dip_footwear_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+
                         <tr>
                             <td>Personnel sanitized their hands using alcohol or soap before entering each building?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.extbio.prsnl_sanit_hands == 0 %}
+                                    <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prsnl_sanit_hands_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.extbio.prsnl_sanit_hands == 1 %}
+                                    <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prsnl_sanit_hands_radio2">No</label>
-                                  
+
+                                    {% if currBio.extbio.prsnl_sanit_hands == 2 %}
+                                    <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="prsnl_sanit_hands" id="prsnl_sanit_hands_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="prsnl_sanit_hands_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
+                        
                         <tr>
                             <td>Changed disinfectant in the wheel bath/foot dip every day?</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    {% if currBio.extbio.chg_disinfect_daily == 0 %}
+                                    <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio1" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio1" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="cng_disinfect_daily_radio1">Yes</label>
-                                  
+
+                                    {% if currBio.extbio.chg_disinfect_daily == 1 %}
+                                    <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio2" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio2" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="cng_disinfect_daily_radio2">No</label>
-                                  
+
+                                    {% if currBio.extbio.chg_disinfect_daily == 2 %}
+                                    <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio3" checked="checked" disabled>
+                                    {% else %}
                                     <input type="radio" class="btn-check" name="cng_disinfect_daily" id="cng_disinfect_daily_radio3" disabled>
+                                    {% endif %}
                                     <label class="btn btn-outline-primary" for="cng_disinfect_daily_radio3">N/A</label>
                                 </div>
                             </td>
                         </tr>
-                    </tr>
                     </tbody>
                 </table>
             </div>
