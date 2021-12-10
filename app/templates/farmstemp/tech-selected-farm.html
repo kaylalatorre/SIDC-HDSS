@@ -15,7 +15,14 @@
 {% block section %}
 <div class="main-div">
     <div class="flex subheading">
-        <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{ farm.id }}</h1>
+        {% if farm.id < 10 %}
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 00{{ farm.id }}</h1>
+        {% elif farm.id < 100 %}
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 0{{ farm.id }}</h1>
+        {% else %}
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{ farm.id }}</h1>
+        {% endif %}
+
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               View

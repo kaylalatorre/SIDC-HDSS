@@ -934,7 +934,7 @@ def biosec_view(request):
             }
             techFarmsList.append(farmObject)
 
-    # debug("techFarmsList -- " + str(techFarmsList))
+    debug("techFarmsList -- " + str(techFarmsList))
 
 
     # (ERROR) for checking technician Areas that have no Farms and null farmID
@@ -1046,11 +1046,11 @@ def select_biosec(request, farmID):
         # pass all data into an array
         for farm in techFarmQry:
             farmObject = {
-                "id": str(farm["id"]),
+                "id": farm["id"],
             }
             techFarmsList.append(farmObject)
-
-    # debug("techFarmsList -- " + str(techFarmsList))
+        
+    debug("techFarmsList -- " + str(techFarmsList))
 
     # Get farmID passed from URL param
     farmID = farmID

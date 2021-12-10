@@ -17,11 +17,18 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
-                    <option hidden value="{{ farmID }}"> {{ farmID }} </option>
+                    {% if farmID < 10 %}
+                        <option hidden value="{{ farmID }}">00{{farmID}}</option>
+                    {% elif farmID < 100 %}
+                        <option hidden value="{{ farmID }}">0{{farmID}}</option>
+                    {% else %}
+                        <option hidden value="{{ farmID }}">{{farmID}}</option>
+                    {% endif %}
+
                     {% for farm in farmList %}
-                        {% if techFarm.code < 10 %}
+                        {% if farm.id < 10 %}
                             <option value="{{ farm.id }}">00{{farm.id}}</option>
-                        {% elif techFarm.code < 100 %}
+                        {% elif farm.id < 100 %}
                             <option value="{{ farm.id }}">0{{farm.id}}</option>
                         {% else %}
                             <option value="{{ farm.id }}">{{farm.id}}</option>
