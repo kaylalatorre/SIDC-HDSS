@@ -65,7 +65,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # app middlewares
 
-    # 'farmsapp.middleware.ErrorPageRedirectMiddleware',
+    'farmsapp.middleware.ErrorPageRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'src.urls'

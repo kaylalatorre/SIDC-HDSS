@@ -50,6 +50,7 @@ urlpatterns = [
     # notifications
     path('notifications', views.getNotifications, name='getNotifications'),
     path('notifications/count', views.countNotifications, name='countNotifications'),
+    path ('notifications/sync', views.syncNotifications, name='syncNotifications'),
 
     # reports
     path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),

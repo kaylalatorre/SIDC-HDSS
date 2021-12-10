@@ -46,6 +46,20 @@ function getNotifsCount() {
     });
 }
 
+function syncNotifs(){
+    // ajax call
+    ajaxCSRF()
+    return $.ajax({
+        type: 'POST',
+        url: '/notifications/sync',
+        success: function (response) {
+            // console.log(count);
+            return response;
+            // console.log(count);
+        }
+    });
+}
+
 /** 
  * Updates the notification icon badge to reflect current notification count.
  */
@@ -90,19 +104,22 @@ var box = document.getElementById('notification-box');
 var down = false;
 
 function toggleNotif() {
-    updateNotifBadge();
     if (down) {
+        syncNotifs();
         box.style.height = '0px';
         box.style.opacity = 0;
         down = false;
     } else {
-        $('.notif-list').load('/notifications .notif-list', function () {
+        $('.notif-list').load('/notifications .notif-list', function (response) {
+            console.log(response);
             $(this).children().unwrap();
+            // alert($(this).html());
         });
         box.style.height = "auto";
         box.style.opacity = 1;
         down = true;
     }
+    updateNotifBadge();
 }
 
 $(document).ready(function () {

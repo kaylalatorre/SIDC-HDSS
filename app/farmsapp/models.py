@@ -11,6 +11,13 @@ from django.conf import settings
 class User(User):
     pass
 
+class AccountData(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+    data = models.JSONField(default=dict)
+
+    def __str__(self):
+        return self.id
+
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)

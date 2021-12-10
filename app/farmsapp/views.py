@@ -13,7 +13,16 @@ from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, InternalBiosecForm, ExternalBiosecForm, ActivityForm, AreaForm, MemAnnouncementForm
+from .forms import (
+    HogRaiserForm, 
+    FarmForm, 
+    PigpenMeasuresForm, 
+    InternalBiosecForm, 
+    ExternalBiosecForm, 
+    ActivityForm, 
+    AreaForm, 
+    MemAnnouncementForm
+)
 from django.forms import formset_factory
 
 # Geocoding
@@ -26,7 +35,17 @@ from geopandas.tools import (
 from django.contrib import messages
 
 # for Model imports
-from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Mem_Announcement
+from .models import (
+    Area, 
+    AccountData,
+    ExternalBiosec, 
+    InternalBiosec, 
+    Farm, 
+    Hog_Raiser, 
+    Pigpen_Measures, 
+    Activity, 
+    Mem_Announcement
+)
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
@@ -40,6 +59,8 @@ from django.utils.timezone import (
     localtime # for getting date today
 ) 
 
+# for list comapare
+from collections import Counter
 
 def debug(m):
     """
@@ -1398,30 +1419,114 @@ def viewAnnouncement(request, id):
     return render(request, 'farmstemp/view-announcement.html', context)
 
 def getNotifications(request):
-
-    notifList = [] # will contain ist of notifications to be displayed
+    notifList = [] # will contain list of notifications to be displayed
+    notifIDList = [] # initialize list of seen notifications
+    try: # get notiflist from database
+        # improve when further use is needed
+        userID = request.session['_auth_user_id']
+        request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
+    except:
+        debug('no items for session item notifIDList obtained from database')
+    try:
+        notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
+    except:
+        pass
+    
+    # print all session items / debug
+    for key, value in request.session.items():
+        print('FIRST {} => {}'.format(key, value))
 
     # Generate notifications to be displayed
     ## Current tags:
+    # string notificationID: notification ID made to uniquely identify each notification
     # string label_class: Classes that will be appended to notif-label. e.g. "notif-urgent"
     # string label: Title of the notification
     # string p: Message of the notification
     # string href: link to the page the user will be sent to if they click on the notification  
     pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+    announceTable = Mem_Announcement._meta.db_table
     for item in pendingAnnouncements:
-        notif = {
-            # "label_class": "notif-urgent test",
-            "label": item["title"],
-            "p": item["mssg"],
-            "href": "/member-announcements"
-        }
-        notifList.append(notif)
-    
-    debug(notifList)
+        notifID = announceTable + str(item['id'])
+        if notifID not in notifIDList:
+            notif = {
+                # "label_class": "notif-urgent test",
+                "notificationID": notifID,
+                "label": item["title"],
+                "p": item["mssg"],
+                "href": "/member-announcements"
+            }
+            # debug(notif)
+            notifIDList.append(notifID)
+            notifList.append(notif)
+
+    request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
+
+    # print all session items / debug
+    for key, value in request.session.items():
+        print('SECOND {} => {}'.format(key, value))
+
     return render(request, 'partials/notifications.html', {"notifList": notifList})
 
+def syncNotifications(request):
+    """
+    Saving notifications data from sessions to database
+    """
+    dbNotifs = []
+    sessionNotifs = []
+    userID = request.session['_auth_user_id']
+    try:
+        dbNotifs.extend(User.objects.get(id=userID).accountdata.data['notifIDList'])
+        sessionNotifs.extend(request.session['notifIDList'])
+    except:
+        debug('no notifs from database found')
+    
+    try:
+        sessionNotifs.extend(request.session['notifIDList'])
+    except:
+        debug('no notifs from session found')
+        return HttpResponse({"error": "no notifs from session found"}, status=404) # no way for sessions notifs to be empty because this will always go after getNotifications
+    
+    if (Counter(dbNotifs) != Counter(sessionNotifs)):
+        new_dbNotifs = []
+        if len(sessionNotifs) != 0: #if sessionNotif is empty
+            pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+            announceTable = Mem_Announcement._meta.db_table
+            for item in pendingAnnouncements:
+                notifID = announceTable + str(item['id'])
+                if notifID in sessionNotifs:
+                    new_dbNotifs.append(notifID)
+    
+    try: # try to save user session 
+        AccountData(
+            user_id = userID,
+            data = {'notifIDList':new_dbNotifs}
+        ).save()
+    except:
+        debug('session was not saved to database')
+
+    return HttpResponse({"success":"session and database synced"}, status=200)
+
 def countNotifications(request):
-    totalNotifs = Mem_Announcement.objects.filter(is_approved=None).count()
+    totalNotifs = 0
+    notifIDList = [] # initialize list of seen notifications
+    try: # get notiflist from database
+        # improve when further use is needed
+        userID = request.session['_auth_user_id']
+        request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
+    except:
+        debug('no items for session item notifIDList obtained from database')
+    try:
+        notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
+    except:
+        pass
+
+    pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+    announceTable = Mem_Announcement._meta.db_table
+    for item in pendingAnnouncements:
+        notifID = announceTable + str(item['id'])
+        if notifID not in notifIDList:
+            totalNotifs = totalNotifs + 1
+
     return HttpResponse(str(totalNotifs), status=200)
 
 # helper functions for Biosec
