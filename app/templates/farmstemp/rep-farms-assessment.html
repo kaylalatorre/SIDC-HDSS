@@ -8,7 +8,7 @@
 
 {% block section %}
 {% include 'partials/messages.html' %}
-<div class="table-container main-div">   
+<div class="table-container main-div" id="farmrep-container">   
     <div>
         <h1>Farms Assessment Reports</h1>
     </div>
@@ -19,8 +19,8 @@
         <div class="mb-3">
             <label class="form-label bold-lbl">Date Range</label>
             <div class="input-group">
-                <input type="date" class="form-control input-startDate" id="farm-start-date">
-                <input type="date" class="form-control input-endDate" id="farm-end-date">
+                <input type="date" class="form-control input-startDate" id="farm-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="farm-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
             </div>
         </div>
 
@@ -39,8 +39,12 @@
 
     <hr>
     <!-- Report description, print button -->
-    <div class="flex subheading">
-        <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p>
+    <div class="flex subheading farmrep-subheading">
+        {% if not isFiltered %}
+            <p class="flex-item" id="farmrep-header">All Farms Assessment Report.</p>
+        {% else %}
+            <p class="flex-item" id="farmrep-header">{{areaName}} Farms Assessment Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}
         <div><button class="primary-btn" onclick="printReport('rep-farmAssess')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     
@@ -48,7 +52,13 @@
     <div class="box-style" id="rep-farmAssess">
         <div class="print-header">
             <h1>SIDC | Hogs Disease Surveillance System</h1>
-            <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p>
+            <!-- <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p> -->
+
+            {% if not isFiltered %}
+                <p class="flex-item">All Farms Assessment Report.</p>
+            {% else %}
+                <p class="flex-item">{{areaName}} Farms Assessment Report for {{dateStart}} to {{dateEnd}}</p>
+            {% endif %}            
         </div>
         <table class="table">
             <thead>

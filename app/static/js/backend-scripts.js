@@ -1,38 +1,5 @@
 /* BACKEND-specific Functions */
 
-window.onload = function() {
-    setToday();
-};
-
-/**
- * Helper function for setting date today for input tags of date-type
- */
-function setToday() {
-    // var farm_sDate = document.getElementById("farm-start-date");
-    // var farm_eDate = document.getElementById("farm-end-date");
-
-    // var int_sDate = document.getElementById("intbio-start-date");
-    // var int_eDate = document.getElementById("intbio-end-date");
-
-    // var ext_sDate = document.getElementById("extbio-start-date");
-    // var ext_eDate = document.getElementById("extbio-end-date");
-
-    var today = new Date();
-    // farm_sDate.value = today.toISOString().substr(0, 10);
-    // farm_eDate.value = today.toISOString().substr(0, 10);
-
-    // set all input START DATE tags to date today 
-    var startDates = document.getElementsByClassName('input-startDate');
-    for(var i = 0; i < startDates.length; i++) {
-        startDates[i].value = today.toISOString().substr(0, 10);
-    }    
-
-    // set all input END DATE tags to date today 
-    var endDates = document.getElementsByClassName('input-endDate');
-    for(var i = 0; i < endDates.length; i++) {
-        endDates[i].value = today.toISOString().substr(0, 10);
-    } 
-}
 
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
@@ -78,6 +45,8 @@ function printReport(htmlID){
     document.body.innerHTML = orig;
 }
 
+//---- MODULE 1 functions ----//
+
 /** 
  * on-change AJAX for Biochecklist search dropdown
  */
@@ -98,6 +67,16 @@ $('.checklist-date').change(function() {
 
             // alert("in AJAX success");
             var biofields = JSON.parse(response["instance"]);
+
+            // check if Checklist can still be editable
+            if (biofields["isEditable"] === false){
+                $('#edit-grp-desktop').hide();
+                $('#edit-grp-mobile').hide();
+            }
+            else {
+                $('#edit-grp-desktop').show();
+                $('#edit-grp-mobile').show();                
+            }
 
             // select btn in btn group based on db value
             // EXTERNAL biosec fields
@@ -183,8 +162,24 @@ $('#farm-code').change(function() {
 
 });
 
+
+/**
+ * Helper function for setting dropdown acc. to selected option
+ */
+ function setSelectedValue(selectObj, valueToSet) {
+    for (var i = 0; i < selectObj.options.length; i++) {
+        if (selectObj.options[i].text == valueToSet) {
+            selectObj.options[i].selected = true;
+            console.log("option [" + selectObj.options[i].text + "] is selected.");
+            return;
+        }
+    }
+}
+
 /**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
 function filterFarmRep(){
 
@@ -197,10 +192,30 @@ function filterFarmRep(){
     console.log("eDate -- " + eDate);
     console.log("arName -- " + arName);
 
+
     try{
+
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
-        location.href = url;
+
+        // for loading report table data
+        $('#rep-farmAssess').load(url + ' #rep-farmAssess', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.farmass-report');
+            // console.log(alertHTML);
+            $('#farmrep-container').prepend(alertHTML);
+            
+        });
+
+        // for loading report subheader
+        $('.farmrep-subheading').load(url + ' .farmrep-subheading', function () {
+            $(this).children().unwrap();
+            
+        });
+        
+
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
@@ -210,6 +225,8 @@ function filterFarmRep(){
 
 /**
  * function for filtering Internal Biosec report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
  function filterIntBioRep(){
 
@@ -225,7 +242,24 @@ function filterFarmRep(){
     try{
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
-        location.href = url;
+
+        // for loading report table data
+        $('#rep-intbiosec').load(url + ' #rep-intbiosec', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.intbio-report');
+            // console.log(alertHTML);
+            $('#intbioRep-container').prepend(alertHTML);
+            
+        });
+
+        // for loading report subheader
+        $('.intbioRep-subheading').load(url + ' .intbioRep-subheading', function () {
+            $(this).children().unwrap();
+            
+        });
+        
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
@@ -235,6 +269,8 @@ function filterFarmRep(){
 
 /**
  * function for filtering External Biosec report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
  function filterExtBioRep(){
 
@@ -250,7 +286,23 @@ function filterFarmRep(){
     try{
         url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
-        location.href = url;
+
+        // for loading report table data
+        $('#rep-extbiosec').load(url + ' #rep-extbiosec', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.extbio-report');
+            // console.log(alertHTML);
+            $('#extbioRep-container').prepend(alertHTML);
+            
+        });
+
+        // for loading report subheader
+        $('.extbioRep-subheading').load(url + ' .extbioRep-subheading', function () {
+            $(this).children().unwrap();
+            
+        });
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
@@ -774,3 +826,5 @@ $('.assignSave').on('click', function () {
         });
     }
 });
+
+//---- MODULE 2 functions ----//

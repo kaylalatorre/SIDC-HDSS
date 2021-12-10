@@ -79,7 +79,7 @@ div.sticky {
     opacity: 0;
     height: 0;
     max-height: 480px;
-    max-width: 300px;
+    width: 300px;
     position: absolute !important;
     top: 72px;
     right: 24px;

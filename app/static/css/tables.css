@@ -16,7 +16,6 @@ tr {
 }
 
 .table tbody tr td button {
-    display: inline-block;
     text-align: right;
     vertical-align: middle;
 }

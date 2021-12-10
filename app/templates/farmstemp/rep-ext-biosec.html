@@ -8,7 +8,7 @@
 
 {% block section %}
 {% include 'partials/messages.html' %}
-<div class="table-container main-div">   
+<div class="table-container main-div" id="extbioRep-container">   
     <div>
         <h1>External Biosecurity Reports</h1>
     </div>
@@ -18,8 +18,8 @@
         <div class="mb-3">
             <label class="form-label bold-lbl">Date Range</label>
             <div class="input-group">
-                <input type="date" class="form-control input-startDate" id="extbio-start-date">
-                <input type="date" class="form-control input-endDate" id="extbio-end-date">
+                <input type="date" class="form-control input-startDate" id="extbio-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="extbio-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
             </div>
         </div>
 
@@ -38,15 +38,23 @@
 
     <hr>
     <!-- Report description, print button -->
-    <div class="flex subheading">
-        <p class="flex-item">All External Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+    <div class="flex subheading extbioRep-subheading">
+        {% if not isFiltered %}
+            <p class="flex-item" id="extrep-header">All External Biosecurity Report.</p>
+        {% else %}
+            <p class="flex-item" id="extrep-header">{{areaName}} External Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}
         <div><button class="primary-btn" onclick="printReport('rep-extbiosec')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
     <div class="box-style" id="rep-extbiosec">
         <div class="print-header">
             <h1>SIDC | Hogs Disease Surveillance System</h1>
-            <p class="flex-item">All External Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+            {% if not isFiltered %}
+                <p class="flex-item">All External Biosecurity Report.</p>
+            {% else %}
+                <p class="flex-item">{{areaName}} External Biosecurity Report for {{dateStart}} to {{dateEnd}}</p>
+            {% endif %}        
         </div>
         <table class="table">
             <thead>
