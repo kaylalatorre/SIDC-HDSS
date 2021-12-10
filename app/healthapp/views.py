@@ -28,12 +28,6 @@ def debug(m):
 
 # (Module 2) Hogs Health view functions
 
-def count_activeIncidents(farmID):
-    total_active = 0
-
-    # symptomQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
-
-    return total_active
 
 def compute_MortRate(farmID):
     """
@@ -63,9 +57,10 @@ def hogsHealth(request):
     (3) Mortality
         - mortality_rate (mortality % = num_toDate / num_begInv)
     (4) Hog Symptoms
-        - symptoms_reported, active_symptoms
+        - incidents reported, active incidents
     """
 
+    # TODO: filter farms by Area
     # (1) Farm details 
     qry = Farm.objects.select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
@@ -109,7 +104,6 @@ def hogsHealth(request):
         farmObject = {
             "code":  str(f["id"]),
             "raiser": " ".join((f["fname"],f["lname"])),
-            "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "updated": f["last_updated"],
             "ave_currWeight": str(f["ave_currWeight"]),
@@ -136,8 +130,82 @@ def hogsMortality(request):
 def symptomsReported(request):
     return render(request, 'healthtemp/rep-symptoms-reported.html', {})
 
+
+
 def healthSymptoms(request):
-    return render(request, 'healthtemp/health-symptoms.html', {})
+
+    """
+    Gets Hogs Health records for all Farms (in Technician view).
+
+    (1) Farm details
+        - farm code, raiser full name, area, technician assigned (?), num pigs
+    (2) Farm Weight
+        - ave_startWeight, ave_currWeight
+    (3) Mortality
+        - mortality_rate (mortality % = num_toDate / num_begInv)
+    (4) Hog Symptoms
+        - incidents reported, active incidents
+    """
+
+    # (1) Farm details 
+    qry = Farm.objects.select_related('hog_raiser', 'area', 'farm_weight').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        farm_area = F("area__area_name"),
+        ave_currWeight = F("farm_weight__ave_weight")
+        # is_starterWeight = F("farm_weight__is_starter")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "farm_area",
+            "total_pigs",
+            "last_updated",
+            "ave_currWeight"
+            # "is_starterWeight"
+            )
+    debug(qry)
+
+    if not qry.exists(): 
+        messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth-tech")
+        return render(request, 'healthtemp/hogs-health.html', {})
+
+    farmsData = []
+    total_pigs = 0
+    total_incidents = 0
+    total_active = 0
+    for f in qry:
+
+        farmID = f["id"]
+
+        # for computing Mortality %
+        mortality_rate = compute_MortRate(farmID)
+
+        # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
+        total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
+
+        # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
+        total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="ACTIVE").count()
+
+        farmObject = {
+            "code":  str(f["id"]),
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "area": str(f["farm_area"]),
+            "pigs": str(f["total_pigs"]),
+            "updated": f["last_updated"],
+            "ave_currWeight": str(f["ave_currWeight"]),
+            # "is_starterWeight": str(f["is_starterWeight"]),
+
+            "mortality_rate": mortality_rate,
+            "total_incidents": total_incidents,
+            "total_active": total_active,
+        }
+        farmsData.append(farmObject)
+
+        total_pigs += f["total_pigs"]
+    # debug(farmsData)
+
+    return render(request, 'healthtemp/health-symptoms.html', {"farmList": farmsData})
 
 def selectedHealthSymptoms(request):
     return render(request, 'healthtemp/selected-health-symptoms.html', {})
