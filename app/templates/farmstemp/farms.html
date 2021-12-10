@@ -49,7 +49,13 @@
             <!-- Data -->
             {% for farm in farms %}
                 <tr>
-                    <td data-label="Farm Code">{{farm.code}}</td>
+                    {% if farm.code < 10 %}
+                        <td data-label="Farm Code">00{{farm.code}}</td>
+                    {% elif farm.code < 100 %}
+                        <td data-label="Farm Code">0{{farm.code}}</td>
+                    {% else %}
+                        <td data-label="Farm Code">{{farm.code}}</td>
+                    {% endif %}
                     <td data-label="Raiser">{{farm.raiser}}</td>
                     <td data-label="Contact No.">{{farm.contact}}</td>
                     <td data-label="Address">{{farm.address}}</td>

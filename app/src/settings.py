@@ -16,6 +16,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load the .env file
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -110,12 +115,12 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'sidcDB',
-        'USER': 'sidcdbuser',
-        'PASSWORD': 'sidcdb123',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'ENGINE': os.getenv("ENGINE"),
+        'NAME': os.getenv("DBNAME"),
+        'USER': os.getenv("DBUSER"),
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': os.getenv("HOST"),
+        'PORT': os.getenv("PORT")
     }
 }
 

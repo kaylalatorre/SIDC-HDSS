@@ -7,8 +7,11 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="main-div">
-    <form action="/add-farm" method="POST">
+    <form action="" method="POST">
 
     {% csrf_token %}
 
@@ -29,21 +32,25 @@
                 </div>
 
                 <h3>Raiser</h3>
-                <div class="mb-3">
+                <div class="mb-3" id="div-raiser-name">
                     <label for="input-first-name" class="form-label"> First Name</label>
                     {{hogRaiserForm.fname}}
 
                     <label for="input-last-name" class="form-label"> Last Name</label>
                     {{hogRaiserForm.lname}}
                 </div>
+
                 <div class="mb-3">
                     <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose here:</label>
                     <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
-                        <option>Raiserz</option>
+                        <option disabled selected value> - - Select Raiser - - </option>
+                        {% for raiser in raisers %}
+                        <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})</option>
+                        {% endfor %}
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" id="div-raiser-contact">
                     <label for="input-contact" class="form-label">Contact No.</label>
                     {{hogRaiserForm.contact_no}}
                 </div>
@@ -65,7 +72,6 @@
                         {% for area in area %}
                         <option>{{area.area_name}}</option>
                         {% endfor %}
-                        <option>Others</option>
                     </select>
                 </div>
                 <div class="mb-3 option-other">
@@ -117,53 +123,41 @@
             
             <div class="flex subheading">
                 <h2 class="flex-item">Pig Pens</h2>
-                <div><button class="secondary-btn" type="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button> </div>
+                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button></div>
             </div>
             <div class="flex mobile-subheading">
                 <h2 style="width: 90%">Pig Pens</h2>
-                <div><button class="secondary-btn" type="button" id="addPigPenRow" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
+                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
             </div>
             <div class="box-style">
                 <br>
-                <div class="input-group" id="input-pen">
+                <div class="input-group">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Length</th>
                                 <th>Width</th>
                                 <th>No. of Pigs</th>
+                                <th></th>
                             </tr>
                         </thead>
-                        <tbody  id="input-pigpen">
-                            <tr>
-                                <td data-label="Length" id="pigpen-length">
-                                    {{pigpenMeasuresForm.length}}
-                                </td>
-                                <td data-label="Width" id="pigpen-width">
-                                    {{pigpenMeasuresForm.width}}
-                                </td>
-                                <td data-label="No. of Pigs" id="pigpen-num-heads">
-                                    {{pigpenMeasuresForm.num_heads}}
-                                </td>
+                        <tbody  id="pigpen-table">
+
+                            <tr id="pigpen-row">
+                                <td data-label="Length" id="pigpen-length"> {{pigpenMeasuresForm.length}} </td>
+                                <td data-label="Width" id="pigpen-width"> {{pigpenMeasuresForm.width}} </td>
+                                <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenMeasuresForm.num_heads}} </td>
+                                <td></td>
+                                <!-- <td><button id="remove-pigpen-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
                             </tr>
-                            <tr>
-                                <td data-label="Length" id="pigpen-length">
-                                    {{pigpenMeasuresForm.length}}
-                                </td>
-                                <td data-label="Width" id="pigpen-width">
-                                    {{pigpenMeasuresForm.width}}
-                                </td>
-                                <td data-label="No. of Pigs" id="pigpen-num-heads">
-                                    {{pigpenMeasuresForm.num_heads}}
-                                </td>
-                            </tr>
+
                         </tbody>
                     </table>
                 </div>
-                <div class="flex subheading">
+                <!-- <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
                     <p> {{numTotalPigs}} pigs </p>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -172,44 +166,70 @@
             <div class="box-style">
                 <p>Select all that apply.</p>
                 <div class="mb-3">
-                    {{internalBiosecForm.isol_pen}}
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
-                </div>
-                <div class="mb-3">
-                    {{externalBiosecForm.bird_proof}}
+                    <input type="checkbox" class="form-check-input" name="cb-birdproof" id="cb-birdproof">
                     <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
                 </div>
                 <div class="mb-3">
-                    {{externalBiosecForm.perim_fence}}
+                    <input type="checkbox" class="form-check-input" name="cb-fence" id="cb-fence">
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    {{internalBiosecForm.foot_dip}}
-                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
-                </div>
-                <div class="mb-3">
-                    {{externalBiosecForm.fiveh_m_dist}}
+                    <input type="checkbox" class="form-check-input" name="cb-distance" id="cb-distance">
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
                 </div>
                 <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" name="cb-isolation" id="cb-isolation">
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" name="cb-footdip" id="cb-birdproof">
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
+                </div>
+                <div class="mb-3">
                     <label for="input-waste-mgt" class="form-label">Waste Management</label>
-                    {{internalBiosecForm.waste_mgt}}
+                    <select class="form-select" id="waste-mgt" name="waste-mgt">
+                        <option value="Septic Tank">Septic Tank</option>
+                        <option value="Biogas">Biogas</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
-                <div class="mb-3 option-other">
+                <!-- <div class="mb-3 option-other" id="option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
-                    <input type="text" id="input-other"class="form-control" placeholder="Other Waste Management">
-                </div>
+                    <input type="text" id="input-other" name="waste-mgt" class="form-control" placeholder="Other Waste Management">
+                </div> -->
             </div>
         </section>
     </div>
+
+    <!-- Hidden depending on user -->
+
+    {% if user.groups.all.0.name == 'Extension Veterinarian' %}
     <div class="flex" >
         <section class="flex-item">
             <div class="box-style">
-                <!-- Hidden depending on user -->
                 <div id="farm-approvals">
                     <h3> Checked by: </h3>
                     <div class="mb-3">
                         <input type="checkbox" class="form-check-input" id="cb-ext-vet">
+                        <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                    </div>
+                    <div class="mb-3">
+                        <input disabled type="checkbox" class="form-check-input" id="cb-am">
+                        <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    {% elif user.groups.all.0.name == 'Assistant Manager' %}
+    <div class="flex" >
+        <section class="flex-item">
+            <div class="box-style">
+                <div id="farm-approvals">
+                    <h3> Checked by: </h3>
+                    <div class="mb-3">
+                        <input disabled type="checkbox" class="form-check-input" id="cb-ext-vet">
                         <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
                     </div>
                     <div class="mb-3">
@@ -220,6 +240,9 @@
             </div>
         </section>
     </div>
+
+    {% endif %}
+    
     <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
     </form>
 </div>

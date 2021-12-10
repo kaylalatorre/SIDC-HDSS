@@ -17,9 +17,22 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
-                    <option hidden value="{{ farmID }}"> {{ farmID }} </option>
+                    {% if farmID < 10 %}
+                        <option hidden value="{{ farmID }}">00{{farmID}}</option>
+                    {% elif farmID < 100 %}
+                        <option hidden value="{{ farmID }}">0{{farmID}}</option>
+                    {% else %}
+                        <option hidden value="{{ farmID }}">{{farmID}}</option>
+                    {% endif %}
+
                     {% for farm in farmList %}
-                        <option value="{{ farm.id }}"> {{ farm.id }} </option>
+                        {% if farm.id < 10 %}
+                            <option value="{{ farm.id }}">00{{farm.id}}</option>
+                        {% elif farm.id < 100 %}
+                            <option value="{{ farm.id }}">0{{farm.id}}</option>
+                        {% else %}
+                            <option value="{{ farm.id }}">{{farm.id}}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
         </div>
@@ -134,7 +147,7 @@
                         <div class="btn-group flex-item" style="justify-content: flex-end; padding: 0;">
                             <button id="saveCheck-btn" class="secondary-btn biosecSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i>Save</button>
                             <button id="editCheck-btn" class="secondary-btn biosecEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i>Edit</button>
-                            <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)"><i class='bx bxs-trash' ></i>Delete</button>
+                            <button id="delCheck-btn" class="secondary-btn-red" onclick="deleteBiocheck(this)"><i class='bx bxs-trash' ></i>Delete</button>
                         </div>
                     </div>
                     <div class="flex mobile-subheading">     
@@ -150,7 +163,7 @@
                         <div class="btn-group" style="justify-content: flex-end; padding: 0;">
                             <button id="saveCheck-btn" class="secondary-btn biosecSave" style="margin-right: 4px;" onclick="saveBiocheck(this)"><i class='bx bxs-save'></i><span class="text">Save</span></button>
                             <button id="editCheck-btn" class="secondary-btn biosecEdit" style="margin-right: 4px;" onclick="enableBiocheck()"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                            <button id="delCheck-btn"class="secondary-btn-red" onclick="deleteBiocheck(this)" ><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                            <button id="delCheck-btn" class="secondary-btn-red" onclick="deleteBiocheck(this)" ><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
                         </div>
                     </div>
                 </div>
@@ -410,23 +423,131 @@
                         </tr>
                     </thead>
                     <tbody>
+                    {% for act in activity %}
+                        
+                        {% if act.editable %}
+                        <tr id="{{ act.id }}" value="{{ act.id }}">
+                            <td data-label="Date">
+                                <p class="activity-data">{{act.date}}</p>
+                                <input id="input-date" type="date" aria-label="Date" class="form-control activity-input" value="{{act.format_date}}">
+                            </td>
+                            <td data-label="Trip Type">
+                                <p class="activity-data">{{act.trip_type}}</p>
+                                <select id="input-type" class="form-select activity-input" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
+                                
+                                {% if act.trip_type == 'Delivery of Feeds' %}
+                                    <option selected value>Delivery of Feeds</option>
+                                    <option>Delivery of Medicine</option>
+                                    <option>Delivery of Pigs</option>
+                                    <option>Vaccinations</option>
+                                    <option>Inspection</option>
+                                    <option>Trucking</option>
+                                    <option>Other</option>
 
-                        {% for act in activity %}
-                        <tr>
-                            <td data-label="Date">{{act.date}}</td>
-                            <td data-label="Trip Type">{{act.trip_type}}</td>
-                            <td data-label="Time">{{act.time_departure}} - {{act.time_arrival}}</td>
-                            <td data-label="Description">{{act.description}}</td>
-                            <td data-label="Remarks">{{act.remarks}}</td>
+                                {% elif act.trip_type == 'Delivery of Medicine' %}
+                                    <option>Delivery of Feeds</option>
+                                    <option selected value>Delivery of Medicine</option>
+                                    <option>Delivery of Pigs</option>
+                                    <option>Vaccinations</option>
+                                    <option>Inspection</option>
+                                    <option>Trucking</option>
+                                    <option>Other</option>
+                                
+                                {% elif act.trip_type == 'Delivery of Pigs' %}
+                                    <option>Delivery of Feeds</option>
+                                    <option>Delivery of Medicine</option>
+                                    <option selected value>Delivery of Pigs</option>
+                                    <option>Vaccinations</option>
+                                    <option>Inspection</option>
+                                    <option>Trucking</option>
+                                    <option>Other</option>
+                                
+                                {% elif act.trip_type == 'Vaccinations' %}
+                                    <option>Delivery of Feeds</option>
+                                    <option>Delivery of Medicine</option>
+                                    <option>Delivery of Pigs</option>
+                                    <option selected value>Vaccinations</option>
+                                    <option>Inspection</option>
+                                    <option>Trucking</option>
+                                    <option>Other</option>
+                                
+                                {% elif act.trip_type == 'Inspection' %}
+                                    <option>Delivery of Feeds</option>
+                                    <option>Delivery of Medicine</option>
+                                    <option>Delivery of Pigs</option>
+                                    <option>Vaccinations</option>
+                                    <option selected value>Inspection</option>
+                                    <option>Trucking</option>
+                                    <option>Other</option>
+                                
+                                {% elif act.trip_type == 'Trucking' %}
+                                    <option>Delivery of Feeds</option>
+                                    <option>Delivery of Medicine</option>
+                                    <option>Delivery of Pigs</option>
+                                    <option>Vaccinations</option>
+                                    <option>Inspection</option>
+                                    <option selected value>Trucking</option>
+                                    <option>Other</option>
+                                
+                                {% else %}
+                                    <option>Delivery of Feeds</option>
+                                    <option>Delivery of Medicine</option>
+                                    <option>Delivery of Pigs</option>
+                                    <option>Vaccinations</option>
+                                    <option>Inspection</option>
+                                    <option>Trucking</option>
+                                    <option selected value>Other</option>
+
+                                {% endif %}
+
+                                </select>
+                            </td>
+                            <td data-label="Time">
+                                <p class="activity-data">{{act.time_arrival}} -</p><p class="activity-data">{{act.time_departure}}</p>
+                                <input type="time" id="input-arrival" aria-label="Arrival Time" value="{{act.format_arrival}}" class="form-control activity-input">
+                                <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input">
+                            </td>
+                            <td data-label="Description">
+                                <p class="activity-data">{{act.description}}</p>
+                                <input type="text" id="input-description"  aria-label="Description" class="form-control activity-input" value="{{act.description}}">
+                            </td>
+                            <td data-label="Remarks">
+                                <p class="activity-data">{{act.remarks}}</p>
+                                <input type="text" id="input-remarks" aria-label="Remarks" class="form-control activity-input" value="{{act.remarks}}">
+                            </td>
                             <td>
                                 <div class="btn-group" style="justify-content: end; padding: 0;">
-                                    <button class="secondary-btn" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                                    <button class="secondary-btn-red"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                                    <button name="editActBtn" class="secondary-btn activity-data" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                                    <button name="deleteActBtn" class="secondary-btn-red activity-data" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+ 
+                                    <button name="saveActBtn" class="secondary-btn activity-input" value="{{ act.id }}" onclick="saveActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Save</span></button>
+                                    <button name="cancelActBtn" class="secondary-btn-red activity-input" value="{{ act.id }}" onclick="cancelActivity(this)"><i class='bx bxs-trash'></i><span class="text">Cancel</span></button>
                                 </div>
                             </td>
                         </tr>
-                        {% endfor %}
-                   
+
+                        {% else %}
+                        <tr id="{{ act.id }}" value="{{ act.id }}">
+                            <td data-label="Date">
+                                <p class="activity-data">{{act.date}}</p>
+                            </td>
+                            <td data-label="Trip Type">
+                                <p class="activity-data">{{act.trip_type}}</p>
+                            </td>
+                            <td data-label="Time">
+                                <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
+                            </td>
+                            <td data-label="Description">
+                                <p class="activity-data">{{act.description}}</p>
+                            </td>
+                            <td data-label="Remarks">
+                                <p class="activity-data">{{act.remarks}}</p>
+                            </td>
+                            <td> </td>
+                        </tr>
+                        {% endif %}
+
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>

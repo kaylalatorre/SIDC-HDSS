@@ -19,8 +19,9 @@ urlpatterns = [
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),
-    path('tech-farms', views.techFarms, name="techFarms"),
-    path('home/view-farm', views.techFarms, name="techFarms"),
+    path('home/tech-farms', views.techFarms, name="techFarms"),
+    # path('tech-farms', views.techFarms, name="techFarms"),
+    # path('home/view-farm', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
 
     # technician - biosecurity
@@ -36,6 +37,8 @@ urlpatterns = [
 
     # technician - biosecurityactivity
     path('add-activity/<str:farmID>', views.addActivity, name="addActivity"),
+    path('biosecurity/<str:farmID>/edit-activity/<str:activityID>', views.editActivity, name="editActivity"),
+    path('biosecurity/<str:farmID>/delete-activity/<str:activityID>', views.deleteActivity, name="deleteActivity"),
 
     # announcements
     path('member-announcements', views.memAnnouncements, name="memAnnouncements"),
@@ -51,5 +54,8 @@ urlpatterns = [
 
     path('ext-biosecurity', views.extBiosecurity, name="extBiosecurity"),
     path('ext-biosecurity/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_extBiosec, name="filter_extBiosec"),
+
+    # Farm detail dashboard
+    path('home/dash', views.dashboard_view, name="dashboard-view"),
 
 ]

@@ -12,6 +12,10 @@ from django.contrib.auth.models import auth, User, Group
 # for ending User session
 from django.contrib.auth import logout
 
+
+# TEST: importing views from cross-app folder
+from farmsapp.views import dashboard_view, techFarms
+
 def debug(m):
     print("------------------------[DEBUG]------------------------")
     print(m)
@@ -88,6 +92,21 @@ def login(request):
 
 def home_view(request):
     print("TEST LOG: in Home view/n")
+
+    userGroup = request.user.groups.all()[0].name
+
+    if userGroup == "Assistant Manager":
+        debug("User is an Assistant Manager. Render dashboard.")
+        farmStats = dashboard_view(request)
+
+        return render(request, 'home.html', { "farmStats": farmStats })
+    
+    elif userGroup == "Field Technician":
+        debug("User is a Field Technician. Render tech farms.")
+        tech_farms = techFarms(request)
+
+        return render(request, 'home.html', { "techFarms": tech_farms })
+
     return render(request, 'home.html', {})
 
 # LOGOUT function

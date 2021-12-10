@@ -143,7 +143,7 @@ button, .button {
     color: #FFF;
 }
 
-.primary-btn:disabled, .primary-btn-red:disabled {
+.primary-btn:disabled, .primary-btn-red:disabled, .secondary-btn:disabled, .secondary-btn-red:disabled  {
     background: #D3D3D3; 
     color:#AAAAAA;
 }

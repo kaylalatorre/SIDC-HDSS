@@ -128,42 +128,89 @@ function viewFarm(farm) {
     }
 }
 
+/**
+*   - Appends new pigpen row for when adding a new farm
+*   
+*   pigpen-table = table body that the row will be appended to
+*/
 function addPigPenRow() {
-
     const length = document.getElementById('pigpen-length').innerHTML;
     const width = document.getElementById('pigpen-width').innerHTML;
     const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
 
-    // const row = document.getElementById("pigpen-row");
-    const table = document.getElementById("input-pigpen");
- 
-    $("#input-pigpen").append("<tr> \
-        <td data-label='Length'> " + length + " </td> \
-        <td data-label='Width'> " + width + " </td> \
-        <td data-label='No. of Pigs'> " + num_heads + " </td> \
+    $("#pigpen-table").append("<tr> \
+        <td data-label='Length' id='pigpen-length'> " + length + " </td> \
+        <td data-label='Width' id='pigpen-width'> " + width + " </td> \
+        <td data-label='No. of Pigs' id='pigpen-num-heads'> " + num_heads + " </td> \
+        <td><button id='remove-pigpen-row' type='button' onclick='removePigpenRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
- 
 }
 
+/*
+*   - Deletes pigpen row input in Add Farm
+*   
+*   currRow = selected pigpen row
+*   pigpen-table = table body that the row will be deleted from
+*/
+function removePigpenRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('pigpen-table');
+    table.deleteRow(rowIndex);
+}
+
+/**
+*   - Appends new activity row to activity table
+*   
+*   activity-table = table body that the row will be appended to
+*/
 function addActivityRow() {
     const date = document.getElementById('date').innerHTML;
     const trip_type = document.getElementById('trip_type').innerHTML;
-    const time_departure = document.getElementById('time_departure').innerHTML;
     const time_arrival = document.getElementById('time_arrival').innerHTML;
+    const time_departure = document.getElementById('time_departure').innerHTML;
     const description = document.getElementById('description').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
-    // const row = document.getElementById("pigpen-row");
-    const table = document.getElementById("input-act");
- 
-    $("#input-act").append("<tr> \
+    $("#activity-table").append("<tr> \
         <td data-label='Date'> " + date + " </td> \
         <td data-label='Trip Type'> " + trip_type + " </td> \
-        <td data-label='Departure Time'> " + time_departure + " </td> \
         <td data-label='Arrival Time'> " + time_arrival + " </td> \
+        <td data-label='Departure Time'> " + time_departure + " </td> \
         <td data-label='Description'> " + description + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
+        <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
+}
+
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeActivityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-table');
+    table.deleteRow(rowIndex);
+}
+
+/**
+*   - Displays input field when waste mgt option is "Others"
+*   
+*   option = value of option waste mgt selected (Others)
+*/
+function wasteMgtOther(option){
+    if (option.value == "Other"){
+        document.getElementById("option-other").style.display = "block";
+    }
 }
 
 function viewForm() {
@@ -224,3 +271,14 @@ function filterSearch(){
         }    
     }
 } 
+
+$(document).ready(function(){
+    /**
+    *   Hides hog raiser fname, lname, and contact input when an existing raiser is selected
+    */
+    $('#input-exist-raiser').change(function(){
+        $("#div-raiser-name").remove();
+        $("#div-raiser-contact").remove();
+    });
+
+});

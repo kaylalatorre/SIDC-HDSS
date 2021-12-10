@@ -38,7 +38,7 @@ function setToday() {
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
  */
-function ajaxCSRF(){
+ function ajaxCSRF(){
     $.ajaxSetup({ 
         beforeSend: function(xhr, settings) {
             function getCookie(name) {
@@ -572,6 +572,179 @@ function addActivityPage(farmID) {
     } catch (error){
         console.log("Fetching farm details failed.");
         location.reload(true);
+    }
+}
+
+/**
+*   - Deletes selected activity row from database.
+*   
+*   actID = button value (carries ID of selected activity)
+*/
+function deleteActivity(actID) {
+
+    var activityID = $(actID).val(); 
+    console.log(activityID)
+
+    var farmID = $("#farm-code option:selected").val();
+    console.log(farmID)
+    
+    if (confirm("Delete selected activity?")){
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/' + farmID + '/delete-activity/' + activityID,
+
+            success: function(response){
+                if (response.status == 200){
+                    console.log(response.responseJSON.success)
+                }
+
+                window.location.replace("/biosecurity/" + farmID);
+            },
+            error: function (res){
+                console.log(res.responseJSON.error)
+            }
+        })
+    }
+
+}
+
+/**
+*   - Updates selected activity row
+*   - Disable all other edit buttons and delete buttons
+*   - Display data inputs and send to saveActivity() function
+*
+*   actID = button value (carries ID of selected activity)
+*/
+function editActivity(actID) {
+
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex;
+    console.log("Row ID: " + rowIndex);
+
+    var activityID = $(actID).val(); 
+    console.log("Activity ID: " + activityID);
+
+    var toShow = row.getElementsByClassName("activity-input");
+    console.log(toShow.length);
+   
+    var toHide = row.getElementsByClassName("activity-data");
+    console.log(toHide.length);
+    for(var i = 0; i < toHide.length; i++){
+        // show displayed data of current row
+        toHide[i].style.display = "none";
+        
+        // hide data inputs
+        toShow[i].style.display = "block";
+    }
+
+    // enable other edit buttons and delete buttons
+    var disableEdit = document.getElementsByName("editActBtn");
+    var disableDelete = document.getElementsByName("deleteActBtn");
+    for(var i = 0; i < disableEdit.length; i++){
+        disableEdit[i].disabled = true;
+        disableDelete[i].disabled = true;
+    }
+
+}
+
+/**
+*   - Cancels edit of selected activity
+*
+*   actID = button value (carries ID of selected activity)
+*/
+function cancelActivity(actID) {
+
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex;
+    console.log("Row ID: " + rowIndex);
+
+    var toShow = row.getElementsByClassName("activity-input");
+    var toHide = row.getElementsByClassName("activity-data");
+
+    for(var i = 0; i < toHide.length; i++){
+        // hide displayed data of current row
+        toHide[i].style.display = "block";
+        
+        // display data inputs
+        toShow[i].style.display = "none";
+    }
+
+    // disable other edit buttons and delete buttons
+    var disableEdit = document.getElementsByName("editActBtn");
+    var disableDelete = document.getElementsByName("deleteActBtn");
+    for(var i = 0; i < disableEdit.length; i++){
+        disableEdit[i].disabled = false;
+        disableDelete[i].disabled = false;
+    }
+
+}
+
+/**
+*   - Send data to backend function save to database
+*   - Check if date input is not later than today
+*   - Check if arrival time is after departure time
+*
+*   actID = button value (carries ID of selected activity)   
+*/
+function saveActivity(actID) {
+
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1
+    console.log("Row ID: " + rowIndex);
+
+    var activityID = $(actID).val(); 
+    console.log("Activity ID: " + activityID);
+
+    var farmID = $("#farm-code option:selected").val();
+    console.log(farmID)
+
+    var checkTrue = 2;
+    var today = new Date(); // date today
+    var date = document.getElementById("input-date").value;
+    var type = document.getElementById("input-type").value;
+    var departure = document.getElementById("input-departure").value;
+    var arrival = document.getElementById("input-arrival").value;
+    var description = document.getElementById("input-description").value;
+    var remarks = document.getElementById("input-remarks").value;
+
+    // check if date is not later than today
+    if (new Date(date) > today){
+        checkTrue -= 1;
+        console.log("Date should not be later than today.");
+    }
+
+    // check if arrival is after departure
+    if (arrival > departure){
+        checkTrue -= 1;
+        console.log("Departure time should be after arrival time.");
+    }
+
+    if(checkTrue == 2){
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/' + farmID + '/edit-activity/' + activityID,
+            data: {"date" : date,
+                    "trip_type" : type,
+                    "time_departure" : departure,
+                    "time_arrival" : arrival,
+                    "description" : description,
+                    "remarks" : remarks},
+
+            success: function(response){
+                if (response.status == 200){
+                    console.log(response.responseJSON.success)
+                }
+
+                window.location.replace("/biosecurity/" + farmID);
+            },
+            error: function (res){
+                console.log(res.responseJSON.error)
+            }
+        })
     }
 }
 
