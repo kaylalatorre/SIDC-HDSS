@@ -42,14 +42,15 @@ def compute_MortRate(farmID):
     """
     mortality_rate = 0
 
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID)
+    # Get latest Mortality record of the Farm
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by('-mortality_date')
 
     if mortQry.exists():
         m = mortQry.first()
 
         mortality_rate = (m.num_toDate / m.num_begInv) * 100
 
-    return mortality_rate
+    return round(mortality_rate, 2)
 
 def hogsHealth(request):
     """
@@ -66,13 +67,12 @@ def hogsHealth(request):
     """
 
     # (1) Farm details 
-    qry = Farm.objects.select_related('hog_raiser', 'area', 'farm_weight', 'hog_symptoms').annotate(
+    qry = Farm.objects.select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        symptomsID = F("hog_symptoms__id"),
-        ave_currWeight = F("farm_weight__ave_weight"),
-        is_starterWeight = F("farm_weight__is_starter")
+        ave_currWeight = F("farm_weight__ave_weight")
+        # is_starterWeight = F("farm_weight__is_starter")
         ).values(
             "id",
             "fname",
@@ -80,9 +80,8 @@ def hogsHealth(request):
             "farm_area",
             "total_pigs",
             "last_updated",
-            "symptomsID",
-            "ave_currWeight",
-            "is_starterWeight"
+            "ave_currWeight"
+            # "is_starterWeight"
             )
     debug(qry)
 
@@ -92,6 +91,8 @@ def hogsHealth(request):
 
     farmsData = []
     total_pigs = 0
+    total_incidents = 0
+    total_active = 0
     for f in qry:
 
         farmID = f["id"]
@@ -102,6 +103,9 @@ def hogsHealth(request):
         # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
         total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
+        # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
+        total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="ACTIVE").count()
+
         farmObject = {
             "code":  str(f["id"]),
             "raiser": " ".join((f["fname"],f["lname"])),
@@ -109,26 +113,18 @@ def hogsHealth(request):
             "pigs": str(f["total_pigs"]),
             "updated": f["last_updated"],
             "ave_currWeight": str(f["ave_currWeight"]),
-            "is_starterWeight": str(f["is_starterWeight"]),
+            # "is_starterWeight": str(f["is_starterWeight"]),
 
             "mortality_rate": mortality_rate,
             "total_incidents": total_incidents,
+            "total_active": total_active,
         }
         farmsData.append(farmObject)
 
         total_pigs += f["total_pigs"]
-
-    debug(farmsData)
+    # debug(farmsData)
 
     
-
-    # TODO: for "Active Incidents" column
-    # Naka-FK hogs symptoms sa farm, so para siyang 'yung intbio and extbio na 
-    # 'yung latest ang naka-FK (so lahat ng True sa naka-FK na record, ayun 'yung Active Symptoms)
-    # 
-
-
-
     return render(request, 'healthtemp/hogs-health.html', {"farmList": farmsData})
 
 def selectedHogsHealth(request):
