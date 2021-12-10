@@ -67,9 +67,21 @@
     </div>
 {% endif %}
 <!-- Member Annoucnements -->
-{% if "announcements" in mssg.tags %}
-<div class="alert {{ mssg.tags }} mb-0 fade show" role="alert">
-    <p class="text-success">{{ mssg }}</p>
-</div>
+{% if "announcement" in mssg.tags %}
+    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
+        <div class="msg flex-item">{{ mssg }}</div>
+        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}  
+<!-- Tech Assignment, add area -->
+{% if "add-area" in mssg.tags %}
+    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
+        <div class="msg flex-item">{{ mssg }}</div>
+        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 {% endif %}  
 {% endfor %}
