@@ -109,8 +109,9 @@ section {
     align-items: center;
 }
 
-.green { color: #00a854 }
-.red { color: #BB0A1E }
+.green { color: #00a854!important }
+.red { color: #BB0A1E!important }
+.yellow { color: #ffc107!important }
 .hide { display: none; }
 .show { display: block; }
 
@@ -226,11 +227,11 @@ button:hover, .button:hover, .primary-btn:hover{
 }
 
 /* Save button for technician assignment */
-.assignSave, .assignEdit, .biosecEdit, .biosecSave {
+.assignSave, .assignEdit, .biosecEdit, .biosecSave, .symptomsEdit, .symptomsSave {
     margin-right: 4px;
 }
 
-.assignSave, .biosecSave {
+.assignSave, .biosecSave, .symptomsSave {
     display: none;
 }
 
