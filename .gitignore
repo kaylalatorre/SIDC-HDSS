@@ -6,5 +6,6 @@ app/temp.txt
 migrations/
 scratch.py
 init.sh
+app/farmsapp/test.py
 how commit-id
 .env

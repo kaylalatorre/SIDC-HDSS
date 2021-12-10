@@ -29,9 +29,10 @@ load_dotenv()
 SECRET_KEY = 'django-insecure-*50ma!v09j_a01-s1sprofq5u6q(bs#upcn0_l$a77y*)lxizr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -67,6 +68,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # app middlewares
+
+    'farmsapp.middleware.ErrorPageRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'src.urls'

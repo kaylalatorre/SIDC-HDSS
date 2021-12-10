@@ -627,6 +627,104 @@ function addActivityPage(farmID) {
     }
 }
 
+/** 
+* Used to assign technicians to area.
+*/
+$('.assignSave').on('click', function () {
+    var area = $(this).parent().parent().siblings(":eq(0)").text();
+    var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    ajaxCSRF();
+    if(technician){
+        $.ajax({
+            type:'POST',
+            url:'technician-assignment/assign',
+            data:{
+                "area":area,
+                "technician":technician
+            },
+            success: function(response){
+                console.log(response);
+            },
+            error: function(response){
+                console.log(response);
+            },
+            complete: function(){
+                location.reload(true);
+            }
+        });
+    }
+});
+/** 
+* Create new area.
+*/
+$('#save-area').on('click', function(){
+    area = $(this).siblings('.form-control').val();
+    ajaxCSRF();
+    if(area){
+        if(area.length <=15){
+            $.ajax({
+                type:'POST',
+                url:'technician-assignment/savearea',
+                data:{"area":area},
+                success: function(response){
+                    console.log(response);
+                },
+                error: function(response){
+                    console.log(response);
+                    
+                },
+                complete: function(){
+                    location.reload(true);
+                }
+            });
+            return;
+        }
+        alert("Area name must have 15 or less characters");
+        return;
+    }
+    alert("No area name provided");
+});
+
+function for_approval(button, decision){
+    var forApproval_IDs = [];
+    button.closest('div.flex').siblings('div.box-style').children('table.table').children('tbody').find(':checkbox:checked').each(function(){
+        forApproval_IDs.push(parseInt(this.id));
+    });
+    if(forApproval_IDs.length === 0){
+        console.log('skip');
+        return;
+    }
+    
+    console.log(forApproval_IDs);
+    console.log('member-announcements/'+decision);
+    ajaxCSRF()
+    $.ajax({
+        type:'POST',
+        url:'/member-announcements/'+decision,
+        dataType : "json",
+        data:{"idList":JSON.stringify(forApproval_IDs)},
+        success: function(response){
+            console.log(response);
+        },
+        error: function(response){
+            console.log(response);
+            
+        },
+        complete: function(){
+            // location.reload(true);
+        }
+    });
+}
+
+/** 
+* Create array of announcement to be approved then send to backend through ajax.
+*/
+$('#approveChecked.primary-btn').on('click', function(){
+    for_approval($(this), 'approve');
+});
+$('#rejectChecked.primary-btn-red').on('click', function(){
+    for_approval($(this), 'reject');
+});
 /**
 *   - Deletes selected activity row from database.
 *   
@@ -799,32 +897,5 @@ function saveActivity(actID) {
         })
     }
 }
-
-/** 
-* Used to assign technicians to area.
-*/
-$('.assignSave').on('click', function () {
-    var area = $(this).parent().parent().siblings(":eq(0)").text();
-    var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
-    ajaxCSRF();
-    if(technician){
-        $.ajax({
-            type:'POST',
-            url:'technician-assignment/assign',
-            data:{
-                "area":area,
-                "technician":technician
-            },
-            success: function(response){
-                console.log(response);
-                location.reload(true);
-            },
-            error: function(response){
-                console.log(response);
-                location.reload(true);
-            }
-        });
-    }
-});
 
 //---- MODULE 2 functions ----//

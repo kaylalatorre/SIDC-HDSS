@@ -6,37 +6,62 @@ import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseNotFound, response
-
+from django.template.loader import render_to_string
+from django.http import HttpResponse, response
 # for AJAX functions
 from django.http import JsonResponse
 from django.core import serializers
 import json
 
 # for Forms
-from .forms import HogRaiserForm, FarmForm, PigpenMeasuresForm, ActivityForm, AreaForm, MemAnnouncementForm
+from .forms import (
+    HogRaiserForm, 
+    FarmForm, 
+    PigpenMeasuresForm, 
+    InternalBiosecForm, 
+    ExternalBiosecForm, 
+    ActivityForm, 
+    AreaForm, 
+    MemAnnouncementForm
+)
 from django.forms import formset_factory
+
+# Geocoding
+from geopandas.tools import (
+    geocode,
+    reverse_geocode
+    )
 
 # for storing success and error Django messages
 from django.contrib import messages
 
 # for Model imports
-from .models import Area, ExternalBiosec, InternalBiosec, Farm, Hog_Raiser, Pigpen_Measures, Activity, Mem_Announcement
+from .models import (
+    Area, 
+    AccountData,
+    ExternalBiosec, 
+    InternalBiosec, 
+    Farm, 
+    Hog_Raiser, 
+    Pigpen_Measures, 
+    Activity, 
+    Mem_Announcement
+)
 from django.db.models.functions import Concat
 
 #Creating a cursor object using the cursor() method
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # for date and time fields in Models
-from datetime import date
-from datetime import datetime, timezone, timedelta
-from django.utils.timezone import make_aware
+from datetime import date, datetime, timezone, timedelta
+from django.utils.timezone import (
+    make_aware, # for date and time fields in Models
+    now, # for getting date today
+    localtime # for getting date today
+) 
 
-# for getting date today
-from django.utils.timezone import now
-from django.utils.timezone import localtime 
-import datetime
-
+# for list comapare
+from collections import Counter
 
 def debug(m):
     """
@@ -46,8 +71,13 @@ def debug(m):
     :type m: String
     """
     print("------------------------[DEBUG]------------------------")
-    print(m)
-    print("-------------------------------------------------------")
+    try:
+        print(m)
+    except:
+        print("---------------------[Print_ERROR]---------------------")
+    else:     
+        print("--------------------[Print_SUCCESS]--------------------")
+    
 
 # class ActivityFormView(View):
 #     # create a formset out of ActivityForm
@@ -67,12 +97,41 @@ def debug(m):
 
 # Farms Management Module Views
 
+def getMapData(request):
+    if request.is_ajax and request.method == 'POST':
+        data = []
+        qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
+                fname=F("hog_raiser__fname"), 
+                lname=F("hog_raiser__lname"), 
+                contact=F("hog_raiser__contact_no"),
+                farm_area = F("area__area_name")
+                ).values(
+                    "id", 
+                    "loc_lat",
+                    "loc_long", 
+                    "total_pigs",
+                    "farm_address",
+                    "last_updated"
+                    )
+        for f in qry:
+            farmObject = {
+                "code":  str(f["id"]),
+                "latitude": f["loc_lat"],
+                "longitude": f["loc_long"],
+                "numPigs": str(f["total_pigs"]),
+                "address": f["farm_address"],
+                "latest": f["last_updated"]
+            }
+            data.append(farmObject)
+    return JsonResponse(data, safe=False)
+
 ## Farms table for all users except Technicians
 def farms(request):
     """
     Display all farms for assistant manager
     """
-    # get all farm data
+
+    # TODO get areas for filter
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
@@ -104,9 +163,11 @@ def farms(request):
             "updated": f["last_updated"]
         }
         farmsData.append(farmObject)
-    # debug(farmsData)
-
-    return render(request, 'farmstemp/farms.html', {"farms":farmsData}) ## Farms table for all users except Technicians
+    areaList = []
+    for choice in Area.objects.distinct().order_by('area_name').values('area_name'):
+            areaList.append({"area_name": choice['area_name']})
+    debug(farmsData)
+    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
     """
@@ -421,6 +482,14 @@ def addFarm(request):
         # validate django farm and pigpen forms
         if farmForm.is_valid():
             farm = farmForm.save(commit=False)
+
+            # get longitude and latitude using geocoding
+            try:
+                farmLoc = geocode([farm.farm_address]).geometry.iloc[0]
+                farm.loc_long = farmLoc.x
+                farm.loc_lat = farmLoc.y
+            except:
+                debug("farmLoc not obtained")
 
             # save hog raiser
             raiserID = request.POST.get("input-exist-raiser", None)
@@ -1187,7 +1256,7 @@ def techAssignment(request):
     areasData = []
     areas = Area.objects.select_related("tech_id").annotate(
         curr_tech = Concat('tech_id__first_name', Value(' '), 'tech_id__last_name')
-    ).order_by('id').values()
+    ).order_by('area_name').values()
     techs = User.objects.filter(groups__name="Field Technician").annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
     ).values(
@@ -1229,12 +1298,21 @@ def assign_technician(request):
         a.save()
         debug(area.get())
         # return output
-        return HttpResponse("message",status=200)
-    else:
-        # abort
-        # return output
-        return HttpResponseNotFound("Not Found",status=400)
+        return HttpResponse("Technician assigned",status=200)
+    # else abort
+    # return output
+    return HttpResponse("Area or Technician Not Found",status=404)
     
+def save_area(request):
+    """
+    Create a new area, abort if area with same string is found
+    """
+    areaName = request.POST.get("area")
+    is_exist = Area.objects.filter(area_name = areaName).exists()
+    if(not is_exist):
+        Area(area_name = areaName, tech_id = None).save()
+        return HttpResponse("Save success")
+    return HttpResponse("Save Fail", status=400)
     
 
 def formsApproval(request):
@@ -1410,24 +1488,192 @@ def memAnnouncements(request):
     )
     context = {
         "approved": announcements.filter(is_approved = True),
-        "unapproved": announcements.filter(is_approved = False),
+        "rejected": announcements.filter(is_approved = False),
+        "unapproved": announcements.filter(is_approved = None),
     }
     return render(request, 'farmstemp/mem-announce.html', context)
+
+def memAnnouncements_Approval(request, decision):
+    """
+    Approves or reject an announcement, sets [is_approved] to either [true] or [false]
+
+    :param decision: "approve" or "reject" depending on the ajax call
+    :type decision: String
+    """
+    idQry = request.POST.get("idList")
+    
+    idList = json.loads(idQry)
+    
+    Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+
+    return HttpResponse(status=200)
 
 def createAnnouncement(request):
     """
     Create announcment
     Defaults to approved if assistant manager
     """
+
     if request.method == 'POST':
-        debug(request.POST)
-        debug(MemAnnouncementForm(request.POST))
+        # debug(request.POST.get("title"))
+        # debug(request.POST.get("category"))
+        # debug(request.POST.get("recip_area"))
+        # debug(request.POST.get("mssg"))
+        # debug(request.user.id)
+        # debug(datetime.now())
+        # debug(request.user.groups.all()[0].name)
+        
+        autoApprove = ['Assistant Manager']
+        if request.user.groups.all()[0].name in autoApprove:
+            approvalState = True
+        else:
+            approvalState = None
+
+        announcement = Mem_Announcement(
+            title = request.POST.get("title"),
+            category = request.POST.get("category"),
+            recip_area = request.POST.get("recip_area"),
+            mssg = request.POST.get("mssg"),
+            author_id = request.user.id,
+            timestamp = now(),
+            is_approved = approvalState
+        )
+        # debug(announcement.title)
+        # debug(announcement.category)
+        # debug(announcement.recip_area)
+        # debug(announcement.mssg)
+        # debug(announcement.author)
+        # debug(announcement.timestamp)
+        # debug(announcement.is_approved)
+        announcement.save()
+        messages.success(request, "Announcement sent.", extra_tags='announcement')
 
     announcementForm = MemAnnouncementForm()
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
 
-def viewAnnouncement(request):
-    return render(request, 'farmstemp/view-announcement.html', {})
+def viewAnnouncement(request, id):
+    qry = Mem_Announcement.objects.filter(pk = id).values(
+        "title",
+        "category",
+        "recip_area",
+        "mssg"
+    ).first()
+    debug(qry)
+    context = {
+        "announcement":qry
+    }
+    return render(request, 'farmstemp/view-announcement.html', context)
+
+def getNotifications(request):
+    notifList = [] # will contain list of notifications to be displayed
+    notifIDList = [] # initialize list of seen notifications
+    try: # get notiflist from database
+        # improve when further use is needed
+        userID = request.session['_auth_user_id']
+        request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
+    except:
+        debug('no items for session item notifIDList obtained from database')
+    try:
+        notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
+    except:
+        pass
+    
+    # print all session items / debug
+    for key, value in request.session.items():
+        print('FIRST {} => {}'.format(key, value))
+
+    # Generate notifications to be displayed
+    ## Current tags:
+    # string notificationID: notification ID made to uniquely identify each notification
+    # string label_class: Classes that will be appended to notif-label. e.g. "notif-urgent"
+    # string label: Title of the notification
+    # string p: Message of the notification
+    # string href: link to the page the user will be sent to if they click on the notification  
+    pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+    announceTable = Mem_Announcement._meta.db_table
+    for item in pendingAnnouncements:
+        notifID = announceTable + str(item['id'])
+        if notifID not in notifIDList:
+            notif = {
+                # "label_class": "notif-urgent test",
+                "notificationID": notifID,
+                "label": item["title"],
+                "p": item["mssg"],
+                "href": "/member-announcements"
+            }
+            # debug(notif)
+            notifIDList.append(notifID)
+            notifList.append(notif)
+
+    request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
+
+    # print all session items / debug
+    for key, value in request.session.items():
+        print('SECOND {} => {}'.format(key, value))
+
+    return render(request, 'partials/notifications.html', {"notifList": notifList})
+
+def syncNotifications(request):
+    """
+    Saving notifications data from sessions to database
+    """
+    dbNotifs = []
+    sessionNotifs = []
+    userID = request.session['_auth_user_id']
+    try:
+        dbNotifs.extend(User.objects.get(id=userID).accountdata.data['notifIDList'])
+        sessionNotifs.extend(request.session['notifIDList'])
+    except:
+        debug('no notifs from database found')
+    
+    try:
+        sessionNotifs.extend(request.session['notifIDList'])
+    except:
+        debug('no notifs from session found')
+        return HttpResponse({"error": "no notifs from session found"}, status=404) # no way for sessions notifs to be empty because this will always go after getNotifications
+    
+    if (Counter(dbNotifs) != Counter(sessionNotifs)):
+        new_dbNotifs = []
+        if len(sessionNotifs) != 0: #if sessionNotif is empty
+            pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+            announceTable = Mem_Announcement._meta.db_table
+            for item in pendingAnnouncements:
+                notifID = announceTable + str(item['id'])
+                if notifID in sessionNotifs:
+                    new_dbNotifs.append(notifID)
+    
+    try: # try to save user session 
+        AccountData(
+            user_id = userID,
+            data = {'notifIDList':new_dbNotifs}
+        ).save()
+    except:
+        debug('session was not saved to database')
+
+    return HttpResponse({"success":"session and database synced"}, status=200)
+
+def countNotifications(request):
+    totalNotifs = 0
+    notifIDList = [] # initialize list of seen notifications
+    try: # get notiflist from database
+        # improve when further use is needed
+        userID = request.session['_auth_user_id']
+        request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
+    except:
+        debug('no items for session item notifIDList obtained from database')
+    try:
+        notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
+    except:
+        pass
+
+    pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+    announceTable = Mem_Announcement._meta.db_table
+    for item in pendingAnnouncements:
+        notifID = announceTable + str(item['id'])
+        if notifID not in notifIDList:
+            totalNotifs = totalNotifs + 1
+
+    return HttpResponse(str(totalNotifs), status=200)
 
 # helper functions for Biosec
 def computeBioscore(farmID, intbioID, extbioID):
@@ -2464,7 +2710,6 @@ def filter_extBiosec(request, startDate, endDate, areaName):
     farmTotalAve = {
         "ave_extbio": round(ave_extbio, 2),
     }
-
 
     return render(request, 'farmstemp/rep-ext-biosec.html', {"isFiltered": isFiltered,"areaName": areaName, "farmTotalAve": farmTotalAve, 'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
 
