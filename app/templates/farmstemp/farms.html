@@ -23,9 +23,12 @@
                 </button>
                 <ul class="dropdown-menu" style="padding: 8px;">
                     <label style="font-weight: 600;">Area</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_TISS" onclick="filterSearch()"/>&nbsp;TSISI</a></li>
+                    {% for area in areaList %}
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_area" id="{{area.area_name}}"  onclick="filterSearch()"/>&nbsp;{{area.area_name}}</a></li>
+                    {% endfor %}
+                    <!-- <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_TISS" onclick="filterSearch()"/>&nbsp;TSISI</a></li>
                     <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_EAST" onclick="filterSearch()"/>&nbsp;East</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_WEST" onclick="filterSearch()"/>&nbsp;West</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_WEST" onclick="filterSearch()"/>&nbsp;West</a></li> -->
                 </ul>
             </div>
         </div>
@@ -49,7 +52,13 @@
             <!-- Data -->
             {% for farm in farms %}
                 <tr>
-                    <td data-label="Farm Code">{{farm.code}}</td>
+                    {% if farm.code < 10 %}
+                        <td data-label="Farm Code">00{{farm.code}}</td>
+                    {% elif farm.code < 100 %}
+                        <td data-label="Farm Code">0{{farm.code}}</td>
+                    {% else %}
+                        <td data-label="Farm Code">{{farm.code}}</td>
+                    {% endif %}
                     <td data-label="Raiser">{{farm.raiser}}</td>
                     <td data-label="Contact No.">{{farm.contact}}</td>
                     <td data-label="Address">{{farm.address}}</td>

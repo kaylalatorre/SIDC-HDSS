@@ -7,6 +7,9 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="main-div">
     <form action="" method="POST">
 
@@ -23,39 +26,47 @@
         <div class="box-style">
             <div class="flex subheading">
                 <p class="flex-item">Add all activity details here. </p>
-                <div><button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row --></div>
+                <div>
+                    <button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row -->
+                </div>
             </div>
             <br>
-            <div class="input-group" id="input-activity">
+            
+            <div class="input-group">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Date</th>
                             <th>Trip Type</th>
-                            <th>Departure Time</th>
                             <th>Arrival Time</th>
+                            <th>Departure Time</th>
                             <th>Description</th>
                             <th>Remarks</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="input-act">
+                    <tbody id="activity-table">
+
                         <tr>
                             <td data-label="Date" id="date"> {{activityForm.date}} </td>
                             <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>                            
-                            <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
                             <td data-label="Arrival Time" id="time_arrival"> {{activityForm.time_arrival}} </td>
+                            <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
                             <td data-label="Description" id="description"> {{activityForm.description}} </td>
                             <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
-                            <td data-label="">
-                                <button class="text-btn-red"><i class='bx bx-x'></i></button>
-                            </td>
+                            <td></td>
+                            <!-- <td><button id="remove-activity-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
                         </tr>
+                        
                     </tbody>
                 </table>
+
             </div>
             <br>
+
             <!-- Hidden depending on user -->
+
+            {% if user.groups.all.0.name == 'Livestock Operation Specialist' %}
             <div id="activity-approvals">
                 <h3> Checked by: </h3>
                 <div class="mb-3">
@@ -63,7 +74,41 @@
                     <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
                 </div>
                 <div class="mb-3">
+                    <input disabled type="checkbox" class="form-check-input" id="cb-ext-vet">
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    <input disabled type="checkbox" class="form-check-input" id="cb-am">
+                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                </div>
+            </div>
+
+            {% elif user.groups.all.0.name == 'Extension Veterinarian' %}
+            <div id="activity-approvals">
+                <h3> Checked by: </h3>
+                <div class="mb-3">
+                    <input disabled type="checkbox" class="form-check-input" id="cb-los">
+                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+                </div>
+                <div class="mb-3">
                     <input type="checkbox" class="form-check-input" id="cb-ext-vet">
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    <input disabled type="checkbox" class="form-check-input" id="cb-am">
+                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                </div>
+            </div>
+
+            {% elif user.groups.all.0.name == 'Assistant Manager' %}
+            <div id="activity-approvals">
+                <h3> Checked by: </h3>
+                <div class="mb-3">
+                    <input disabled type="checkbox" class="form-check-input" id="cb-los">
+                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+                </div>
+                <div class="mb-3">
+                    <input disabled type="checkbox" class="form-check-input" id="cb-ext-vet">
                     <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
                 </div>
                 <div class="mb-3">
@@ -71,6 +116,9 @@
                     <label class="form-check-label" for="cb-am">Assistant Manager</label>
                 </div>
             </div>
+
+            {% endif %}
+
         </div>
     </section>
     <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>

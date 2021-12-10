@@ -3,13 +3,26 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Farm {{ farm.id }} </title>
+    {% if farm.id < 10 %}
+    <title>SIDC-HDSS | Farm 00{{farm.id}} </title>
+    {% elif farm.id < 100 %}
+    <title>SIDC-HDSS | Farm 0{{farm.id}} </title>
+    {% else %}
+    <title>SIDC-HDSS | Farm {{farm.id}} </title>
+    {% endif %}
 {% endblock page_title %}
 
 {% block section %}
 <div class="main-div">
     <div class="flex subheading">
-        <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
+        {% if farm.id < 10 %}
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 00{{ farm.id }}</h1>
+        {% elif farm.id < 100 %}
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 0{{ farm.id }}</h1>
+        {% else %}
+            <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{ farm.id }}</h1>
+        {% endif %}
+
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               View
@@ -22,7 +35,15 @@
     </div>
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 80%">
-            <h1 class="heading flex-item"><a href="/tech-farms">Farms Assigned</a> > {{ farm.id }}</h1>
+
+            {% if farm.id < 10 %}
+                <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 00{{farm.id}} </h1>
+            {% elif farm.id < 100 %}
+                <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > 0{{farm.id}} </h1>
+            {% else %}
+                <h1 class="heading flex-item"><a href="/">Farms Assigned</a> > {{farm.id}} </h1>
+            {% endif %}
+
             <div class="dropdown flex-item">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                 View
@@ -52,7 +73,7 @@
                             </tr>
                             <tr>
                                 <th>Directly Managed</td>
-                                <td data-label="Directly Managed">{{farm.directly_manage|yesno:'Yes,No'}}"</td>
+                                <td data-label="Directly Managed">{{farm.directly_manage|yesno:'Yes,No'}}</td>
                             </tr>
                             <tr>
                                 <th>Address</td>
@@ -63,10 +84,8 @@
                                 <td data-label="Area">{{farm.farm_area}}</td>
                             </tr>
                             <tr>
-                            <tr>
                                 <th>Road Access</td>
                                 <td data-label="Road Access">{{farm.road_access|yesno:"Yes,No"}}</td>
-                            </tr>
                             </tr>
                         </tbody>
                     </table>
@@ -148,15 +167,6 @@
             <h2>Biosecurity Measures</h2>
             <div class="box-style">
                 <div class="mb-3">
-                    {% if farm.isol_pen == 0 %}
-                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked disabled> 
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
-                    {% endif %}
-
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
-                </div>
-                <div class="mb-3">
                     {% if farm.bird_proof == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-birdproof" value="true" checked disabled> 
                     {% else %}
@@ -175,15 +185,6 @@
                     <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
                 </div>
                 <div class="mb-3">
-                    {% if farm.foot_dip == 0 %}
-                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" checked disabled> 
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" disabled> 
-                    {% endif %}
-
-                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
-                </div>
-                <div class="mb-3">
                     {% if farm.fiveh_m_dist == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-distance" value="true" checked disabled> 
                     {% else %}
@@ -191,6 +192,24 @@
                     {% endif %}
                     
                     <label class="form-check-label" for="cb-distance">500-meter Distance</label>
+                </div>
+                <div class="mb-3">
+                    {% if farm.isol_pen == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
+                    {% endif %}
+
+                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                </div>
+                <div class="mb-3">
+                    {% if farm.foot_dip == 0 %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" checked disabled> 
+                    {% else %}
+                    <input type="checkbox" class="form-check-input" id="cb-footdip" value="true" disabled> 
+                    {% endif %}
+
+                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
                 </div>
                 <div class="flex">
                     <label for="input-trough" class="form-label">Waste Management:</label>

@@ -128,42 +128,89 @@ function viewFarm(farm) {
     }
 }
 
+/**
+*   - Appends new pigpen row for when adding a new farm
+*   
+*   pigpen-table = table body that the row will be appended to
+*/
 function addPigPenRow() {
-
     const length = document.getElementById('pigpen-length').innerHTML;
     const width = document.getElementById('pigpen-width').innerHTML;
     const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
 
-    // const row = document.getElementById("pigpen-row");
-    const table = document.getElementById("input-pigpen");
- 
-    $("#input-pigpen").append("<tr> \
-        <td data-label='Length'> " + length + " </td> \
-        <td data-label='Width'> " + width + " </td> \
-        <td data-label='No. of Pigs'> " + num_heads + " </td> \
+    $("#pigpen-table").append("<tr> \
+        <td data-label='Length' id='pigpen-length'> " + length + " </td> \
+        <td data-label='Width' id='pigpen-width'> " + width + " </td> \
+        <td data-label='No. of Pigs' id='pigpen-num-heads'> " + num_heads + " </td> \
+        <td><button id='remove-pigpen-row' type='button' onclick='removePigpenRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
- 
 }
 
+/*
+*   - Deletes pigpen row input in Add Farm
+*   
+*   currRow = selected pigpen row
+*   pigpen-table = table body that the row will be deleted from
+*/
+function removePigpenRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('pigpen-table');
+    table.deleteRow(rowIndex);
+}
+
+/**
+*   - Appends new activity row to activity table
+*   
+*   activity-table = table body that the row will be appended to
+*/
 function addActivityRow() {
     const date = document.getElementById('date').innerHTML;
     const trip_type = document.getElementById('trip_type').innerHTML;
-    const time_departure = document.getElementById('time_departure').innerHTML;
     const time_arrival = document.getElementById('time_arrival').innerHTML;
+    const time_departure = document.getElementById('time_departure').innerHTML;
     const description = document.getElementById('description').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
-    // const row = document.getElementById("pigpen-row");
-    const table = document.getElementById("input-act");
- 
-    $("#input-act").append("<tr> \
+    $("#activity-table").append("<tr> \
         <td data-label='Date'> " + date + " </td> \
         <td data-label='Trip Type'> " + trip_type + " </td> \
-        <td data-label='Departure Time'> " + time_departure + " </td> \
         <td data-label='Arrival Time'> " + time_arrival + " </td> \
+        <td data-label='Departure Time'> " + time_departure + " </td> \
         <td data-label='Description'> " + description + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
+        <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
+}
+
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeActivityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-table');
+    table.deleteRow(rowIndex);
+}
+
+/**
+*   - Displays input field when waste mgt option is "Others"
+*   
+*   option = value of option waste mgt selected (Others)
+*/
+function wasteMgtOther(option){
+    if (option.value == "Other"){
+        document.getElementById("option-other").style.display = "block";
+    }
 }
 
 function viewForm() {
@@ -175,13 +222,11 @@ function viewForm() {
     };
 }
 
-function viewAnnounce() {
+function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template
         // not sure if this can be used with actual implementation? with data
-    let viewAnnounce = document.querySelector('#viewAnnounce');
-    viewAnnounce.onclick = function () {
-        location.href = "/view-announcement";
-    };
+    id = $(elem).attr('id');
+    location.href = "/view-announcement/"+id;
 }
 
 /** 
@@ -194,25 +239,24 @@ function filterSearch(){
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
     table   = document.getElementById("mainTableid"); //to get the html table    
     tr      = table.getElementsByTagName("tr"); //to access rows in the table    
-    
-    var 
-    tiss = document.getElementById("ch_TISS").checked,
-    east = document.getElementById("ch_EAST").checked,
-    west = document.getElementById("ch_WEST").checked;
+
+    var checkedValues = $('input:checkbox:checked.ch_area').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
 
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
         address=tr[i].getElementsByTagName("td")[3];
         area = tr[i].getElementsByTagName("td")[4];
+        
         if(raiser && address && area){    
             if(
-                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) && 
-                (
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) 
+                &&(
                     (
-                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
-                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
-                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
-                        (!tiss && !east && !west)
+                        ($.inArray(area.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
                     ) 
                 )
             ){    
@@ -224,6 +268,17 @@ function filterSearch(){
         }    
     }
 } 
+
+$(document).ready(function(){
+    /**
+    *   Hides hog raiser fname, lname, and contact input when an existing raiser is selected
+    */
+    $('#input-exist-raiser').change(function(){
+        $("#div-raiser-name").remove();
+        $("#div-raiser-contact").remove();
+    });
+
+});
 
 //---- MODULE 2 functions ----//
 /** 
@@ -265,3 +320,10 @@ function filterHogsHealth(){
         }    
     }
 } 
+/** 
+* Select all.
+*/
+$('#select_all').change(function() {
+    var checkboxes = $(this).closest('table').find(':checkbox');
+    checkboxes.prop('checked', $(this).is(':checked'));
+});

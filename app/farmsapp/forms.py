@@ -1,75 +1,10 @@
+from django import forms
 from django.forms import ModelForm, DateField, widgets, Select, Textarea
-from .models import Farm, Hog_Raiser, Pigpen_Measures, ExternalBiosec, InternalBiosec, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
-# Mem_Announcement
+from .models import Farm, Hog_Raiser, Pigpen_Measures, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
+import datetime
+
 class DateInput(ModelForm):
     input_type = 'date'
-
-class ExternalBiosecForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['bird_proof'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-birdproof',
-            # 'value' : '1'               
-        })
-        self.fields['perim_fence'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-fence',
-            # 'value' : '1'               
-        })
-        self.fields['fiveh_m_dist'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-distance',
-            # 'value' : '1'         
-        })
-    
-    def clean_active(self):
-        return 0 if self.cleaned_data['active'] else 1
-
-    class Meta:
-        model = ExternalBiosec
-        fields = ('__all__')
-        # widgets = {
-        #     'bird_proof' : widgets.CheckboxInput(),
-        #     'perim_fence' : widgets.CheckboxInput(),
-        #     'fiveh_m_dist' : widgets.CheckboxInput(),
-        # }
-
-# class ExternalBiosecForm(forms.Form):
-#     bird_proof = forms.CheckboxInput()
-#     perim_fence = forms.CheckboxInput()
-#     fiveh_m_dist = forms.CheckboxInput()
-
-class InternalBiosecForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['isol_pen'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-isolation',
-            # 'value' : '1'               
-        })
-        self.fields['foot_dip'].widget.attrs.update({
-            'input type' : 'checkbox',
-            'class' : 'form-check-input',
-            'id': 'cb-footdip',
-            # 'value' : '1'         
-        })
-        self.fields['waste_mgt'].widget.attrs.update({
-           'select class' : 'form-select',
-           'id' : 'input-waste-mgt'
-        })
-
-    class Meta:
-        model = InternalBiosec
-        fields = ('__all__')
-        # widgets = {
-        #     'isol_pen' : widgets.CheckboxInput(),
-        #     'foot_dip' : widgets.CheckboxInput(),
-        # }
 
 class FarmWeightForm(ModelForm):
     class Meta:
@@ -96,7 +31,6 @@ class AreaForm(ModelForm):
     class Meta:
         model = Area
         fields = ('__all__')
-
 
 class FarmForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -139,7 +73,7 @@ class FarmForm(ModelForm):
         })
         self.fields['feed_trough'].widget.attrs.update({
            'select class' : 'form-select',
-           'id' : 'input-trough'
+           'id' : 'input-trough',
         })
         self.fields['bldg_cap'].widget.attrs.update({
             'input type' : 'number', 
@@ -224,33 +158,28 @@ class PigpenMeasuresForm(ModelForm):
         model = Pigpen_Measures
         fields = ('__all__')
 
-class ActivityForm(ModelForm):
-    # date = ModelForm.DateField()
-
+class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].widget.attrs.update({
             'type' : 'date', 
             'aria-label' : 'Date',
             'class' : 'form-control',
-            'placeholder' : '01/01/2021'
         })
         self.fields['trip_type'].widget.attrs.update({
            'select class' : 'form-select',
            'id' : 'act-trip-type',
-           'style' : 'margin-bottom: 0'
-        })
-        self.fields['time_departure'].widget.attrs.update({
-            'type' : 'time', 
-            'aria-label' : 'Departure Time',
-            'class' : 'form-control',
-            'placeholder' : '18:00'
+           'style' : 'margin-bottom: 0',
         })
         self.fields['time_arrival'].widget.attrs.update({
             'input type' : 'time', 
             'aria-label' : 'Arrival Time',
             'class' : 'form-control',
-            'placeholder' : '18:00'
+        })
+        self.fields['time_departure'].widget.attrs.update({
+            'type' : 'time', 
+            'aria-label' : 'Departure Time',
+            'class' : 'form-control',
         })
         self.fields['description'].widget.attrs.update({
             'input type' : 'text', 
@@ -273,6 +202,27 @@ class ActivityForm(ModelForm):
             'time_departure' : widgets.TimeInput(attrs={'type' : 'time'}),
             'time_arrival' : widgets.TimeInput(attrs={'type' : 'time'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        date = cleaned_data.get("date")
+        today = datetime.date.today()
+
+        # print("Input Date: " + str(date))
+        # print("Date today: " + str(today))
+
+        if date > today:
+            raise forms.ValidationError("Date can not be later than today.")
+
+        time_arrival = cleaned_data.get("time_arrival")
+        time_departure = cleaned_data.get("time_departure")
+
+        # print("Arrival: " + str(time_arrival))
+        # print("Departure: " + str(time_departure))
+
+        if time_departure < time_arrival:
+            raise forms.ValidationError("Arrival time should be before departure time.")
 
 class MortalityForm(ModelForm):
     class Meta:
@@ -304,13 +254,18 @@ class MemAnnouncementForm(ModelForm):
 
     class Meta:
         model = Mem_Announcement
+        AREA_CHOICES = [('All Raisers', 'All Raisers')]
+
+        for choice in Area.objects.distinct().values('area_name'):
+            AREA_CHOICES.append((choice['area_name'], choice['area_name']))
+
         fields = ('__all__')
         widgets = {
             'category': widgets.Select(
                 choices=(('Reminder','Reminder'), ('Announcement','Announcement'), ('Event','Event'), ('Other','Other'))
             ),
             'recip_area': widgets.Select(
-                choices=(('All Raisers','All Raisers'), ('TISISI Raisers','TISISI Raisers'), ('West Raisers','West Raisers'), ('East Raisers','East Raisers'))
+                choices=AREA_CHOICES
             ),
             'mssg': widgets.Textarea()
         }

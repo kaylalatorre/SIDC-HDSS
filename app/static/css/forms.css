@@ -18,7 +18,7 @@
 }
 
 /* Overwriting Bootstrap CCS */
-.form-select, .form-control, .form-check-input {
+.form-select, .form-datalist, .form-control, .form-check-input {
     margin-bottom: 16px;
     font-size: 14px;
     font-family: 'Roboto';
@@ -71,4 +71,8 @@ textarea {
         min-width: 100%;
         vertical-align: middle;
     }
+}
+
+.activity-input {
+    display: none;
 }

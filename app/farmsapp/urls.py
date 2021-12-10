@@ -4,6 +4,8 @@ from . import views
 # Farms Management Module URLS
 # r'^selected-farm/(?P<parameter>[0-9]+)$'
 urlpatterns = [
+    # Map
+    path('map-data', views.getMapData, name="getMapData"),
 
     # asst. manager - view farms
     path('farms', views.farms, name="farms"),
@@ -12,6 +14,7 @@ urlpatterns = [
     # asst. manager - assign technicians
     path('technician-assignment', views.techAssignment, name="techAssignment"),
     path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
+    path('technician-assignment/savearea', views.save_area, name="save_area"),
 
     # asst. manager - forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
@@ -19,8 +22,9 @@ urlpatterns = [
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),
-    path('tech-farms', views.techFarms, name="techFarms"),
-    path('home/view-farm', views.techFarms, name="techFarms"),
+    path('home/tech-farms', views.techFarms, name="techFarms"),
+    # path('tech-farms', views.techFarms, name="techFarms"),
+    # path('home/view-farm', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
 
     # technician - biosecurity
@@ -36,11 +40,19 @@ urlpatterns = [
 
     # technician - biosecurityactivity
     path('add-activity/<str:farmID>', views.addActivity, name="addActivity"),
+    path('biosecurity/<str:farmID>/edit-activity/<str:activityID>', views.editActivity, name="editActivity"),
+    path('biosecurity/<str:farmID>/delete-activity/<str:activityID>', views.deleteActivity, name="deleteActivity"),
 
     # announcements
     path('member-announcements', views.memAnnouncements, name="memAnnouncements"),
+    path('member-announcements/<str:decision>', views.memAnnouncements_Approval, name="memAnnouncements_Approval"),
     path('create-announcement', views.createAnnouncement, name="createAnnouncement"),
-    path('view-announcement', views.viewAnnouncement, name="viewAnnouncement"),
+    path('view-announcement/<int:id>', views.viewAnnouncement, name="viewAnnouncement"),
+
+    # notifications
+    path('notifications', views.getNotifications, name='getNotifications'),
+    path('notifications/count', views.countNotifications, name='countNotifications'),
+    path ('notifications/sync', views.syncNotifications, name='syncNotifications'),
 
     # reports
     path('farms-assessment', views.farmsAssessment, name="farmsAssessment"),

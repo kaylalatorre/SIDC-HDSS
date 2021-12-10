@@ -14,7 +14,7 @@ from django.contrib.auth import logout
 
 
 # TEST: importing views from cross-app folder
-from farmsapp.views import dashboard_view
+from farmsapp.views import dashboard_view, techFarms
 
 def debug(m):
     print("------------------------[DEBUG]------------------------")
@@ -96,12 +96,17 @@ def home_view(request):
     userGroup = request.user.groups.all()[0].name
 
     if userGroup == "Assistant Manager":
-        debug("User is a Field Technician. Render dashboard.")
+        debug("User is an Assistant Manager. Render dashboard.")
         farmStats = dashboard_view(request)
         return render(request, 'home.html', {"farmStats": farmStats})
-
-    return render(request, 'home.html', {})
     
+    elif userGroup == "Field Technician":
+        debug("User is a Field Technician. Render tech farms.")
+        tech_farms = techFarms(request)
+
+        return render(request, 'home.html', { "techFarms": tech_farms })
+    
+    return render(request, 'home.html', {})
 
 # LOGOUT function
 def logout_view(request):
