@@ -356,8 +356,55 @@ def healthSymptoms(request):
 
     return render(request, 'healthtemp/health-symptoms.html', {"farmList": farmsData})
 
-def selectedHealthSymptoms(request):
-    return render(request, 'healthtemp/selected-health-symptoms.html', {})
+def selectedHealthSymptoms(request, farmID):
+    """
+    Displays information of selected hogs health record for Technician user.
+
+    :param farmID: PK of selected farm
+    :type farmID: string
+    """
+
+    debug("TEST LOG: in selectedHealthSymptoms()/n")
+    debug("farmID -- " + str(farmID))
+
+    # TODO: (1) Mortality Records (*what need?)
+
+
+    # (2.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
+    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
+        'date_filed', 
+        'report_status',
+        'num_pigs_affected').all()
+
+    # (2.2) Incidents Reported (symptoms list)
+    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
+            'high_fever'        ,
+            'loss_appetite'     ,
+            'depression'        ,
+            'lethargic'         ,
+            'constipation'      ,
+            'vomit_diarrhea'    ,
+            'colored_pigs'      ,
+            'skin_lesions'      ,
+            'hemorrhages'       ,
+            'abn_breathing'     ,
+            'discharge_eyesnose',
+            'death_isDays'      ,
+            'death_isWeek'      ,
+            'cough'             ,
+            'sneeze'            ,
+            'runny_nose'        ,
+            'waste'             ,
+            'boar_dec_libido'   ,
+            'farrow_miscarriage',
+            'weight_loss'       ,
+            'trembling'         ,
+            'conjunctivitis').all()
+
+    # combine the 2 previous queries into 1 temporary list
+    incident_symptomsList = zip(incidentQry, symptomsList)
+
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"incident_symptomsList": incident_symptomsList})
 
 def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})

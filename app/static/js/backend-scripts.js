@@ -918,3 +918,22 @@ function viewHogsHealth(farmHTML) {
         location.reload(true);
     }
 }
+
+/**
+ * Links to detailed view of selected Hogs Health record (for Technician view)
+ * @param farmHTML the HTML tag of farm code column in table data
+ */
+function viewHealthSymptoms(farmHTML) {
+
+    var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log("farmID -- " + farmID);
+
+    try{
+        url = "/selected-health-symptoms/" + farmID;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        location.reload(true);
+    }
+}
