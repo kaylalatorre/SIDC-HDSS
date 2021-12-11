@@ -14,6 +14,9 @@ from django.db.models.expressions import F, Value
 from django.db.models import Q
 # from django.forms.formsets import formset_factory
 
+# to-python queryset serializer
+from django.core import serializers
+
 
 def debug(m):
     """
@@ -99,7 +102,7 @@ def hogsHealth(request):
         total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
         # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-        total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="ACTIVE").count()
+        total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
         farmObject = {
             "code":  str(f["id"]),
@@ -121,12 +124,42 @@ def hogsHealth(request):
 
     return render(request, 'healthtemp/hogs-health.html', {"farmList": farmsData})
 
+
+def get_symptomsList(farmID):
+    symptomDict = [
+            'high_fever'        ,
+            'loss_appetite'     ,
+            'depression'        ,
+            'lethargic'         ,
+            'constipation'      ,
+            'vomit_diarrhea'    ,
+            'colored_pigs'      ,
+            'skin_lesions'      ,
+            'hemorrhages'       ,
+            'abn_breathing'     ,
+            'discharge_eyesnose',
+            'death_isDays'      ,
+            'death_isWeek'      ,
+            'cough'             ,
+            'sneeze'            ,
+            'runny_nose'        ,
+            'waste'             ,
+            'boar_dec_libido'   ,
+            'farrow_miscarriage',
+            'weight_loss'       ,
+            'trembling'         ,
+            'conjunctivitis'    
+    ]
+
+
+    symptomList = []
+
 def selectedHogsHealth(request, farmID):
     """
     Displays information of selected hogs health record for assistant manager
 
     :param farmID: PK of selected farm
-    :type farmID: integer
+    :type farmID: string
     """
 
     debug("TEST LOG: in selectedHogsHealth()/n")
@@ -166,7 +199,7 @@ def selectedHogsHealth(request, farmID):
     total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
     # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="ACTIVE").count()
+    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
     farmObject = {
         "code":  farmID,
@@ -182,7 +215,49 @@ def selectedHogsHealth(request, farmID):
         "total_active": total_active,
     }
 
-    return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject})
+
+    # (2.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
+    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
+        'date_filed', 
+        'report_status',
+        'num_pigs_affected').all()
+
+    # (2.2) Incidents Reported (symptoms list)
+    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
+            'high_fever'        ,
+            'loss_appetite'     ,
+            'depression'        ,
+            'lethargic'         ,
+            'constipation'      ,
+            'vomit_diarrhea'    ,
+            'colored_pigs'      ,
+            'skin_lesions'      ,
+            'hemorrhages'       ,
+            'abn_breathing'     ,
+            'discharge_eyesnose',
+            'death_isDays'      ,
+            'death_isWeek'      ,
+            'cough'             ,
+            'sneeze'            ,
+            'runny_nose'        ,
+            'waste'             ,
+            'boar_dec_libido'   ,
+            'farrow_miscarriage',
+            'weight_loss'       ,
+            'trembling'         ,
+            'conjunctivitis').all()
+    
+    # # TEST LOG for item list
+    # for sympRecord in symptomsList:
+    #     # per record, iterate through key-value (serves as 1 <li> tag)
+    #     for sKey, sVal in sympRecord.items():
+    #         if sVal:
+    #             debug(sKey + " --- " + str(sVal))
+
+    # combine the 2 previous queries into 1 temporary list
+    incident_symptomsList = zip(incidentQry, symptomsList)
+
+    return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject, "incident_symptomsList": incident_symptomsList})
 
 
 
@@ -252,7 +327,7 @@ def healthSymptoms(request):
             total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
             # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="ACTIVE").count()
+            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
             farmObject = {
                 "code":  str(f["id"]),

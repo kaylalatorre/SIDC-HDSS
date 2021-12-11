@@ -71,7 +71,8 @@ class Farm_Weight(models.Model):
 class Hog_Symptoms(models.Model):
     date_filed          = models.DateTimeField(default=now)
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    report_status       = models.CharField(max_length=50, default='ACTIVE')
+    report_status       = models.CharField(max_length=50, default='Active')
+    num_pigs_affected   = models.IntegerField(default=0)
 
     high_fever          = models.BooleanField(default=False, null=True, blank=True)
     loss_appetite       = models.BooleanField(default=False, null=True, blank=True)

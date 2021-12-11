@@ -69,18 +69,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for incident,symptoms in incident_symptomsList %}
                         <tr>
-                            <td data-label="Incident Code">1</td>
-                            <td data-label="Date Reported"> 50000 </td>
-                            <td data-label="No. of Pigs Affected"> 50000 </td>
+                            <td data-label="Incident Code">{{ incident.id }}</td>
+                            <td data-label="Date Reported">{{ incident.date_filed }}</td>
+                            <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }}</td>
                             <td data-label="Symptoms Observed">  
+                                {% for sKey, sVal in symptoms.items %}
                                 <ul>
-                                    <li>hi</li>
-                                    <li>hello</li>
+                                    {% if sVal %}
+                                        <li>{{ sKey }}</li>
+                                    {% endif %}
                                 </ul>
+                                {% endfor %}
                             </td>
-                            <td data-label="Status" class="status"> Resolved </td>
+                            <td data-label="Status" class="status"> {{ incident.report_status }} </td>
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
