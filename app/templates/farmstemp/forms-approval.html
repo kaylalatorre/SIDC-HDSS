@@ -10,6 +10,7 @@
 <div class="table-container main-div">
     <h1 class="heading">Forms Approval</h1>
     <p>Check all details of the forms below.</p>
+    <br>
     <div class="box-style small-table">
         <table class="table">
             <thead>
@@ -21,17 +22,18 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
+            {% for act in activityList %}
                 <tr>
-                    <td>01/01/21</td>
+                    <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
                     <td>Marites</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewForm()><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

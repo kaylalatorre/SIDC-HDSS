@@ -1,3 +1,17 @@
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 /* 
 * Tech assignment edit button 
 */
@@ -112,10 +126,12 @@ function toggleAreaView() {
     }
 }
 
-// MGIHT BE BACKEND
+/**
+*   - Redirects user from farm list to selected farm page
+*   
+*   farm = value of selected farm row
+*/
 function viewFarm(farm) {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
 
     try{
         url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
@@ -123,8 +139,8 @@ function viewFarm(farm) {
         location.href = url;
     }catch (error){
         console.log("Something went wrong. Restarting...");
-        console.log("reloading...");
-        location.reload(true);
+        console.log(error);
+        // location.reload(true);
     }
 }
 
@@ -213,13 +229,26 @@ function wasteMgtOther(option){
     }
 }
 
-function viewForm() {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
-    let viewFarm = document.querySelector('#viewForm');
-    viewFarm.onclick = function () {
-        location.href = "/selected-form";
-    };
+/**
+*   - Redirects user from farm list to selected farm page
+*   
+*   farm = value of selected farm row
+*/
+function viewActivityForm(activity) {
+
+    var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log(actDate)
+    console.log(formatDate(actDate))
+
+    try{
+        url = "/selected-activity-form/" + formatDate(actDate);
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log(error);
+        // location.reload(true);
+    }
 }
 
 function viewAnnounce(elem) {

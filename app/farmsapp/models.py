@@ -192,7 +192,7 @@ class Activity(models.Model):
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
-    date_added          = models.DateTimeField(auto_now=True, editable=False)
+    date_added          = models.DateField(auto_now=True, editable=False)
     date_approved       = models.DateTimeField(null=True, blank=True)
 
     is_approved         = models.BooleanField(default=False)

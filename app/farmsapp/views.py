@@ -1349,10 +1349,37 @@ def save_area(request):
     
 
 def formsApproval(request):
-    return render(request, 'farmstemp/forms-approval.html', {})
+    # get all unapproved activities from each farm
+    actQuery = Activity.objects.filter(is_approved=False).distinct("date_added").order_by("-date_added")
 
-def selectedForm(request):
-    return render(request, 'farmstemp/selected-form.html', {})
+    # print(str(actQuery))
+
+    return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actQuery })
+
+def selectedActivityForm(request, activityDate):
+    # print(str(activityDate))
+    actQuery = Activity.objects.filter(date_added=activityDate).filter(is_approved=False).all().order_by('id')
+
+    actList = []
+
+    # store all data to an array
+    for activity in actQuery:
+        actList.append({
+            'id' : activity.id,
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_arrival' : activity.time_arrival,
+            'time_departure' : activity.time_departure,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+        })
+
+
+    return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList })
+
+def approveActivityForm(request, activityDate):
+
+    return render(request, 'farmstemp/selected-activity-form.html', {})
 
 
 def addActivity(request, farmID):

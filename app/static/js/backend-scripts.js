@@ -725,6 +725,7 @@ $('#approveChecked.primary-btn').on('click', function(){
 $('#rejectChecked.primary-btn-red').on('click', function(){
     for_approval($(this), 'reject');
 });
+
 /**
 *   - Deletes selected activity row from database.
 *   
@@ -895,6 +896,23 @@ function saveActivity(actID) {
                 console.log(res.responseJSON.error)
             }
         })
+    }
+}
+
+/**
+*   - Passes actDate and change is_approve status of activities
+*   
+*   actDate = date_added of all activities
+*/
+function approveActivity(actDate) {
+
+    try{
+        url = "/approve-activity-form/" + actDate;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Approval of activities failed.");
+        location.reload(true);
     }
 }
 
