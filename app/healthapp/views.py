@@ -118,11 +118,73 @@ def hogsHealth(request):
         total_pigs += f["total_pigs"]
     # debug(farmsData)
 
-    
+
     return render(request, 'healthtemp/hogs-health.html', {"farmList": farmsData})
 
-def selectedHogsHealth(request):
-    return render(request, 'healthtemp/selected-hogs-health.html', {})
+def selectedHogsHealth(request, farmID):
+    """
+    Displays information of selected hogs health record for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
+
+    debug("TEST LOG: in selectedHogsHealth()/n")
+    debug("farmID -- " + str(farmID))
+
+    # get farm based on farmID; get related data from hog_raiser, area, farm_weight
+    selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        farm_area = F("area__area_name"),
+        ave_currWeight = F("farm_weight__ave_weight")
+        # is_starterWeight = F("farm_weight__is_starter")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "farm_area",
+            "total_pigs",
+            "last_updated",
+            "ave_currWeight"
+            # "is_starterWeight"
+            ).first()
+    # debug(qry)
+
+    if selectFarm is None: 
+        messages.error(request, "Hogs health record not found.", extra_tags="selected-hogsHealth")
+        return render(request, 'healthtemp/selected-hogs-health.html', {})
+
+
+    total_incidents = 0
+    total_active = 0
+
+    # for computing Mortality %
+    mortality_rate = compute_MortRate(farmID)
+
+    # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
+    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
+
+    # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
+    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="ACTIVE").count()
+
+    farmObject = {
+        "code":  farmID,
+        "raiser": " ".join((selectFarm["fname"], selectFarm["lname"])),
+        "area": selectFarm["farm_area"],
+        "pigs": selectFarm["total_pigs"],
+        "updated": selectFarm["last_updated"],
+        "ave_currWeight": selectFarm["ave_currWeight"],
+        # "is_starterWeight": str(f["is_starterWeight"]),
+
+        "mortality_rate": mortality_rate,
+        "total_incidents": total_incidents,
+        "total_active": total_active,
+    }
+
+    return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject})
+
+
 
 def hogsMortality(request):
     return render(request, 'healthtemp/rep-hogs-mortality.html', {})
