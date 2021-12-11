@@ -146,7 +146,7 @@ def healthSymptoms(request):
         - incidents reported, active incidents
     """
 
-    # (1) Get all Farms under the logged-in technician User
+    # Get all Areas assigned to logged-in technician User
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
@@ -154,42 +154,28 @@ def healthSymptoms(request):
     print("TEST LOG areaQry: " + str(areaQry))
 
     # array to store all farms under each area
-    techFarmsList = []
+    farmsData = []
 
     for area in areaQry :
         # print(str(area.id) + str(area.area_name))
 
-        # # collect the corresponding hog raiser details for each farm 
-        # techFarmQry  = Farm.objects.filter(area_id=area.id).values(
-        #     "id"
-        # ).all()
-        # # debug("techFarmQry -- " + str(techFarmQry))
-
-
-        # (1) collect the corresponding details for each Farm 
-        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser', 'area', 'farm_weight').annotate(
+        # (1) filter by area, then collect details for each Farm 
+        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser','farm_weight').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
-            farm_area = F("area__area_name"),
             ave_currWeight = F("farm_weight__ave_weight")
             # is_starterWeight = F("farm_weight__is_starter")
             ).values(
                 "id",
                 "fname",
                 "lname", 
-                "farm_area",
                 "total_pigs",
                 "last_updated",
                 "ave_currWeight"
                 # "is_starterWeight"
                 ).order_by("id")
-        debug(qry)
-
-        if not qry.exists(): 
-            messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth-tech")
-            return render(request, 'healthtemp/hogs-health.html', {})
-
-        farmsData = []
+        # debug(qry)
+        
         total_pigs = 0
         total_incidents = 0
         total_active = 0
@@ -209,7 +195,6 @@ def healthSymptoms(request):
             farmObject = {
                 "code":  str(f["id"]),
                 "raiser": " ".join((f["fname"],f["lname"])),
-                "area": str(f["farm_area"]),
                 "pigs": str(f["total_pigs"]),
                 "updated": f["last_updated"],
                 "ave_currWeight": str(f["ave_currWeight"]),
@@ -222,25 +207,14 @@ def healthSymptoms(request):
             farmsData.append(farmObject)
 
             total_pigs += f["total_pigs"]
-        # debug(farmsData)
+        debug("-- farmsData ---")
+        debug(farmsData)
 
 
-    #     #---------- pass all data into an array
-    #     for farm in techFarmQry:
-    #         farmObject = {
-    #             "id": farm["id"],
-    #         }
-    #         techFarmsList.append(farmObject)
-
-    # debug("techFarmsList -- " + str(techFarmsList))
-
-
-    # (ERROR) for checking technician Areas that have no Farms and null farmID
+    # (ERROR) for checking technician Areas that have no assigned Farms
     if not farmsData: 
         messages.error(request, "Hogs health record/s not found.", extra_tags="view-healthSymp")
         return render(request, 'farmstemp/biosecurity.html', {})
-
-#-------------------
 
 
     return render(request, 'healthtemp/health-symptoms.html', {"farmList": farmsData})
