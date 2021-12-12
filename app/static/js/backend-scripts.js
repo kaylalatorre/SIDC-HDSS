@@ -877,7 +877,7 @@ function saveActivity(actID) {
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/edit-activity/' + activityID,
+            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
             data: {"date" : date,
                     "trip_type" : type,
                     "time_departure" : departure,
@@ -905,15 +905,54 @@ function saveActivity(actID) {
 *   actDate = date_added of all activities
 */
 function approveActivity(actDate) {
+    // console.log(actDate)
 
-    try{
-        url = "/approve-activity-form/" + actDate;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Approval of activities failed.");
-        location.reload(true);
-    }
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-activity-form/' + actDate,
+        data: {"date_added" : actDate},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+*   - Return activities to farm/technician
+*   
+*   actDate = date_added of all activities
+*/
+function rejectActivity(actDate) {
+    // console.log(actDate)
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-activity-form/' + actDate,
+        data: {"date_added" : actDate},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
 }
 
 //---- MODULE 2 functions ----//

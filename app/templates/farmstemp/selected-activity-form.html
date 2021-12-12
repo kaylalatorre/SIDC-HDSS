@@ -7,10 +7,14 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="table-container main-div">
     <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activities made on {{actDate}} </h1>
     <div class="flex subheading">
-        <button class="primary-btn" id="approve-activity" style="justify-content: flex-end;" onclick="approveActivity();">Approve</button> 
+        <button class="primary-btn" id="approve-activity" style="justify-content: flex-end;" onclick="approveActivity('{{ actDate }}')">Approve</button> 
+        <button class="primary-btn-red" id="reject-activity" onclick="rejectActivity('{{ actDate }}')">Reject</button>
     </div>
     <div class="box-style small-table">
         <table class="table">

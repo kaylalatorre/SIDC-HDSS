@@ -1350,7 +1350,9 @@ def save_area(request):
 
 def formsApproval(request):
     # get all unapproved activities from each farm
+    # actQuery = Activity.objects.filter(is_approved=False).filter(date_approved__isnull=True).distinct("date_added").order_by("-date_added")
     actQuery = Activity.objects.filter(is_approved=False).distinct("date_added").order_by("-date_added")
+
 
     # print(str(actQuery))
 
@@ -1358,7 +1360,7 @@ def formsApproval(request):
 
 def selectedActivityForm(request, activityDate):
     # print(str(activityDate))
-    actQuery = Activity.objects.filter(date_added=activityDate).filter(is_approved=False).all().order_by('id')
+    actQuery = Activity.objects.filter(date_added=activityDate).filter(is_approved=False).all().order_by('-date')
 
     actList = []
 
@@ -1379,8 +1381,58 @@ def selectedActivityForm(request, activityDate):
 
 def approveActivityForm(request, activityDate):
 
-    return render(request, 'farmstemp/selected-activity-form.html', {})
+    # print(activityDate)
+    # convert activityDate string into date object
+    actDate = (datetime.strptime(activityDate, '%Y-%m-%d')).date()
 
+    actQuery = Activity.objects.filter(date_added=actDate).filter(is_approved=False).all()
+    # print(str(actQuery))
+
+    # for setting Date input filters to today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        # print("TEST LOG: Approve Activity Form is a POST Method")
+
+        # update contents of activities
+        for activity in actQuery:
+            activity.last_updated = dateToday
+            activity.date_approved = dateToday
+            activity.is_approved = True
+
+            activity.save()
+    
+        messages.success(request, "Activities have been approved.", extra_tags='update-activity')
+        return JsonResponse({"success": "Activities have been approved."}, status=200)
+
+    messages.error(request, "Failed to approve activities.", extra_tags='update-activity')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def rejectActivityForm(request, activityDate):
+
+    # convert activityDate string into date object
+    actDate = (datetime.strptime(activityDate, '%Y-%m-%d')).date()
+
+    actQuery = Activity.objects.filter(date_added=actDate).filter(is_approved=False).all()
+    # print(str(actQuery))
+
+    # for setting Date input filters to today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        # print("TEST LOG: Approve Activity Form is a POST Method")
+
+        # update contents of activities
+        for activity in actQuery:
+            activity.last_updated = dateToday
+
+            activity.save()
+    
+        messages.success(request, "Activities have been rejected.", extra_tags='update-activity')
+        return JsonResponse({"success": "Activities have been rejected."}, status=200)
+
+    messages.error(request, "Failed to reject activities.", extra_tags='update-activity')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def addActivity(request, farmID):
     """
@@ -1475,7 +1527,7 @@ def addActivity(request, farmID):
     # pass django form and farmID to template
     return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
 
-def editActivity(request, farmID, activityID):
+def saveActivity(request, farmID, activityID):
     """
     - Update selected activity under current farm
     - Collect data from backend-scripts.js
@@ -1483,6 +1535,9 @@ def editActivity(request, farmID, activityID):
     activityID - selected activityID passed as parameter
     farmID - selected farmID passed as parameter
     """
+
+    # for setting Date input filters to today's date
+    dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
         print("TEST LOG: Edit Activity is a POST Method")
@@ -1506,6 +1561,7 @@ def editActivity(request, farmID, activityID):
         activity.time_arrival = time_arrival
         activity.description = description
         activity.remarks = remarks
+        activity.last_updated = dateToday
         
         activity.save()
         print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )

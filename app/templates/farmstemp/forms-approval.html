@@ -7,15 +7,19 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="table-container main-div">
     <h1 class="heading">Forms Approval</h1>
     <p>Check all details of the forms below.</p>
     <br>
     <div class="box-style small-table">
+        <!-- <h2>Activity Forms</h2> -->
         <table class="table">
             <thead>
                 <tr>
-                    <th>Date</th>
+                    <th>Date Added</th>
                     <th>Form</th>
                     <th>Prepared by</th>
                     <th></th>
