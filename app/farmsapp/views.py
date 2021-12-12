@@ -1892,7 +1892,7 @@ def farmsAssessment(request):
 
     # Get technician name assigned per Farm
     # Farm > Area > User (tech)
-    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No farm records found.
@@ -1928,7 +1928,7 @@ def farmsAssessment(request):
             "last_updated",
             "intbioID",
             "extbioID"
-            )
+            ).order_by("id")
     debug(qry)
 
     if not qry.exists(): 
@@ -2032,7 +2032,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No farm records found.
             messages.error(request, "No farm records found.", extra_tags="farmass-report")
@@ -2055,13 +2055,13 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "last_updated",
                 "intbioID",
                 "extbioID"
-                )
+                ).order_by("id")
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/ filter_farmsAssessment")
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No farm records found.
             messages.error(request, "No farm records found.", extra_tags="farmass-report")
@@ -2084,7 +2084,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "last_updated",
                 "intbioID",
                 "extbioID"
-                )
+                ).order_by("id")
    
     debug(qry)
 
@@ -2197,7 +2197,7 @@ def intBiosecurity(request):
     areaQry = Area.objects.all()
 
     # Get technician name assigned per Farm
-    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     # debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
@@ -2238,7 +2238,7 @@ def intBiosecurity(request):
             "intbio_waste_mgt",
             "intbio_disinfect_prem",
             "intbio_disinfect_vet_supp"
-            )
+            ).order_by("id")
     debug(qry)
 
     if not qry.exists(): #(ERROR) No Internal biosecurity records found.
@@ -2325,7 +2325,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
             messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
@@ -2354,13 +2354,13 @@ def filter_intBiosec(request, startDate, endDate, areaName):
                     "intbio_waste_mgt",
                     "intbio_disinfect_prem",
                     "intbio_disinfect_vet_supp"
-                    )
+                    ).order_by("id")
 
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
         # Get technician name assigned per Farm
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
             messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
@@ -2388,7 +2388,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
                 "intbio_waste_mgt",
                 "intbio_disinfect_prem",
                 "intbio_disinfect_vet_supp"
-                )
+                ).order_by("id")
 
 
     if not qry.exists(): # (ERROR) No Internal biosecurity records found.
@@ -2472,7 +2472,7 @@ def extBiosecurity(request):
     areaQry = Area.objects.all()
 
     # Get technician name assigned per Farm
-    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     # debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No External biosecurity records found.
@@ -2521,7 +2521,7 @@ def extBiosecurity(request):
             "extbio_prsnl_dip_footwear",
             "extbio_prsnl_sanit_hands",
             "extbio_chg_disinfect_daily"
-            )
+            ).order_by("id")
     debug(qry)
 
     if not qry.exists(): #(ERROR) No External biosecurity records found.
@@ -2609,7 +2609,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
         debug("TRACE: in areaName == 'All'")
 
         # Get technician name assigned per Farm
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No External biosecurity records found.
             messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
@@ -2645,13 +2645,13 @@ def filter_extBiosec(request, startDate, endDate, areaName):
                     "extbio_prsnl_dip_footwear",
                     "extbio_prsnl_sanit_hands",
                     "extbio_chg_disinfect_daily"
-                    )
+                    ).order_by("id")
 
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
         # Get technician name assigned per Farm
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No External biosecurity records found.
             messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
@@ -2687,7 +2687,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
                     "extbio_prsnl_dip_footwear",
                     "extbio_prsnl_sanit_hands",
                     "extbio_chg_disinfect_daily"
-                    )
+                    ).order_by("id")
 
 
     if not qry.exists(): # (ERROR) No External biosecurity records found.

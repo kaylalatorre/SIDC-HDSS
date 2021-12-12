@@ -125,35 +125,6 @@ def hogsHealth(request):
     return render(request, 'healthtemp/hogs-health.html', {"farmList": farmsData})
 
 
-def get_symptomsList(farmID):
-    symptomDict = [
-            'high_fever'        ,
-            'loss_appetite'     ,
-            'depression'        ,
-            'lethargic'         ,
-            'constipation'      ,
-            'vomit_diarrhea'    ,
-            'colored_pigs'      ,
-            'skin_lesions'      ,
-            'hemorrhages'       ,
-            'abn_breathing'     ,
-            'discharge_eyesnose',
-            'death_isDays'      ,
-            'death_isWeek'      ,
-            'cough'             ,
-            'sneeze'            ,
-            'runny_nose'        ,
-            'waste'             ,
-            'boar_dec_libido'   ,
-            'farrow_miscarriage',
-            'weight_loss'       ,
-            'trembling'         ,
-            'conjunctivitis'    
-    ]
-
-
-    symptomList = []
-
 def selectedHogsHealth(request, farmID):
     """
     Displays information of selected hogs health record for assistant manager
