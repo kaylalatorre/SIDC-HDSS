@@ -2031,7 +2031,7 @@ def farmsAssessment(request):
         biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "address": f["farm_address"],
             "area": str(f["farm_area"]),
@@ -2198,7 +2198,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "address": f["farm_address"],
             "area": str(f["farm_area"]),
@@ -2337,7 +2337,7 @@ def intBiosecurity(request):
         biosec_score = computeBioscore(f["id"], f["intbioID"], None)
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "area": str(f["farm_area"]),
             "updated": f["last_updated"],
@@ -2498,7 +2498,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
         biosec_score = computeBioscore(f["id"], f["intbioID"], None)
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "area": str(f["farm_area"]),
             "updated": f["last_updated"],
@@ -2619,7 +2619,7 @@ def extBiosecurity(request):
         biosec_score = computeBioscore(f["id"], None, f["extbioID"])
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "area": str(f["farm_area"]),
             "updated": f["last_updated"],
@@ -2797,7 +2797,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
         biosec_score = computeBioscore(f["id"], None, f["extbioID"])
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "area": str(f["farm_area"]),
             "updated": f["last_updated"],
