@@ -75,10 +75,11 @@
                             <td data-label="Date Reported">{{ incident.date_filed }}</td>
                             <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }}</td>
                             <td data-label="Symptoms Observed">  
+                                {% load healthapp_extras %}
                                 {% for sKey, sVal in symptoms.items %}
                                 <ul>
                                     {% if sVal %}
-                                        <li>{{ sKey }}</li>
+                                        <li>{{ sKey|formatField }}</li>
                                     {% endif %}
                                 </ul>
                                 {% endfor %}
