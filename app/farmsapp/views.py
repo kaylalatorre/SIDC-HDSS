@@ -77,22 +77,6 @@ def debug(m):
         print("--------------------[Print_SUCCESS]--------------------")
     
 
-# class ActivityFormView(View):
-#     # create a formset out of ActivityForm
-#     Activity_FormSet = formset_factory(ActivityForm)
-
-#     # render template were it will be displayed
-#     template_name = "add-activity.html"
-
-#     def get(self, request, *args, **kwargs):
-#         # create an instance of formset and put in context dict
-#         context = {
-#             'activityForm' : self.Activity_FormSet(),
-#         }
-
-#         return render(request, self.template_name, context)
-
-
 # Farms Management Module Views
 
 def getMapData(request):
@@ -176,6 +160,7 @@ def selectedFarm(request, farmID):
     :param farmID: PK of selected farm
     :type farmID: integer
     """
+
     # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
@@ -391,7 +376,6 @@ def techSelectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
-    # FOR TESTING
     # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
     # print("TEST LOG pigpenList: " + str(pigpenList))
     # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
@@ -462,12 +446,6 @@ def addFarm(request):
             waste_mgt = request.POST.get("waste-mgt", None)
         )
 
-        # print(str(internalBiosec.id))
-
-        # internalBiosec.save()
-        # print("TEST LOG: Added new internal biosec")
-        
-
         # collect external biosec checkbox inputs and convert to integer value
         if request.POST.get("cb-birdproof", None) == 'on':
             bird_proof = 0
@@ -491,10 +469,6 @@ def addFarm(request):
             fiveh_m_dist = fiveh_m_dist
         )
 
-        # print(str(externalBiosec.id))
-
-        # externalBiosec.save()
-        # print("TEST LOG: Added new internal biosec")
 
         # pass all pigpens values into array pigpenList
         pigpenList = []
@@ -510,6 +484,7 @@ def addFarm(request):
             pigpenList.append(pigpenObj)
 
             i += 1
+
         
         # validate django farm and pigpen forms
         if farmForm.is_valid():
@@ -1056,17 +1031,17 @@ def biosec_view(request):
     - (1) farms under Technician user, 
     - (2) latest intbio-extbio Checklist, 
     - (3) all biosec IDs and dates within that Farm, 
-    - (4) activities
+    - (4) approved ctivities
     """
 
-    print("TEST LOG: in Biosec view/n")
+    # print("TEST LOG: in Biosec view/n")
 
     # (1) Get all Farms under the logged-in technician User
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all()
-    print("TEST LOG areaQry: " + str(areaQry))
+    # print("TEST LOG areaQry: " + str(areaQry))
 
     # array to store all farms under each area
     techFarmsList = []
@@ -1087,7 +1062,7 @@ def biosec_view(request):
             }
             techFarmsList.append(farmObject)
 
-    debug("techFarmsList -- " + str(techFarmsList))
+    # debug("techFarmsList -- " + str(techFarmsList))
 
 
     # (ERROR) for checking technician Areas that have no Farms and null farmID
@@ -1100,7 +1075,7 @@ def biosec_view(request):
         firstFarm = str(*techFarmsList[0].values())
         farmID = int(firstFarm)
 
-        debug("biosec_view() farmID -- " + str(farmID))
+        # debug("biosec_view() farmID -- " + str(farmID))
 
         
         # Get current internal and external FKs
@@ -1158,7 +1133,7 @@ def biosec_view(request):
         # - (1) farmIDs under Technician user, 
         # - (2) latest intbio-extbio Checklist, 
         # - (3) all biocheck IDs and dates within that Farm, 
-        # - (4) activities
+        # - (4) approved activities
         return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
     
     return render(request, 'farmstemp/biosecurity.html', {}) 
@@ -1172,10 +1147,8 @@ def select_biosec(request, farmID):
     - (1) farms under Technician user, 
     - (2) latest intbio-extbio Checklist, 
     - (3) all biosec IDs and dates within that Farm, 
-    - (4) activities
+    - (4) approved activities
     """
-
-    print("TEST LOG: in Biosec view/n")
 
     # # (1) Get all Farms under the logged-in technician User
     techID = request.user.id
@@ -1203,11 +1176,11 @@ def select_biosec(request, farmID):
             }
             techFarmsList.append(farmObject)
         
-    debug("techFarmsList -- " + str(techFarmsList))
+    # debug("techFarmsList -- " + str(techFarmsList))
 
     # Get farmID passed from URL param
     farmID = farmID
-    debug("in select_biosec() farmID -- " + str(farmID))
+    # debug("in select_biosec() farmID -- " + str(farmID))
 
     # (ERROR) for checking technician Areas that have no Farms and null farmID
     if not techFarmsList or farmID is None: 
@@ -1229,7 +1202,7 @@ def select_biosec(request, farmID):
         ).order_by('-last_updated')
 
         # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-        print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
+        # print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
         # (ERROR) for checking Farms that have no Biosec records
         if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
@@ -1268,7 +1241,7 @@ def select_biosec(request, farmID):
         # - (1) farmIDs under Technician user, 
         # - (2) latest intbio-extbio Checklist, 
         # - (3) all biocheck IDs and dates within that Farm, 
-        # - (4) activities
+        # - (4) approved activities
         return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
     return render(request, 'farmstemp/biosecurity.html', {}) 
@@ -1315,6 +1288,7 @@ def assign_technician(request):
     """
     Assign technician to area through ajax
     """
+
     areaQry = request.POST.get("area")
     techQry = request.POST.get("technician")
 
@@ -1340,6 +1314,7 @@ def save_area(request):
     """
     Create a new area, abort if area with same string is found
     """
+
     areaName = request.POST.get("area")
     is_exist = Area.objects.filter(area_name = areaName).exists()
     if(not is_exist):
@@ -1349,16 +1324,26 @@ def save_area(request):
     
 
 def formsApproval(request):
+    """
+    - Redirect to Forms Approval Page
+    - For Module 1, display all activities pending for approval
+    """
+
     # get all unapproved activities from each farm
     # actQuery = Activity.objects.filter(is_approved=False).filter(date_approved__isnull=True).distinct("date_added").order_by("-date_added")
     actQuery = Activity.objects.filter(is_approved=False).distinct("date_added").order_by("-date_added")
-
 
     # print(str(actQuery))
 
     return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actQuery })
 
 def selectedActivityForm(request, activityDate):
+    """
+    - Display all activity rows for the form made based on activityDate
+
+    activityDate = is_added value of activity form selected
+    """
+
     # print(str(activityDate))
     actQuery = Activity.objects.filter(date_added=activityDate).filter(is_approved=False).all().order_by('-date')
 
@@ -1380,6 +1365,12 @@ def selectedActivityForm(request, activityDate):
     return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList })
 
 def approveActivityForm(request, activityDate):
+    """
+    - Modify is_approved (true) value of all activities with the same activityDate
+    - Update last_updated and date_approved
+
+    activityDate = is_added value of activity form selected
+    """
 
     # print(activityDate)
     # convert activityDate string into date object
@@ -1409,6 +1400,12 @@ def approveActivityForm(request, activityDate):
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def rejectActivityForm(request, activityDate):
+    """
+    - Value for is_approved of all activities with the same activityDate stays false
+    - Update last_updated
+
+    activityDate = is_added value of activity form selected
+    """
 
     # convert activityDate string into date object
     actDate = (datetime.strptime(activityDate, '%Y-%m-%d')).date()
@@ -1592,6 +1589,7 @@ def memAnnouncements(request):
     """
     Display approved and unapproved announcements
     """
+
     announcements = Mem_Announcement.objects.select_related("author").annotate(
         name = Concat('author__first_name', Value(' '), 'author__last_name')
     ).values(
@@ -1616,6 +1614,7 @@ def memAnnouncements_Approval(request, decision):
     :param decision: "approve" or "reject" depending on the ajax call
     :type decision: String
     """
+
     idQry = request.POST.get("idList")
     
     idList = json.loads(idQry)
@@ -1733,6 +1732,7 @@ def syncNotifications(request):
     """
     Saving notifications data from sessions to database
     """
+    
     dbNotifs = []
     sessionNotifs = []
     userID = request.session['_auth_user_id']
