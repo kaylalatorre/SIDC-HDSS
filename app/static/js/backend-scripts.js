@@ -149,17 +149,27 @@ $('.checklist-date').change(function() {
  * on-change AJAX for Farm search dropdown
  */
 $('#farm-code').change(function() { 
+    console.log("Farm Code: " + this.value);
+    if ( this.value >= 0){
+        $('#biosec-details').show();
+        $('#biosec-checklists').show();
+        $('farm-activities').show();
 
-    farmID = $("#farm-code option:selected").val();
-    try{
-        url = "/biosecurity/" + farmID;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching biosec details failed.");
-        location.reload(true);
+        farmID = $("#farm-code option:selected").val();
+        try{
+            url = "/biosecurity/" + farmID;
+            console.log(url);
+            location.href = url;
+        } catch (error){
+            console.log("Fetching biosec details failed.");
+            // location.reload(true);
+        }
     }
-
+    else {
+        $('#biosec-details').hide();
+        $('#biosec-checklists').hide();
+        $('farm-activities').hide();
+    }
 });
 
 
@@ -654,6 +664,7 @@ $('.assignSave').on('click', function () {
         });
     }
 });
+
 /** 
 * Create new area.
 */

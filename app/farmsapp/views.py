@@ -1052,7 +1052,7 @@ def biosec_view(request):
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).values(
             "id"
-        ).all()
+        ).order_by('id').all()
         # debug("techFarmQry -- " + str(techFarmQry))
 
         # pass all data into an array
@@ -1134,7 +1134,8 @@ def biosec_view(request):
         # - (2) latest intbio-extbio Checklist, 
         # - (3) all biocheck IDs and dates within that Farm, 
         # - (4) approved activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList})
+        # return render(request, 'farmstemp/biosecurity.html', {}) 
     
     return render(request, 'farmstemp/biosecurity.html', {}) 
 
@@ -1166,7 +1167,7 @@ def select_biosec(request, farmID):
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).values(
             "id"
-        ).all()
+        ).order_by('id').all()
         # debug("techFarmQry -- " + str(techFarmQry))
 
         # pass all data into an array

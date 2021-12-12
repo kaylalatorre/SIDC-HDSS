@@ -25,6 +25,8 @@
                         <option hidden value="{{ farmID }}">{{farmID}}</option>
                     {% endif %}
 
+                    <!-- <option hidden disabled selected value> - - Select a farm - -  </option> -->
+
                     {% for farm in farmList %}
                         {% if farm.id < 10 %}
                             <option value="{{ farm.id }}">00{{farm.id}}</option>
@@ -66,17 +68,15 @@
             </div>
         </div>
     
-        <h2 class="heading">Biosecurity Measures</h2>
         <!-- Disabled form -- result from adding new farm record -->
         <section id="biosec-measures">
+            <h2 class="heading">Biosecurity Measures</h2>
+
             <div class="box-style">
                 <div style="padding-bottom: 8px;">
                     <p>All biosecurity measures in the farm. </p>
                 </div>
                 <div class="mb-3">
-                    <!-- <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label> -->
-
                     {% if currBio.intbio.isol_pen == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked="checked" disabled> 
                     {% else %}
@@ -128,8 +128,8 @@
             </div>
         </section>
 
-        <h2 class="heading">Checklists</h2>
         <section id="biosec-checklists">
+        <h2 class="heading">Checklists</h2>
             
             <div class="box-style">
                 <div>
@@ -405,10 +405,11 @@
                     
                 </table>
             </div>
-
         </section>
-        <h2 class="heading">Activities</h2>
+
         <section id="farm-activities">
+            <h2 class="heading">Activities</h2>
+
             <div class="box-style">
                 <table class="table">
                     <thead>

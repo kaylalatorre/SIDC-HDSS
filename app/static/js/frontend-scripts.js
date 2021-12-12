@@ -349,6 +349,7 @@ function filterHogsHealth(){
         }    
     }
 } 
+
 /** 
 * Select all.
 */
