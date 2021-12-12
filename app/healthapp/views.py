@@ -107,6 +107,7 @@ def hogsHealth(request):
         farmObject = {
             "code":  str(f["id"]),
             "raiser": " ".join((f["fname"],f["lname"])),
+            "area": f["farm_area"],
             "pigs": str(f["total_pigs"]),
             "updated": f["last_updated"],
             "ave_currWeight": str(f["ave_currWeight"]),
@@ -218,12 +219,9 @@ def selectedHogsHealth(request, farmID):
             'trembling'         ,
             'conjunctivitis').all()
     
-    # # TEST LOG for item list
-    # for sympRecord in symptomsList:
-    #     # per record, iterate through key-value (serves as 1 <li> tag)
-    #     for sKey, sVal in sympRecord.items():
-    #         if sVal:
-    #             debug(sKey + " --- " + str(sVal))
+    if not incidentQry.exists(): # (ERROR) No incident/symptoms record under the farm
+        messages.error(request, "No incidents reported for this farm.", extra_tags="selected-hogsHealth")
+        return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject})
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
@@ -322,7 +320,7 @@ def healthSymptoms(request):
     # (ERROR) for checking technician Areas that have no assigned Farms
     if not farmsData: 
         messages.error(request, "Hogs health record/s not found.", extra_tags="view-healthSymp")
-        return render(request, 'farmstemp/biosecurity.html', {})
+        return render(request, 'healthtemp/health-symptoms.html', {})
 
 
     return render(request, 'healthtemp/health-symptoms.html', {"farmList": farmsData})
@@ -371,6 +369,10 @@ def selectedHealthSymptoms(request, farmID):
             'weight_loss'       ,
             'trembling'         ,
             'conjunctivitis').all()
+
+    if not incidentQry.exists(): # (ERROR) No incident/symptoms record under the farm
+        messages.error(request, "No incidents reported for this farm.", extra_tags="selected-healthSymp")
+        return render(request, 'healthtemp/selected-health-symptoms.html', {})
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
