@@ -23,6 +23,7 @@
                 <tr>
                     <th>Date Added</th>
                     <th>Form</th>
+                    <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
                 </tr>
@@ -32,7 +33,14 @@
                 <tr>
                     <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
-                    <td>Marites</td>
+                    {% if act.is_approved == True %}
+                        <td>Accepted</td>
+                    {% elif act.is_approved == False %}
+                        <td>Rejected</td>
+                    {% else %}
+                        <td>Pending</td>
+                    {% endif %}    
+                    <td>{{act.author}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -56,17 +64,24 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
+            {% for act in activityList %}
                 <tr>
-                    <td data-label="Date">01/01/21</td>
-                    <td data-label="Form">Activities Record</td>
-                    <td data-label="Status" class="status">Approved</td>
+                    <td>{{act.date_added}}</td>
+                    <td>Activities Record</td>
+                    {% if act.is_approved == True %}
+                        <td>Accepted</td>
+                    {% elif act.is_approved == False %}
+                        <td>Rejected</td>
+                    {% else %}
+                        <td>Pending</td>
+                    {% endif %}    
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewForm()><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>

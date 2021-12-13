@@ -1071,7 +1071,7 @@ def biosec_view(request):
         return render(request, 'farmstemp/biosecurity.html', {})
     else: 
 
-        # pass in context: farmIDs under Technician user
+        # pass in context farmIDs under Technician user
         return render(request, 'farmstemp/biosecurity.html', {'farmID' : 0, 'farmList': techFarmsList})
         # return render(request, 'farmstemp/biosecurity.html', {}) 
     
@@ -1258,10 +1258,7 @@ def save_area(request):
     is_exist = Area.objects.filter(area_name = areaName).exists()
     if(not is_exist):
         Area(area_name = areaName, tech_id = None).save()
-        messages.success(request, "Area successfully added!", extra_tags='add-area')
         return HttpResponse("Save success")
-    else:
-        messages.error(request, "Failed to add area.", extra_tags='add-area')
     return HttpResponse("Save Fail", status=400)
     
 
@@ -1273,7 +1270,7 @@ def formsApproval(request):
 
     # get all unapproved activities from each farm
     # actQuery = Activity.objects.filter(is_approved=False).filter(date_approved__isnull=True).distinct("date_added").order_by("-date_added")
-    actQuery = Activity.objects.filter(is_approved=False).distinct("date_added").order_by("-date_added")
+    actQuery = Activity.objects.distinct("date_added").order_by("-date_added")
 
     # print(str(actQuery))
 
@@ -1287,7 +1284,7 @@ def selectedActivityForm(request, activityDate):
     """
 
     # print(str(activityDate))
-    actQuery = Activity.objects.filter(date_added=activityDate).filter(is_approved=False).all().order_by('-date')
+    actQuery = Activity.objects.filter(date_added=activityDate).all().order_by('-date')
 
     actList = []
 
@@ -1318,7 +1315,7 @@ def approveActivityForm(request, activityDate):
     # convert activityDate string into date object
     actDate = (datetime.strptime(activityDate, '%Y-%m-%d')).date()
 
-    actQuery = Activity.objects.filter(date_added=actDate).filter(is_approved=False).all()
+    actQuery = Activity.objects.filter(date_added=actDate).all()
     # print(str(actQuery))
 
     # for setting Date input filters to today's date
@@ -1352,7 +1349,7 @@ def rejectActivityForm(request, activityDate):
     # convert activityDate string into date object
     actDate = (datetime.strptime(activityDate, '%Y-%m-%d')).date()
 
-    actQuery = Activity.objects.filter(date_added=actDate).filter(is_approved=False).all()
+    actQuery = Activity.objects.filter(date_added=actDate).all()
     # print(str(actQuery))
 
     # for setting Date input filters to today's date
@@ -1364,6 +1361,7 @@ def rejectActivityForm(request, activityDate):
         # update contents of activities
         for activity in actQuery:
             activity.last_updated = dateToday
+            activity.is_approved = False
 
             activity.save()
     
@@ -1429,7 +1427,8 @@ def addActivity(request, farmID):
                     time_arrival = act['time_arrival'],
                     time_departure = act['time_departure'],
                     description = act['description'],
-                    remarks = act['remarks']
+                    remarks = act['remarks'],
+                    # is_approved = None
                 )
 
                 print(str(activity))
@@ -1604,7 +1603,6 @@ def createAnnouncement(request):
         # debug(announcement.is_approved)
         announcement.save()
         messages.success(request, "Announcement sent.", extra_tags='announcement')
-        return redirect('/member-announcements')
 
     announcementForm = MemAnnouncementForm()
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})

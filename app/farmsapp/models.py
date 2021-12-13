@@ -195,7 +195,7 @@ class Activity(models.Model):
     date_added          = models.DateField(auto_now=True, editable=False)
     date_approved       = models.DateTimeField(null=True, blank=True)
 
-    is_approved         = models.BooleanField(default=False)
+    is_approved         = models.BooleanField(null=True, editable=True)
 
     # def __str__(self):
     #     return self.id
