@@ -220,10 +220,7 @@ def selectedHogsHealth(request, farmID):
             'weight_loss'       ,
             'trembling'         ,
             'conjunctivitis').all()
-    
-    if not incidentQry.exists(): # (ERROR) No incident/symptoms record under the farm
-        messages.error(request, "No incidents reported for this farm.", extra_tags="selected-hogsHealth")
-        return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject})
+
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
@@ -372,9 +369,6 @@ def selectedHealthSymptoms(request, farmID):
             'trembling'         ,
             'conjunctivitis').all()
 
-    if not incidentQry.exists(): # (ERROR) No incident/symptoms record under the farm
-        messages.error(request, "No incidents reported for this farm.", extra_tags="selected-healthSymp")
-        return render(request, 'healthtemp/selected-health-symptoms.html', {})
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
