@@ -18,7 +18,7 @@ urlpatterns = [
 
     # asst. manager - forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
-    path('selected-activity-form/<str:activityDate>', views.selectedActivityForm, name="selectedActivityForm"),
+    path('selected-activity-form/<str:activityFormID>/<str:activityDate>', views.selectedActivityForm, name="selectedActivityForm"),
     path('approve-activity-form/<str:activityDate>', views.approveActivityForm, name="approveActivityForm"),
     path('reject-activity-form/<str:activityDate>', views.rejectActivityForm, name="rejectActivityForm"),
     

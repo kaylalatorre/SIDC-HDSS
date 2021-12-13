@@ -225,11 +225,11 @@ class Activities_Form(models.Model):
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
     act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_liveop', null=True, blank=True)
-    is_checked          = models.BooleanField(default=False)
+    is_checked          = models.BooleanField(null=True, editable=True)
     act_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(default=False)
+    is_reported         = models.BooleanField(null=True, editable=True)
     act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(default=False)
+    is_noted            = models.BooleanField(null=True, editable=True)
 
 # PPE FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):

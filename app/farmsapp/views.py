@@ -1263,7 +1263,7 @@ def save_area(request):
 def formsApproval(request):
     """
     - Redirect to Forms Approval Page
-    - For Module 1, display all activities pending for approval
+    - For Module 1, display all activity forms with corresponding status
     """
 
     ## ACTIVITY FORMS
@@ -1275,7 +1275,7 @@ def formsApproval(request):
                 "is_checked",
                 "is_reported",
                 "is_noted"
-                ).order_by("-date_added")
+                ).order_by("-date_added").order_by("-id")
     # print(str(actQuery))
 
     actList = []
@@ -1283,16 +1283,18 @@ def formsApproval(request):
         getTech = User.objects.filter(id=act["act_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
-        print(str(getTech))
+        # print(str(getTech))
 
+        # set status for each activity form
         if act["is_noted"] == True and act["is_checked"] == True and act["is_reported"] == True :
-            status = 'Accepted'
+            status = 'Approved'
         elif act["is_noted"] == False and act["is_checked"] == False and act["is_reported"] == False :
             status = 'Rejected'
         else : 
             status = 'Pending'
 
         actObject = {
+            "id" : act["id"],
             "date_added" : act["date_added"],
             "status" : status,
             "prepared_by" : getTech["name"]
@@ -1302,25 +1304,39 @@ def formsApproval(request):
 
     return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actList })
 
-def selectedActivityForm(request, activityDate):
+def selectedActivityForm(request, activityFormID, activityDate):
     """
     - Display all activity rows for the form made based on activityDate
 
+    activityFormID = id value of selected activity form
     activityDate = is_added value of activity form selected
     """
 
-    # print(str(activityDate))
-    actQuery = Activity.objects.filter(date_added=activityDate).all().order_by('-date')
+    # get adetails of activity form
+    actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
+                "id",
+                "is_checked",
+                "is_reported",
+                "is_noted",
+                "act_tech"
+                ).first()
+    # print(str(actFormQuery))
+
+    # set status of activity form
+    if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+        status = 'Approved'
+    elif actFormQuery["is_noted"] == False and actFormQuery["is_checked"] == False and actFormQuery["is_reported"] == False :
+        status = 'Rejected'
+    else : 
+        status = 'Pending'
+
+    # get all activities under activity form
+    actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("-date").order_by("time_arrival")
 
     actList = []
 
-    formStatus = None
-
     # store all data to an array
     for activity in actQuery:
-        if activity.is_approved == True : 
-            formStatus = "Approved"
-
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
@@ -1332,11 +1348,11 @@ def selectedActivityForm(request, activityDate):
         })
 
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList, 'formStatus' : formStatus })
+    return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList, 'formStatus' : status })
 
 def approveActivityForm(request, activityDate):
     """
-    - Modify is_approved (true) value of all activities with the same activityDate
+    - Modify is_checked, is_reported, and is_noted values of all activities with the same activity form
     - Update last_updated and date_approved
 
     activityDate = is_added value of activity form selected
@@ -1371,7 +1387,7 @@ def approveActivityForm(request, activityDate):
 
 def rejectActivityForm(request, activityDate):
     """
-    - Value for is_approved of all activities with the same activityDate stays false
+    - Modify is_checked, is_reported, and is_noted values of all activities with the same activity form
     - Update last_updated
 
     activityDate = is_added value of activity form selected
@@ -1405,12 +1421,15 @@ def rejectActivityForm(request, activityDate):
 def addActivity(request, farmID):
     """
     - Redirect to Add Activity Page and render corresponding Django form
-    - Add new activity to database (will be sent for approval by asst. manager)
+    - Add new activity to database and connect to new instance of Activity Form (as FK)
     - Save details to activity and add FK of current farm table
     - Django forms will first check the validity of input (based on the fields within models.py)
 
     farmID - selected farmID passed as parameter
     """
+    
+    # get ID of current technician
+    techID = request.user.id
 
     # collected farmID of selected tech farm
     farmQuery = Farm.objects.get(pk=farmID)
@@ -1449,6 +1468,7 @@ def addActivity(request, farmID):
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
                 date_added = dateToday,
+                act_tech_id = techID,
             )
             activity_form.save()
 

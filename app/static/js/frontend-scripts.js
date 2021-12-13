@@ -290,17 +290,19 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(actDate)
-    console.log(formatDate(actDate))
+    console.log(actDate);
+    console.log(formatDate(actDate));
+    var actFormID = activity.parentNode.parentNode.parentNode.id;
+    console.log(actFormID);
 
     try{
-        url = "/selected-activity-form/" + formatDate(actDate);
+        url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
         console.log(url);
         location.href = url;
     }catch (error){
         console.log("Something went wrong. Restarting...");
         console.log(error);
-        // location.reload(true);
+        location.reload(true);
     }
 }
 
