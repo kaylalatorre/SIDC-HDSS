@@ -286,29 +286,28 @@ $(document).ready(function(){
 * @summary Filters and searches farms for assistant manager (hogs-health.html)
 */
 function filterHogsHealth(){ 
-    var input, filter, table, tr, raiser, address, area, i;        
+    var input, filter, table, tr, raiser, area, i;        
     input   = document.getElementById("hog_searchTextBoxid"); //to get typed in keyword    
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
     table   = document.getElementById("hog_mainTableid"); //to get the html table    
     tr      = table.getElementsByTagName("tr"); //to access rows in the table    
     
-    var 
-    tiss = document.getElementById("ch_hog_TISS").checked,
-    east = document.getElementById("ch_hog_EAST").checked,
-    west = document.getElementById("ch_hog_WEST").checked;
+    // get array of Area names in checkbox filter
+    var checkedValues = $('input:checkbox:checked.ch_hog_area').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
 
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
         area = tr[i].getElementsByTagName("td")[2];
         if(raiser && area){    
             if(
-                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) && 
-                (
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) 
+                &&(
                     (
-                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
-                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
-                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
-                        (!tiss && !east && !west)
+                        ($.inArray(area.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
                     ) 
                 )
             ){    

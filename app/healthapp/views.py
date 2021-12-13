@@ -63,6 +63,8 @@ def hogsHealth(request):
     (4) Hog Symptoms
         - incidents reported, active incidents
     """
+    # for list of Areas in checkbox filter
+    areaQry = Area.objects.only("area_name").all()
 
     # (1) Farm details 
     qry = Farm.objects.select_related('hog_raiser', 'area', 'farm_weight').annotate(
@@ -85,7 +87,7 @@ def hogsHealth(request):
 
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
-        return render(request, 'healthtemp/hogs-health.html', {})
+        return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry})
 
     farmsData = []
     total_pigs = 0
@@ -123,7 +125,7 @@ def hogsHealth(request):
     # debug(farmsData)
 
 
-    return render(request, 'healthtemp/hogs-health.html', {"farmList": farmsData})
+    return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
 
 
 def selectedHogsHealth(request, farmID):

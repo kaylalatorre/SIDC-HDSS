@@ -23,9 +23,12 @@
                 </button>
                 <ul class="dropdown-menu" style="padding: 8px;">
                     <label style="font-weight: 600;">Area</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_TISS" onclick="filterHogsHealth()"/>&nbsp;TSISI</a></li>
+                    {% for area in areaList %}
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_hog_area" id="{{area.area_name}}"  onclick="filterHogsHealth()"/>&nbsp;{{area.area_name}}</a></li>
+                    {% endfor %}
+                    <!-- <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_TISS" onclick="filterHogsHealth()"/>&nbsp;TSISI</a></li>
                     <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_EAST" onclick="filterHogsHealth()"/>&nbsp;East</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_WEST" onclick="filterHogsHealth()"/>&nbsp;West</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_WEST" onclick="filterHogsHealth()"/>&nbsp;West</a></li> -->
                 </ul>
             </div>
         </div>

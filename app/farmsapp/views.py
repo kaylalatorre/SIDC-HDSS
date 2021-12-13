@@ -1972,18 +1972,18 @@ def farmsAssessment(request):
     farmtechList = zip(farmsData, techList)
 
     # compute for -- total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-    ave_pigs = total_pigs / len(farmsData)
-    ave_pens = total_pens / len(farmsData)
-    ave_intbio = ave_intbio / len(farmsData)
-    ave_extbio = ave_extbio / len(farmsData)
+    ave_pigs   = round((total_pigs / len(farmsData)), 2)
+    ave_pens   = round((total_pens / len(farmsData)), 2)
+    ave_intbio = round((ave_intbio / len(farmsData)), 2)
+    ave_extbio = round((ave_extbio / len(farmsData)), 2)
     
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
         "ave_pigs": ave_pigs,
         "ave_pens": ave_pens,
-        "ave_intbio": round(ave_intbio, 2),
-        "ave_extbio": round(ave_extbio, 2),
+        "ave_intbio": ave_intbio,
+        "ave_extbio": ave_extbio,
     }
 
 
@@ -2139,18 +2139,18 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
     farmtechList = zip(farmsData, techList)
 
     # compute for -- total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-    ave_pigs = total_pigs / len(farmsData)
-    ave_pens = total_pens / len(farmsData)
-    ave_intbio = ave_intbio / len(farmsData)
-    ave_extbio = ave_extbio / len(farmsData)
+    ave_pigs   = round((total_pigs / len(farmsData)), 2)
+    ave_pens   = round((total_pens / len(farmsData)), 2)
+    ave_intbio = round((ave_intbio / len(farmsData)), 2)
+    ave_extbio = round((ave_extbio / len(farmsData)), 2)
     
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
         "ave_pigs": ave_pigs,
         "ave_pens": ave_pens,
-        "ave_intbio": round(ave_intbio, 2),
-        "ave_extbio": round(ave_extbio, 2),
+        "ave_intbio": ave_intbio,
+        "ave_extbio": ave_extbio,
     }
 
     return render(request, 'farmstemp/rep-farms-assessment.html', {"areaName": areaName, "isFiltered": isFiltered,"farmTotalAve": farmTotalAve,'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
@@ -2798,7 +2798,7 @@ def dashboard_view(request):
 
     total_farms = len(farmQry)
     # compute for -- total (pigs) and ave columns (intbio, extbio)
-    ave_pigs = total_pigs / len(farmQry)
+    ave_pigs   = round((total_pigs / len(farmQry)), 2)
     ave_intbio = round((ave_intbio / len(farmQry)), 2)
     ave_extbio = round((ave_extbio / len(farmQry)), 2)
     
@@ -2808,8 +2808,8 @@ def dashboard_view(request):
         "total_farms": total_farms,
         "total_pigs": total_pigs,
         "total_needInspect": total_needInspect,
-        "ave_intbio": ave_intbio,
-        "ave_extbio": ave_extbio,
+        "ave_intbio": round(ave_intbio, 2),
+        "ave_extbio": round(ave_extbio, 2),
         "rem_intbio": round((100 - ave_intbio), 2),
         "rem_extbio": round((100 - ave_extbio), 2),
     }
