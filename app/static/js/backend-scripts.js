@@ -704,14 +704,15 @@ function for_approval(button, decision){
         dataType : "json",
         data:{"idList":JSON.stringify(forApproval_IDs)},
         success: function(response){
-            console.log(response);
+            if (response.status == 200){
+                console.log(response.responseJSON.success);
+            }
+
+            window.location.replace("/member-announcements");
         },
-        error: function(response){
-            console.log(response);
-            
-        },
-        complete: function(){
-            // location.reload(true);
+        error: function (res){
+            console.log(res.responseJSON.error);
+           // alert("Error in submitting the approval.")
         }
     });
 }

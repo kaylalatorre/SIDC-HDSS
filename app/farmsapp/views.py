@@ -1536,13 +1536,35 @@ def memAnnouncements_Approval(request, decision):
     :param decision: "approve" or "reject" depending on the ajax call
     :type decision: String
     """
-    idQry = request.POST.get("idList")
-    
-    idList = json.loads(idQry)
-    
-    Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+    if decision:
 
-    return HttpResponse(status=200)
+        if decision == "approve":
+            idQry = request.POST.get("idList")
+            
+            idList = json.loads(idQry)
+            
+            debug("Messages approved.")
+            Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+            messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
+
+            return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
+    
+        elif decision == "reject":
+            idQry = request.POST.get("idList")
+            
+            idList = json.loads(idQry)
+            
+            debug("Messages rejected.")
+            Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = False)
+            messages.success(request, "Messages rejected.", extra_tags='announcement')
+
+            return JsonResponse({"success": "Messages rejected."}, status=200)
+    
+    else:
+        debug("There was an error in saving the approval.")
+        messages.error(request, "There was an error in saving the approval.", extra_tags='announcement')
+        return JsonResponse({"error": "There was an error in saving the approval."}, status=400)
+    
 
 def createAnnouncement(request):
     """
