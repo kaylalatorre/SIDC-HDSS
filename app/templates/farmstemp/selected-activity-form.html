@@ -13,12 +13,16 @@
 <div class="table-container main-div">
     <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activities made on {{actDate}} </h1>
     {% if user.groups.all.0.name != 'Field Technician' %}
-    <div class="flex subheading">
-        <button class="primary-btn" id="approve-activity" style="justify-content: flex-end;" onclick="approveActivity('{{ actDate }}')">Approve</button> 
-        <button class="primary-btn-red" id="reject-activity" onclick="rejectActivity('{{ actDate }}')">Reject</button>
-    </div>
+        {% if formStatus != 'Approved' %}
+        <div class="flex subheading">
+            <button class="primary-btn" id="approve-activity" style="justify-content: flex-end;" onclick="approveActivity('{{ actDate }}')">Approve</button> 
+            <button class="primary-btn-red" id="reject-activity" onclick="rejectActivity('{{ actDate }}')">Reject</button>
+        </div>
+        {% else %}
+        <br><br>
+        {% endif %}
     {% else %}
-    <br>
+    <br><br>
     {% endif %}
 
     <div class="box-style small-table">

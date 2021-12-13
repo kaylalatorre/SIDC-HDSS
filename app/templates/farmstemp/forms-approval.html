@@ -40,7 +40,7 @@
                     {% else %}
                         <td>Pending</td>
                     {% endif %}    
-                    <td>{{act.author}}</td>
+                    <td>{{act.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -53,6 +53,7 @@
     </div>
     {% else %}
     <p>Check the status of your forms here.</p>
+    <br>
     <div class="box-style small-table">
         <table class="table">
             <thead>

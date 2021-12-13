@@ -1268,13 +1268,38 @@ def formsApproval(request):
     - For Module 1, display all activities pending for approval
     """
 
-    # get all unapproved activities from each farm
-    # actQuery = Activity.objects.filter(is_approved=False).filter(date_approved__isnull=True).distinct("date_added").order_by("-date_added")
-    actQuery = Activity.objects.distinct("date_added").order_by("-date_added")
-
+    ## ACTIVITY FORMS
+    # get all activities under each farm
+    actQuery = Activity.objects.distinct("date_added").values(
+                "id",
+                "date_added",
+                "is_approved",
+                "ref_farm_id"
+                ).order_by("-date_added")
     # print(str(actQuery))
 
-    return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actQuery })
+    actList = []
+    for act in actQuery:
+        getFarm = Farm.objects.filter(id=act["ref_farm_id"]).values("area_id").first()
+        # print(str(getFarm))
+
+        techID = Area.objects.filter(id=getFarm["area_id"]).values("tech").first()
+        # print(str(techID))
+        
+        getTech = User.objects.filter(id=techID["tech"]).annotate(
+            name = Concat('first_name', Value(' '), 'last_name'),
+        ).values("id", "name").first()
+        # print(str(getTech))
+
+        actObject = {
+            "date_added" : act["date_added"],
+            "is_approved" : act["is_approved"],
+            "prepared_by" : getTech["name"]
+        }
+
+        actList.append(actObject)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actList })
 
 def selectedActivityForm(request, activityDate):
     """
@@ -1290,6 +1315,9 @@ def selectedActivityForm(request, activityDate):
 
     # store all data to an array
     for activity in actQuery:
+        if activity.is_approved == True : 
+            formStatus = "Approved"
+
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
@@ -1301,7 +1329,7 @@ def selectedActivityForm(request, activityDate):
         })
 
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList })
+    return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList, 'formStatus' : formStatus })
 
 def approveActivityForm(request, activityDate):
     """
