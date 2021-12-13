@@ -307,6 +307,7 @@ function viewActivityForm(activity) {
 }
 
 /**
+ *   From selected-activity-form.html
  *   - Toggle activity form approve/reject buttons on checkbox toggle
  */
 let actitivty_checkbox = document.querySelectorAll('.cb-activity-form');
@@ -314,7 +315,6 @@ for(var i = 0; i < actitivty_checkbox.length; i++) {
 
     actitivty_checkbox[i].addEventListener('click', (e) => {
         var isChecked = e.target.checked;
-        // console.log(isChecked);
 
         // get activity form approve/reject buttons
         var actFormsBtn = document.getElementsByClassName('act-forms-btn');

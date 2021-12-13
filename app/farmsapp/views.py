@@ -262,7 +262,7 @@ def techFarms(request):
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
-    areaQry = Area.objects.filter(tech_id=techID).all()
+    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
     # print("TEST LOG areaQry: " + str(areaQry))
     
     # collect number of areas assigned (for frontend purposes)
@@ -1418,8 +1418,6 @@ def rejectActivityForm(request, activityFormID):
     activityFormID = id value of activity form selected
     """
 
-    # convert activityDate string into date object
-  
     activity_form = Activities_Form.objects.filter(id=activityFormID).first()
     # print(str(activity_form))
 
@@ -1454,6 +1452,10 @@ def rejectActivityForm(request, activityFormID):
         
         activity_form.save()
 
+        # create duplicate of current activity form
+        # create activity form
+
+
         # get all activities under activity form
         actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
@@ -1463,6 +1465,9 @@ def rejectActivityForm(request, activityFormID):
                 activity.is_approved = False
 
             activity.save()
+
+
+            # create activities and connect to created activity form (FK)
     
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)

@@ -18,7 +18,7 @@
     <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
     <div class="flex subheading">
         <p class="flex-item">Add a new farm record here. </p>
-        <div><button class="primary-btn" type="submit">Send for Approval</button></div>
+        <div><button class="primary-btn" type="submit">Save farm</button></div>
     </div>
 
     <hr>
@@ -61,10 +61,10 @@
                 <br>
 
                 <h3>Farm</h3>
-                <div class="mb-3">
-                    <label for="input-address" class="form-label">Address</label>
-                    {{farmForm.farm_address}}
-                </div>
+                <!-- <div class="mb-3">
+                    <label for="address-street" class="form-label">Street</label>
+                    <input type="text" class="form-control" id="address-street" name="address-street" placeholder="Kalye Street">
+                </div> -->
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
@@ -242,7 +242,7 @@
 
     {% endif %}
     
-    <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>
+    <div class="mobile-subheading"><button class="primary-btn" type="submit">Save farm</button></div>
     </form>
 </div>
 {% endblock section %}
