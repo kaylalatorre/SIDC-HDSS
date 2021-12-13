@@ -356,16 +356,14 @@ def selectedHealthSymptoms(request, farmID):
     debug("TEST LOG: in selectedHealthSymptoms()/n")
     debug("farmID -- " + str(farmID))
 
-    # TODO: (1) Mortality Records (*what need?)
 
-
-    # (2.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
+    # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
         'date_filed', 
         'report_status',
         'num_pigs_affected').order_by("id").all()
 
-    # (2.2) Incidents Reported (symptoms list)
+    # (1.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
             'high_fever'        ,
             'loss_appetite'     ,
@@ -394,7 +392,22 @@ def selectedHealthSymptoms(request, farmID):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"incident_symptomsList": incident_symptomsList})
+
+    # (2) Mortality Records
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by("id").all()
+
+    mortality_rate = 0
+    mRateList = [] 
+    # (3.2) Mortality % per record
+    for m in mortQry:
+        mortality_rate = compute_MortRate(None, m.id)
+        mRateList.append(mortality_rate)
+
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
+
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"incident_symptomsList": incident_symptomsList,
+                                                                        "mortalityList": mortalityList})
 
 def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})

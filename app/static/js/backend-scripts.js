@@ -169,19 +169,6 @@ $('#farm-code').change(function() {
 
 
 /**
- * Helper function for setting dropdown acc. to selected option
- */
- function setSelectedValue(selectObj, valueToSet) {
-    for (var i = 0; i < selectObj.options.length; i++) {
-        if (selectObj.options[i].text == valueToSet) {
-            selectObj.options[i].selected = true;
-            console.log("option [" + selectObj.options[i].text + "] is selected.");
-            return;
-        }
-    }
-}
-
-/**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
@@ -1000,4 +987,34 @@ function rejectActivity(actDate) {
         }
     })
 }
+
+
+/**
+ * Helper function for setting dropdown acc. to selected option
+ */
+ function setSelectedValue(selectObj, valueToSet) {
+    for (var i = 0; i < selectObj.options.length; i++) {
+        if (selectObj.options[i].text == valueToSet) {
+            selectObj.options[i].selected = true;
+            console.log("option [" + selectObj.options[i].text + "] is selected.");
+            return;
+        }
+    }
+}
+
+// window.onload = function() {
+
+//     selectStatus();
+// };
+
+// function selectStatus(){
+//     var repStatus = $('#hidden-repstat').val();
+//     console.log("repStatus -- " + repStatus);
+
+//     var dropdownObj = $('#dropdown-repstatus');
+//     console.log(dropdownObj);
+
+//     setSelectedValue(dropdownObj, repStatus);
+    
+// }
 

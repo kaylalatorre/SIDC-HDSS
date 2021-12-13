@@ -78,16 +78,26 @@
                             {% endfor %}
                         </td>
                         
-                        <!-- BACKEND TODO: replace with dropdown status-->
-                        <td data-label="Status" class="status"> {{ incident.report_status }} </td>
-
-
                         <td data-label="Status"> 
                             <div class="mb-3">
-                                <select aria-label="Status" class="form-select status" disabled>
-                                    <option value="Active" class="status">Active</option>
-                                    <option value="Pending"  class="status">Pending</option>
-                                    <option value="Resolved"  class="status">Resolved</option>
+                                <select id="dropdown-repstatus" aria-label="Status" class="form-select status" disabled>
+                                    {% if incident.report_status == 'Active' %}
+                                        <option value="Active" class="status" selected>Active</option>
+                                    {% else %}
+                                        <option value="Active" class="status">Active</option>
+                                    {% endif %}
+
+                                    {% if incident.report_status == 'Pending' %}
+                                        <option value="Pending"  class="status" selected>Pending</option>
+                                    {% else %}
+                                        <option value="Pending"  class="status">Pending</option>
+                                    {% endif %} 
+
+                                    {% if incident.report_status == 'Resolved' %}
+                                        <option value="Resolved"  class="status" selected>Resolved</option>
+                                    {% else %}
+                                        <option value="Resolved"  class="status">Resolved</option>
+                                    {% endif %} 
                                 </select>
                             </div>
                         </td>
@@ -121,17 +131,19 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for mort, mRate in mortalityList %}
                     <tr>
-                        <td data-label="Series"> // </td>
-                        <td data-label="Farm Code"> // </td>
-                        <td data-label="Mortality Date"> // </td>
-                        <td data-label="Beg. Inv."  style="text-align: right;"> // </td>
-                        <td data-label="Today"  style="text-align: right;">  // </td>
-                        <td data-label="To Date"  style="text-align: right;"> // </td>
-                        <td data-label="Mortality %"  style="text-align: right;"> // </td>
-                        <td data-label="Source"> // </td>
-                        <td data-label="Remarks"> // </td>
+                        <td data-label="Series">{{ mort.series }}</td>
+                        <td data-label="Farm Code">{{ farm.code }}</td>
+                        <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
+                        <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
+                        <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>
+                        <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }}</td>
+                        <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}</td>
+                        <td data-label="Source">{{ mort.source }}</td>
+                        <td data-label="Remarks">{{ mort.remarks }}</td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
