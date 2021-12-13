@@ -148,3 +148,6 @@ def selectedHealthSymptoms(request):
 
 def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})
+
+def addMortality(request):
+    return render(request, 'healthtemp/add-mortality.html', {})

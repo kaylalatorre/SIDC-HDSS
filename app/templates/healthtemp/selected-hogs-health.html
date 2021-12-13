@@ -55,36 +55,74 @@
                 </table>
             </div>
         </section>
-        <section style="width: 60%">
-            <h2>Symptoms Reported</h2>
-            <div class="box-style">
-                <table class="table" id="symptoms-reported">
-                    <thead>
-                        <tr>
-                            <th>Incident Code</th>
-                            <th>Date Reported</th>
-                            <th>No. of Pigs Affected</th>
-                            <th>Symptoms Observed</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="Incident Code">1</td>
-                            <td data-label="Date Reported"> 50000 </td>
-                            <td data-label="No. of Pigs Affected"> 50000 </td>
-                            <td data-label="Symptoms Observed">  
-                                <ul>
-                                    <li>hi</li>
-                                    <li>hello</li>
-                                </ul>
-                            </td>
-                            <td data-label="Status" class="status"> Resolved </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        <div style="width:70%">
+            <section>
+                <h2>Symptoms Reported</h2>
+                <div class="box-style">
+                    <table class="table" id="symptoms-reported">
+                        <thead>
+                            <tr>
+                                <th>Incident Code</th>
+                                <th>Date Reported</th>
+                                <th>No. of Pigs Affected</th>
+                                <th>Symptoms Observed</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Incident Code">1</td>
+                                <td data-label="Date Reported"> 50000 </td>
+                                <td data-label="No. of Pigs Affected"> 50000 </td>
+                                <td data-label="Symptoms Observed">  
+                                    <ul>
+                                        <li>hi</li>
+                                        <li>hello</li>
+                                    </ul>
+                                </td>
+                                <td data-label="Status" class="status"> Resolved </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <h2>Mortality Records</h2>
+                <div class="box-style">
+                    <table class="table" id="mortality-records">
+                        <thead>
+                            <tr>
+                                <th>Series</th>
+                                <th>Farm Code</th>
+                                <th>Mortality Date</th>
+                                <th style="text-align: right;">Beg. Inv.</th>
+                                <th style="text-align: right;">Today</th>
+                                <th style="text-align: right;">To Date</th>
+                                <th style="text-align: right;">Mortality %</th>
+                                <th>Source</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Series"> // </td>
+                                <td data-label="Farm Code"> // </td>
+                                <td data-label="Mortality Date"> // </td>
+                                <td data-label="Beg. Inv."  style="text-align: right;"> // </td>
+                                <td data-label="Today"  style="text-align: right;">  // </td>
+                                <td data-label="To Date"  style="text-align: right;"> // </td>
+                                <td data-label="Mortality %"  style="text-align: right;"> // </td>
+                                <td data-label="Source"> // </td>
+                                <td data-label="Remarks"> // </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        
     </div>
+
 </div>
 {% endblock section %}
