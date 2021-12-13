@@ -14,9 +14,6 @@ from django.db.models.expressions import F, Value
 from django.db.models import Q
 # from django.forms.formsets import formset_factory
 
-# to-python queryset serializer
-from django.core import serializers
-
 
 def debug(m):
     """
@@ -32,20 +29,29 @@ def debug(m):
 # (Module 2) Hogs Health view functions
 
 
-def compute_MortRate(farmID):
+def compute_MortRate(farmID, mortalityID):
     """
-    Computes for the mortality rate of a Farm.
+    Helper function that computes for the mortality rate of a Farm.
     mortality % = num_toDate / num_begInv
     """
     mortality_rate = 0
 
-    # Get latest Mortality record of the Farm
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by('-mortality_date')
+    # compute mortality % with the given farmID (latest mortality record in a Farm)
+    if farmID is not None:
+        # Get latest Mortality record of the Farm
+        mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by('-mortality_date')
 
-    if mortQry.exists():
-        m = mortQry.first()
+        if mortQry.exists():
+            m = mortQry.first()
 
-        mortality_rate = (m.num_toDate / m.num_begInv) * 100
+            mortality_rate = (m.num_toDate / m.num_begInv) * 100
+
+    # compute mortality % with the given mortalityID
+    if mortalityID is not None:
+        mortObj = Mortality.objects.filter(id=mortalityID).first()
+
+        if mortObj is not None:
+            mortality_rate = (mortObj.num_toDate / mortObj.num_begInv) * 100
 
     return round(mortality_rate, 2)
 
@@ -98,7 +104,7 @@ def hogsHealth(request):
         farmID = f["id"]
 
         # for computing Mortality %
-        mortality_rate = compute_MortRate(farmID)
+        mortality_rate = compute_MortRate(farmID, None)
 
         # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
         total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
@@ -139,7 +145,7 @@ def selectedHogsHealth(request, farmID):
     debug("TEST LOG: in selectedHogsHealth()/n")
     debug("farmID -- " + str(farmID))
 
-    # get farm based on farmID; get related data from hog_raiser, area, farm_weight
+    # (1) get farm based on farmID; get related data from hog_raiser, area, farm_weight
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
@@ -167,7 +173,7 @@ def selectedHogsHealth(request, farmID):
     total_active = 0
 
     # for computing Mortality %
-    mortality_rate = compute_MortRate(farmID)
+    mortality_rate = compute_MortRate(farmID, None)
 
     # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
     total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
@@ -194,7 +200,7 @@ def selectedHogsHealth(request, farmID):
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
         'date_filed', 
         'report_status',
-        'num_pigs_affected').all()
+        'num_pigs_affected').order_by("id").all()
 
     # (2.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
@@ -219,13 +225,28 @@ def selectedHogsHealth(request, farmID):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').all()
-
+            'conjunctivitis').order_by("id").all()
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
 
-    return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject, "incident_symptomsList": incident_symptomsList})
+
+    # (3.1) Mortality Records
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by("id").all()
+
+    mortality_rate = 0
+    mRateList = [] 
+    # (3.2) Mortality % per record
+    for m in mortQry:
+        mortality_rate = compute_MortRate(None, m.id)
+        mRateList.append(mortality_rate)
+
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
+    
+    return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject, 
+                                                                    "incident_symptomsList": incident_symptomsList,
+                                                                    "mortalityList": mortalityList})
 
 
 
@@ -289,7 +310,7 @@ def healthSymptoms(request):
             farmID = f["id"]
 
             # for computing Mortality %
-            mortality_rate = compute_MortRate(farmID)
+            mortality_rate = compute_MortRate(farmID, None)
 
             # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
             total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
@@ -342,7 +363,7 @@ def selectedHealthSymptoms(request, farmID):
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
         'date_filed', 
         'report_status',
-        'num_pigs_affected').all()
+        'num_pigs_affected').order_by("id").all()
 
     # (2.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
@@ -367,7 +388,7 @@ def selectedHealthSymptoms(request, farmID):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').all()
+            'conjunctivitis').order_by("id").all()
 
 
     # combine the 2 previous queries into 1 temporary list
