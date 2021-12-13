@@ -18,13 +18,13 @@ urlpatterns = [
 
     # asst. manager - forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
-    path('selected-form', views.selectedForm, name="selectedForm"),
+    path('selected-activity-form/<str:activityDate>', views.selectedActivityForm, name="selectedActivityForm"),
+    path('approve-activity-form/<str:activityDate>', views.approveActivityForm, name="approveActivityForm"),
+    path('reject-activity-form/<str:activityDate>', views.rejectActivityForm, name="rejectActivityForm"),
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),
     path('home/tech-farms', views.techFarms, name="techFarms"),
-    # path('tech-farms', views.techFarms, name="techFarms"),
-    # path('home/view-farm', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
 
     # technician - biosecurity
@@ -38,9 +38,9 @@ urlpatterns = [
     path('add-checklist/<str:farmID>', views.addChecklist_view, name="addChecklist"),
     path('post-addchecklist/<str:farmID>', views.post_addChecklist, name="post-addChecklist"), # not working even without param
 
-    # technician - biosecurityactivity
+    # technician - biosecurity activity
     path('add-activity/<str:farmID>', views.addActivity, name="addActivity"),
-    path('biosecurity/<str:farmID>/edit-activity/<str:activityID>', views.editActivity, name="editActivity"),
+    path('biosecurity/<str:farmID>/save-activity/<str:activityID>', views.saveActivity, name="saveActivity"),
     path('biosecurity/<str:farmID>/delete-activity/<str:activityID>', views.deleteActivity, name="deleteActivity"),
 
     # announcements
@@ -64,7 +64,7 @@ urlpatterns = [
     path('ext-biosecurity', views.extBiosecurity, name="extBiosecurity"),
     path('ext-biosecurity/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_extBiosec, name="filter_extBiosec"),
 
-    # Farm detail dashboard
+    # asst. manager - farm detail dashboard
     path('home/dash', views.dashboard_view, name="dashboard-view"),
 
 ]

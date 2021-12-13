@@ -7,7 +7,9 @@
 {% endblock page_title %}
 
 {% block section %}
+
 {% include 'partials/messages.html' %}
+
 <div class="table-container main-div" id="extbioRep-container">   
     <div>
         <h1>External Biosecurity Reports</h1>
@@ -87,7 +89,13 @@
                 <!-- Data -->
                 {% for farm,tech in farmtechList %}
                 <tr>
-                    <td data-label="Farm Code" style="text-align: center;"> {{farm.code}} </td>
+                    {% if farm.code < 10 %}
+                    <td data-label="Farm Code" style="text-align: center;">00{{farm.code}}</td>
+                    {% elif farm.code < 100 %}
+                        <td data-label="Farm Code" style="text-align: center;">0{{farm.code}}</td>
+                    {% else %}
+                        <td data-label="Farm Code" style="text-align: center;">{{farm.code}}</td>
+                    {% endif %}
                     <td data-label="Raiser"> {{farm.raiser}} </td>
                     <td data-label="Area"> {{farm.area}} </td>
                     <td data-label="Technician"> {{tech.name}} </td>

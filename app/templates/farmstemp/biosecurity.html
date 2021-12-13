@@ -17,13 +17,17 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
-                    {% if farmID < 10 %}
+
+                    {% if farmID == 0 %}
+                        <option hidden>- - Select a farm - -</option>
+                    {% elif farmID < 10 %}
                         <option hidden value="{{ farmID }}">00{{farmID}}</option>
                     {% elif farmID < 100 %}
                         <option hidden value="{{ farmID }}">0{{farmID}}</option>
                     {% else %}
                         <option hidden value="{{ farmID }}">{{farmID}}</option>
                     {% endif %}
+
 
                     {% for farm in farmList %}
                         {% if farm.id < 10 %}
@@ -37,7 +41,11 @@
                 </select>
         </div>
     </div>
+    
+    {% if farmID == 0 %}
+    <div></div>
 
+    {% else %}
     <!-- Selected Farm's Biosecurity Details -->
         <!-- Will appear once a farm is selected -->
     <div id="biosec-details">
@@ -66,17 +74,15 @@
             </div>
         </div>
     
-        <h2 class="heading">Biosecurity Measures</h2>
         <!-- Disabled form -- result from adding new farm record -->
         <section id="biosec-measures">
+            <h2 class="heading">Biosecurity Measures</h2>
+
             <div class="box-style">
                 <div style="padding-bottom: 8px;">
                     <p>All biosecurity measures in the farm. </p>
                 </div>
                 <div class="mb-3">
-                    <!-- <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" disabled> 
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label> -->
-
                     {% if currBio.intbio.isol_pen == 0 %}
                     <input type="checkbox" class="form-check-input" id="cb-isolation" value="true" checked="checked" disabled> 
                     {% else %}
@@ -128,8 +134,8 @@
             </div>
         </section>
 
-        <h2 class="heading">Checklists</h2>
         <section id="biosec-checklists">
+        <h2 class="heading">Checklists</h2>
             
             <div class="box-style">
                 <div>
@@ -411,10 +417,11 @@
                 </div>
                 {% endif %}
             </div>
-
         </section>
-        <h2 class="heading">Activities</h2>
+
         <section id="farm-activities">
+            <h2 class="heading">Activities</h2>
+
             <div class="box-style">
                 {% if activity|length > 0 %}
                 <table class="table">
@@ -563,6 +570,7 @@
             </div>
         </section>
     </div>
+    {% endif %}
 </div>
 
 {% endblock section %}
