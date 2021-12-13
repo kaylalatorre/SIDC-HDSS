@@ -14,7 +14,7 @@
 }
 
 .overview-item:hover { background-color: #fafafa;}
-.alerts-item:hover { background-color: rgba(255, 0, 0, 0.6); color: #fafafa; }
+.alerts-item:hover { background-color: #ED1E40; color: #fafafa; }
 
 .ov-info label {
     font-weight: 400;

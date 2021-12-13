@@ -137,8 +137,8 @@ def selectedHogsHealth(request):
 def hogsMortality(request):
     return render(request, 'healthtemp/rep-hogs-mortality.html', {})
 
-def symptomsReported(request):
-    return render(request, 'healthtemp/rep-symptoms-reported.html', {})
+def incidentsReported(request):
+    return render(request, 'healthtemp/rep-incidents-reported.html', {})
 
 def healthSymptoms(request):
     return render(request, 'healthtemp/health-symptoms.html', {})
