@@ -394,6 +394,10 @@ def addFarm(request):
     - Save new input for hog raiser but if raiser exists, collect existing raiser ID
     """
     
+    latestFarm = Farm.objects.last()
+    farmID = latestFarm.id
+    print(farmID)
+
     # get all hog raisers to be passed as dropdown
     hogRaiserQry = Hog_Raiser.objects.all().order_by('lname')
     # print("TEST LOG hogRaiserQry: " + str(hogRaiserQry))
@@ -410,7 +414,7 @@ def addFarm(request):
         print(request.POST)
 
         # collect non-Django form inputs
-        farmID = request.POST.get("input-code", None)
+        # farmID = request.POST.get("input-code", None)
         # print("TEST LOG farmID: " + farmID)
 
         areaName = request.POST.get("input-area", None)
@@ -491,6 +495,14 @@ def addFarm(request):
         if farmForm.is_valid():
             farm = farmForm.save(commit=False)
 
+            # FARM ADDRESS
+            street = request.POST.get("address-street", None)
+            barangay = request.POST.get("address-barangay", None)
+            city = request.POST.get("address-city", None)
+            province = request.POST.get("address-province", None)
+            zipcode = request.POST.get("address-zipcode", None)
+
+
             # get longitude and latitude using geocoding
             try:
                 farmLoc = geocode([farm.farm_address]).geometry.iloc[0]
@@ -507,7 +519,7 @@ def addFarm(request):
                 # if empty, new raiser is inputted; validate django hog raiser form
                 if hogRaiserForm.is_valid():
                     hogRaiser = hogRaiserForm.save(commit=False)
-                    hogRaiser.save()
+                    # hogRaiser.save()
 
                     print("TEST LOG: Added new raiser")
 
@@ -533,7 +545,7 @@ def addFarm(request):
 
             # print("TEST LOG farm.area_id: " + str(farm.area_id))
 
-            farm.save()
+            # farm.save()
             print("TEST LOG: Added new farm")
 
             messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
@@ -542,10 +554,10 @@ def addFarm(request):
             externalBiosec.ref_farm_id = farm
             internalBiosec.ref_farm_id = farm
 
-            internalBiosec.save()
+            # internalBiosec.save()
             print("TEST LOG: Added new internal biosec")
 
-            externalBiosec.save()
+            # externalBiosec.save()
             print("TEST LOG: Added new internal biosec")
 
             if pigpenMeasuresForm.is_valid():
@@ -573,7 +585,7 @@ def addFarm(request):
 
                     # print(str(pigpen_measure))
 
-                    pigpen_measure.save()
+                    # pigpen_measure.save()
                     # print("TEST LOG: Added new pigpen measure")
 
                     x += 1
@@ -582,7 +594,7 @@ def addFarm(request):
                 # update num_pens and total_pigs of newly added farm
                 farm.num_pens = len(pigpenList)
                 farm.total_pigs = numTotal
-                farm.save()
+                # farm.save()
                 
                 # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
 
@@ -605,7 +617,8 @@ def addFarm(request):
         pigpenMeasuresForm  = PigpenMeasuresForm()
 
     # pass django forms to template
-    return render(request, 'farmstemp/add-farm.html', { 'area' : areaQry,
+    return render(request, 'farmstemp/add-farm.html', { 'farmCode' : farmID,
+                                                        'area' : areaQry,
                                                         'raisers' : hogRaiserQry,
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,

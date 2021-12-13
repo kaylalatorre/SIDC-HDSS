@@ -27,9 +27,14 @@
             <h2>Farm Details</h2>
             <div class="box-style">
                 <div class="mb-3">
-                    <label for="input-code" class="form-label">Code</label>
-                    <input type="text" class="form-control" required id="input-code" minlength="1" maxlength="3" name="input-code" placeholder="ex. 001">
-                </div>
+                    {% if farmCode < 10 %}
+                    <h3>Code: 00{{farmCode}}</h3>
+                    {% elif farmCode < 100 %}
+                    <h3>Code: 0{{farmCode}}</h3>
+                    {% else %}
+                    <h3>Code: {{farmCode}}</h3>
+                    {% endif %}
+                </div> <br>
 
                 <h3>Raiser</h3>
                 <div class="mb-3" id="div-raiser-name">
@@ -61,10 +66,26 @@
                 <br>
 
                 <h3>Farm</h3>
-                <!-- <div class="mb-3">
+                <div class="mb-3">
                     <label for="address-street" class="form-label">Street</label>
-                    <input type="text" class="form-control" id="address-street" name="address-street" placeholder="Kalye Street">
-                </div> -->
+                    <input type="text" class="form-control" id="address-street" name="address-street" placeholder="Street">
+                </div>
+                <div class="mb-3">
+                    <label for="address-barangay" class="form-label">Barangay</label>
+                    <input type="text" class="form-control" id="address-barangay" name="address-barangay" required placeholder="Barangay (required)">
+                </div>
+                <div class="mb-3">
+                    <label for="address-city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="address-city" name="address-city" required placeholder="city (required)">
+                </div>
+                <div class="mb-3">
+                    <label for="address-province" class="form-label">Province</label>
+                    <input type="text" class="form-control" id="address-province" name="address-province" required placeholder="Province (required)">
+                </div>
+                <div class="mb-3">
+                    <label for="address-zipcode" class="form-label">Zip Code</label>
+                    <input type="text" class="form-control" id="address-zipcode" name="address-zipcode" placeholder="Zip Code">
+                </div>
                 
                 <div class="mb-3">
                     <label for="input-area" class="form-label">Area</label>
@@ -73,10 +94,6 @@
                         <option>{{area.area_name}}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="mb-3 option-other">
-                    <label for="input-other" class="form-label">Indicate which area.</label>
-                    <input type="text" id="input-other"class="form-control" placeholder="Other Area">
                 </div>
 
                 <div class="mb-3">
