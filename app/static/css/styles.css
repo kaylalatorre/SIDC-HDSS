@@ -226,6 +226,11 @@ button:hover, .button:hover, .primary-btn:hover{
     box-shadow: none;
 }
 
+button[disabled]:hover, .button[disabled]:hover {
+    background: #D3D3D3;
+    color: #AAAAAA;
+}
+
 /* Save button for technician assignment */
 .assignSave, .assignEdit, .biosecEdit, .biosecSave, .symptomsEdit, .symptomsSave {
     margin-right: 4px;
