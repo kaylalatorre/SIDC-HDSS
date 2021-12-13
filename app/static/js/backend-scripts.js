@@ -150,7 +150,7 @@ $('.checklist-date').change(function() {
  */
 $('#farm-code').change(function() { 
     console.log("Farm Code: " + this.value);
-    if ( this.value >= 0){
+    if ( this.value > 0){
         $('#biosec-details').show();
         $('#biosec-checklists').show();
         $('farm-activities').show();
@@ -164,11 +164,6 @@ $('#farm-code').change(function() {
             console.log("Fetching biosec details failed.");
             // location.reload(true);
         }
-    }
-    else {
-        $('#biosec-details').hide();
-        $('#biosec-checklists').hide();
-        $('farm-activities').hide();
     }
 });
 

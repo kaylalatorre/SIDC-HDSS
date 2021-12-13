@@ -1071,70 +1071,8 @@ def biosec_view(request):
         return render(request, 'farmstemp/biosecurity.html', {})
     else: 
 
-        # Get ID of first farm under technician
-        firstFarm = str(*techFarmsList[0].values())
-        farmID = int(firstFarm)
-
-        # debug("biosec_view() farmID -- " + str(farmID))
-
-        
-        # Get current internal and external FKs
-        currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
-        
-        # (2) Get latest instance of Biochecklist
-        currbioObj = currbioQuery.first()
-        # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
-
-
-        # (3) Get all biosecID, last_updated in extbio under a Farm
-        extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
-            'last_updated',
-        ).order_by('-last_updated')
-
-        # (ERROR) for checking Farms that have no Biosec records
-        if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
-            messages.error(request, "No biosecurity records for this farm.", extra_tags="view-biosec")
-            return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList})
-
-
-        # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-        print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
-
-
-        # (4) GET ACTIVITIES
-        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
-
-        actList = []
-
-        # store all data to an array
-        for activity in actQuery:
-                        
-            # check if activity record date is still within the 24 hour mark of current time
-            if (localtime() - activity.date_approved).days <= 1:
-                editable = True
-            else : 
-                editable = False
-
-            actList.append({
-                'id' : activity.id,
-                'date' : activity.date,
-                'format_date' : (activity.date).strftime('%Y-%m-%d'),
-                'trip_type' : activity.trip_type,
-                'time_arrival' : activity.time_arrival,
-                'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
-                'time_departure' : activity.time_departure,
-                'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
-                'description' : activity.description,
-                'remarks' : activity.remarks,
-                'editable' : editable
-            })
-
-        # pass in context:
-        # - (1) farmIDs under Technician user, 
-        # - (2) latest intbio-extbio Checklist, 
-        # - (3) all biocheck IDs and dates within that Farm, 
-        # - (4) approved activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList})
+        # pass in context: farmIDs under Technician user
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : 0, 'farmList': techFarmsList})
         # return render(request, 'farmstemp/biosecurity.html', {}) 
     
     return render(request, 'farmstemp/biosecurity.html', {}) 
