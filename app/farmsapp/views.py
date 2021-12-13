@@ -43,7 +43,8 @@ from .models import (
     Hog_Raiser, 
     Pigpen_Measures, 
     Activity, 
-    Mem_Announcement
+    Mem_Announcement,
+    Activities_Form
 )
 from django.db.models.functions import Concat
 
@@ -1028,10 +1029,7 @@ def biosec_view(request):
     For getting all Biosecurity details under a Farm. 
     This function gets the ID of the first Farm due to no passed farmID as parameter.
 
-    - (1) farms under Technician user, 
-    - (2) latest intbio-extbio Checklist, 
-    - (3) all biosec IDs and dates within that Farm, 
-    - (4) approved ctivities
+    - (1) farms under Technician user
     """
 
     # print("TEST LOG: in Biosec view/n")
@@ -1270,30 +1268,33 @@ def formsApproval(request):
 
     ## ACTIVITY FORMS
     # get all activities under each farm
-    actQuery = Activity.objects.distinct("date_added").values(
+    actQuery = Activities_Form.objects.values(
                 "id",
                 "date_added",
-                "is_approved",
-                "ref_farm_id"
+                "act_tech",
+                "is_checked",
+                "is_reported",
+                "is_noted"
                 ).order_by("-date_added")
     # print(str(actQuery))
 
     actList = []
-    for act in actQuery:
-        getFarm = Farm.objects.filter(id=act["ref_farm_id"]).values("area_id").first()
-        # print(str(getFarm))
-
-        techID = Area.objects.filter(id=getFarm["area_id"]).values("tech").first()
-        # print(str(techID))
-        
-        getTech = User.objects.filter(id=techID["tech"]).annotate(
+    for act in actQuery:       
+        getTech = User.objects.filter(id=act["act_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
-        ).values("id", "name").first()
-        # print(str(getTech))
+        ).values("name").first()
+        print(str(getTech))
+
+        if act["is_noted"] == True and act["is_checked"] == True and act["is_reported"] == True :
+            status = 'Accepted'
+        elif act["is_noted"] == False and act["is_checked"] == False and act["is_reported"] == False :
+            status = 'Rejected'
+        else : 
+            status = 'Pending'
 
         actObject = {
             "date_added" : act["date_added"],
-            "is_approved" : act["is_approved"],
+            "status" : status,
             "prepared_by" : getTech["name"]
         }
 
@@ -1312,6 +1313,8 @@ def selectedActivityForm(request, activityDate):
     actQuery = Activity.objects.filter(date_added=activityDate).all().order_by('-date')
 
     actList = []
+
+    formStatus = None
 
     # store all data to an array
     for activity in actQuery:
@@ -1346,7 +1349,7 @@ def approveActivityForm(request, activityDate):
     actQuery = Activity.objects.filter(date_added=actDate).all()
     # print(str(actQuery))
 
-    # for setting Date input filters to today's date
+    # get today's date
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
@@ -1380,7 +1383,7 @@ def rejectActivityForm(request, activityDate):
     actQuery = Activity.objects.filter(date_added=actDate).all()
     # print(str(actQuery))
 
-    # for setting Date input filters to today's date
+    # get today's date
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
@@ -1412,6 +1415,9 @@ def addActivity(request, farmID):
     # collected farmID of selected tech farm
     farmQuery = Farm.objects.get(pk=farmID)
     
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
     if request.method == 'POST':
         print("TEST LOG: Activity Form has POST method") 
         print(request.POST)
@@ -1440,6 +1446,12 @@ def addActivity(request, farmID):
 
         if activityForm.is_valid():
 
+            # create instance of Activity Form model
+            activity_form = Activities_Form.objects.create(
+                date_added = dateToday,
+            )
+            activity_form.save()
+
             # pass all activityList objects into Activity model
             x = 0
 
@@ -1457,19 +1469,18 @@ def addActivity(request, farmID):
                     description = act['description'],
                     remarks = act['remarks'],
                     # is_approved = None
+                    activity_form_id = activity_form.id
                 )
 
-                print(str(activity))
+                # print(str(activity))
 
                 activity.save()
                 print("TEST LOG: Added new activity")
 
                 x += 1
             
-            if x == 1:
-                messages.success(request, "Activity made on " + activity.date + " has been succesfully sent for approval!", extra_tags='add-activity')
-            else:
-                messages.success(request, "Activities have been succesfully sent for approval!", extra_tags='add-activity')
+            
+            messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             
             return redirect('/biosecurity/' + str(farmID))
             

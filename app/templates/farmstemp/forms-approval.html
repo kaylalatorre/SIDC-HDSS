@@ -33,9 +33,9 @@
                 <tr>
                     <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
-                    {% if act.is_approved == True %}
+                    {% if act.status == 'Accepted' %}
                         <td>Accepted</td>
-                    {% elif act.is_approved == False %}
+                    {% elif act.status == 'Rejected' %}
                         <td>Rejected</td>
                     {% else %}
                         <td>Pending</td>
