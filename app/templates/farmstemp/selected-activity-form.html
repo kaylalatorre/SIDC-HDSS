@@ -13,7 +13,7 @@
 <div class="table-container main-div">
     <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activities made on {{actDate}} </h1>
     {% if user.groups.all.0.name != 'Field Technician' %}
-        {% if formStatus != 'Approved' %}
+        {% if formStatus == 'Pending' %}
         <div class="flex subheading btn-group" id="actForm-btn-group">
             <button class="primary-btn act-forms-btn" disabled id="approve-activity" style="justify-content: flex-end;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
             <button class="primary-btn-red act-forms-btn" disabled id="reject-activity" onclick="rejectActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>

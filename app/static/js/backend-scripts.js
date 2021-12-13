@@ -953,19 +953,38 @@ function approveActivity(actFormID, userType) {
 }
 
 /**
-*   - Return activities to farm/technician
+*   - Rejects all activities under selected activity form
 *   
-*   actDate = date_added of all activities
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
 */
-function rejectActivity(actDate) {
-    // console.log(actDate)
+function rejectActivity(actFormID, userType) {
+    // console.log(actFormID);
+    // console.log(userType);
+
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Assistant Manager"){
+        is_noted = false;
+    }
+    else if (userType == "Extension Veterinarian"){
+        is_reported = false;   
+    }
+    else { // if (userType == "Livestock Operation Specialist"){
+        is_checked = false;
+    }
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/reject-activity-form/' + actDate,
-        data: {"date_added" : actDate},
+        url: '/reject-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_noted" : is_noted,
+                "is_reported" : is_reported,
+                "is_checked" : is_checked },
 
         success: function(response){
             if (response.status == 200){
