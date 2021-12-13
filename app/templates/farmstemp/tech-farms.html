@@ -27,7 +27,7 @@
         <div>
             
             {% if tFarms.areaCount == 0 %}
-            <a href="" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a>
+            <button class="button primary-btn" disabled><i class='bx bx-plus'></i>Add Farm</button>
             {% else %}
             <a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i>Add Farm</a>
             {% endif %}
@@ -60,6 +60,7 @@
         </div>
     </div>
     <div class="box-style">
+        {% if tFarms.techFarms|length > 0 %}
         <table class="table">
             <thead>
                 <tr>
@@ -74,7 +75,7 @@
             <tbody>
             {% for techFarm in tFarms.techFarms %}
             
-                <tr>
+                <tr class="farm-row">
                     {% if techFarm.code < 10 %}
                         <td data-label="Farm Code">00{{techFarm.code}}</td>
                     {% elif techFarm.code < 100 %}
@@ -85,7 +86,7 @@
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
                     <td data-label="Contact No.">{{techFarm.contact}}</td>
                     <td data-label="Address">{{techFarm.address}}</td>
-                    <td data-label="Last Update">{{techFarm.updated|date:'N j, Y, P'}}</td>
+                    <td data-label="Last Update" class="farm-last-update" value="{{techFarm.updated}}">{{techFarm.updated|date:'N j, Y, P'}}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>
@@ -94,6 +95,11 @@
             {% endfor %}
             </tbody>            
         </table>
+        {% else %}
+        <div>
+            <p>No farms to display.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock section %}

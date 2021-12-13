@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Add Case</title>
+{% endblock page_title %}
+
+{% block section %}
+<div class="main-div">
+    <form action="" method="POST">
+        <h1 class="heading"><a href="/selected-health-symptoms">Hogs Health & Symptoms</a> >  Add Mortality Record</h1>
+        <div class="flex subheading">
+            <p class="flex-item"> <strong>Series: </strong> 001010 </p>
+            <div><button class="primary-btn" type="submit">Send for Approval</button></div>
+        </div>
+        <div class="mobile-subheading">
+            <p> <strong>Series: </strong> 001010 </p>
+        </div>
+        <hr>
+
+        <div class="box-style">
+            <div class="flex subheading">
+                <p class="flex-item">Add all mortality records here. </p>
+                <div>
+                    <button class="secondary-btn" type="button" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
+                </div>
+            </div>
+            <div class="mobile-subheading">
+                <button class="secondary-btn" type="button" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
+           </div>
+
+            <div class="input-group">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Farm Code</th>
+                            <th>Mortality Date</th>
+                            <th width="10%">Beg. Inv.</th>
+                            <th width="10%">Today</th>
+                            <th width="10%">To Date</th>
+                            <th>Source</th>
+                            <th>Remarks</th>
+                            <th style="text-align: right;">Mortality %</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-table">
+
+                        <tr>
+                            <td data-label="Farm Code"> 
+                                <div class="mb-3">
+                                    <select aria-label="Farm Code" class="form-select">
+                                        <option value="code" class="status">001</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td data-label="Mortality Date"> 
+                                <input type="date" class="form-control" id="mortality-date">
+                            </td>                            
+                            <td data-label="Beg. Inv.">
+                                <input type="number" class="form-control" id="beg-inv" placeholder="ex. 20"> 
+                            </td>
+                            <td data-label="Today">
+                                <input type="number" class="form-control" id="mortality-today" placeholder="ex. 5">
+                            </td>
+                            <td data-label="To Date" >
+                                <input type="number" class="form-control" id="inv-to-date" placeholder="ex. 15">
+                            </td>
+                            <td data-label="Source">
+                                <input type="text" class="form-control" id="mortality-source" placeholder="">
+                            </td>
+                            <td data-label="Remarks">
+                                <input type="text" class="form-control" id="mortality-remarks" placeholder="">
+                            </td>
+                            <td style="text-align: right;">
+                                99%
+                            </td>
+                            <td></td>
+                            <!-- <td><button id="remove-activity-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
+                            <!-- Remove row: ask kimi about how -->
+                        </tr>
+                        
+                    </tbody>
+                </table>
+
+            </div>
+            <br>
+
+            <!-- Hidden depending on user -->
+
+            <div id="activity-approvals">
+                <h3> Checked by: </h3>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-pms">
+                    <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-ext-vet">
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input" id="cb-am">
+                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
+    </form>
+</div>
+{% endblock section %}

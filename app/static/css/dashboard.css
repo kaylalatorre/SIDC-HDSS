@@ -13,7 +13,8 @@
     justify-content: first baseline;
 }
 
-.overview-item:hover, .alerts-item:hover { background-color: #fafafa;}
+.overview-item:hover { background-color: #fafafa;}
+.alerts-item:hover { background-color: #ED1E40; color: #fafafa; }
 
 .ov-info label {
     font-weight: 400;

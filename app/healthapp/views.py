@@ -232,8 +232,8 @@ def selectedHogsHealth(request, farmID):
 def hogsMortality(request):
     return render(request, 'healthtemp/rep-hogs-mortality.html', {})
 
-def symptomsReported(request):
-    return render(request, 'healthtemp/rep-symptoms-reported.html', {})
+def incidentsReported(request):
+    return render(request, 'healthtemp/rep-incidents-reported.html', {})
 
 
 # for Technician view Hogs Health
@@ -377,3 +377,6 @@ def selectedHealthSymptoms(request, farmID):
 
 def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})
+
+def addMortality(request):
+    return render(request, 'healthtemp/add-mortality.html', {})

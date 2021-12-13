@@ -64,6 +64,11 @@ textarea {
 .filters .form-label {
     margin: 0!important;
 }
+
+.symptoms-checklist {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
 /* Responsive Styles */
 @media (max-width: 848px) {
     .table .flex, .flex-item {

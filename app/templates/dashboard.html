@@ -34,7 +34,7 @@
                     <i class='bx bx-intersect' ></i>
                 </div>
                 <div class="ov-info">
-                    <h2 id="total-farms">{{ fStats.ave_intbio }}% <small class="txt-positive">{{ fStats.rem_intbio }}%</small></h2>
+                    <h2 id="total-farms">{{ fStats.ave_intbio }}% </h2>
                     <label for="total-farms">Ave. Int. Biosecurity Score</label>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                     <i class='bx bx-exclude' ></i>
                 </div>
                 <div class="ov-info">
-                    <h2 id="total-farms">{{ fStats.ave_extbio }}% <small class="txt-negative">{{ fStats.rem_extbio }}%</small></h2>
+                    <h2 id="total-farms">{{ fStats.ave_extbio }}% </h2>
                     <label for="total-farms">Ave. Ext. Biosecurity Score</label>
                 </div>
             </div>
@@ -67,24 +67,28 @@
                         </div>
                     </div>
                     <!-- others -->
-                    <div class="alerts-item">
-                        <div class="al-icon">
-                            <i class='bx bx-search-alt' ></i>
+                    <a href="/farms">
+                        <div class="alerts-item">
+                            <div class="al-icon">
+                                <i class='bx bx-search-alt' ></i>
+                            </div>
+                            <div class="al-info">
+                                <h2 id="total-farms">{{ fStats.total_needInspect }}</h2>
+                                <label for="total-farms">Farms Need Inspection</label>
+                            </div>
                         </div>
-                        <div class="al-info">
-                            <h2 id="total-farms">{{ fStats.total_needInspect }}</h2>
-                            <label for="total-farms">Farms Need Inspection</label>
+                    </a>
+                    <a href="/hogs-health">
+                        <div class="alerts-item">
+                            <div class="al-icon">
+                                <i class='bx bx-first-aid'></i>
+                            </div>
+                            <div class="al-info">
+                                <h2 id="total-farms">2</h2>
+                                <label for="total-farms">New Symptoms Reported</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="alerts-item">
-                        <div class="al-icon">
-                            <i class='bx bx-first-aid'></i>
-                        </div>
-                        <div class="al-info">
-                            <h2 id="total-farms">2</h2>
-                            <label for="total-farms">New Symptoms Reported</label>
-                        </div>
-                    </div>
+                    </a>
                 </div>
            </div>
            <!-- Map -->

@@ -7,33 +7,86 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="table-container main-div">
     <h1 class="heading">Forms Approval</h1>
+
+    {% if user.groups.all.0.name != 'Field Technician' %}
     <p>Check all details of the forms below.</p>
+    <br>
+    <div class="box-style small-table">
+        <!-- <h2>Activity Forms</h2> -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date Added</th>
+                    <th>Form</th>
+                    <th>Status</th>
+                    <th>Prepared by</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for act in activityList %}
+                <tr>
+                    <td>{{act.date_added}}</td>
+                    <td>Activities Record</td>
+                    {% if act.status == 'Accepted' %}
+                        <td>Accepted</td>
+                    {% elif act.status == 'Rejected' %}
+                        <td>Rejected</td>
+                    {% else %}
+                        <td>Pending</td>
+                    {% endif %}    
+                    <td>{{act.prepared_by}}</td>
+                    <td>
+                        <div class="btn-group" style="justify-content: end; padding: 0;">
+                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>Check the status of your forms here.</p>
+    <br>
     <div class="box-style small-table">
         <table class="table">
             <thead>
                 <tr>
                     <th>Date</th>
                     <th>Form</th>
-                    <th>Prepared by</th>
+                    <th>Status</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Data -->
+            {% for act in activityList %}
                 <tr>
-                    <td>01/01/21</td>
+                    <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
-                    <td>Marites</td>
+                    {% if act.is_approved == True %}
+                        <td>Accepted</td>
+                    {% elif act.is_approved == False %}
+                        <td>Rejected</td>
+                    {% else %}
+                        <td>Pending</td>
+                    {% endif %}    
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewForm()><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
+    {% endif %}
 </div>
+
 {% endblock section %}

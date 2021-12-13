@@ -149,17 +149,22 @@ $('.checklist-date').change(function() {
  * on-change AJAX for Farm search dropdown
  */
 $('#farm-code').change(function() { 
+    console.log("Farm Code: " + this.value);
+    if ( this.value > 0){
+        $('#biosec-details').show();
+        $('#biosec-checklists').show();
+        $('farm-activities').show();
 
-    farmID = $("#farm-code option:selected").val();
-    try{
-        url = "/biosecurity/" + farmID;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching biosec details failed.");
-        location.reload(true);
+        farmID = $("#farm-code option:selected").val();
+        try{
+            url = "/biosecurity/" + farmID;
+            console.log(url);
+            location.href = url;
+        } catch (error){
+            console.log("Fetching biosec details failed.");
+            // location.reload(true);
+        }
     }
-
 });
 
 
@@ -654,6 +659,7 @@ $('.assignSave').on('click', function () {
         });
     }
 });
+
 /** 
 * Create new area.
 */
@@ -704,14 +710,15 @@ function for_approval(button, decision){
         dataType : "json",
         data:{"idList":JSON.stringify(forApproval_IDs)},
         success: function(response){
-            console.log(response);
+            if (response.status == 200){
+                console.log(response.responseJSON.success);
+            }
+
+            window.location.replace("/member-announcements");
         },
-        error: function(response){
-            console.log(response);
-            
-        },
-        complete: function(){
-            // location.reload(true);
+        error: function (res){
+            console.log(res.responseJSON.error);
+           // alert("Error in submitting the approval.")
         }
     });
 }
@@ -725,6 +732,7 @@ $('#approveChecked.primary-btn').on('click', function(){
 $('#rejectChecked.primary-btn-red').on('click', function(){
     for_approval($(this), 'reject');
 });
+
 /**
 *   - Deletes selected activity row from database.
 *   
@@ -876,7 +884,7 @@ function saveActivity(actID) {
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/edit-activity/' + activityID,
+            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
             data: {"date" : date,
                     "trip_type" : type,
                     "time_departure" : departure,
@@ -937,3 +945,59 @@ function viewHealthSymptoms(farmHTML) {
         location.reload(true);
     }
 }
+/**
+*   - Passes actDate and change is_approve status of activities
+*   
+*   actDate = date_added of all activities
+*/
+function approveActivity(actDate) {
+    // console.log(actDate)
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-activity-form/' + actDate,
+        data: {"date_added" : actDate},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+*   - Return activities to farm/technician
+*   
+*   actDate = date_added of all activities
+*/
+function rejectActivity(actDate) {
+    // console.log(actDate)
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-activity-form/' + actDate,
+        data: {"date_added" : actDate},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+

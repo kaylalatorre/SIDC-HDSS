@@ -109,8 +109,9 @@ section {
     align-items: center;
 }
 
-.green { color: #00a854 }
-.red { color: #BB0A1E }
+.green { color: #00a854!important }
+.red { color: #BB0A1E!important }
+.yellow { color: #ffc107!important }
 .hide { display: none; }
 .show { display: block; }
 
@@ -225,12 +226,17 @@ button:hover, .button:hover, .primary-btn:hover{
     box-shadow: none;
 }
 
+button[disabled]:hover, .button[disabled]:hover {
+    background: #D3D3D3;
+    color: #AAAAAA;
+}
+
 /* Save button for technician assignment */
-.assignSave, .assignEdit, .biosecEdit, .biosecSave {
+.assignSave, .assignEdit, .biosecEdit, .biosecSave, .symptomsEdit, .symptomsSave {
     margin-right: 4px;
 }
 
-.assignSave, .biosecSave {
+.assignSave, .biosecSave, .symptomsSave {
     display: none;
 }
 
@@ -262,3 +268,7 @@ button:hover, .button:hover, .primary-btn:hover{
 .btn-outline-secondary {
     box-shadow: none;
 }
+
+/* #biosec-details, #biosec-checklists, #farm-activities {
+    display: none;
+} */

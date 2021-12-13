@@ -9,10 +9,11 @@ urlpatterns = [
     path('selected-hogs-health/<str:farmID>', views.selectedHogsHealth, name="selectedHogsHealth"),
 
     path('hogs-mortality', views.hogsMortality, name="hogsMortality"),
-    path('symptoms-reported', views.symptomsReported, name="symptomsReported"),
+    path('incidents-reported', views.incidentsReported, name="incidentsReported"),
 
     # for technician view
     path('health-symptoms', views.healthSymptoms, name="healthSymptoms"),
     path('selected-health-symptoms/<str:farmID>', views.selectedHealthSymptoms, name="selectedHealthSymptoms"),
     path('add-case', views.addCase, name="addCase"),
+    path('add-mortality', views.addMortality, name="addMortality"),
 ]
