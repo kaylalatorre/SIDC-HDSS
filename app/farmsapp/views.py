@@ -1348,41 +1348,66 @@ def selectedActivityForm(request, activityFormID, activityDate):
         })
 
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'actDate' : activityDate, 'activities' : actList, 'formStatus' : status })
+    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate,
+                                                                        'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
 
-def approveActivityForm(request, activityDate):
+def approveActivityForm(request, activityFormID):
     """
-    - Modify is_checked, is_reported, and is_noted values of all activities with the same activity form
+    - Modify is_checked, is_reported, and is_noted values of selected activity form
     - Update last_updated and date_approved
 
-    activityDate = is_added value of activity form selected
+    activityFormID = id value of activity form selected
     """
 
-    # print(activityDate)
-    # convert activityDate string into date object
-    actDate = (datetime.strptime(activityDate, '%Y-%m-%d')).date()
-
-    actQuery = Activity.objects.filter(date_added=actDate).all()
+    activity_form = Activities_Form.objects.filter(id=activityFormID).all()
     # print(str(actQuery))
 
     # get today's date
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        # print("TEST LOG: Approve Activity Form is a POST Method")
+        print("TEST LOG: Approve Activity Form is a POST Method")
+        print(request.POST)
 
-        # update contents of activities
+        # update activity form fields for user approvals
+        # is_noted for asst. manager
+        if request.POST.get("is_noted") == 'true' :
+            activity_form.is_noted = True
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                act_asm_id = request.user.id
+        
+        # is_reported for ext vet
+        elif request.POST.get("is_reported") == 'true' :
+            activity_form.is_reported = True
+
+            if request.user.groups.all()[0].name == "Extension Veterinarian":
+                act_extvet = request.user.id
+
+        # is_checked for live op
+        elif request.POST.get("is_checked") == 'true' :
+            activity_form.is_checked = True
+
+            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+                act_liveop = request.user.id
+        
+        activity_form.save()
+
+        # get all activities under activity form
+        actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
             activity.last_updated = dateToday
-            activity.date_approved = dateToday
-            activity.is_approved = True
+            
+            if activity_form["is_noted"] == True and activity_form["is_checked"] == True and activity_form["is_reported"] == True :
+                is_approved = True
+                activity.date_approved = dateToday
 
             activity.save()
     
-        messages.success(request, "Activities have been approved.", extra_tags='update-activity')
-        return JsonResponse({"success": "Activities have been approved."}, status=200)
+        messages.success(request, "Activity Form has been approved by " + str(request.user.groups.all()[0].name), extra_tags='update-activity')
+        return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name)}, status=200)
 
-    messages.error(request, "Failed to approve activities.", extra_tags='update-activity')
+    messages.error(request, "Failed to approve activity form.", extra_tags='update-activity')
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def rejectActivityForm(request, activityDate):

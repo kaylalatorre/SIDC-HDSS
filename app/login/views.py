@@ -93,7 +93,7 @@ def login(request):
 def home_view(request):
     print("TEST LOG: in Home view/n")
 
-    if request.user.is_authenticated and hasGroup :
+    if request.user.is_authenticated :
         userGroup = request.user.groups.all()[0].name
 
         if userGroup == "Assistant Manager":
