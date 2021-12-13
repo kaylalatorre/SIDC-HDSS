@@ -123,7 +123,7 @@ class Farm(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     area                = models.ForeignKey('Area', related_name="area", on_delete=models.CASCADE, null=True, blank=True)
-    farm_address        = models.CharField(max_length=200)
+    farm_address        = models.CharField(max_length=200, null=True, blank=True)
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
 
