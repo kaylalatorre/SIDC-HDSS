@@ -1258,7 +1258,10 @@ def save_area(request):
     is_exist = Area.objects.filter(area_name = areaName).exists()
     if(not is_exist):
         Area(area_name = areaName, tech_id = None).save()
+        messages.success(request, "Area successfully added!", extra_tags='add-area')
         return HttpResponse("Save success")
+    else:
+        messages.error(request, "Failed to add area.", extra_tags='add-area')
     return HttpResponse("Save Fail", status=400)
     
 
@@ -1601,6 +1604,7 @@ def createAnnouncement(request):
         # debug(announcement.is_approved)
         announcement.save()
         messages.success(request, "Announcement sent.", extra_tags='announcement')
+        return redirect('/member-announcements')
 
     announcementForm = MemAnnouncementForm()
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})

@@ -21,16 +21,31 @@
         </div>
     </div>
     <section>
-        <h2>Symptoms Reported</h2>
+        <div class="flex">
+            <h2 class="subheading flex-item">Symptoms Reported</h2>
+            <div class="dropdown">
+                <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Filters
+                </button>
+                <ul class="dropdown-menu" style="padding: 8px;">
+                    <label style="font-weight: 600;">Status</label>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" />&nbsp;Active</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" />&nbsp;Pending</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" />&nbsp;Resolved</a></li>
+                </ul>
+            </div>
+        </div>
+        
         <div class="box-style">
             <table class="table" id="symptoms-reported">
                 <thead>
                     <tr>
                         <th>Incident Code</th>
                         <th>Date Reported</th>
-                        <th>No. of Pigs Affected</th>
-                        <th>Symptoms Observed</th>
+                        <th style="width: 10%">No. of Pigs Affected</th>
+                        <th style="width: 35%">Symptoms Observed</th>
                         <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,7 +59,21 @@
                                 <li>hello</li>
                             </ul>
                         </td>
-                        <td data-label="Status" class="status"> Resolved </td>
+                        <td data-label="Status"> 
+                            <div class="mb-3">
+                                <select aria-label="Status" class="form-select status" disabled>
+                                    <option value="Active" class="status">Active</option>
+                                    <option value="Pending"  class="status">Pending</option>
+                                    <option value="Resolved"  class="status">Resolved</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="symptoms-btn-grp">
+                            <div class="btn-group" style="justify-content: end; padding: 0;">
+                                <button class="secondary-btn symptomsEdit"><span class="material-icons md-18">edit</span>Edit</button>
+                                <button class="secondary-btn symptomsSave"><span class="material-icons md-18">save</span>Save</button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

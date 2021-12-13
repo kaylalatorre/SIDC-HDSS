@@ -12,6 +12,8 @@
 
 <div class="table-container main-div">
     <h1 class="heading">Forms Approval</h1>
+
+    {% if user.groups.all.0.name != 'Field Technician' %}
     <p>Check all details of the forms below.</p>
     <br>
     <div class="box-style small-table">
@@ -41,5 +43,34 @@
             </tbody>
         </table>
     </div>
+    {% else %}
+    <p>Check the status of your forms here.</p>
+    <div class="box-style small-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Form</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data -->
+                <tr>
+                    <td data-label="Date">01/01/21</td>
+                    <td data-label="Form">Activities Record</td>
+                    <td data-label="Status" class="status">Approved</td>
+                    <td>
+                        <div class="btn-group" style="justify-content: end; padding: 0;">
+                            <button class="secondary-btn" id="viewForm" onclick=viewForm()><span class="material-icons md-18">visibility</span>View</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
 </div>
+
 {% endblock section %}

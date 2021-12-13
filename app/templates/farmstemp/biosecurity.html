@@ -175,6 +175,7 @@
                 </div>
                 <hr>
                 <!-- Disabled form -- result from adding new checklist -->
+                {% if bioList|length > 1 %}
                 <table class="table">
                     <thead>
                         <tr>
@@ -410,6 +411,11 @@
                     </tbody>
                     
                 </table>
+                {% else %}
+                <div>
+                    <p> This farm has no checklists. </p>
+                </div>
+                {% endif %}
             </div>
         </section>
 
@@ -417,6 +423,7 @@
             <h2 class="heading">Activities</h2>
 
             <div class="box-style">
+                {% if activity|length > 0 %}
                 <table class="table">
                     <thead>
                         <tr>
@@ -555,6 +562,11 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <div>
+                    <p> This farm has no activities. </p>
+                </div>
+                {% endif %}
             </div>
         </section>
     </div>
