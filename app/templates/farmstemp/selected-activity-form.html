@@ -61,54 +61,93 @@
         </table>
 
         <br><br>
-            
           {% if user.groups.all.0.name == 'Livestock Operation Specialist' %}
             <div id="activity-approvals">
                 <h3> Checked by: </h3>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% if actFormDetails.is_checked == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% elif actFormDetails.is_checked == False %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% else %}
+                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% endif %}
                     <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
                 </div>
                 <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% if actFormDetails.is_reported == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% endif %}
                     <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
                 </div>
                 <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% if actFormDetails.is_noted == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% endif %}
                     <label class="form-check-label" for="cb-am">Assistant Manager</label>
                 </div>
             </div>
 
             {% elif user.groups.all.0.name == 'Extension Veterinarian' %}
             <div id="activity-approvals">
-                <h3> Checked by: </h3>
                 <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% if actFormDetails.is_checked == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% endif %}
                     <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% if actFormDetails.is_reported == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% elif actFormDetails.is_reported == False %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% else %}
+                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% endif %}
                     <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
                 </div>
                 <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% if actFormDetails.is_noted == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% endif %}
                     <label class="form-check-label" for="cb-am">Assistant Manager</label>
                 </div>
             </div>
 
             {% elif user.groups.all.0.name == 'Assistant Manager' %}
             <div id="activity-approvals">
-                <h3> Checked by: </h3>
                 <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% if actFormDetails.is_checked == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% endif %}
                     <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
                 </div>
                 <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% if actFormDetails.is_reported == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% endif %}
                     <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% if actFormDetails.is_noted == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% elif actFormDetails.is_noted == False %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% else %}
+                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% endif %}
                     <label class="form-check-label" for="cb-am">Assistant Manager</label>
                 </div>
             </div>
