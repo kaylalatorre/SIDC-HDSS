@@ -125,7 +125,7 @@ class Farm(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     area                = models.ForeignKey('Area', related_name="area", on_delete=models.CASCADE, null=True, blank=True)
-    farm_address        = models.CharField(max_length=200)
+    farm_address        = models.CharField(max_length=200, null=True, blank=True)
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
 
@@ -224,11 +224,11 @@ class Activities_Form(models.Model):
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
     act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_liveop', null=True, blank=True)
-    is_checked          = models.BooleanField(default=False)
+    is_checked          = models.BooleanField(null=True, editable=True)
     act_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(default=False)
+    is_reported         = models.BooleanField(null=True, editable=True)
     act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(default=False)
+    is_noted            = models.BooleanField(null=True, editable=True)
 
 # PPE FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):

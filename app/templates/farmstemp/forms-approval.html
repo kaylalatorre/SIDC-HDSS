@@ -30,11 +30,11 @@
             </thead>
             <tbody>
             {% for act in activityList %}
-                <tr>
+                <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
-                    {% if act.status == 'Accepted' %}
-                        <td>Accepted</td>
+                    {% if act.status == 'Approved' %}
+                        <td>Approved</td>
                     {% elif act.status == 'Rejected' %}
                         <td>Rejected</td>
                     {% else %}
@@ -43,7 +43,7 @@
                     <td>{{act.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this,)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -66,12 +66,14 @@
             </thead>
             <tbody>
             {% for act in activityList %}
-                <tr>
+                {% load login_extras %}
+                {% if act.prepared_by == user.first_name|addStr:user.last_name %}
+                <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
-                    {% if act.is_approved == True %}
-                        <td>Accepted</td>
-                    {% elif act.is_approved == False %}
+                    {% if act.status == 'Approved' %}
+                        <td>Approved</td>
+                    {% elif act.status == 'Rejected' %}
                         <td>Rejected</td>
                     {% else %}
                         <td>Pending</td>
@@ -82,6 +84,7 @@
                         </div>
                     </td>
                 </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>

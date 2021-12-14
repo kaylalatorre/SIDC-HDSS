@@ -49,7 +49,6 @@
                         </tr>
                     </thead>
                     <tbody id="activity-table">
-
                         <tr>
                             <td data-label="Date" id="date"> {{activityForm.date}} </td>
                             <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>                            
@@ -58,70 +57,11 @@
                             <td data-label="Description" id="description"> {{activityForm.description}} </td>
                             <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
                             <td></td>
-                            <!-- <td><button id="remove-activity-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
                         </tr>
-                        
                     </tbody>
                 </table>
-
             </div>
-            <br>
-
-            <!-- Hidden depending on user -->
-
-            {% if user.groups.all.0.name == 'Livestock Operation Specialist' %}
-            <div id="activity-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-los">
-                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
-                </div>
-                <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input" id="cb-ext-vet">
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input" id="cb-am">
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
-            </div>
-
-            {% elif user.groups.all.0.name == 'Extension Veterinarian' %}
-            <div id="activity-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input" id="cb-los">
-                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-ext-vet">
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input" id="cb-am">
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
-            </div>
-
-            {% elif user.groups.all.0.name == 'Assistant Manager' %}
-            <div id="activity-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input" id="cb-los">
-                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
-                </div>
-                <div class="mb-3">
-                    <input disabled type="checkbox" class="form-check-input" id="cb-ext-vet">
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-am">
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
-            </div>
-
-            {% endif %}
-
+            
         </div>
     </section>
     <div class="mobile-subheading"><button class="primary-btn" type="submit">Send for Approval</button></div>

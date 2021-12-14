@@ -290,19 +290,47 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(actDate)
-    console.log(formatDate(actDate))
+    // console.log(actDate);
+    console.log(formatDate(actDate));
+    var actFormID = activity.parentNode.parentNode.parentNode.id;
+    // console.log(actFormID);
 
     try{
-        url = "/selected-activity-form/" + formatDate(actDate);
+        url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
         console.log(url);
         location.href = url;
     }catch (error){
         console.log("Something went wrong. Restarting...");
         console.log(error);
-        // location.reload(true);
+        location.reload(true);
     }
 }
+
+/**
+ *   From selected-activity-form.html
+ *   - Toggle activity form approve/reject buttons on checkbox toggle
+ */
+let actitivty_checkbox = document.querySelectorAll('.cb-activity-form');
+for(var i = 0; i < actitivty_checkbox.length; i++) { 
+
+    actitivty_checkbox[i].addEventListener('click', (e) => {
+        var isChecked = e.target.checked;
+
+        // get activity form approve/reject buttons
+        var actFormsBtn = document.getElementsByClassName('act-forms-btn');
+
+        if(isChecked) { // enable buttons when checkbox is selected
+            for(var j = 0; j < actFormsBtn.length; j++) {
+                actFormsBtn[j].disabled = false;
+            }   
+        } else { // disable buttons when checkbox is not selected
+            for(var j = 0; j < actFormsBtn.length; j++) {
+                actFormsBtn[j].disabled = true;
+            }
+        }
+        
+    });
+ } 
 
 function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template
@@ -359,7 +387,6 @@ $(document).ready(function(){
         $("#div-raiser-name").remove();
         $("#div-raiser-contact").remove();
     });
-
 });
 
 //---- MODULE 2 functions ----//
