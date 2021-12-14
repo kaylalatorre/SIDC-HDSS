@@ -1017,7 +1017,7 @@ function rejectActivity(actDate) {
 
     // Get selected report_status in dropdown
     var selectedStat = $("#dropdown-repstatus option:selected").val();
-    var currStat = $("#hidden-repstat").val();
+    var currStat = $("#hidden-status").val();
 
     if (selectedStat !== currStat){
         ajaxCSRF();

@@ -415,7 +415,7 @@ $('#select_all').change(function() {
 * Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
 */
 function filterRepStatus(){ 
-    var input, filter, table, tr;
+    var input, filter, table, tr, i;
     var repStatus;        
     // input   = document.getElementById("hog_searchTextBoxid"); //to get typed in keyword    
     // filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
@@ -431,7 +431,7 @@ function filterRepStatus(){
     // console.log(table);
 
     for(i=0;i<tr.length;i++){    
-        repStatus = tr[i].getElementsByTagName("td")[4].firstElementChild;
+        repStatus = tr[i].getElementsByTagName("td")[4];
 
         console.log(repStatus);
 
