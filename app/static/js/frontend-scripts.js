@@ -107,7 +107,7 @@ for(var i = 0; i < biosecSave.length; i++) {
  * Changing style of statuses
  */
 let rowStatus = document.querySelectorAll('.status');
-console.log(rowStatus);
+// console.log(rowStatus);
 for(var i = 0; i < rowStatus.length; i++) { 
     let val = rowStatus[i].innerText;
     if( val === "Resolved" | val === "Approved") {
@@ -409,3 +409,46 @@ $('#select_all').change(function() {
     var checkboxes = $(this).closest('table').find(':checkbox');
     checkboxes.prop('checked', $(this).is(':checked'));
 });
+
+/** 
+* Checkbox filters incident reports according to status for technician view (selected-health-symptoms.html)
+* Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
+*/
+function filterRepStatus(){ 
+    var input, filter, table, tr;
+    var repStatus;        
+    // input   = document.getElementById("hog_searchTextBoxid"); //to get typed in keyword    
+    // filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
+    table   = document.getElementById("symptoms-reported"); //to get the html table    
+    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+    
+    // get array of report_status text in checkbox filter
+    var checkedValues = $('input:checkbox:checked.ch_stat').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
+
+    // console.log(table);
+
+    for(i=0;i<tr.length;i++){    
+        repStatus = tr[i].getElementsByTagName("td")[4].firstElementChild;
+
+        console.log(repStatus);
+
+        if(repStatus){    
+            if(
+                (
+                    (
+                        ($.inArray(repStatus.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
+                    ) 
+                )
+            ){    
+                tr[i].style.display="";        
+            }    
+            else{    
+                tr[i].style.display = "none";   
+            }    
+        }    
+    }
+} 
