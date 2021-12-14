@@ -84,7 +84,7 @@ def hogsHealth(request):
             "ave_currWeight",
             "is_starterWeight"
             )
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
@@ -103,7 +103,7 @@ def hogsHealth(request):
         total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
@@ -118,7 +118,7 @@ def hogsHealth(request):
 
         total_pigs += f["total_pigs"]
 
-    debug(farmsData)
+    # debug(farmsData)
 
     
 
