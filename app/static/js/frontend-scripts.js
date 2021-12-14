@@ -1,3 +1,17 @@
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+    
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 /* 
 * Tech assignment edit button 
 */
@@ -57,22 +71,75 @@ for(var i = 0; i < biosecSave.length; i++) {
 }
 
 /**
+ * Symptoms edit button 
+ */
+ let symptomsEdit = document.querySelectorAll('.symptomsEdit');
+ for(var i = 0; i < symptomsEdit.length; i++) { 
+    symptomsEdit[i].addEventListener("click", (e)=> {
+         let editParent = e.target.parentElement.parentElement.parentElement.parentElement;
+         
+         let dropdown = editParent.querySelector(".form-select");
+         console.log(dropdown);
+         let symptomsSave = editParent.querySelector(".symptomsSave");
+         let symptomsEdit = editParent.querySelector(".symptomsEdit");
+         
+         dropdown.removeAttribute("disabled");
+         symptomsSave.setAttribute("style", "display: block");
+         symptomsEdit.setAttribute("style", "display: none");
+     })
+ }
+ 
+ let symptomsSave = document.querySelectorAll('.symptomsSave');
+ for(var i = 0; i < symptomsSave.length; i++) { 
+    symptomsSave[i].addEventListener("click", (e)=> {
+         let saveParent = e.target.parentElement.parentElement.parentElement.parentElement;
+         let dropdown = saveParent.querySelector(".form-select");
+         let symptomsSave = saveParent.querySelector(".symptomsSave");
+         let symptomsEdit = saveParent.querySelector(".symptomsEdit");
+ 
+         dropdown.setAttribute("disabled", true);
+         symptomsSave.setAttribute("style", "display: none");
+         symptomsEdit.setAttribute("style", "display: block");
+     })
+ }
+
+/**
  * Changing style of statuses
  */
 let rowStatus = document.querySelectorAll('.status');
 console.log(rowStatus);
 for(var i = 0; i < rowStatus.length; i++) { 
     let val = rowStatus[i].innerText;
-    if( val === "Resolved") {
+    if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
     else if ( val === "Active") {
         rowStatus[i].classList.add("red");
     }
+    else if ( val === "Pending") {
+        rowStatus[i].classList.add("yellow");
+    }
     else {
         console.log("No status detected/status value invalid.")
     }
-}   
+}  
+
+/**
+ * Checking for farms need inspection
+ * - Checks farms last updated more than 7 days ago
+ * - Highlights row to red
+ */
+let farmRow = document.querySelectorAll('.farm-row');
+for (var i = 0; i < farmRow.length; i++) {
+    let farm = farmRow[i];
+
+    var lastUpdated = farm.querySelector('.farm-last-update');
+    var date = lastUpdated.innerHTML;
+    
+    var newDate = new Date(formatDate(date));
+    console.log(formatDate(date));
+    // console.log(newDate);
+}
 
 /**
  * Toggling view to Member Announcement btn-grp
@@ -112,10 +179,12 @@ function toggleAreaView() {
     }
 }
 
-// MGIHT BE BACKEND
+/**
+*   - Redirects user from farm list to selected farm page
+*   
+*   farm = value of selected farm row
+*/
 function viewFarm(farm) {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
 
     try{
         url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
@@ -123,8 +192,8 @@ function viewFarm(farm) {
         location.href = url;
     }catch (error){
         console.log("Something went wrong. Restarting...");
-        console.log("reloading...");
-        location.reload(true);
+        console.log(error);
+        // location.reload(true);
     }
 }
 
@@ -213,14 +282,55 @@ function wasteMgtOther(option){
     }
 }
 
-function viewForm() {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
-    let viewFarm = document.querySelector('#viewForm');
-    viewFarm.onclick = function () {
-        location.href = "/selected-form";
-    };
+/**
+*   - Redirects user from farm list to selected farm page
+*   
+*   farm = value of selected farm row
+*/
+function viewActivityForm(activity) {
+
+    var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    // console.log(actDate);
+    console.log(formatDate(actDate));
+    var actFormID = activity.parentNode.parentNode.parentNode.id;
+    // console.log(actFormID);
+
+    try{
+        url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log(error);
+        location.reload(true);
+    }
 }
+
+/**
+ *   From selected-activity-form.html
+ *   - Toggle activity form approve/reject buttons on checkbox toggle
+ */
+let actitivty_checkbox = document.querySelectorAll('.cb-activity-form');
+for(var i = 0; i < actitivty_checkbox.length; i++) { 
+
+    actitivty_checkbox[i].addEventListener('click', (e) => {
+        var isChecked = e.target.checked;
+
+        // get activity form approve/reject buttons
+        var actFormsBtn = document.getElementsByClassName('act-forms-btn');
+
+        if(isChecked) { // enable buttons when checkbox is selected
+            for(var j = 0; j < actFormsBtn.length; j++) {
+                actFormsBtn[j].disabled = false;
+            }   
+        } else { // disable buttons when checkbox is not selected
+            for(var j = 0; j < actFormsBtn.length; j++) {
+                actFormsBtn[j].disabled = true;
+            }
+        }
+        
+    });
+ } 
 
 function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template
@@ -277,7 +387,6 @@ $(document).ready(function(){
         $("#div-raiser-name").remove();
         $("#div-raiser-contact").remove();
     });
-
 });
 
 //---- MODULE 2 functions ----//
@@ -320,6 +429,7 @@ function filterHogsHealth(){
         }    
     }
 } 
+
 /** 
 * Select all.
 */

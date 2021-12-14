@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | For Approval </title>
+{% endblock page_title %}
+
+{% block section %}
+
+{% include 'partials/messages.html' %}
+
+<div class="table-container main-div">
+    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activities made on {{actDate}} </h1>
+    {% if user.groups.all.0.name != 'Field Technician' %}
+        {% if formStatus == 'Pending' %}
+        <div class="flex subheading btn-group" id="actForm-btn-group">
+            <button class="primary-btn act-forms-btn" disabled id="approve-activity" style="justify-content: flex-end;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+            <button class="primary-btn-red act-forms-btn" disabled id="reject-activity" onclick="rejectActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
+        </div>
+        {% else %}
+        <br><br>
+        {% endif %}
+    {% else %}
+    <br><br>
+    {% endif %}
+
+    {% if user.groups.all.0.name != 'Field Technician' %}
+    <div class="box-style small-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th style="width: 20%">Trip Type</th>
+                    <th>Time</th>
+                    <th style="width: 30%">Description</th>
+                    <th style="width: 15%">Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for act in activities %}
+                <tr id="{{ act.id }}" value="{{ act.id }}">
+                    <td data-label="Date">
+                        <p class="activity-data">{{act.date}}</p>
+                    </td>
+                    <td data-label="Trip Type">
+                        <p class="activity-data">{{act.trip_type}}</p>
+                    </td>
+                    <td data-label="Time">
+                        <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
+                    </td>
+                    <td data-label="Description">
+                        <p class="activity-data">{{act.description}}</p>
+                    </td>
+                    <td data-label="Remarks">
+                        <p class="activity-data">{{act.remarks}}</p>
+                    </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <br><br>
+          {% if user.groups.all.0.name == 'Livestock Operation Specialist' %}
+            <div id="activity-approvals">
+                <h3> Checked by: </h3>
+                <div class="mb-3">
+                    {% if actFormDetails.is_checked == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% elif actFormDetails.is_checked == False %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% else %}
+                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+                </div>
+                <div class="mb-3">
+                    {% if actFormDetails.is_reported == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    {% if actFormDetails.is_noted == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                </div>
+            </div>
+
+            {% elif user.groups.all.0.name == 'Extension Veterinarian' %}
+            <div id="activity-approvals">
+                <div class="mb-3">
+                    {% if actFormDetails.is_checked == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+                </div>
+                <div class="mb-3">
+                    {% if actFormDetails.is_reported == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% elif actFormDetails.is_reported == False %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% else %}
+                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    {% if actFormDetails.is_noted == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                </div>
+            </div>
+
+            {% elif user.groups.all.0.name == 'Assistant Manager' %}
+            <div id="activity-approvals">
+                <div class="mb-3">
+                    {% if actFormDetails.is_checked == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+                </div>
+                <div class="mb-3">
+                    {% if actFormDetails.is_reported == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% else %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+                </div>
+                <div class="mb-3">
+                    {% if actFormDetails.is_noted == True %}
+                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% elif actFormDetails.is_noted == False %}
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% else %}
+                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    {% endif %}
+                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
+                </div>
+            </div>
+
+            {% endif %}
+    </div>
+
+
+    {% else %}
+    <div class="box-style small-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th style="width: 20%">Trip Type</th>
+                    <th>Time</th>
+                    <th style="width: 30%">Description</th>
+                    <th style="width: 15%">Remarks</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for act in activities %}
+                {% if act.is_approved == False %}
+                <tr id="{{ act.id }}" value="{{ act.id }}">
+                    <td data-label="Date">
+                        <p class="activity-data">{{act.date}}</p>
+                        <input id="input-date" type="date" aria-label="Date" class="form-control activity-input" value="{{act.format_date}}">
+                    </td>
+                    <td data-label="Trip Type">
+                        <p class="activity-data">{{act.trip_type}}</p>
+                        <select id="input-type" class="form-select activity-input" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
+                        
+                        {% if act.trip_type == 'Delivery of Feeds' %}
+                            <option selected value>Delivery of Feeds</option>
+                            <option>Delivery of Medicine</option>
+                            <option>Delivery of Pigs</option>
+                            <option>Vaccinations</option>
+                            <option>Inspection</option>
+                            <option>Trucking</option>
+                            <option>Other</option>
+
+                        {% elif act.trip_type == 'Delivery of Medicine' %}
+                            <option>Delivery of Feeds</option>
+                            <option selected value>Delivery of Medicine</option>
+                            <option>Delivery of Pigs</option>
+                            <option>Vaccinations</option>
+                            <option>Inspection</option>
+                            <option>Trucking</option>
+                            <option>Other</option>
+                        
+                        {% elif act.trip_type == 'Delivery of Pigs' %}
+                            <option>Delivery of Feeds</option>
+                            <option>Delivery of Medicine</option>
+                            <option selected value>Delivery of Pigs</option>
+                            <option>Vaccinations</option>
+                            <option>Inspection</option>
+                            <option>Trucking</option>
+                            <option>Other</option>
+                        
+                        {% elif act.trip_type == 'Vaccinations' %}
+                            <option>Delivery of Feeds</option>
+                            <option>Delivery of Medicine</option>
+                            <option>Delivery of Pigs</option>
+                            <option selected value>Vaccinations</option>
+                            <option>Inspection</option>
+                            <option>Trucking</option>
+                            <option>Other</option>
+                        
+                        {% elif act.trip_type == 'Inspection' %}
+                            <option>Delivery of Feeds</option>
+                            <option>Delivery of Medicine</option>
+                            <option>Delivery of Pigs</option>
+                            <option>Vaccinations</option>
+                            <option selected value>Inspection</option>
+                            <option>Trucking</option>
+                            <option>Other</option>
+                        
+                        {% elif act.trip_type == 'Trucking' %}
+                            <option>Delivery of Feeds</option>
+                            <option>Delivery of Medicine</option>
+                            <option>Delivery of Pigs</option>
+                            <option>Vaccinations</option>
+                            <option>Inspection</option>
+                            <option selected value>Trucking</option>
+                            <option>Other</option>
+                        
+                        {% else %}
+                            <option>Delivery of Feeds</option>
+                            <option>Delivery of Medicine</option>
+                            <option>Delivery of Pigs</option>
+                            <option>Vaccinations</option>
+                            <option>Inspection</option>
+                            <option>Trucking</option>
+                            <option selected value>Other</option>
+
+                        {% endif %}
+
+                        </select>
+                    </td>
+                    <td data-label="Time">
+                        <p class="activity-data">{{act.time_arrival}} -</p><p class="activity-data">{{act.time_departure}}</p>
+                        <input type="time" id="input-arrival" aria-label="Arrival Time" value="{{act.format_arrival}}" class="form-control activity-input">
+                        <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input">
+                    </td>
+                    <td data-label="Description">
+                        <p class="activity-data">{{act.description}}</p>
+                        <input type="text" id="input-description"  aria-label="Description" class="form-control activity-input" value="{{act.description}}">
+                    </td>
+                    <td data-label="Remarks">
+                        <p class="activity-data">{{act.remarks}}</p>
+                        <input type="text" id="input-remarks" aria-label="Remarks" class="form-control activity-input" value="{{act.remarks}}">
+                    </td>
+                    <td>
+                        <div class="btn-group" style="justify-content: end; padding: 0;">
+                            <button name="editActBtn" class="secondary-btn activity-data" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
+                            <button name="deleteActBtn" class="secondary-btn-red activity-data" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+
+                            <button name="saveActBtn" class="secondary-btn activity-input" value="{{ act.id }}" onclick="saveActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Save</span></button>
+                            <button name="cancelActBtn" class="secondary-btn-red activity-input" value="{{ act.id }}" onclick="cancelActivity(this)"><i class='bx bxs-trash'></i><span class="text">Cancel</span></button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr id="{{ act.id }}" value="{{ act.id }}">
+                    <td data-label="Date">
+                        <p class="activity-data">{{act.date}}</p>
+                    </td>
+                    <td data-label="Trip Type">
+                        <p class="activity-data">{{act.trip_type}}</p>
+                    </td>
+                    <td data-label="Time">
+                        <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
+                    </td>
+                    <td data-label="Description">
+                        <p class="activity-data">{{act.description}}</p>
+                    </td>
+                    <td data-label="Remarks">
+                        <p class="activity-data">{{act.remarks}}</p>
+                    </td>
+                    <td> </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock section %}

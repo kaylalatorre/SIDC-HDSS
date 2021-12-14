@@ -41,13 +41,6 @@ class FarmForm(ModelForm):
             'id': 'cb-directly', 
             'name' : 'cb-directly'            
         })
-        self.fields['farm_address'].widget.attrs.update({
-            'input type' : 'text', 
-            'class' : 'form-control',
-            'id' : 'input-address',
-            'name' : 'input-address',
-            'placeholder' : 'ex. Batangas, 4200 Batangas'
-        })
         self.fields['roof_height'].widget.attrs.update({
             'input type' : 'number', 
             'class' : 'form-control',

@@ -123,7 +123,7 @@ class Farm(models.Model):
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
     area                = models.ForeignKey('Area', related_name="area", on_delete=models.CASCADE, null=True, blank=True)
-    farm_address        = models.CharField(max_length=200)
+    farm_address        = models.CharField(max_length=200, null=True, blank=True)
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
 
@@ -192,10 +192,12 @@ class Activity(models.Model):
     remarks             = models.CharField(max_length=500, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
-    date_added          = models.DateTimeField(auto_now=True, editable=False)
     date_approved       = models.DateTimeField(null=True, blank=True)
 
-    is_approved         = models.BooleanField(default=False)
+    is_approved         = models.BooleanField(null=True, editable=True)
+
+    activity_form       = models.ForeignKey('Activities_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+
 
     # def __str__(self):
     #     return self.id
@@ -219,15 +221,15 @@ class Mortality(models.Model):
 
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
-    ref_activity        = models.ForeignKey('Activity', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-    
-    act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_tech', null=True, blank=True)
-    act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_liveop', null=True, blank=True)
-    is_checked          = models.BooleanField(default=False)
-    act_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(default=False)
-    act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='act_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(default=False)
+    date_added          = models.DateField(null=True, blank=True)
+
+    act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
+    act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_liveop', null=True, blank=True)
+    is_checked          = models.BooleanField(null=True, editable=True)
+    act_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_extvet', null=True, blank=True)
+    is_reported         = models.BooleanField(null=True, editable=True)
+    act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_asm', null=True, blank=True)
+    is_noted            = models.BooleanField(null=True, editable=True)
 
 # PPE FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):

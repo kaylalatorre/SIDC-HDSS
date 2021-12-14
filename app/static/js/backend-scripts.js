@@ -149,17 +149,22 @@ $('.checklist-date').change(function() {
  * on-change AJAX for Farm search dropdown
  */
 $('#farm-code').change(function() { 
+    console.log("Farm Code: " + this.value);
+    if ( this.value > 0){
+        $('#biosec-details').show();
+        $('#biosec-checklists').show();
+        $('farm-activities').show();
 
-    farmID = $("#farm-code option:selected").val();
-    try{
-        url = "/biosecurity/" + farmID;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching biosec details failed.");
-        location.reload(true);
+        farmID = $("#farm-code option:selected").val();
+        try{
+            url = "/biosecurity/" + farmID;
+            console.log(url);
+            location.href = url;
+        } catch (error){
+            console.log("Fetching biosec details failed.");
+            // location.reload(true);
+        }
     }
-
 });
 
 
@@ -654,6 +659,7 @@ $('.assignSave').on('click', function () {
         });
     }
 });
+
 /** 
 * Create new area.
 */
@@ -725,6 +731,7 @@ $('#approveChecked.primary-btn').on('click', function(){
 $('#rejectChecked.primary-btn-red').on('click', function(){
     for_approval($(this), 'reject');
 });
+
 /**
 *   - Deletes selected activity row from database.
 *   
@@ -876,7 +883,7 @@ function saveActivity(actID) {
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/edit-activity/' + activityID,
+            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
             data: {"date" : date,
                     "trip_type" : type,
                     "time_departure" : departure,
@@ -896,6 +903,100 @@ function saveActivity(actID) {
             }
         })
     }
+}
+
+/**
+*   - Approves all activities under selected activity form
+*   
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
+*/
+function approveActivity(actFormID, userType) {
+    // console.log(actFormID);
+    // console.log(userType);
+
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Assistant Manager"){
+        is_noted = true;
+    }
+    else if (userType == "Extension Veterinarian"){
+        is_reported = true;   
+    }
+    else { // if (userType == "Livestock Operation Specialist"){
+        is_checked = true;
+    }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_noted" : is_noted,
+                "is_reported" : is_reported,
+                "is_checked" : is_checked },
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+*   - Rejects all activities under selected activity form
+*   
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
+*/
+function rejectActivity(actFormID, userType) {
+    // console.log(actFormID);
+    // console.log(userType);
+
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Assistant Manager"){
+        is_noted = false;
+    }
+    else if (userType == "Extension Veterinarian"){
+        is_reported = false;   
+    }
+    else { // if (userType == "Livestock Operation Specialist"){
+        is_checked = false;
+    }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_noted" : is_noted,
+                "is_reported" : is_reported,
+                "is_checked" : is_checked },
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
 }
 
 //---- MODULE 2 functions ----//
