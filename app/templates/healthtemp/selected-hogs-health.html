@@ -8,17 +8,6 @@
 
 {% block section %}
 
-{% for mssg in messages %}
-    {% if "selected-hogsHealth" in mssg.tags %}
-        <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-            <div class="msg flex-item">{{ mssg }}</div>
-            <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endif %}
-{% endfor %}
-
 <div class="main-div">
     <div class="flex">
         <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code }}</h1>
@@ -72,6 +61,7 @@
             <section>
                 <h2>Incidents Reported</h2>
                 <div class="box-style">
+                    {% if incident_symptomsList|length > 0 %}
                     <table class="table" id="symptoms-reported">
                         <thead>
                             <tr>
@@ -103,12 +93,18 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    {% else %}
+                        <div>
+                            <p> This farms has no incidents yet. </p>
+                        </div>
+                    {% endif %}   
                 </div>
             </section>
 
             <section>
                 <h2>Mortality Records</h2>
                 <div class="box-style">
+                    {% if mortalityList|length > 0 %}
                     <table class="table" id="mortality-records">
                         <thead>
                             <tr>
@@ -139,6 +135,11 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    {% else %}
+                        <div>
+                            <p> This farms has no mortality records yet. </p>
+                        </div>
+                    {% endif %}   
                 </div>
             </section>
         </div>

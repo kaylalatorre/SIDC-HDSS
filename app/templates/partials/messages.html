@@ -1,87 +1,8 @@
 {% for mssg in messages %}
-<!-- Biosecurity Checklist -->
-{% if "add-checklist" in mssg.tags %}
     <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
         <div class="msg flex-item">{{ mssg }}</div>
         <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-{% endif %}
-{% if "view-biosec" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}
-<!-- Reports -->
-{% if "farmass-report" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}    
-{% if "intbio-report" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}    
-{% if "extbio-report" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}   
-<!-- Activitiy, add farm  -->
-{% if "add-activity" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}
-{% if "update-activity" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}  
-{% if "add-farm" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}
-<!-- Member Annoucnements -->
-{% if "announcement" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}  
-<!-- Tech Assignment, add area -->
-{% if "add-area" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-{% endif %}  
 {% endfor %}
