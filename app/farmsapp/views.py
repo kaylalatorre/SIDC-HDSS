@@ -1305,31 +1305,139 @@ def formsApproval(request):
                 ).order_by("-date_added").order_by("-id")
     # print(str(actQuery))
 
-    actList = []
+    approvedList = []
+    rejectedList = []
+    pendingList = []
+
     for act in actQuery:       
         getTech = User.objects.filter(id=act["act_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
         # print(str(getTech))
 
-        # set status for each activity form
-        if act["is_noted"] == True and act["is_checked"] == True and act["is_reported"] == True :
-            status = 'Approved'
-        elif act["is_noted"] == False or act["is_checked"] == False or act["is_reported"] == False :
-            status = 'Rejected'
-        else : 
-            status = 'Pending'
+        if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+            if act["is_checked"] == True:
+                status = 'Approved'
 
-        actObject = {
-            "id" : act["id"],
-            "date_added" : act["date_added"],
-            "status" : status,
-            "prepared_by" : getTech["name"]
-        }
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
 
-        actList.append(actObject)
+                approvedList.append(approved)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actList })
+            elif act["is_checked"] == False:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            else:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+                
+        elif request.user.groups.all()[0].name == "Extension Veterinarian":
+            if act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                approvedList.append(approved)
+
+            elif act["is_reported"] == False and act["is_checked"] == True:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            elif act["is_reported"] == None and act["is_checked"] == True:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+
+        elif request.user.groups.all()[0].name == "Assistant Manager":
+            if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                approvedList.append(approved)
+
+            elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList,
+                                                                'rejected' : rejectedList,
+                                                                'pending' : pendingList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1339,7 +1447,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
     activityDate = is_added value of activity form selected
     """
 
-    # get adetails of activity form
+    # get details of activity form
     actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
                 "id",
                 "is_checked",
