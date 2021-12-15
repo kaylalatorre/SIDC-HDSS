@@ -67,6 +67,7 @@ def compute_MortRate(farmID, mortalityID):
 
     return round(mortality_rate, 2)
 
+
 # for Asst. Manager view Hogs Health
 def hogsHealth(request):
     """

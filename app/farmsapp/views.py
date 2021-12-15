@@ -44,7 +44,8 @@ from .models import (
     Pigpen_Measures, 
     Activity, 
     Mem_Announcement,
-    Activities_Form
+    Activities_Form,
+    Hog_Symptoms
 )
 from django.db.models.functions import Concat
 
@@ -2856,6 +2857,7 @@ def dashboard_view(request):
     total_farms = 0
     total_pigs = 0
     total_needInspect = 0
+    total_active = 0
     ave_intbio = 0
     ave_extbio = 0
 
@@ -2872,10 +2874,11 @@ def dashboard_view(request):
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
         
-        # debug("bioDateDiff.days -- " + str(bioDateDiff.days))
-
         if bioDateDiff.days > 7:
             total_needInspect += 1
+
+        # counts no of. Symptoms record with "Active" status
+        total_active += Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(report_status="Active").count()
 
     # debug(farmsData)
 
@@ -2891,6 +2894,7 @@ def dashboard_view(request):
         "total_farms": total_farms,
         "total_pigs": total_pigs,
         "total_needInspect": total_needInspect,
+        "total_active": total_active,
         "ave_intbio": round(ave_intbio, 2),
         "ave_extbio": round(ave_extbio, 2),
         "rem_intbio": round((100 - ave_intbio), 2),
