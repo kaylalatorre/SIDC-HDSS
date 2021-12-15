@@ -79,6 +79,7 @@ for(var i = 0; i < biosecSave.length; i++) {
          let editParent = e.target.parentElement.parentElement.parentElement.parentElement;
          
          let dropdown = editParent.querySelector(".form-select");
+         console.log("from edit");
          console.log(dropdown);
          let symptomsSave = editParent.querySelector(".symptomsSave");
          let symptomsEdit = editParent.querySelector(".symptomsEdit");
@@ -90,10 +91,13 @@ for(var i = 0; i < biosecSave.length; i++) {
  }
  
  let symptomsSave = document.querySelectorAll('.symptomsSave');
+ 
  for(var i = 0; i < symptomsSave.length; i++) { 
     symptomsSave[i].addEventListener("click", (e)=> {
          let saveParent = e.target.parentElement.parentElement.parentElement.parentElement;
          let dropdown = saveParent.querySelector(".form-select");
+         console.log("from edit");
+         console.log(dropdown);
          let symptomsSave = saveParent.querySelector(".symptomsSave");
          let symptomsEdit = saveParent.querySelector(".symptomsEdit");
  

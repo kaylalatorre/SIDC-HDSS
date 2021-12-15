@@ -1054,8 +1054,8 @@ function rejectActivity(actFormID, userType) {
  function editRepStatus(incidID){
 
     // Get selected report_status in dropdown
-    var selectedStat = $("#dropdown-repstatus option:selected").val();
-    var currStat = $("#hidden-status").val();
+    var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
+    var currStat = $("#hidden-status-" + incidID).val();
 
     if (selectedStat !== currStat){
         ajaxCSRF();
@@ -1072,15 +1072,16 @@ function rejectActivity(actFormID, userType) {
                     var updatedStat = response.updated_status;
                     // alert("updatedStat -- " + updatedStat);
                     
-                    setSelectedValue("dropdown-repstatus", updatedStat);
+                    setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
 
                     // update value of hidden input tag
-                    $("#hidden-status").val(updatedStat);
+                    $("#hidden-status-" + incidID).val(updatedStat);
 
                     console.log("Status for incident ID [" + incidID + "] has been updated.");                    
                 } 
                 else {
-                    alert("ERROR [" + response.status_code + "]: " + response.error);
+                    // alert("ERROR [" + response.status_code + "]: " + response.error);
+                    console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);
                 }
 
