@@ -113,7 +113,7 @@ for(var i = 0; i < rowStatus.length; i++) {
     if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
-    else if ( val === "Active") {
+    else if ( val === "Active" | val === "Rejected") {
         rowStatus[i].classList.add("red");
     }
     else if ( val === "Pending") {
