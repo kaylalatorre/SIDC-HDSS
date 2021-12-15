@@ -33,13 +33,6 @@
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
                     <td>Activities Record</td>
-                    <!-- {% if act.status == 'Approved' %}
-                        <td class=>Approved</td>
-                    {% elif act.status == 'Rejected' %}
-                        <td>Rejected</td>
-                    {% else %}
-                        <td>Pending</td>
-                    {% endif %}     -->
                     <td class="status">{{ act.status }}</td>
                     <td>{{act.prepared_by}}</td>
                     <td>

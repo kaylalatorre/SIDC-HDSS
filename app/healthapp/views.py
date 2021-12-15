@@ -98,44 +98,45 @@ def hogsHealth(request):
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
         return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry})
+    else:
 
-    farmsData = []
-    total_pigs = 0
-    total_incidents = 0
-    total_active = 0
-    for f in qry:
+        farmsData = []
+        total_pigs = 0
+        total_incidents = 0
+        total_active = 0
+        for f in qry:
 
-        farmID = f["id"]
+            farmID = f["id"]
 
-        # for computing Mortality %
-        mortality_rate = compute_MortRate(farmID, None)
+            # for computing Mortality %
+            mortality_rate = compute_MortRate(farmID, None)
 
-        # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
-        total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
+            # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
+            total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
 
-        # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-        total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
+            # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
+            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
-        farmObject = {
-            "code":  str(f["id"]),
-            "raiser": " ".join((f["fname"],f["lname"])),
-            "area": f["farm_area"],
-            "pigs": str(f["total_pigs"]),
-            "updated": f["last_updated"],
-            "ave_currWeight": str(f["ave_currWeight"]),
-            # "is_starterWeight": str(f["is_starterWeight"]),
+            farmObject = {
+                "code":  str(f["id"]),
+                "raiser": " ".join((f["fname"],f["lname"])),
+                "area": f["farm_area"],
+                "pigs": str(f["total_pigs"]),
+                "updated": f["last_updated"],
+                "ave_currWeight": str(f["ave_currWeight"]),
+                # "is_starterWeight": str(f["is_starterWeight"]),
 
-            "mortality_rate": mortality_rate,
-            "total_incidents": total_incidents,
-            "total_active": total_active,
-        }
-        farmsData.append(farmObject)
+                "mortality_rate": mortality_rate,
+                "total_incidents": total_incidents,
+                "total_active": total_active,
+            }
+            farmsData.append(farmObject)
 
-        total_pigs += f["total_pigs"]
-    # debug(farmsData)
+            total_pigs += f["total_pigs"]
+        # debug(farmsData)
 
 
-    return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
+        return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
 
 
 def selectedHogsHealth(request, farmID):
