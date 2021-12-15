@@ -17,8 +17,8 @@
         <div class="flex small-table">
             <p class="flex-item" >Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn act-forms-btn" disabled id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
-                <button class="primary-btn-red act-forms-btn" disabled id="reject-activity" onclick="rejectActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
+                <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+                <button class="primary-btn-red act-forms-btn" id="reject-activity" onclick="rejectActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
             </div>
         </div>
         
@@ -71,10 +71,8 @@
                 <div class="mb-3">
                     {% if actFormDetails.is_checked == True %}
                         <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% elif actFormDetails.is_checked == False %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
                     {% else %}
-                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
                     {% endif %}
                     <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
                 </div>
@@ -109,10 +107,8 @@
                 <div class="mb-3">
                     {% if actFormDetails.is_reported == True %}
                         <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% elif actFormDetails.is_reported == False %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
                     {% else %}
-                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
                     {% endif %}
                     <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
                 </div>
@@ -147,10 +143,8 @@
                 <div class="mb-3">
                     {% if actFormDetails.is_noted == True %}
                         <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% elif actFormDetails.is_noted == False %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
                     {% else %}
-                        <input type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
                     {% endif %}
                     <label class="form-check-label" for="cb-am">Assistant Manager</label>
                 </div>
