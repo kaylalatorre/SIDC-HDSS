@@ -14,6 +14,10 @@ from django.db.models.expressions import F, Value
 from django.db.models import Q
 # from django.forms.formsets import formset_factory
 
+# for AJAX functions
+from django.http import JsonResponse
+from django.core import serializers
+import json
 
 def debug(m):
     """
@@ -408,6 +412,44 @@ def selectedHealthSymptoms(request, farmID):
 
     return render(request, 'healthtemp/selected-health-symptoms.html', {"farm_code": farmID, "incident_symptomsList": incident_symptomsList,
                                                                         "mortalityList": mortalityList})
+
+
+def edit_incidStat(request, incidID):
+    """
+    (POST-AJAX) For updating report_status based on incident ID
+    """
+
+    if request.is_ajax and request.method == 'POST':
+
+        debug("TEST LOG: in edit_incidStat()/n")
+
+        # Get report status from sent AJAX post data
+        select_status = request.POST.get("selectStat")
+        debug("select_status -- " + select_status)
+
+        # search if Incident exists in db
+        incidentObj = Hog_Symptoms.objects.filter(id=incidID).first()
+
+        if incidentObj is not None:
+            incidentObj.report_status = select_status
+            incidentObj.save()
+
+            debug("(SUCCESS) Incident status successfully updated!")
+
+            # Get updated status from db
+            updatedStat = incidentObj.report_status
+            return JsonResponse({"updated_status": updatedStat, "status_code":"200"}, status=200)
+
+        else:
+            return JsonResponse({"error": "Incident record not found", "status_code":"400"}, status=400)
+
+    # # Serialize dictionary
+    # jsonStr = json.dumps(bioDict)
+    # return JsonResponse({"instance": jsonStr, "status_code":"200"}, status=200)
+
+    return JsonResponse({"error": "not an AJAX post request"}, status=400)
+
+
 
 def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})

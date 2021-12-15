@@ -42,9 +42,9 @@
                 </button>
                 <ul class="dropdown-menu" style="padding: 8px;">
                     <label style="font-weight: 600;">Status</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" />&nbsp;Active</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" />&nbsp;Pending</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" />&nbsp;Resolved</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Active" onclick="filterRepStatus()"/>&nbsp;Active</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Pending" onclick="filterRepStatus()"/>&nbsp;Pending</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Resolved" onclick="filterRepStatus()"/>&nbsp;Resolved</a></li>
                 </ul>
             </div>
         </div>
@@ -77,8 +77,10 @@
                             </ul>
                             {% endfor %}
                         </td>
-                        
-                        <td data-label="Status"> 
+
+                        <td data-label="Status">
+                            <input type="hidden" id="hidden-status" value="{{incident.report_status}}">
+
                             <div class="mb-3">
                                 <select id="dropdown-repstatus" aria-label="Status" class="form-select status" disabled>
                                     {% if incident.report_status == 'Active' %}
@@ -103,8 +105,8 @@
                         </td>
                         <td class="symptoms-btn-grp">
                             <div class="btn-group" style="justify-content: end; padding: 0;">
-                                <button class="secondary-btn symptomsEdit"><span class="material-icons md-18">edit</span>Edit</button>
-                                <button class="secondary-btn symptomsSave"><span class="material-icons md-18">save</span>Save</button>
+                                <button class="secondary-btn symptomsEdit" id="editStatus-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
+                                <button class="secondary-btn symptomsSave" id="saveStatus-{{incident.id}}" onclick="editRepStatus('{{incident.id}}')"><span class="material-icons md-18">save</span>Save</button>
                             </div>
                         </td>
                     </tr>
