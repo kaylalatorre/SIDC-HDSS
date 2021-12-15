@@ -14,6 +14,14 @@ from django.db.models.expressions import F, Value
 from django.db.models import Q
 # from django.forms.formsets import formset_factory
 
+# for date and time fields in Models
+from datetime import date, datetime, timezone, timedelta
+from django.utils.timezone import (
+    make_aware, # for date and time fields in Models
+    now, # for getting date today
+    localtime # for getting date today
+) 
+
 # for AJAX functions
 from django.http import JsonResponse
 from django.core import serializers
@@ -58,6 +66,7 @@ def compute_MortRate(farmID, mortalityID):
             mortality_rate = (mortObj.num_toDate / mortObj.num_begInv) * 100
 
     return round(mortality_rate, 2)
+
 
 # for Asst. Manager view Hogs Health
 def hogsHealth(request):
@@ -364,9 +373,26 @@ def selectedHealthSymptoms(request, farmID):
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
-        'date_filed', 
+        'date_filed',
+        'date_updated', 
         'report_status',
         'num_pigs_affected').order_by("id").all()
+
+    # for checking if Incident record is "RESOLVED" and exceeds 1 day
+    editList = []
+    for s in incidentQry:
+
+        # get date diff of date_filed from date_updated
+        sDateDiff = datetime.now(timezone.utc) - s.date_updated
+        # debug("sDateDiff.days -- " + str(sDateDiff.days))
+        
+        isEditable = True
+        # set as false if date diff exceeds 1 day
+        if s.report_status == "Resolved" and sDateDiff.days > 1:
+            isEditable = False
+            
+        editList.append(isEditable)
+
 
     # (1.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
@@ -392,10 +418,10 @@ def selectedHealthSymptoms(request, farmID):
             'weight_loss'       ,
             'trembling'         ,
             'conjunctivitis').order_by("id").all()
-
+    
 
     # combine the 2 previous queries into 1 temporary list
-    incident_symptomsList = zip(incidentQry, symptomsList)
+    incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
 
     # (2) Mortality Records
@@ -406,6 +432,7 @@ def selectedHealthSymptoms(request, farmID):
     # (3.2) Mortality % per record
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
+        
         mRateList.append(mortality_rate)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
@@ -431,15 +458,27 @@ def edit_incidStat(request, incidID):
         # search if Incident exists in db
         incidentObj = Hog_Symptoms.objects.filter(id=incidID).first()
 
+        # get date diff of date_filed from date_updated
+        repDateDiff = datetime.now(timezone.utc) - incidentObj.date_updated
+        debug("repDateDiff.days -- " + str(repDateDiff.days))
+
         if incidentObj is not None:
-            incidentObj.report_status = select_status
-            incidentObj.save()
+            # (ERROR 1) if select_status is ACTIVE & db_status is PENDING 
+            if select_status == "Active" and incidentObj.report_status == "Pending":
+                return JsonResponse({"error": "Cannot set [PENDING] report status back to [ACTIVE].", "status_code":"400"}, status=400)
 
-            debug("(SUCCESS) Incident status successfully updated!")
+            # (ERROR 2) if db_status is RESOLVED & exceeds 1 day
+            # Note: already handled in selectedHealthSymptoms()
 
-            # Get updated status from db
-            updatedStat = incidentObj.report_status
-            return JsonResponse({"updated_status": updatedStat, "status_code":"200"}, status=200)
+            else: # (SUCCESS) No restrictions, can edit report_status
+                incidentObj.report_status = select_status
+                incidentObj.save()
+
+                debug("(SUCCESS) Incident status successfully updated!")
+
+                # Get updated status from db
+                updatedStat = incidentObj.report_status
+                return JsonResponse({"updated_status": updatedStat, "status_code":"200"}, status=200)
 
         else:
             return JsonResponse({"error": "Incident record not found", "status_code":"400"}, status=400)

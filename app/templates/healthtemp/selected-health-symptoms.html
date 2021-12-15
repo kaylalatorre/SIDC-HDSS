@@ -62,7 +62,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for incident,symptoms in incident_symptomsList %}
+                    {% for incident,symptoms,editStat in incident_symptomsList %}
                     <tr>
                         <td data-label="Incident Code">{{ incident.id }}</td>
                         <td data-label="Date Reported">{{ incident.date_filed }}</td>
@@ -103,12 +103,14 @@
                                 </select>
                             </div>
                         </td>
+                        {% if editStat %}
                         <td class="symptoms-btn-grp">
                             <div class="btn-group" style="justify-content: end; padding: 0;">
                                 <button class="secondary-btn symptomsEdit" id="editStatus-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
                                 <button class="secondary-btn symptomsSave" id="saveStatus-{{incident.id}}" onclick="editRepStatus('{{incident.id}}')"><span class="material-icons md-18">save</span>Save</button>
                             </div>
                         </td>
+                        {% endif%}
                     </tr>
                     {% endfor %}
                 </tbody>

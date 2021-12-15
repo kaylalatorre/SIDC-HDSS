@@ -70,6 +70,8 @@ class Farm_Weight(models.Model):
 # FARM SYMPTOMS Table
 class Hog_Symptoms(models.Model):
     date_filed          = models.DateTimeField(default=now)
+    date_updated        = models.DateTimeField(auto_now=True, editable=True)
+
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     report_status       = models.CharField(max_length=50, default='Active')
     num_pigs_affected   = models.IntegerField(default=0)
