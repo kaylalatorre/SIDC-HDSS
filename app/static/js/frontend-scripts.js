@@ -198,6 +198,64 @@ function viewFarm(farm) {
 }
 
 /**
+*   - Redirects current user (technician) to the selected farm. 
+*   - Appends selected farm ID to url that will display farm details.
+*   
+*   techFarm = row of selected farm
+*/
+function viewTechFarm(techFarm) {
+
+    try{
+        url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
+*   - Appends selected farm ID to url that will display an empty biosecurity checklist.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addBiosecPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-checklist/" + techFarm;
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-activity page for selected farm.
+*   - Appends selected farm ID to url that will display an empty activity record.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addActivityPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-activity/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
 *   - Appends new pigpen row for when adding a new farm
 *   
 *   pigpen-table = table body that the row will be appended to
@@ -305,32 +363,6 @@ function viewActivityForm(activity) {
         location.reload(true);
     }
 }
-
-/**
- *   From selected-activity-form.html
- *   - Toggle activity form approve/reject buttons on checkbox toggle
- */
-let actitivty_checkbox = document.querySelectorAll('.cb-activity-form');
-for(var i = 0; i < actitivty_checkbox.length; i++) { 
-
-    actitivty_checkbox[i].addEventListener('click', (e) => {
-        var isChecked = e.target.checked;
-
-        // get activity form approve/reject buttons
-        var actFormsBtn = document.getElementsByClassName('act-forms-btn');
-
-        if(isChecked) { // enable buttons when checkbox is selected
-            for(var j = 0; j < actFormsBtn.length; j++) {
-                actFormsBtn[j].disabled = false;
-            }   
-        } else { // disable buttons when checkbox is not selected
-            for(var j = 0; j < actFormsBtn.length; j++) {
-                actFormsBtn[j].disabled = true;
-            }
-        }
-        
-    });
- } 
 
 function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template

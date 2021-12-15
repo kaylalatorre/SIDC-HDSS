@@ -93,7 +93,7 @@ def hogsHealth(request):
             "ave_currWeight"
             # "is_starterWeight"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
