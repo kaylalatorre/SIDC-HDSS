@@ -1028,14 +1028,24 @@ function rejectActivity(actDate) {
             data: {"selectStat": selectedStat}, 
             success: function (response) {
                 
-                // update selected rep_status in dropdown acc. to returned db value
-                var updatedStat = response.updated_status;
-                setSelectedValue("dropdown-repstatus", updatedStat);
 
-                // update value of hidden input tag
-                $("#hidden-status").val(updatedStat);
+                if (response.status_code === "200"){
+                    // update selected rep_status in dropdown acc. to returned db value
+                    var updatedStat = response.updated_status;
+                    // alert("updatedStat -- " + updatedStat);
+                    
+                    setSelectedValue("dropdown-repstatus", updatedStat);
 
-                alert("Status for incident ID [" + incidID + "] has been updated.");
+                    // update value of hidden input tag
+                    $("#hidden-status").val(updatedStat);
+
+                    console.log("Status for incident ID [" + incidID + "] has been updated.");                    
+                } 
+                else {
+                    alert("ERROR [" + response.status_code + "]: " + response.error);
+                    location.reload(true);
+                }
+
             },
             error: function (res){
                 console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
