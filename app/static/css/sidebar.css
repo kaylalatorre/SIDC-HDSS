@@ -28,7 +28,7 @@ ul, li {
 }
 
 .sidebar .logo-details .logo-name {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #006633;
 }
@@ -77,7 +77,7 @@ ul, li {
 }
 
 .sidebar .nav-links li a .link-name {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 400;
     color: #333;
 }
@@ -103,7 +103,7 @@ ul, li {
 
 .sidebar .nav-links li .sub-menu a {
     color: #333;
-    font-size: 14px;
+    font-size: 0.875rem;
     padding: 8px 8px 8px 72px;
     white-space: nowrap;
 }
@@ -141,14 +141,14 @@ ul, li {
 }
 
 .sidebar .user-details .user-position {
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 400;
 }
 
 /* User profile isn't one of the features of the app.
     for now, a default picture is used until no functionality is present. */
 #user-default {
-    font-size: 40px;
+    font-size: 2.5rem;
     color: lightgray; 
     align-items: center;
     object-fit: cover;

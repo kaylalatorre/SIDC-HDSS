@@ -107,13 +107,13 @@ for(var i = 0; i < biosecSave.length; i++) {
  * Changing style of statuses
  */
 let rowStatus = document.querySelectorAll('.status');
-console.log(rowStatus);
+// console.log(rowStatus);
 for(var i = 0; i < rowStatus.length; i++) { 
     let val = rowStatus[i].innerText;
     if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
-    else if ( val === "Active") {
+    else if ( val === "Active" | val === "Rejected") {
         rowStatus[i].classList.add("red");
     }
     else if ( val === "Pending") {
@@ -395,29 +395,28 @@ $(document).ready(function(){
 * @summary Filters and searches farms for assistant manager (hogs-health.html)
 */
 function filterHogsHealth(){ 
-    var input, filter, table, tr, raiser, address, area, i;        
+    var input, filter, table, tr, raiser, area, i;        
     input   = document.getElementById("hog_searchTextBoxid"); //to get typed in keyword    
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
     table   = document.getElementById("hog_mainTableid"); //to get the html table    
     tr      = table.getElementsByTagName("tr"); //to access rows in the table    
     
-    var 
-    tiss = document.getElementById("ch_hog_TISS").checked,
-    east = document.getElementById("ch_hog_EAST").checked,
-    west = document.getElementById("ch_hog_WEST").checked;
+    // get array of Area names in checkbox filter
+    var checkedValues = $('input:checkbox:checked.ch_hog_area').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
 
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
         area = tr[i].getElementsByTagName("td")[2];
         if(raiser && area){    
             if(
-                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) && 
-                (
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) 
+                &&(
                     (
-                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
-                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
-                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
-                        (!tiss && !east && !west)
+                        ($.inArray(area.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
                     ) 
                 )
             ){    
@@ -437,3 +436,44 @@ $('#select_all').change(function() {
     var checkboxes = $(this).closest('table').find(':checkbox');
     checkboxes.prop('checked', $(this).is(':checked'));
 });
+
+/** 
+* Checkbox filters incident reports according to status for technician view (selected-health-symptoms.html)
+* Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
+*/
+function filterRepStatus(){ 
+    var table, tr, i;
+    var repStatus;          
+    table   = document.getElementById("symptoms-reported"); //to get the html table    
+    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+    
+    // get array of report_status text in checkbox filter
+    var checkedValues = $('input:checkbox:checked.ch_stat').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
+
+    // console.log(table);
+
+    for(i=0;i<tr.length;i++){    
+        repStatus = tr[i].getElementsByTagName("td")[4].firstElementChild;
+
+        console.log(repStatus);
+
+        if(repStatus){    
+            if(
+                (
+                    (
+                        ($.inArray(repStatus.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
+                    ) 
+                )
+            ){    
+                tr[i].style.display="";        
+            }    
+            else{    
+                tr[i].style.display = "none";   
+            }    
+        }    
+    }
+} 

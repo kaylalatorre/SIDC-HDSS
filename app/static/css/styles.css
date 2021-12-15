@@ -18,17 +18,17 @@ body {
 
 * {
     font-family: 'Roboto'; 
-    font-size: 14px;
-    line-height: 24px;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
     box-sizing: border-box;
 }
 
 /* Typography Styles */
-h1, h1 a { font-size: 32px; font-family: 'Public Sans'; font-weight: 600; }
-h1 a .bx-chevron-left { font-size: 42px!important; vertical-align: text-bottom; margin-bottom: -4px; }
-h2 { font-size: 24px; font-family: 'Public Sans'; font-weight: 600; }
-h3 { font-size: 16px; font-family: 'Public Sans'; font-weight: 600; }
-p { font-size: 14px; font-family: 'Roboto'; margin-bottom: 0 !important;}
+h1, h1 a { font-size: 2rem; font-family: 'Public Sans'; font-weight: 600; }
+h1 a .bx-chevron-left { font-size: 2.5rem!important; vertical-align: text-bottom; margin-bottom: -4px; }
+h2 { font-size: 1.5rem; font-family: 'Public Sans'; font-weight: 600; }
+h3 { font-size: 1rem; font-family: 'Public Sans'; font-weight: 600; }
+p { font-size: 0.875rem; font-family: 'Roboto'; margin-bottom: 0 !important;}
 label { font-weight: 400; padding-right: 8px;}
 .bold-lbl { font-weight: 600;}
 a { text-decoration: none; color: #333;}
@@ -122,7 +122,7 @@ button, .button {
     justify-content: center;
     align-items: center;
     padding: 6px 12px;
-    font-size: 14px;
+    font-size: 0.875rem;
     border-radius: 4px;
     border: 0.5px;
     box-shadow: 0px 4px 8px rgba(51, 51, 51, 0.08);
@@ -215,7 +215,7 @@ button:hover, .button:hover, .primary-btn:hover{
 }
 
 .bx-printer {
-    font-size: 14px!important;
+    font-size: 0.875rem!important;
     padding-right: 4px;
 }
 

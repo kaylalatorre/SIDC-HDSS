@@ -169,19 +169,6 @@ $('#farm-code').change(function() {
 
 
 /**
- * Helper function for setting dropdown acc. to selected option
- */
- function setSelectedValue(selectObj, valueToSet) {
-    for (var i = 0; i < selectObj.options.length; i++) {
-        if (selectObj.options[i].text == valueToSet) {
-            selectObj.options[i].selected = true;
-            console.log("option [" + selectObj.options[i].text + "] is selected.");
-            return;
-        }
-    }
-}
-
-/**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
@@ -414,13 +401,13 @@ function saveBiocheck(elem){
         data: {"checkArr": checkArr}, 
         success: function (response) {
             
-            if (response.status_code == '200'){
-                alert("Biosec checklist successfully updated!");
-            }
+            // if (response.status_code == '200'){
+            //     alert("Biosec checklist successfully updated!");
+            // }
 
-            if (response.status == 400){
-                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-            }
+            // if (response.status == 400){
+            //     alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            // }
 
             var biofields = JSON.parse(response["instance"]);
 
@@ -710,14 +697,15 @@ function for_approval(button, decision){
         dataType : "json",
         data:{"idList":JSON.stringify(forApproval_IDs)},
         success: function(response){
-            console.log(response);
+            if (response.status == 200){
+                console.log(response.responseJSON.success);
+            }
+
+            window.location.replace("/member-announcements");
         },
-        error: function(response){
-            console.log(response);
-            
-        },
-        complete: function(){
-            // location.reload(true);
+        error: function (res){
+            console.log(res.responseJSON.error);
+           // alert("Error in submitting the approval.")
         }
     });
 }
@@ -905,6 +893,45 @@ function saveActivity(actID) {
     }
 }
 
+//---- MODULE 2 functions ----//
+
+/**
+ * Links to detailed view of selected Hogs Health record (for Asst. Manager view)
+ * @param farmHTML the HTML tag of farm code column in table data
+ */
+function viewHogsHealth(farmHTML) {
+
+    var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log("farmID -- " + farmID);
+
+    try{
+        url = "/selected-hogs-health/" + farmID;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        location.reload(true);
+    }
+}
+
+/**
+ * Links to detailed view of selected Hogs Health record (for Technician view)
+ * @param farmHTML the HTML tag of farm code column in table data
+ */
+function viewHealthSymptoms(farmHTML) {
+
+    var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log("farmID -- " + farmID);
+
+    try{
+        url = "/selected-health-symptoms/" + farmID;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        location.reload(true);
+    }
+}
 /**
 *   - Approves all activities under selected activity form
 *   
@@ -999,4 +1026,59 @@ function rejectActivity(actFormID, userType) {
     })
 }
 
-//---- MODULE 2 functions ----//
+
+/**
+ * Helper function for setting dropdown acc. to selected option
+ * Code modified from: https://usefulangle.com/post/254/javascript-loop-through-select-options
+ * @param selectID HTML ID name of the dropdown
+ * @param valueToSet string value of option tag to be selected
+ */
+ function setSelectedValue(selectID, valueToSet) {
+    Array.from(document.getElementById(selectID).options).forEach(function(option_element) {
+        let option_text = option_element.text;
+        let option_value = option_element.value;
+        let is_option_selected = option_element.selected;
+    
+        if (option_value == valueToSet){
+            option_element.selected = true;
+            console.log("option selected is -- [" + option_value + "]");
+        }
+    });
+}
+
+
+/**
+ * on-click AJAX for edit status btn for Incident Report
+ * @param incidID string ID of Incident record to be edited
+ */
+ function editRepStatus(incidID){
+
+    // Get selected report_status in dropdown
+    var selectedStat = $("#dropdown-repstatus option:selected").val();
+    var currStat = $("#hidden-status").val();
+
+    if (selectedStat !== currStat){
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/update-incident-status/' + incidID,
+            data: {"selectStat": selectedStat}, 
+            success: function (response) {
+                
+                // update selected rep_status in dropdown acc. to returned db value
+                var updatedStat = response.updated_status;
+                setSelectedValue("dropdown-repstatus", updatedStat);
+
+                // update value of hidden input tag
+                $("#hidden-status").val(updatedStat);
+
+                alert("Status for incident ID [" + incidID + "] has been updated.");
+            },
+            error: function (res){
+                console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            }
+        });
+    }
+
+}

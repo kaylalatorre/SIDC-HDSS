@@ -14,12 +14,12 @@
 }
 
 .overview-item:hover { background-color: #fafafa;}
-.alerts-item:hover { background-color: rgba(255, 0, 0, 0.6); color: #fafafa; }
+.alerts-item:hover { background-color: #ED1E40; color: #fafafa; }
 
 .ov-info label {
     font-weight: 400;
     color: #333;
-    font-size: 14px;
+    font-size: 0.875rem;
     margin-bottom: 4px;
 }
 
@@ -30,7 +30,7 @@
 
 .ov-info h2 small {
     font-weight: 500!important;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .overview-item .ov-icon {
@@ -96,7 +96,7 @@
 /*Legend specific*/
 .legend, .leaflet-control-layers, .leaflet-control-layers-expanded {
     padding: 8px;
-    font: 14px;
+    font: 0.875rem;
     background: white;
     background: rgba(255, 255, 255, 0.8)!important;
     border: none!important;
@@ -112,7 +112,7 @@
 
 .legend h4 {
     text-align: center;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 500;
     margin: 4px;
     color: #333;

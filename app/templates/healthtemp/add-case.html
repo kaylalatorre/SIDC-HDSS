@@ -14,6 +14,9 @@
             <p class="flex-item">Add new incidents cases here. Record all symptoms observed. </p>
             <div><button class="primary-btn" type="submit">Save</button></div>
         </div>
+        <div class="mobile-subheading">
+            <p>Add new incidents cases here. Record all symptoms observed. </p>
+        </div>
         <hr>
 
         <div class="box-style small-table">
@@ -24,7 +27,7 @@
                 </div>
             </section>
             <section>
-                <ul class="symptoms-checklist" data-columns="2">
+                <ul class="symptoms-checklist">   
                     <li>
                         <div class="mb-3">
                             <input type="checkbox" class="form-check-input" id="high_fever" value="true"> 
@@ -58,7 +61,7 @@
                     <li>
                         <div class="mb-3">
                             <input type="checkbox" class="form-check-input" id="vomiting_diarrhea" value="true"> 
-                            <label class="form-check-label" for="vomiting_diarrhea">Vomitting or diarrhea with bloody discharge</label>
+                            <label class="form-check-label" for="vomiting_diarrhea">Vomitting/diarrhea with bloody discharge</label>
                         </div>
                     </li>
                     <li>
@@ -160,6 +163,7 @@
                 </ul>
             </section>
         </div>
+        <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
     </form>
 </div>
 {% endblock section %}
