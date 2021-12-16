@@ -11,17 +11,27 @@
 {% include 'partials/messages.html' %}
 
 <div class="table-container main-div">
-    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activities made on {{actDate}} </h1>
+    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activity Form made on {{actDate}} for Farm {{farm.id}} </h1>
     {% if user.groups.all.0.name != 'Field Technician' %}
         {% if formStatus == 'Pending' %}
         <div class="flex small-table">
-            <p class="flex-item" >Approve form?</p>
+            <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
                 <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
                 <button class="primary-btn-red act-forms-btn" id="reject-activity" onclick="rejectActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
             </div>
         </div>
-        
+        {% else %}
+        <br><br>
+        {% endif %}
+    {% elif user.groups.all.0.name == 'Field Technician' %}
+        {% if formStatus == 'Rejected' %}
+        <div class="flex small-table">
+            <p class="flex-item">Resubmit form?</p>
+            <div class="subheading btn-group" id="actForm-btn-group">
+                <button class="primary-btn act-forms-btn" id="resubmit-activity" style="margin-right: 4px;" onclick="resubmitActivity('{{ farm.id }}')">Resubmit</button> 
+            </div>
+        </div>
         {% else %}
         <br><br>
         {% endif %}
@@ -51,7 +61,7 @@
                         <p class="activity-data">{{act.trip_type}}</p>
                     </td>
                     <td data-label="Time">
-                        <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
+                        <p class="activity-data ">{{act.time_arrival}} - {{act.time_departure}}</p>
                     </td>
                     <td data-label="Description">
                         <p class="activity-data">{{act.description}}</p>
@@ -65,7 +75,6 @@
         </table>
 
         <br><br>
-          {% if user.groups.all.0.name == 'Livestock Operation Specialist' %}
             <div id="activity-approvals">
                 <h3> Checked by: </h3>
                 <div class="mb-3">
@@ -93,64 +102,6 @@
                     <label class="form-check-label" for="cb-am">Assistant Manager</label>
                 </div>
             </div>
-
-            {% elif user.groups.all.0.name == 'Extension Veterinarian' %}
-            <div id="activity-approvals">
-                <div class="mb-3">
-                    {% if actFormDetails.is_checked == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
-                </div>
-                <div class="mb-3">
-                    {% if actFormDetails.is_reported == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    {% if actFormDetails.is_noted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
-            </div>
-
-            {% elif user.groups.all.0.name == 'Assistant Manager' %}
-            <div id="activity-approvals">
-                <div class="mb-3">
-                    {% if actFormDetails.is_checked == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
-                </div>
-                <div class="mb-3">
-                    {% if actFormDetails.is_reported == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    {% if actFormDetails.is_noted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
-            </div>
-
-            {% endif %}
     </div>
 
 
@@ -160,23 +111,23 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th style="width: 20%">Trip Type</th>
+                    <th style="width: 15%">Trip Type</th>
                     <th>Time</th>
-                    <th style="width: 30%">Description</th>
+                    <th style="width: 25%">Description</th>
                     <th style="width: 15%">Remarks</th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="activity-table">
             {% for act in activities %}
-                {% if act.is_approved == False %}
+                {% if formStatus == 'Rejected' %}
                 <tr id="{{ act.id }}" value="{{ act.id }}">
                     <td data-label="Date">
-                        <p class="activity-data">{{act.date}}</p>
+                        <p class="activity-data act-date">{{act.date}}</p>
                         <input id="input-date" type="date" aria-label="Date" class="form-control activity-input" value="{{act.format_date}}">
                     </td>
                     <td data-label="Trip Type">
-                        <p class="activity-data">{{act.trip_type}}</p>
+                        <p class="activity-data act-trip-type">{{act.trip_type}}</p>
                         <select id="input-type" class="form-select activity-input" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
                         
                         {% if act.trip_type == 'Delivery of Feeds' %}
@@ -247,25 +198,27 @@
                         </select>
                     </td>
                     <td data-label="Time">
-                        <p class="activity-data">{{act.time_arrival}} -</p><p class="activity-data">{{act.time_departure}}</p>
+                        <div class="flex small-table">
+                            <p class="activity-data act-arrival">{{act.time_arrival}}</p>
+                            <p class="activity-data flex-item act-departure">{{act.time_departure}}</p></div>
                         <input type="time" id="input-arrival" aria-label="Arrival Time" value="{{act.format_arrival}}" class="form-control activity-input">
                         <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input">
                     </td>
                     <td data-label="Description">
-                        <p class="activity-data">{{act.description}}</p>
+                        <p class="activity-data act-description">{{act.description}}</p>
                         <input type="text" id="input-description"  aria-label="Description" class="form-control activity-input" value="{{act.description}}">
                     </td>
                     <td data-label="Remarks">
-                        <p class="activity-data">{{act.remarks}}</p>
+                        <p class="activity-data act-remarks">{{act.remarks}}</p>
                         <input type="text" id="input-remarks" aria-label="Remarks" class="form-control activity-input" value="{{act.remarks}}">
                     </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button name="editActBtn" class="secondary-btn activity-data" value="{{ act.id }}" onclick="editActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Edit</span></button>
-                            <button name="deleteActBtn" class="secondary-btn-red activity-data" value="{{ act.id }}" onclick="deleteActivity(this)"><i class='bx bxs-trash'></i><span class="text">Delete</span></button>
+                            <button name="editActBtn" class="secondary-btn activity-data" style="margin-right: 4px;" value="{{ act.id }}" onclick="editActivity(this)"><span class="text">Edit</span></button>
+                            <button id="remove-activity-row" onclick="removeActivityRow(this)" name="deleteActBtn" class="secondary-btn-red activity-data"><span class="text">Delete</span></button>
 
-                            <button name="saveActBtn" class="secondary-btn activity-input" value="{{ act.id }}" onclick="saveActivity(this)" style="margin-right: 4px;"><i class='bx bxs-edit'></i><span class="text">Save</span></button>
-                            <button name="cancelActBtn" class="secondary-btn-red activity-input" value="{{ act.id }}" onclick="cancelActivity(this)"><i class='bx bxs-trash'></i><span class="text">Cancel</span></button>
+                            <button name="saveActBtn" class="secondary-btn activity-input" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveActivity(this)"><span class="text">Save</span></button>
+                            <button name="cancelActBtn" class="secondary-btn-red activity-input" value="{{ act.id }}" onclick="cancelActivity(this)"><span class="text">Cancel</span></button>
                         </div>
                     </td>
                 </tr>
@@ -292,6 +245,35 @@
             {% endfor %}
             </tbody>
         </table>
+
+        <br><br>
+        <div id="activity-approvals">
+            <h3> Checked by: </h3>
+            <div class="mb-3">
+                {% if actFormDetails.is_checked == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                {% endif %}
+                <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
+            </div>
+            <div class="mb-3">
+                {% if actFormDetails.is_reported == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                {% endif %}
+                <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+            </div>
+            <div class="mb-3">
+                {% if actFormDetails.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                {% endif %}
+                <label class="form-check-label" for="cb-am">Assistant Manager</label>
+            </div>
+        </div>
     </div>
     {% endif %}
 

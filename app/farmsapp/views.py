@@ -1519,6 +1519,14 @@ def selectedActivityForm(request, activityFormID, activityDate):
             status = 'Rejected'
         elif actFormQuery["is_noted"] == None and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True : 
             status = 'Pending'
+    
+    elif request.user.groups.all()[0].name == "Field Technician":
+        if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == False or actFormQuery["is_reported"] == False :
+            status = 'Rejected'
+        elif actFormQuery["is_noted"] == None or actFormQuery["is_checked"] == None or actFormQuery["is_reported"] == None : 
+            status = 'Pending'
 
     # get all activities under activity form
     actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("-date").order_by("time_arrival")
@@ -1527,18 +1535,23 @@ def selectedActivityForm(request, activityFormID, activityDate):
 
     # store all data to an array
     for activity in actQuery:
+        farm = Farm.objects.filter(id=activity.ref_farm_id).values("id").first()
+
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
+            'format_date' : (activity.date).strftime('%Y-%m-%d'),
             'trip_type' : activity.trip_type,
             'time_arrival' : activity.time_arrival,
+            'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
             'time_departure' : activity.time_departure,
+            'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
             'description' : activity.description,
             'remarks' : activity.remarks,
         })
 
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate,
+    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'farm' : farm,
                                                                         'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
 
 def approveActivityForm(request, activityFormID):
@@ -1642,10 +1655,6 @@ def rejectActivityForm(request, activityFormID):
         
         activity_form.save()
 
-        # create duplicate of current activity form
-        # create activity form
-
-
         # get all activities under activity form
         actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
@@ -1663,6 +1672,94 @@ def rejectActivityForm(request, activityFormID):
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
     messages.error(request, "Failed to reject activities.", extra_tags='update-activity')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def resubmitActivityForm(request, farmID):
+    """
+    - Resubmit rejected activity form and add as a new instance of activity form
+    - Add new activities to database and connect to activity aorm (as FK)
+    - Save details to activity and add FK of current farm table
+    """
+    
+    # get farm id for FK
+    # print("FarmID: " + str(farmID))
+
+    # get ID of current technician
+    techID = request.user.id
+
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        # print(request.POST)
+        numActivities = int(len(request.POST)/6)
+
+        # pass all values into each of the array activityList
+        activityList = []
+
+        i = 0
+        while i < numActivities:
+            actDate = str('activityList[') + str(i) + str('][date]')
+            actType = str('activityList[') + str(i) + str('][trip_type]')
+            actArrival = str('activityList[') + str(i) + str('][time_arrival]')
+            actDeparture = str('activityList[') + str(i) + str('][time_departure]')
+            actDescription = str('activityList[') + str(i) + str('][description]')
+            actRemarks = str('activityList[') + str(i) + str('][remarks]')
+
+            activityObject = {
+                "date" : request.POST.get(actDate, default=None),
+                "trip_type" : request.POST.get(actType, default=None),
+                "time_arrival" : request.POST.get(actArrival, default=None),
+                "time_departure" : request.POST.get(actDeparture, default=None),
+                "description" : request.POST.get(actDescription, default=None),
+                "remarks" : request.POST.get(actRemarks, default=None),
+            }
+
+            activityList.append(activityObject)
+
+            i += 1
+        
+        print("TEST LOG activityList: " + str(activityList))
+
+        # create instance of Activity Form model
+        activity_form = Activities_Form.objects.create(
+            date_added = dateToday,
+            act_tech_id = techID,
+        )
+        activity_form.save()
+
+        # pass all activityList objects into Activity model
+        x = 0
+
+        for act in activityList:
+            act = activityList[x]
+            # print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
+
+            # create new instance of Activity model
+            activity = Activity.objects.create(
+                ref_farm = farmID,
+                date = act['date'],
+                trip_type = act['trip_type'],
+                time_arrival = act['time_arrival'],
+                time_departure = act['time_departure'],
+                description = act['description'],
+                remarks = act['remarks'],
+                # is_approved = None
+                activity_form_id = activity_form.id
+            )
+
+            # print(str(activity))
+
+            activity.save()
+            print("TEST LOG: Added new activity")
+
+            x += 1
+        
+        
+        messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
+        # return JsonResponse({"success": "Activity Form has been resubmitted."}, status=200)
+
+    # messages.error(request, "Failed to resubmit activities.", extra_tags='update-activity')
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def addActivity(request, farmID):

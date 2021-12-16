@@ -812,6 +812,73 @@ function saveActivity(actID) {
     }
 }
 
+/**
+*   - Send data to backend function save to database
+*   - Check if date input is not later than today
+*   - Check if arrival time is after departure time
+*
+*   farmID = connected farm for activities   
+*/
+function resubmitActivity(farmID) {
+    // console.log(farmID);
+
+    // get all data from each column
+    var date = document.getElementsByClassName("act-date");
+    var trip = document.getElementsByClassName("act-trip-type");
+    var arrival = document.getElementsByClassName("act-arrival");
+    var departure = document.getElementsByClassName("act-departure");
+    var description = document.getElementsByClassName("act-description");
+    var remarks = document.getElementsByClassName("act-remarks");
+
+    // pass each row into one object    
+    var activityList = [];
+    for (var i = 0; i < date.length; i++){
+        // console.log(date[i].innerHTML);
+        var activity = {
+            date : date[i].innerHTML,
+            trip_type : trip[i].innerHTML,
+            time_arrival : arrival[i].innerHTML,
+            time_departure : departure[i].innerHTML,
+            description : description[i].innerHTML,
+            remarks : remarks[i].innerHTML
+        };
+        
+        activityList[i] = activity;
+    }
+
+    console.log(activityList);
+    // // check if date is not later than today
+    // if (new Date(date) > today){
+    //     checkTrue -= 1;
+    //     console.log("Date should not be later than today.");
+    // }
+
+    // // check if arrival is after departure
+    // if (arrival > departure){
+    //     checkTrue -= 1;
+    //     console.log("Departure time should be after arrival time.");
+    // }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/resubmit-activity-form/' + farmID,
+        data: {"activityList" : activityList},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
 //---- MODULE 2 functions ----//
 
 /**

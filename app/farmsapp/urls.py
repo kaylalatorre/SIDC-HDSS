@@ -16,11 +16,12 @@ urlpatterns = [
     path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
     path('technician-assignment/savearea', views.save_area, name="save_area"),
 
-    # asst. manager - forms
+    # forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
     path('selected-activity-form/<str:activityFormID>/<str:activityDate>', views.selectedActivityForm, name="selectedActivityForm"),
     path('approve-activity-form/<str:activityFormID>', views.approveActivityForm, name="approveActivityForm"),
     path('reject-activity-form/<str:activityFormID>', views.rejectActivityForm, name="rejectActivityForm"),
+    path('resubmit-activity-form/<str:farmID>', views.resubmitActivityForm, name="resubmitActivityForm"),
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),
