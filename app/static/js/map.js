@@ -82,50 +82,51 @@ $(document).ready(async function () {
         // var symptomsRep = new L.layerGroup();
 
         // add markers and popups to layer groups
-
+        var test = {'long':null}
+        console.log(Boolean(test['long'] && test['long']));
         for (var i = 0; i < metadata.length; i++) {
+            if(!(metadata[i]['latitude'] && metadata[i]['longitude']))
+                continue;
+
             var farmLat = metadata[i]['latitude'];
             var farmLong = metadata[i]['longitude'];
             var numPigs = metadata[i]['numPigs'];
             var radiusSize = numPigs *100;
-            try {
-                allFarms.addLayer(new L.marker([farmLat, farmLong])
-                .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
-                    '<label class="bold-lbl">Address:</label>' + metadata[i]['address'])).addTo(map);
+        
+            allFarms.addLayer(new L.marker([farmLat, farmLong])
+            .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
+                '<label class="bold-lbl">Address:</label>' + metadata[i]['address'])).addTo(map);
 
-                pigsPerFarm.addLayer(new L.circle([farmLat, farmLong], {
-                    radius: radiusSize,
-                    color: '#FFFFFF',
-                    fillColor: 'violet',
-                    weight: 1,
-                    fillOpacity: 0.6,
-                }).bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
-                    '<label class="bold-lbl">No. of pigs: </label>' + numPigs + '<br>' +
-                    '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
+            pigsPerFarm.addLayer(new L.circle([farmLat, farmLong], {
+                radius: radiusSize,
+                color: '#FFFFFF',
+                fillColor: 'violet',
+                weight: 1,
+                fillOpacity: 0.6,
+            }).bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
+                '<label class="bold-lbl">No. of pigs: </label>' + numPigs + '<br>' +
+                '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
 
-                // mortalityRates.addLayer(new L.circle([farmLat, farmLong], {
-                //     radius: 500,
-                //     color: '#FFFFFF',
-                //     fillColor: 'red',
-                //     weight: 1,
-                //     fillOpacity: 0.6,
-                // }).bindTooltip('<label class="bold-lbl">Farm Code:</label> 001 <br>' +
-                //     '<label class="bold-lbl">Mortality Rate:</label> 10 <br>' +
-                //     '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
+            // mortalityRates.addLayer(new L.circle([farmLat, farmLong], {
+            //     radius: 500,
+            //     color: '#FFFFFF',
+            //     fillColor: 'red',
+            //     weight: 1,
+            //     fillOpacity: 0.6,
+            // }).bindTooltip('<label class="bold-lbl">Farm Code:</label> 001 <br>' +
+            //     '<label class="bold-lbl">Mortality Rate:</label> 10 <br>' +
+            //     '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
 
-                // symptomsRep.addLayer(new L.circle([farmLat, farmLong], {
-                //     radius: 500,
-                //     color: '#FFFFFF',
-                //     fillColor: 'orange',
-                //     weight: 1,
-                //     fillOpacity: 0.6,
-                // }).bindTooltip('<label class="bold-lbl">Farm Code:</label> 001 <br>' +
-                //     '<label class="bold-lbl">Symptoms Reported:</label> 10 <br>' +
-                //     '<label class="bold-lbl">Symptoms Active:</label> 10 <br>' +
-                //     '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
-            } catch (error) {
-                continue;   
-            }
+            // symptomsRep.addLayer(new L.circle([farmLat, farmLong], {
+            //     radius: 500,
+            //     color: '#FFFFFF',
+            //     fillColor: 'orange',
+            //     weight: 1,
+            //     fillOpacity: 0.6,
+            // }).bindTooltip('<label class="bold-lbl">Farm Code:</label> 001 <br>' +
+            //     '<label class="bold-lbl">Symptoms Reported:</label> 10 <br>' +
+            //     '<label class="bold-lbl">Symptoms Active:</label> 10 <br>' +
+            //     '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
         }
 
 
