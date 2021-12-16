@@ -14,7 +14,7 @@
     <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activity Form made on {{actDate}} for Farm {{farm.id}} </h1>
     {% if user.groups.all.0.name != 'Field Technician' %}
         {% if formStatus == 'Pending' %}
-        <div class="flex small-table">
+        <div class="flex">
             <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
                 <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
@@ -26,10 +26,11 @@
         {% endif %}
     {% elif user.groups.all.0.name == 'Field Technician' %}
         {% if formStatus == 'Rejected' %}
-        <div class="flex small-table">
+        <div class="flex">
             <p class="flex-item">Resubmit form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn act-forms-btn" id="resubmit-activity" style="margin-right: 4px;" onclick="resubmitActivity('{{ farm.id }}')">Resubmit</button> 
+                <button class="primary-btn act-forms-btn" id="resubmit-activity" style="margin-right: 4px;" type="submit" onclick="resubmitActivity('{{ actDate }}', '{{ activityFormID }}', '{{ farm.id }}')">Resubmit</button> 
+                <!-- <button class="primary-btn act-forms-btn" id="resubmit-activity" style="margin-right: 4px;" type="submit">Resubmit</button>  -->
             </div>
         </div>
         {% else %}
@@ -40,7 +41,7 @@
     {% endif %}
 
     {% if user.groups.all.0.name != 'Field Technician' %}
-    <div class="box-style small-table">
+    <div class="box-style">
         <table class="table">
             <thead>
                 <tr>
@@ -106,19 +107,19 @@
 
 
     {% else %}
-    <div class="box-style small-table">
+    <div class="box-style">
         <table class="table">
             <thead>
                 <tr>
                     <th>Date</th>
                     <th style="width: 15%">Trip Type</th>
-                    <th>Time</th>
+                    <th style="width: 25%">Time</th>
                     <th style="width: 25%">Description</th>
                     <th style="width: 15%">Remarks</th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody id="activity-table">
+            <tbody id="activity-form-table">
             {% for act in activities %}
                 {% if formStatus == 'Rejected' %}
                 <tr id="{{ act.id }}" value="{{ act.id }}">
@@ -198,11 +199,12 @@
                         </select>
                     </td>
                     <td data-label="Time">
-                        <div class="flex small-table">
+                        <div class="flex">
                             <p class="activity-data act-arrival">{{act.time_arrival}}</p>
                             <p class="activity-data flex-item act-departure">{{act.time_departure}}</p></div>
+                        <div class="input-group">
                         <input type="time" id="input-arrival" aria-label="Arrival Time" value="{{act.format_arrival}}" class="form-control activity-input">
-                        <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input">
+                        <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input"></div>
                     </td>
                     <td data-label="Description">
                         <p class="activity-data act-description">{{act.description}}</p>
@@ -214,14 +216,15 @@
                     </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button name="editActBtn" class="secondary-btn activity-data" style="margin-right: 4px;" value="{{ act.id }}" onclick="editActivity(this)"><span class="text">Edit</span></button>
-                            <button id="remove-activity-row" onclick="removeActivityRow(this)" name="deleteActBtn" class="secondary-btn-red activity-data"><span class="text">Delete</span></button>
+                            <button name="editActBtn" class="secondary-btn activity-data" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="editActivity(this)">Edit</button>
+                            <button id="remove-activity-row" onclick="removeActivityFormRow(this)" type="button" name="deleteActBtn" class="secondary-btn-red activity-data">Delete</button>
 
-                            <button name="saveActBtn" class="secondary-btn activity-input" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveActivity(this)"><span class="text">Save</span></button>
-                            <button name="cancelActBtn" class="secondary-btn-red activity-input" value="{{ act.id }}" onclick="cancelActivity(this)"><span class="text">Cancel</span></button>
+                            <button name="saveActBtn" class="secondary-btn activity-input" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveFormActivity(this, '{{ farm.id }}')">Save</button>
+                            <button name="cancelActBtn" class="secondary-btn-red activity-input" type="button" value="{{ act.id }}" onclick="cancelActivity(this)">Cancel</button>
                         </div>
                     </td>
                 </tr>
+
                 {% else %}
                 <tr id="{{ act.id }}" value="{{ act.id }}">
                     <td data-label="Date">
@@ -245,7 +248,46 @@
             {% endfor %}
             </tbody>
         </table>
-
+        {% if formStatus == 'Rejected' %}
+        <br>
+        <div class="flex subheading">
+            <p class="flex-item"> </p>
+            <div>
+                <button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row -->
+            </div>
+        </div> 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Trip Type</th>
+                    <th>Arrival Time</th>
+                    <th>Departure Time</th>
+                    <th>Description</th>
+                    <th>Remarks</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="activity-table">
+                <tr style="display: none">
+                    <td data-label="Date" id="date"><input type="date" aria-label="Date" class="form-control act-date-input"></td>
+                    <td data-label="Trip Type" id="trip_type"><select class="form-select act-trip-type-input" style="margin-bottom:0;">
+                        <option>Delivery of Feeds</option>
+                        <option>Delivery of Medicine</option>
+                        <option>Delivery of Pigs</option>
+                        <option>Vaccinations</option>
+                        <option>Inspection</option>
+                        <option>Trucking</option>
+                        <option>Other</option></select></td>                            
+                    <td data-label="Arrival Time" id="time_arrival"><input type="time" aria-label="Arrival Time" class="form-control act-arrival-input"></td>
+                    <td data-label="Departure Time" id="time_departure"><input type="time" aria-label="Departure Time" class="form-control act-departure-input"></td>
+                    <td data-label="Description" id="description"><input type="text" aria-label="Description" placeholder="Description" class="form-control act-description-input"></td>
+                    <td data-label="Remarks" id="remarks"><input type="text" aria-label="Remarks" placeholder="Remarks" class="form-control act-remarks-input"></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
         <br><br>
         <div id="activity-approvals">
             <h3> Checked by: </h3>
@@ -276,6 +318,5 @@
         </div>
     </div>
     {% endif %}
-
 </div>
 {% endblock section %}

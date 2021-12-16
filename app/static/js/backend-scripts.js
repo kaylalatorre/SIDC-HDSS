@@ -817,7 +817,66 @@ function saveActivity(actID) {
                     console.log(response.responseJSON.success)
                 }
 
-                window.location.replace("/biosecurity/" + farmID);
+                location.reload(true);
+            },
+            error: function (res){
+                console.log(res.responseJSON.error)
+            }
+        })
+    }
+}
+
+function saveFormActivity(actID, farmID) {
+
+    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1
+    console.log("Row ID: " + rowIndex);
+
+    var activityID = $(actID).val(); 
+    console.log("Activity ID: " + activityID);
+
+    console.log(farmID)
+
+    var checkTrue = 2;
+    var today = new Date(); // date today
+    var date = document.getElementById("input-date").value;
+    var type = document.getElementById("input-type").value;
+    var departure = document.getElementById("input-departure").value;
+    var arrival = document.getElementById("input-arrival").value;
+    var description = document.getElementById("input-description").value;
+    var remarks = document.getElementById("input-remarks").value;
+
+    // check if date is not later than today
+    if (new Date(date) > today){
+        checkTrue -= 1;
+        console.log("Date should not be later than today.");
+    }
+
+    // check if arrival is after departure
+    if (arrival > departure){
+        checkTrue -= 1;
+        console.log("Departure time should be after arrival time.");
+    }
+
+    if(checkTrue == 2){
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
+            data: {"date" : date,
+                    "trip_type" : type,
+                    "time_departure" : departure,
+                    "time_arrival" : arrival,
+                    "description" : description,
+                    "remarks" : remarks},
+
+            success: function(response){
+                if (response.status == 200){
+                    console.log(response.responseJSON.success)
+                }
+
+                location.reload(true);
             },
             error: function (res){
                 console.log(res.responseJSON.error)
@@ -831,18 +890,22 @@ function saveActivity(actID) {
 *   - Check if date input is not later than today
 *   - Check if arrival time is after departure time
 *
-*   farmID = connected farm for activities   
+*   actFormID = id value of selected activity form
+*   actDate = date_added value of selected activity form   
 */
-function resubmitActivity(farmID) {
-    // console.log(farmID);
+function resubmitActivity(actDate, actFormID, farmID) {
+    // console.log(actDate);
+    // console.log(actFormID);
+
+    // var table = document.getElementById("activity-form-table");
 
     // get all data from each column
-    var date = document.getElementsByClassName("act-date");
-    var trip = document.getElementsByClassName("act-trip-type");
-    var arrival = document.getElementsByClassName("act-arrival");
-    var departure = document.getElementsByClassName("act-departure");
-    var description = document.getElementsByClassName("act-description");
-    var remarks = document.getElementsByClassName("act-remarks");
+    var date = document.getElementsByClassName("act-date-input");
+    var trip = document.getElementsByClassName("act-trip-type-input");
+    var arrival = document.getElementsByClassName("act-arrival-input");
+    var departure = document.getElementsByClassName("act-departure-input");
+    var description = document.getElementsByClassName("act-description-input");
+    var remarks = document.getElementsByClassName("act-remarks-input");
 
     const convertTime = timeStr => {
         const [time, modifier] = timeStr.split(' ');
@@ -851,30 +914,36 @@ function resubmitActivity(farmID) {
 
         if (hours === '12') {
            hours = '00';
-        }
+        };
         if (modifier === 'p.m.') {
            hours = parseInt(hours, 10) + 12;
-        }
+        };
         if (minutes === undefined) {
             minutes = '00';
-        }
+        };
         return `${hours}:${minutes}`;
      };
-
+    
+    var x = 0;
     // pass each row into one object    
     var activityList = [];
     for (var i = 0; i < date.length; i++){
-        // console.log(date[i].innerHTML);
-        var activity = {
-            date : formatDate(date[i].innerHTML),
-            trip_type : trip[i].innerHTML,
-            time_arrival : convertTime(arrival[i].innerHTML),
-            time_departure : convertTime(departure[i].innerHTML),
-            description : description[i].innerHTML,
-            remarks : remarks[i].innerHTML
+        // console.log([i].value)
+        if (date[i].value !== '') {
+        // if ((date[i].innerHTML !== null && trip_type[i].innerHTML !== null) && (time_arrival[i].innerHTML !== null && time_departure[i].innerHTML !== null)){
+            var activity = {
+                date : formatDate(date[i].value),
+                trip_type : trip[i].value,
+                time_arrival : convertTime(arrival[i].value),
+                time_departure : convertTime(departure[i].value),
+                description : description[i].value,
+                remarks : remarks[i].value
+            };
+            
+            activityList[x] = activity;
+            x++;
         };
-        
-        activityList[i] = activity;
+       
     }
 
     console.log(activityList);
@@ -894,7 +963,7 @@ function resubmitActivity(farmID) {
 
     $.ajax({
         type: 'POST',
-        url: '/resubmit-activity-form/' + farmID,
+        url: '/resubmit-activity-form/' + actFormID +'/' + farmID + '/' + actDate,
         data: {"activityList" : activityList},
 
         success: function(response){

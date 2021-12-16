@@ -21,7 +21,7 @@ urlpatterns = [
     path('selected-activity-form/<str:activityFormID>/<str:activityDate>', views.selectedActivityForm, name="selectedActivityForm"),
     path('approve-activity-form/<str:activityFormID>', views.approveActivityForm, name="approveActivityForm"),
     path('reject-activity-form/<str:activityFormID>', views.rejectActivityForm, name="rejectActivityForm"),
-    path('resubmit-activity-form/<str:farmID>', views.resubmitActivityForm, name="resubmitActivityForm"),
+    path('resubmit-activity-form/<str:activityFormID>/<str:farmID>/<str:activityDate>', views.resubmitActivityForm, name="resubmitActivityForm"),
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),

@@ -289,6 +289,32 @@ function removePigpenRow(currRow){
     table.deleteRow(rowIndex);
 }
 
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeActivityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-table');
+    table.deleteRow(rowIndex);
+}
+
+function removeActivityFormRow(currRow){
+
+    var row = currRow.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-form-table');
+    table.deleteRow(rowIndex);
+}
+
 /**
 *   - Appends new activity row to activity table
 *   
@@ -311,22 +337,6 @@ function addActivityRow() {
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
-}
-
-/*
-*   - Deletes activity row input in Add Activity
-*   
-*   currRow = selected activity row
-*   activity-table = table body that the row will be deleted from
-*/
-function removeActivityRow(currRow){
-
-    var row = currRow.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
-
-    var table = document.getElementById('activity-table');
-    table.deleteRow(rowIndex);
 }
 
 /**

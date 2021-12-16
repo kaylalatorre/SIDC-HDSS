@@ -1529,7 +1529,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
             status = 'Pending'
 
     # get all activities under activity form
-    actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("-date").order_by("time_arrival")
+    actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("id")
 
     actList = []
 
@@ -1551,7 +1551,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
         })
 
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'farm' : farm,
+    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'farm' : farm, 'activityForm' : ActivityForm(),
                                                                         'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
 
 def approveActivityForm(request, activityFormID):
@@ -1674,10 +1674,10 @@ def rejectActivityForm(request, activityFormID):
     messages.error(request, "Failed to reject activities.", extra_tags='update-activity')
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
-def resubmitActivityForm(request, farmID):
+def resubmitActivityForm(request, activityFormID, farmID, activityDate):
     """
-    - Resubmit rejected activity form and add as a new instance of activity form
-    - Add new activities to database and connect to activity aorm (as FK)
+    - Resubmit rejected activity form and modify approval status
+    - Add new activities to database and connect to activity form (as FK)
     - Save details to activity and add FK of current farm table
     """
     
@@ -1686,6 +1686,9 @@ def resubmitActivityForm(request, farmID):
 
     # get ID of current technician
     techID = request.user.id
+
+    # get activity form from ID
+    activity_form = Activities_Form.objects.filter(id=activityFormID).first()
 
     # get today's date
     dateToday = datetime.now(timezone.utc)
@@ -1722,12 +1725,12 @@ def resubmitActivityForm(request, farmID):
         print("TEST LOG activityList: " + str(activityList))
 
         # create instance of Activity Form model
-        activity_form = Activities_Form.objects.create(
-            date_added = dateToday,
-            act_tech_id = techID,
-        )
-        activity_form.save()
+        activity_form.is_checked = None
+        activity_form.is_reported = None
+        activity_form.is_noted = None
 
+        activity_form.save()
+        
         # pass all activityList objects into Activity model
         x = 0
 
@@ -1747,10 +1750,7 @@ def resubmitActivityForm(request, farmID):
                 activity_form_id = activity_form.id
             )
 
-            print(str(activity))
-
             activity.save()
-            print("TEST LOG: Added new activity")
 
             x += 1
         
@@ -1884,7 +1884,7 @@ def saveActivity(request, farmID, activityID):
         
         # collect data from inputs
         date = request.POST.get("date", None)
-        trip_type = request.POST.get("trip_type", None)
+        trip_type = request.POST.get("trip_type", "Other")
         time_departure = request.POST.get("time_departure", None)
         time_arrival = request.POST.get("time_arrival", None)
         description = request.POST.get("description", None)
