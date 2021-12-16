@@ -28,47 +28,44 @@ function ajaxCSRF() {
     });
 }
 
+function syncNotifs(){
+    // ajax call
+    ajaxCSRF();
+    $.ajax({
+        type: 'POST',
+        url: '/notifications/sync',
+        success: function (response) {
+            console.log(response);
+            return response;
+        }
+    }).then(async function(){
+        var notifCount = await getNotifsCount();
+        updateNotifBadge(notifCount);
+    })
+    
+}
+
 /** 
  * Ajax call for notification count.
  * @return {Integer} Count of all notifications.
  */
 function getNotifsCount() {
     // ajax call
-    ajaxCSRF()
+    ajaxCSRF();
     return $.ajax({
         type: 'POST',
         url: '/notifications/count',
-        success: function (response) {
-            // console.log(count);
+        success: function (response) {            
             return response;
-            // console.log(count);
         }
     });
 }
 
-function syncNotifs(){
-    // ajax call
-    ajaxCSRF()
-    return $.ajax({
-        type: 'POST',
-        url: '/notifications/sync',
-        success: function (response) {
-            // console.log(count);
-            return response;
-            // console.log(count);
-        }
-    });
-}
 
 /** 
  * Updates the notification icon badge to reflect current notification count.
  */
-async function updateNotifBadge() {
-    // console.log(
-    //     Boolean(await getNotifsCount())+
-    //     Boolean($('.notif-icon').children('span').length)*2
-    // );
-    var notifCount = await getNotifsCount();
+function updateNotifBadge(notifCount) {
     switch (
         Boolean(parseInt(notifCount)) + // 1 or 0
         Boolean($('.notif-icon').children('span').length) * 2 // 2 or 0
@@ -105,25 +102,25 @@ var down = false;
 
 async function toggleNotif() {
     if (down) {
-        await syncNotifs();
-        updateNotifBadge();
+        syncNotifs();
         box.style.height = '0px';
         box.style.opacity = 0;
         down = false;
     } else {
-        await updateNotifBadge();
         $('.notif-list').load('/notifications .notif-list', function (response) {
             $(this).children().unwrap();
         });
+        var notifCount = await getNotifsCount();
         box.style.height = "auto";
         box.style.opacity = 1;
         down = true;
+        updateNotifBadge(notifCount);
     }
-    
 }
 
-$(document).ready(function () {
+$(document).ready(async function () {
     if ($('.notif-icon').length) {
-        updateNotifBadge();
+        var notifCount = await getNotifsCount();
+        updateNotifBadge(notifCount);
     }
 });

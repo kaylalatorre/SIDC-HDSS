@@ -1785,13 +1785,9 @@ def initNotifIDList(request):
     notifIDList = [] # initialize list of seen notifications
     try: # get notiflist from database
         userID = request.session['_auth_user_id']
-        request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
+        notifIDList.extend(User.objects.get(id=userID).accountdata.data['notifIDList'])
     except:
-        debug('no items for session item notifIDList obtained from database')
-    try:
-        notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
-    except:
-        pass
+        debug('no items obtained from database')
     return notifIDList
 
 def getNotifIDs(request):
@@ -1833,8 +1829,9 @@ def getMemAncmtNotifs(request, notifIDList):
 
 def getNotifications(request):
     # print all session items / debug
-    for key, value in request.session.items():
-        print('FIRST {} => {}'.format(key, value))
+    # for key, value in request.session.items():
+    #     print('GETNOTIF 1 {} => {}'.format(key, value))
+    request.session['notifIDList'] = initNotifIDList(request)
 
     memAncmtNotifs = getMemAncmtNotifs(request, request.session['notifIDList'])
     notifIDList = memAncmtNotifs["notifIDList"]
@@ -1842,17 +1839,13 @@ def getNotifications(request):
 
     request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
 
-    # print all session items / debug
-    for key, value in request.session.items():
-        print('SECOND {} => {}'.format(key, value))
-
     return render(request, 'partials/notifications.html', {"notifList": notifList})
 
 def syncNotifications(request):
     """
     Saving notifications data from sessions to database
     """
-    
+
     dbNotifs = []
     sessionNotifs = []
     userID = request.session['_auth_user_id']
@@ -1884,7 +1877,12 @@ def syncNotifications(request):
     except:
         debug('session was not saved to database')
 
-    return HttpResponse({"success":"session and database synced"}, status=200)
+    if User.objects.get(id=userID).accountdata.data['notifIDList'] == new_dbNotifs:
+        debug('true')
+        return HttpResponse({"success":"session and database synced"}, status=200)
+    else:
+        debug('false')
+        return HttpResponse({"failure":"session and database not synced"}, status=500)
 
 def countNotifications(request):
     totalNotifs = 0
@@ -1894,7 +1892,7 @@ def countNotifications(request):
     for notifID in notifIDs:
         if notifID not in notifIDList:
             totalNotifs = totalNotifs + 1
-
+    
     return HttpResponse(str(totalNotifs), status=200)
 
 # helper functions for Biosec
