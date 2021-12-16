@@ -717,7 +717,7 @@ function for_approval(button, decision){
             
         },
         complete: function(){
-            // location.reload(true);
+            location.reload(true);
         }
     });
 }

@@ -502,14 +502,28 @@ def addFarm(request):
             province = request.POST.get("address-province", None)
             zipcode = request.POST.get("address-zipcode", None)
 
+            addressList = [street, barangay, city, province, zipcode, "Philippines"]
+            farmAddress = ", ".join(filter(None, addressList))
+            farm.farm_address = farmAddress
 
-            # get longitude and latitude using geocoding
+            addressList[4] = ""
             try:
-                farmLoc = geocode([farm.farm_address]).geometry.iloc[0]
+                farmAddress = ", ".join(filter(None, addressList))
+                debug(farmAddress)
+                farmLoc = geocode([farmAddress]).geometry.iloc[0]
                 farm.loc_long = farmLoc.x
                 farm.loc_lat = farmLoc.y
             except:
-                debug("farmLoc not obtained")
+                addressList[0] = ""
+                try:
+                    farmAddress = ", ".join(filter(None, addressList))
+                    debug(farmAddress)
+                    farmLoc = geocode([farmAddress]).geometry.iloc[0]
+                    farm.loc_long = farmLoc.x
+                    farm.loc_lat = farmLoc.y
+                except:
+                    debug("farmLoc not obtained")
+
 
             # save hog raiser
             raiserID = request.POST.get("input-exist-raiser", None)
@@ -1685,9 +1699,9 @@ def memAnnouncements(request):
         "name"
     )
     context = {
-        "approved": announcements.filter(is_approved = True),
-        "rejected": announcements.filter(is_approved = False),
-        "unapproved": announcements.filter(is_approved = None),
+        "approved": announcements.filter(is_approved = True).order_by("timestamp"),
+        "rejected": announcements.filter(is_approved = False).order_by("timestamp"),
+        "unapproved": announcements.filter(is_approved = None).order_by("timestamp"),
     }
     return render(request, 'farmstemp/mem-announce.html', context)
 
@@ -1703,7 +1717,10 @@ def memAnnouncements_Approval(request, decision):
     
     idList = json.loads(idQry)
     
-    Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+    if decision == "approve":
+        Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+    else:
+        Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = False)
 
     return HttpResponse(status=200)
 
@@ -1746,6 +1763,7 @@ def createAnnouncement(request):
         # debug(announcement.is_approved)
         announcement.save()
         messages.success(request, "Announcement sent.", extra_tags='announcement')
+        return redirect('/member-announcements')
 
     announcementForm = MemAnnouncementForm()
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
@@ -1763,11 +1781,9 @@ def viewAnnouncement(request, id):
     }
     return render(request, 'farmstemp/view-announcement.html', context)
 
-def getNotifications(request):
-    notifList = [] # will contain list of notifications to be displayed
+def initNotifIDList(request):
     notifIDList = [] # initialize list of seen notifications
     try: # get notiflist from database
-        # improve when further use is needed
         userID = request.session['_auth_user_id']
         request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
     except:
@@ -1776,11 +1792,18 @@ def getNotifications(request):
         notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
     except:
         pass
-    
-    # print all session items / debug
-    for key, value in request.session.items():
-        print('FIRST {} => {}'.format(key, value))
+    return notifIDList
 
+def getNotifIDs(request):
+    notifIDs = []
+    pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+    announceTable = Mem_Announcement._meta.db_table
+    for item in pendingAnnouncements:
+        notifIDs.append(announceTable + str(item['id']))
+    return notifIDs 
+
+def getMemAncmtNotifs(request, notifIDList):
+    notifList = []
     # Generate notifications to be displayed
     ## Current tags:
     # string notificationID: notification ID made to uniquely identify each notification
@@ -1803,6 +1826,19 @@ def getNotifications(request):
             # debug(notif)
             notifIDList.append(notifID)
             notifList.append(notif)
+    return {
+        "notifIDList": notifIDList,
+        "notifList": notifList
+    }
+
+def getNotifications(request):
+    # print all session items / debug
+    for key, value in request.session.items():
+        print('FIRST {} => {}'.format(key, value))
+
+    memAncmtNotifs = getMemAncmtNotifs(request, request.session['notifIDList'])
+    notifIDList = memAncmtNotifs["notifIDList"]
+    notifList = memAncmtNotifs["notifList"]
 
     request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
 
@@ -1820,9 +1856,9 @@ def syncNotifications(request):
     dbNotifs = []
     sessionNotifs = []
     userID = request.session['_auth_user_id']
+
     try:
         dbNotifs.extend(User.objects.get(id=userID).accountdata.data['notifIDList'])
-        sessionNotifs.extend(request.session['notifIDList'])
     except:
         debug('no notifs from database found')
     
@@ -1831,14 +1867,12 @@ def syncNotifications(request):
     except:
         debug('no notifs from session found')
         return HttpResponse({"error": "no notifs from session found"}, status=404) # no way for sessions notifs to be empty because this will always go after getNotifications
-    
+
     if (Counter(dbNotifs) != Counter(sessionNotifs)):
         new_dbNotifs = []
         if len(sessionNotifs) != 0: #if sessionNotif is empty
-            pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
-            announceTable = Mem_Announcement._meta.db_table
-            for item in pendingAnnouncements:
-                notifID = announceTable + str(item['id'])
+            notifIDs = getNotifIDs(request)
+            for notifID in notifIDs:
                 if notifID in sessionNotifs:
                     new_dbNotifs.append(notifID)
     
@@ -1854,22 +1888,10 @@ def syncNotifications(request):
 
 def countNotifications(request):
     totalNotifs = 0
-    notifIDList = [] # initialize list of seen notifications
-    try: # get notiflist from database
-        # improve when further use is needed
-        userID = request.session['_auth_user_id']
-        request.session['notifIDList'] = User.objects.get(id=userID).accountdata.data['notifIDList']
-    except:
-        debug('no items for session item notifIDList obtained from database')
-    try:
-        notifIDList.extend(request.session['notifIDList']) # try to append with data from user session
-    except:
-        pass
+    notifIDList = initNotifIDList(request)
 
-    pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
-    announceTable = Mem_Announcement._meta.db_table
-    for item in pendingAnnouncements:
-        notifID = announceTable + str(item['id'])
+    notifIDs = getNotifIDs(request)
+    for notifID in notifIDs:
         if notifID not in notifIDList:
             totalNotifs = totalNotifs + 1
 
