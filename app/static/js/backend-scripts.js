@@ -1,3 +1,17 @@
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+    
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 /* BACKEND-specific Functions */
 
 
@@ -830,15 +844,32 @@ function resubmitActivity(farmID) {
     var description = document.getElementsByClassName("act-description");
     var remarks = document.getElementsByClassName("act-remarks");
 
+    const convertTime = timeStr => {
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':');
+        // console.log(hours, minutes, time, modifier)
+
+        if (hours === '12') {
+           hours = '00';
+        }
+        if (modifier === 'p.m.') {
+           hours = parseInt(hours, 10) + 12;
+        }
+        if (minutes === undefined) {
+            minutes = '00';
+        }
+        return `${hours}:${minutes}`;
+     };
+
     // pass each row into one object    
     var activityList = [];
     for (var i = 0; i < date.length; i++){
         // console.log(date[i].innerHTML);
         var activity = {
-            date : date[i].innerHTML,
+            date : formatDate(date[i].innerHTML),
             trip_type : trip[i].innerHTML,
-            time_arrival : arrival[i].innerHTML,
-            time_departure : departure[i].innerHTML,
+            time_arrival : convertTime(arrival[i].innerHTML),
+            time_departure : convertTime(departure[i].innerHTML),
             description : description[i].innerHTML,
             remarks : remarks[i].innerHTML
         };

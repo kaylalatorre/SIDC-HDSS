@@ -1733,11 +1733,10 @@ def resubmitActivityForm(request, farmID):
 
         for act in activityList:
             act = activityList[x]
-            # print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
 
             # create new instance of Activity model
             activity = Activity.objects.create(
-                ref_farm = farmID,
+                ref_farm_id = farmID,
                 date = act['date'],
                 trip_type = act['trip_type'],
                 time_arrival = act['time_arrival'],
@@ -1748,7 +1747,7 @@ def resubmitActivityForm(request, farmID):
                 activity_form_id = activity_form.id
             )
 
-            # print(str(activity))
+            print(str(activity))
 
             activity.save()
             print("TEST LOG: Added new activity")
@@ -1757,9 +1756,9 @@ def resubmitActivityForm(request, farmID):
         
         
         messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
-        # return JsonResponse({"success": "Activity Form has been resubmitted."}, status=200)
+        return JsonResponse({"success": "Activity Form has been resubmitted."}, status=200)
 
-    # messages.error(request, "Failed to resubmit activities.", extra_tags='update-activity')
+    messages.error(request, "Failed to resubmit Activity Form.", extra_tags='update-activity')
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def addActivity(request, farmID):
