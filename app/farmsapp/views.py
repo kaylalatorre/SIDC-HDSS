@@ -1435,9 +1435,47 @@ def formsApproval(request):
 
                 pendingList.append(pending)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList,
-                                                                'rejected' : rejectedList,
-                                                                'pending' : pendingList })
+        elif request.user.groups.all()[0].name == "Field Technician":
+            if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                approvedList.append(approved)
+
+            elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList, 'rejected' : rejectedList, 'pending' : pendingList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1458,12 +1496,29 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # print(str(actFormQuery))
 
     # set status of activity form
-    if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
-        status = 'Approved'
-    elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == False or actFormQuery["is_reported"] == False :
-        status = 'Rejected'
-    else : 
-        status = 'Pending'
+    if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+        if actFormQuery["is_reported"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_reported"] == False :
+            status = 'Rejected'
+        elif actFormQuery["is_reported"] == None :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Extension Veterinarian":
+        if actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_checked"] == False and actFormQuery["is_reported"] == True :
+            status = 'Rejected'
+        elif actFormQuery["is_checked"] == None and actFormQuery["is_reported"] == True :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Assistant Manager":
+        if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Rejected'
+        elif actFormQuery["is_noted"] == None and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True : 
+            status = 'Pending'
 
     # get all activities under activity form
     actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("-date").order_by("time_arrival")
