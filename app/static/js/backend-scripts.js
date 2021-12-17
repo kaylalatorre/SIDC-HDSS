@@ -1054,3 +1054,34 @@ function rejectActivity(actDate) {
     }
 
 }
+
+
+/** 
+ * on-click AJAX for edit status btn for Incident Report
+ * @param incidID string ID of Incident record to be edited
+*/
+$('.symptomsSave').on('click', function () {
+    // TODO: get incident ID based on DOM access
+    var area = $(this).parent().parent().siblings(":eq(0)").text();
+    // var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    ajaxCSRF();
+    if(technician){
+        $.ajax({
+            type:'POST',
+            url:'technician-assignment/assign',
+            data:{
+                "area":area,
+                "technician":technician
+            },
+            success: function(response){
+                console.log(response);
+            },
+            error: function(response){
+                console.log(response);
+            },
+            complete: function(){
+                location.reload(true);
+            }
+        });
+    }
+});

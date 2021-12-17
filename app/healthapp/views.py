@@ -126,7 +126,7 @@ def hogsHealth(request):
         total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
         farmObject = {
-            "code":  str(f["id"]),
+            "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
             "area": f["farm_area"],
             "pigs": str(f["total_pigs"]),
@@ -332,7 +332,7 @@ def healthSymptoms(request):
             total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
             farmObject = {
-                "code":  str(f["id"]),
+                "code":  f["id"],
                 "raiser": " ".join((f["fname"],f["lname"])),
                 "pigs": str(f["total_pigs"]),
                 "updated": f["last_updated"],
