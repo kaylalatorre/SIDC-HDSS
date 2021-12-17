@@ -126,22 +126,22 @@ def hogsHealth(request):
             # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
             total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
-        farmObject = {
-            "code":  f["id"],
-            "raiser": " ".join((f["fname"],f["lname"])),
-            "area": f["farm_area"],
-            "pigs": str(f["total_pigs"]),
-            "updated": f["last_updated"],
-            "ave_currWeight": str(f["ave_currWeight"]),
-            # "is_starterWeight": str(f["is_starterWeight"]),
+            farmObject = {
+                "code":  f["id"],
+                "raiser": " ".join((f["fname"],f["lname"])),
+                "area": f["farm_area"],
+                "pigs": str(f["total_pigs"]),
+                "updated": f["last_updated"],
+                "ave_currWeight": str(f["ave_currWeight"]),
+                # "is_starterWeight": str(f["is_starterWeight"]),
 
-            "mortality_rate": mortality_rate,
-            "total_incidents": total_incidents,
-            "total_active": total_active,
-        }
-        farmsData.append(farmObject)
+                "mortality_rate": mortality_rate,
+                "total_incidents": total_incidents,
+                "total_active": total_active,
+            }
+            farmsData.append(farmObject)
 
-        total_pigs += f["total_pigs"]
+            total_pigs += f["total_pigs"]
         debug(farmsData)
 
 
@@ -258,7 +258,11 @@ def selectedHogsHealth(request, farmID):
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
     
-    return render(request, 'healthtemp/selected-hogs-health.html', {"farm": farmObject, 
+    # for getting length of Incident records
+    total_incidents = incidentQry.count()
+    debug("total_incidents -- " + str(total_incidents))
+
+    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, 
                                                                     "incident_symptomsList": incident_symptomsList,
                                                                     "mortalityList": mortalityList})
 

@@ -1076,7 +1076,11 @@ $('.symptomsSave').on('click', function () {
                     var updatedStat = response.updated_status;
                     // alert("updatedStat -- " + updatedStat);
                     
-                    setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
+                    // TODO: convert dropdown to DOM selection
+                    var dropdownStat = $(this).parent().parent().siblings(":eq(4):nth-child(2)");
+                    console.log("dropdownStat");
+                    console.log(dropdownStat);
+                    // setSelectedValue(dropdownStat, updatedStat);
 
                     // update value of hidden input tag
                     $("#hidden-status-" + incidID).val(updatedStat);
