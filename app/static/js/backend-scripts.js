@@ -581,7 +581,7 @@ $('.assignSave').on('click', function () {
 });
 
 /** 
-* Create new area.
+* Create new area
 */
 $('#save-area').on('click', function(){
     area = $(this).siblings('.form-control').val();
@@ -784,21 +784,6 @@ function saveActivity(actID, farmID) {
     var departure = row.getElementsByClassName("activity-input")[3].value;
     var description = row.getElementsByClassName("activity-input")[4].value;
     var remarks = row.getElementsByClassName("activity-input")[5].value;
-
-    // var date = row.getElementsByClassName("input-date")[0].value;
-    // var trip_type = row.getElementsByClassName("input-type")[0];
-    // var departure = row.getElementsByClassName("input-departure")[0].value;
-    // var arrival = row.getElementsByClassName("input-arrival")[0].value;
-    // var description = row.getElementsByClassName("input-description")[0].value;
-    // var remarks = row.getElementsByClassName("input-remarks")[0].value;
-
-    // console.log(date);
-    // console.log(tripVar.options[tripVar.selectedIndex].text)
-    // console.log(trip_type);
-    // console.log(arrival);
-    // console.log(departure);
-    // console.log(description);
-    // console.log(remarks);
 
     // check if date is not later than today
     if (new Date(date) > today){

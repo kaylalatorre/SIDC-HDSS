@@ -305,16 +305,6 @@ function removeActivityRow(currRow){
     table.deleteRow(rowIndex);
 }
 
-function removeActivityFormRow(currRow){
-
-    var row = currRow.parentNode.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
-
-    var table = document.getElementById('activity-form-table');
-    table.deleteRow(rowIndex);
-}
-
 /**
 *   - Appends new activity row to activity table
 *   

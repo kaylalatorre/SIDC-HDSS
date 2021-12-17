@@ -1582,13 +1582,17 @@ def approveActivityForm(request, activityFormID):
         print(request.POST)
 
         # update activity form fields for user approvals
-        # is_noted for asst. manager
-        if request.POST.get("is_noted") == 'true' :
-            activity_form.is_noted = True
+            # is_checked for live op
+        if request.POST.get("is_checked") == 'true' :
+            activity_form.is_checked = True
 
-            if request.user.groups.all()[0].name == "Assistant Manager":
-                activity_form.act_asm_id = request.user.id
-        
+            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+                activity_form.act_liveop_id = request.user.id
+
+                # NOTIFY USER (EXTENSION VETERINARIAN) - An Activity Form has been sent for approval or is pending for approval
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Livestock Operation Specialist
+    
         # is_reported for ext vet
         elif request.POST.get("is_reported") == 'true' :
             activity_form.is_reported = True
@@ -1596,12 +1600,20 @@ def approveActivityForm(request, activityFormID):
             if request.user.groups.all()[0].name == "Extension Veterinarian":
                 activity_form.act_extvet_id = request.user.id
 
-        # is_checked for live op
-        elif request.POST.get("is_checked") == 'true' :
-            activity_form.is_checked = True
+                # NOTIFY USER (ASSISTANT MANAGER) - An Activity Form has been sent for approval or is pending for approval
 
-            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-                activity_form.act_liveop_id = request.user.id
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Extension Veterinarian
+
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'true' :
+            activity_form.is_noted = True
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                activity_form.act_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Assistant Manager
+
         
         activity_form.save()
 
@@ -1616,6 +1628,7 @@ def approveActivityForm(request, activityFormID):
 
             activity.save()
     
+
         messages.success(request, "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
@@ -1675,8 +1688,7 @@ def rejectActivityForm(request, activityFormID):
             activity.save()
 
 
-            # create activities and connect to created activity form (FK)
-    
+        # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been rejected by <user>
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
@@ -1733,7 +1745,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
         
         print("TEST LOG activityList: " + str(activityList))
 
-        # create instance of Activity Form model
+        # reset approval status of activity form
         activity_form.is_checked = None
         activity_form.is_reported = None
         activity_form.is_noted = None
@@ -1755,7 +1767,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
                 time_departure = act['time_departure'],
                 description = act['description'],
                 remarks = act['remarks'],
-                # is_approved = None
                 activity_form_id = activity_form.id
             )
 
@@ -1763,7 +1774,8 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
 
             x += 1
         
-        
+
+        # NOTIFY USER (LIVESTOCK OPERATION SPECIALIST) - An Activity Form has been resubmitted by Field Technician; needs approval
         messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been resubmitted."}, status=200)
 
@@ -1851,9 +1863,9 @@ def addActivity(request, farmID):
 
                 x += 1
             
-            
+
+            # NOTIFY USER (LIVESTOCK OPERATION SPECIALIST) - New Activity Form has been submitted by Field Technician OR New Activity Form needs approval
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
-            
             return redirect('/biosecurity/' + str(farmID))
             
         else:
