@@ -1497,20 +1497,22 @@ def selectedActivityForm(request, activityFormID, activityDate):
 
     # set status of activity form
     if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-        if actFormQuery["is_reported"] == True :
+        if actFormQuery["is_checked"] == True :
             status = 'Approved'
-        elif actFormQuery["is_reported"] == False :
+        elif actFormQuery["is_checked"] == False :
             status = 'Rejected'
-        elif actFormQuery["is_reported"] == None :
+        elif actFormQuery["is_checked"] == None :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Extension Veterinarian":
-        if actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+        if actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
             status = 'Approved'
-        elif actFormQuery["is_checked"] == False and actFormQuery["is_reported"] == True :
+        elif actFormQuery["is_reported"] == False and actFormQuery["is_checked"] == True :
             status = 'Rejected'
-        elif actFormQuery["is_checked"] == None and actFormQuery["is_reported"] == True :
+        elif actFormQuery["is_reported"] == None and actFormQuery["is_checked"] == True :
             status = 'Pending'
+        else : 
+            status = ''
 
     elif request.user.groups.all()[0].name == "Assistant Manager":
         if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
@@ -1519,13 +1521,16 @@ def selectedActivityForm(request, activityFormID, activityDate):
             status = 'Rejected'
         elif actFormQuery["is_noted"] == None and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True : 
             status = 'Pending'
+        else : 
+            status = ''
     
     elif request.user.groups.all()[0].name == "Field Technician":
         if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
             status = 'Approved'
         elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == False or actFormQuery["is_reported"] == False :
             status = 'Rejected'
-        elif actFormQuery["is_noted"] == None or actFormQuery["is_checked"] == None or actFormQuery["is_reported"] == None : 
+        else :
+        # elif actFormQuery["is_noted"] == None or actFormQuery["is_checked"] == None or actFormQuery["is_reported"] == None : 
             status = 'Pending'
 
     # get all activities under activity form

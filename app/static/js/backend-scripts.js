@@ -781,7 +781,7 @@ function saveActivity(actID) {
     var checkTrue = 2;
     var today = new Date(); // date today
     var date = document.getElementById("input-date").value;
-    var type = document.getElementById("input-type").value;
+    var trip_type = document.getElementById("input-type").value;
     var departure = document.getElementById("input-departure").value;
     var arrival = document.getElementById("input-arrival").value;
     var description = document.getElementById("input-description").value;
@@ -804,9 +804,9 @@ function saveActivity(actID) {
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
+            url: '/save-activity/' + farmID + '/' + activityID,
             data: {"date" : date,
-                    "trip_type" : type,
+                    "trip_type" : trip_type,
                     "time_departure" : departure,
                     "time_arrival" : arrival,
                     "description" : description,
@@ -840,7 +840,7 @@ function saveFormActivity(actID, farmID) {
     var checkTrue = 2;
     var today = new Date(); // date today
     var date = document.getElementById("input-date").value;
-    var type = document.getElementById("input-type").value;
+    var trip_type = document.getElementById("input-type").value;
     var departure = document.getElementById("input-departure").value;
     var arrival = document.getElementById("input-arrival").value;
     var description = document.getElementById("input-description").value;
@@ -863,9 +863,9 @@ function saveFormActivity(actID, farmID) {
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
+            url: '/save-activity/' + farmID + '/' + activityID,
             data: {"date" : date,
-                    "trip_type" : type,
+                    "trip_type" : trip_type,
                     "time_departure" : departure,
                     "time_arrival" : arrival,
                     "description" : description,

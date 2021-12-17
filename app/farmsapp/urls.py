@@ -41,7 +41,7 @@ urlpatterns = [
 
     # technician - biosecurity activity
     path('add-activity/<str:farmID>', views.addActivity, name="addActivity"),
-    path('biosecurity/<str:farmID>/save-activity/<str:activityID>', views.saveActivity, name="saveActivity"),
+    path('save-activity/<str:farmID>/save-activity/<str:activityID>', views.saveActivity, name="saveActivity"),
     path('biosecurity/<str:farmID>/delete-activity/<str:activityID>', views.deleteActivity, name="deleteActivity"),
 
     # announcements
