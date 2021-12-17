@@ -1898,11 +1898,11 @@ def saveActivity(request, farmID, activityID):
         time_arrival = request.POST.get("time_arrival")
         description = request.POST.get("description")
         remarks = request.POST.get("remarks")
-        print("DATA COLLECTED: " + str(date) + " - " + str(trip_type) + " - " + str(time_arrival) + " to " + str(time_departure) )
+        # print("DATA COLLECTED: " + str(date) + " - " + str(trip_type) + " - " + str(time_arrival) + " to " + str(time_departure) )
 
         # get activity to be updated
         activity = Activity.objects.filter(id=activityID).first()
-        print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
+        # print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
 
         # assign new values
         activity.date = date
@@ -1913,20 +1913,19 @@ def saveActivity(request, farmID, activityID):
         activity.remarks = remarks
         activity.last_updated = dateToday
         
-        # activity.save()
-        print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
+        activity.save()
+        # print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
         messages.success(request, "Activity has been updated.", extra_tags='update-activity')
 
         return JsonResponse({"success": "Activity has been updated."}, status=200)
 
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
-def deleteActivity(request, farmID, activityID):
+def deleteActivity(request, activityID):
     """
     - Delete selected activity under current farm
     
     activityID - selected activityID passed as parameter
-    farmID - selected farmID passed as parameter
     """
     
     if request.method == 'POST':

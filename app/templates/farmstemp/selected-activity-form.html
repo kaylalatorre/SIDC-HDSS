@@ -125,11 +125,11 @@
                 <tr id="{{ act.id }}" value="{{ act.id }}">
                     <td data-label="Date">
                         <p class="activity-data act-date">{{act.date}}</p>
-                        <input id="input-date" type="date" aria-label="Date" class="form-control activity-input" value="{{act.format_date}}">
+                        <input type="date" aria-label="Date" class="input-date form-control activity-input" value="{{act.format_date}}">
                     </td>
                     <td data-label="Trip Type">
                         <p class="activity-data act-trip-type">{{act.trip_type}}</p>
-                        <select id="input-type" class="form-select activity-input" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
+                        <select class="input-type form-select activity-input" style="margin-bottom: 0;" placeholder="{{act.trip_type}}">
                         
                         {% if act.trip_type == 'Delivery of Feeds' %}
                             <option selected value>Delivery of Feeds</option>
@@ -203,23 +203,23 @@
                             <p class="activity-data act-arrival">{{act.time_arrival}}</p>
                             <p class="activity-data flex-item act-departure">{{act.time_departure}}</p></div>
                         <div class="input-group">
-                        <input type="time" id="input-arrival" aria-label="Arrival Time" value="{{act.format_arrival}}" class="form-control activity-input">
-                        <input type="time" id="input-departure" aria-label="Arrival Time" value="{{act.format_departure}}" class="form-control activity-input"></div>
+                        <input type="time" aria-label="Arrival Time" value="{{act.format_arrival}}" class="input-arrival form-control activity-input">
+                        <input type="time" aria-label="Arrival Time" value="{{act.format_departure}}" class="input-departure form-control activity-input"></div>
                     </td>
                     <td data-label="Description">
                         <p class="activity-data act-description">{{act.description}}</p>
-                        <input type="text" id="input-description"  aria-label="Description" class="form-control activity-input" value="{{act.description}}">
+                        <input type="text" aria-label="Description" class="input-description form-control activity-input" value="{{act.description}}">
                     </td>
                     <td data-label="Remarks">
                         <p class="activity-data act-remarks">{{act.remarks}}</p>
-                        <input type="text" id="input-remarks" aria-label="Remarks" class="form-control activity-input" value="{{act.remarks}}">
+                        <input type="text" aria-label="Remarks" class="input-remarks form-control activity-input" value="{{act.remarks}}">
                     </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button name="editActBtn" class="secondary-btn activity-data" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="editActivity(this)">Edit</button>
-                            <button id="remove-activity-row" onclick="removeActivityFormRow(this)" type="button" name="deleteActBtn" class="secondary-btn-red activity-data">Delete</button>
+                            <button id="remove-activity-row" value="{{ act.id }}" onclick="deleteActivity(this)" type="button" name="deleteActBtn" class="secondary-btn-red activity-data">Delete</button>
 
-                            <button name="saveActBtn" class="secondary-btn activity-input" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveFormActivity(this, '{{ farm.id }}')">Save</button>
+                            <button name="saveActBtn" class="secondary-btn activity-input" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveActivity(this, '{{ farm.id }}')">Save</button>
                             <button name="cancelActBtn" class="secondary-btn-red activity-input" type="button" value="{{ act.id }}" onclick="cancelActivity(this)">Cancel</button>
                         </div>
                     </td>

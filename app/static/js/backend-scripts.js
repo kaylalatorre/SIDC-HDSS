@@ -654,31 +654,28 @@ $('#rejectChecked.primary-btn-red').on('click', function(){
 });
 
 /**
-*   - Deletes selected activity row from database.
+*   - Deletes selected activity row from database
 *   
 *   actID = button value (carries ID of selected activity)
 */
 function deleteActivity(actID) {
 
     var activityID = $(actID).val(); 
-    console.log(activityID)
+    console.log("Activity ID: " + activityID);
 
-    var farmID = $("#farm-code option:selected").val();
-    console.log(farmID)
-    
     if (confirm("Delete selected activity?")){
         ajaxCSRF();
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/delete-activity/' + activityID,
+            url: '/delete-activity/' + activityID,
 
             success: function(response){
                 if (response.status == 200){
                     console.log(response.responseJSON.success)
                 }
 
-                window.location.replace("/biosecurity/" + farmID);
+                location.reload(true);
             },
             error: function (res){
                 console.log(res.responseJSON.error)
@@ -767,7 +764,7 @@ function cancelActivity(actID) {
 *   actID = button value (carries ID of selected activity)
 *   farmID = id value of farm activities are connected to   
 */
-function saveFormActivity(actID, farmID) {
+function saveActivity(actID, farmID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex;
@@ -780,59 +777,66 @@ function saveFormActivity(actID, farmID) {
 
     var checkTrue = 2;
     var today = new Date(); // date today
-    var date = document.getElementById("input-date").value;
-    // var trip_type = document.getElementById("input-type").value;
-    var trip_type = $('#input-type option:selected').text()
-    var departure = document.getElementById("input-departure").value;
-    var arrival = document.getElementById("input-arrival").value;
-    var description = document.getElementById("input-description").value;
-    var remarks = document.getElementById("input-remarks").value;
+    var date = row.getElementsByClassName("activity-input")[0].value;
+    var tripVar = row.getElementsByClassName("activity-input")[1];
+    var trip_type = tripVar.options[tripVar.selectedIndex].text;
+    var arrival = row.getElementsByClassName("activity-input")[2].value;
+    var departure = row.getElementsByClassName("activity-input")[3].value;
+    var description = row.getElementsByClassName("activity-input")[4].value;
+    var remarks = row.getElementsByClassName("activity-input")[5].value;
 
-    console.log(date);
-    console.log(trip_type);
-    console.log(departure);
-    console.log(arrival);
-    console.log(description);
-    console.log(remarks);
+    // var date = row.getElementsByClassName("input-date")[0].value;
+    // var trip_type = row.getElementsByClassName("input-type")[0];
+    // var departure = row.getElementsByClassName("input-departure")[0].value;
+    // var arrival = row.getElementsByClassName("input-arrival")[0].value;
+    // var description = row.getElementsByClassName("input-description")[0].value;
+    // var remarks = row.getElementsByClassName("input-remarks")[0].value;
 
+    // console.log(date);
+    // console.log(tripVar.options[tripVar.selectedIndex].text)
+    // console.log(trip_type);
+    // console.log(arrival);
+    // console.log(departure);
+    // console.log(description);
+    // console.log(remarks);
 
     // check if date is not later than today
     if (new Date(date) > today){
         checkTrue -= 1;
         console.log("Date should not be later than today.");
-    };
+    }
 
     // check if arrival is after departure
     if (arrival > departure){
         checkTrue -= 1;
         console.log("Departure time should be after arrival time.");
-    };
+    }
 
-    // if(checkTrue == 2){
-    //     ajaxCSRF();
+    if(checkTrue == 2){
+        ajaxCSRF();
 
-    //     $.ajax({
-    //         type: 'POST',
-    //         url: '/save-activity/' + farmID + '/' + activityID,
-    //         data: {"date" : date,
-    //                 "trip_type" : trip_type,
-    //                 "time_departure" : departure,
-    //                 "time_arrival" : arrival,
-    //                 "description" : description,
-    //                 "remarks" : remarks},
+        $.ajax({
+            type: 'POST',
+            url: '/save-activity/' + farmID + '/' + activityID,
+            data: {"date" : date,
+                    "trip_type" : trip_type,
+                    "time_arrival" : arrival,
+                    "time_departure" : departure,
+                    "description" : description,
+                    "remarks" : remarks},
 
-    //         success: function(response){
-    //             if (response.status == 200){
-    //                 console.log(response.responseJSON.success)
-    //             }
+            success: function(response){
+                if (response.status == 200){
+                    console.log(response.responseJSON.success)
+                }
 
-    //             location.reload(true);
-    //         },
-    //         error: function (res){
-    //             console.log(res.responseJSON.error)
-    //         }
-    //     })
-    // }
+                location.reload(true);
+            },
+            error: function (res){
+                console.log(res.responseJSON.error)
+            }
+        })
+    }
 }
 
 /**
