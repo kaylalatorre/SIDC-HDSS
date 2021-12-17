@@ -1096,3 +1096,24 @@ $('.symptomsSave').on('click', function () {
         });
     }
 });
+
+function addCase(){
+
+    // REFERENCE: https://github.com/kaylalatorre/thevahubapp/blob/main/assets/js/scripts.js
+
+    // get array of symptoms list based on HTML class (input check tag)
+    let checkedArr = [];
+    checkedArr = $(".check-symp");
+    console.log(checkedArr);
+
+    for(var i=0; i<checkedArr.length; i++){
+        var sCheck = checkedArr[i].prop('checked');
+        console.log(sCheck);
+    }
+
+    // url for add-incident-case
+
+    console.log("in addCase()/n/r");
+
+
+}
