@@ -1308,6 +1308,11 @@ def formsApproval(request):
     approvedList = []
     rejectedList = []
     pendingList = []
+    # print(request.user)
+
+    loggedTech = User.objects.filter(username=request.user).annotate(
+        name = Concat('first_name', Value(' '), 'last_name'),
+        ).values("name").first()
 
     for act in actQuery:       
         getTech = User.objects.filter(id=act["act_tech"]).annotate(
@@ -1436,44 +1441,47 @@ def formsApproval(request):
                 pendingList.append(pending)
 
         elif request.user.groups.all()[0].name == "Field Technician":
-            if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Approved'
+                
+            if getTech["name"] == loggedTech["name"]:
 
-                # pass into object and append to list 
-                approved = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
+                if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Approved'
 
-                approvedList.append(approved)
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
 
-            elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
-                status = 'Rejected'
+                    approvedList.append(approved)
 
-                # pass into object and append to list 
-                rejected = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
+                elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
+                    status = 'Rejected'
 
-                rejectedList.append(rejected)
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
 
-            elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
-                status = 'Pending'
+                    rejectedList.append(rejected)
 
-                # pass into object and append to list 
-                pending = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
+                elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
+                    status = 'Pending'
 
-                pendingList.append(pending)
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    pendingList.append(pending)
 
     return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList, 'rejected' : rejectedList, 'pending' : pendingList })
 
@@ -1511,18 +1519,14 @@ def selectedActivityForm(request, activityFormID, activityDate):
             status = 'Rejected'
         elif actFormQuery["is_reported"] == None and actFormQuery["is_checked"] == True :
             status = 'Pending'
-        else : 
-            status = ''
 
     elif request.user.groups.all()[0].name == "Assistant Manager":
         if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
             status = 'Approved'
-        elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+        elif actFormQuery["is_noted"] == False and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
             status = 'Rejected'
         elif actFormQuery["is_noted"] == None and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True : 
             status = 'Pending'
-        else : 
-            status = ''
     
     elif request.user.groups.all()[0].name == "Field Technician":
         if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
@@ -1888,16 +1892,17 @@ def saveActivity(request, farmID, activityID):
         print("TEST LOG: Edit Activity is a POST Method")
         
         # collect data from inputs
-        date = request.POST.get("date", None)
-        trip_type = request.POST.get("trip_type", "Other")
-        time_departure = request.POST.get("time_departure", None)
-        time_arrival = request.POST.get("time_arrival", None)
-        description = request.POST.get("description", None)
-        remarks = request.POST.get("remarks", None)
+        date = request.POST.get("date")
+        trip_type = request.POST.get("trip_type")
+        time_departure = request.POST.get("time_departure")
+        time_arrival = request.POST.get("time_arrival")
+        description = request.POST.get("description")
+        remarks = request.POST.get("remarks")
+        print("DATA COLLECTED: " + str(date) + " - " + str(trip_type) + " - " + str(time_arrival) + " to " + str(time_departure) )
 
         # get activity to be updated
-        activity = Activity.objects.get(pk=activityID)
-        print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+        activity = Activity.objects.filter(id=activityID).first()
+        print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
 
         # assign new values
         activity.date = date
@@ -1908,8 +1913,8 @@ def saveActivity(request, farmID, activityID):
         activity.remarks = remarks
         activity.last_updated = dateToday
         
-        activity.save()
-        print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+        # activity.save()
+        print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
         messages.success(request, "Activity has been updated.", extra_tags='update-activity')
 
         return JsonResponse({"success": "Activity has been updated."}, status=200)

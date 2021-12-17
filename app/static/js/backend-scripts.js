@@ -705,10 +705,10 @@ function editActivity(actID) {
     console.log("Activity ID: " + activityID);
 
     var toShow = row.getElementsByClassName("activity-input");
-    console.log(toShow.length);
+    // console.log(toShow.length);
    
     var toHide = row.getElementsByClassName("activity-data");
-    console.log(toHide.length);
+    // console.log(toHide.length);
     for(var i = 0; i < toHide.length; i++){
         // show displayed data of current row
         toHide[i].style.display = "none";
@@ -764,125 +764,75 @@ function cancelActivity(actID) {
 *   - Check if date input is not later than today
 *   - Check if arrival time is after departure time
 *
-*   actID = button value (carries ID of selected activity)   
+*   actID = button value (carries ID of selected activity)
+*   farmID = id value of farm activities are connected to   
 */
-function saveActivity(actID) {
-
-    var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1
-    console.log("Row ID: " + rowIndex);
-
-    var activityID = $(actID).val(); 
-    console.log("Activity ID: " + activityID);
-
-    var farmID = $("#farm-code option:selected").val();
-    console.log(farmID)
-
-    var checkTrue = 2;
-    var today = new Date(); // date today
-    var date = document.getElementById("input-date").value;
-    var trip_type = document.getElementById("input-type").value;
-    var departure = document.getElementById("input-departure").value;
-    var arrival = document.getElementById("input-arrival").value;
-    var description = document.getElementById("input-description").value;
-    var remarks = document.getElementById("input-remarks").value;
-
-    // check if date is not later than today
-    if (new Date(date) > today){
-        checkTrue -= 1;
-        console.log("Date should not be later than today.");
-    }
-
-    // check if arrival is after departure
-    if (arrival > departure){
-        checkTrue -= 1;
-        console.log("Departure time should be after arrival time.");
-    }
-
-    if(checkTrue == 2){
-        ajaxCSRF();
-
-        $.ajax({
-            type: 'POST',
-            url: '/save-activity/' + farmID + '/' + activityID,
-            data: {"date" : date,
-                    "trip_type" : trip_type,
-                    "time_departure" : departure,
-                    "time_arrival" : arrival,
-                    "description" : description,
-                    "remarks" : remarks},
-
-            success: function(response){
-                if (response.status == 200){
-                    console.log(response.responseJSON.success)
-                }
-
-                location.reload(true);
-            },
-            error: function (res){
-                console.log(res.responseJSON.error)
-            }
-        })
-    }
-}
-
 function saveFormActivity(actID, farmID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1
+    var rowIndex = row.rowIndex;
     console.log("Row ID: " + rowIndex);
 
     var activityID = $(actID).val(); 
     console.log("Activity ID: " + activityID);
 
-    console.log(farmID)
+    console.log("Farm ID: " + farmID)
 
     var checkTrue = 2;
     var today = new Date(); // date today
     var date = document.getElementById("input-date").value;
-    var trip_type = document.getElementById("input-type").value;
+    // var trip_type = document.getElementById("input-type").value;
+    var trip_type = $('#input-type option:selected').text()
     var departure = document.getElementById("input-departure").value;
     var arrival = document.getElementById("input-arrival").value;
     var description = document.getElementById("input-description").value;
     var remarks = document.getElementById("input-remarks").value;
 
+    console.log(date);
+    console.log(trip_type);
+    console.log(departure);
+    console.log(arrival);
+    console.log(description);
+    console.log(remarks);
+
+
     // check if date is not later than today
     if (new Date(date) > today){
         checkTrue -= 1;
         console.log("Date should not be later than today.");
-    }
+    };
 
     // check if arrival is after departure
     if (arrival > departure){
         checkTrue -= 1;
         console.log("Departure time should be after arrival time.");
-    }
+    };
 
-    if(checkTrue == 2){
-        ajaxCSRF();
+    // if(checkTrue == 2){
+    //     ajaxCSRF();
 
-        $.ajax({
-            type: 'POST',
-            url: '/save-activity/' + farmID + '/' + activityID,
-            data: {"date" : date,
-                    "trip_type" : trip_type,
-                    "time_departure" : departure,
-                    "time_arrival" : arrival,
-                    "description" : description,
-                    "remarks" : remarks},
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: '/save-activity/' + farmID + '/' + activityID,
+    //         data: {"date" : date,
+    //                 "trip_type" : trip_type,
+    //                 "time_departure" : departure,
+    //                 "time_arrival" : arrival,
+    //                 "description" : description,
+    //                 "remarks" : remarks},
 
-            success: function(response){
-                if (response.status == 200){
-                    console.log(response.responseJSON.success)
-                }
+    //         success: function(response){
+    //             if (response.status == 200){
+    //                 console.log(response.responseJSON.success)
+    //             }
 
-                location.reload(true);
-            },
-            error: function (res){
-                console.log(res.responseJSON.error)
-            }
-        })
-    }
+    //             location.reload(true);
+    //         },
+    //         error: function (res){
+    //             console.log(res.responseJSON.error)
+    //         }
+    //     })
+    // }
 }
 
 /**
