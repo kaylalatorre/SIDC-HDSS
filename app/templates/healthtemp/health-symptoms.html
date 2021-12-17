@@ -10,6 +10,7 @@
 <div class="table-container main-div">
     <h1 class="heading">Hogs Health & Symptoms</h1>
     <div class="box-style">
+        {% if farmList|length > 0 %}
         <table class="table" id="mainTableid">
             <thead>
                 <tr>
@@ -26,6 +27,7 @@
             </thead>
             <tbody>
                 <!-- Data -->
+            
                 {% for farm in farmList %}
                 <tr>
                     <td data-label="Farm Code">{{ farm.code }}</td>
@@ -40,9 +42,14 @@
                         <button class="secondary-btn" id="view-HealthSymptoms" onclick="viewHealthSymptoms(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>
                 </tr>    
-                {% endfor %}            
+                {% endfor %}          
             </tbody>            
         </table>
+        {% else %}
+        <div>
+            <p> No farms to display. </p>
+        </div>
+        {% endif %}  
     </div>
 </div>
 {% endblock section %}

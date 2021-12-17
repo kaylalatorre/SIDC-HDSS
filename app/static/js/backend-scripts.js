@@ -933,19 +933,38 @@ function viewHealthSymptoms(farmHTML) {
     }
 }
 /**
-*   - Passes actDate and change is_approve status of activities
+*   - Approves all activities under selected activity form
 *   
-*   actDate = date_added of all activities
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
 */
-function approveActivity(actDate) {
-    // console.log(actDate)
+function approveActivity(actFormID, userType) {
+    // console.log(actFormID);
+    // console.log(userType);
+
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Assistant Manager"){
+        is_noted = true;
+    }
+    else if (userType == "Extension Veterinarian"){
+        is_reported = true;   
+    }
+    else { // if (userType == "Livestock Operation Specialist"){
+        is_checked = true;
+    }
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/approve-activity-form/' + actDate,
-        data: {"date_added" : actDate},
+        url: '/approve-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_noted" : is_noted,
+                "is_reported" : is_reported,
+                "is_checked" : is_checked },
 
         success: function(response){
             if (response.status == 200){
@@ -961,19 +980,38 @@ function approveActivity(actDate) {
 }
 
 /**
-*   - Return activities to farm/technician
+*   - Rejects all activities under selected activity form
 *   
-*   actDate = date_added of all activities
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
 */
-function rejectActivity(actDate) {
-    // console.log(actDate)
+function rejectActivity(actFormID, userType) {
+    // console.log(actFormID);
+    // console.log(userType);
+
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Assistant Manager"){
+        is_noted = false;
+    }
+    else if (userType == "Extension Veterinarian"){
+        is_reported = false;   
+    }
+    else { // if (userType == "Livestock Operation Specialist"){
+        is_checked = false;
+    }
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/reject-activity-form/' + actDate,
-        data: {"date_added" : actDate},
+        url: '/reject-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_noted" : is_noted,
+                "is_reported" : is_reported,
+                "is_checked" : is_checked },
 
         success: function(response){
             if (response.status == 200){
@@ -1016,8 +1054,8 @@ function rejectActivity(actDate) {
  function editRepStatus(incidID){
 
     // Get selected report_status in dropdown
-    var selectedStat = $("#dropdown-repstatus option:selected").val();
-    var currStat = $("#hidden-status").val();
+    var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
+    var currStat = $("#hidden-status-" + incidID).val();
 
     if (selectedStat !== currStat){
         ajaxCSRF();
@@ -1034,15 +1072,16 @@ function rejectActivity(actDate) {
                     var updatedStat = response.updated_status;
                     // alert("updatedStat -- " + updatedStat);
                     
-                    setSelectedValue("dropdown-repstatus", updatedStat);
+                    setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
 
                     // update value of hidden input tag
-                    $("#hidden-status").val(updatedStat);
+                    $("#hidden-status-" + incidID).val(updatedStat);
 
                     console.log("Status for incident ID [" + incidID + "] has been updated.");                    
                 } 
                 else {
-                    alert("ERROR [" + response.status_code + "]: " + response.error);
+                    // alert("ERROR [" + response.status_code + "]: " + response.error);
+                    console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);
                 }
 

@@ -93,18 +93,24 @@ def login(request):
 def home_view(request):
     print("TEST LOG: in Home view/n")
 
-    userGroup = request.user.groups.all()[0].name
+    if request.user.is_authenticated :
+        userGroup = request.user.groups.all()[0].name
 
-    if userGroup == "Assistant Manager":
-        debug("User is an Assistant Manager. Render dashboard.")
-        farmStats = dashboard_view(request)
-        return render(request, 'home.html', {"farmStats": farmStats})
-    
-    elif userGroup == "Field Technician":
-        debug("User is a Field Technician. Render tech farms.")
-        tech_farms = techFarms(request)
+        if userGroup == "Assistant Manager":
+            debug("User is an Assistant Manager. Render dashboard.")
+            farmStats = dashboard_view(request)
+            return render(request, 'home.html', {"farmStats": farmStats})
+        
+        elif userGroup == "Field Technician":
+            debug("User is a Field Technician. Render tech farms.")
+            tech_farms = techFarms(request)
 
-        return render(request, 'home.html', { "techFarms": tech_farms })
+            return render(request, 'home.html', { "techFarms": tech_farms })
+        
+    else :
+        # redirect to login page if user is not logged in
+        return render(request, 'login.html', {})
+
     
     return render(request, 'home.html', {})
 

@@ -31,6 +31,7 @@
         </div>
     </div>
     <div class="box-style">
+        {% if farmList|length > 0 %}
         <table class="table" id="hog_mainTableid">
             <thead>
                 <tr>
@@ -63,9 +64,14 @@
                         <button class="secondary-btn" id="view-HogsHealth" onclick="viewHogsHealth(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>
                 </tr>
-                {% endfor %}                
+                {% endfor %}                 
             </tbody>            
         </table>
+        {% else %}
+            <div>
+                <p> No farms to display. </p>
+            </div>
+        {% endif %}   
     </div>
 </div>
 {% endblock section %}
