@@ -1687,7 +1687,7 @@ def memAnnouncements(request):
     """
     Display approved and unapproved announcements
     """
-
+    
     announcements = Mem_Announcement.objects.select_related("author").annotate(
         name = Concat('author__first_name', Value(' '), 'author__last_name')
     ).values(
@@ -1697,12 +1697,20 @@ def memAnnouncements(request):
         "category",
         "recip_area",
         "name"
-    )
-    context = {
-        "approved": announcements.filter(is_approved = True).order_by("timestamp"),
-        "rejected": announcements.filter(is_approved = False).order_by("timestamp"),
-        "unapproved": announcements.filter(is_approved = None).order_by("timestamp"),
-    }
+    ).order_by("timestamp")
+
+    if request.user.groups.all()[0].name == "Assistant Manager":
+        context = {
+            "approved": announcements.filter(is_approved = True),
+            "rejected": announcements.filter(is_approved = False),
+            "unapproved": announcements.filter(is_approved = None),
+        }
+    else:
+        context = {
+            "approved": announcements.filter(is_approved = True),
+            "rejected": announcements.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']),
+            "unapproved": announcements.filter(is_approved = None).filter(author_id = request.session['_auth_user_id']),
+        }
     return render(request, 'farmstemp/mem-announce.html', context)
 
 def memAnnouncements_Approval(request, decision):
