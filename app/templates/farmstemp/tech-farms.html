@@ -39,13 +39,13 @@
         
             {% if tFarms.areaCount == 0 %}
                 <label style="font-weight: 600;">No Areas Assigned.</label>
-                <p class="flex-item"> </p>
+                <p> </p>
             {% elif tFarms.areaCount == 1 %}
                 <label style="font-weight: 600;">Area Assigned:</label>
-                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}}{% endfor %}</p>
+                <p>{% for area in tFarms.areaList %} {{area.area_name}}{% endfor %}</p>
             {% else %}
                 <label style="font-weight: 600;">Areas Assigned:</label>
-                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}} {% endfor %}</p>
+                <p>{% for area in tFarms.areaList %} {{area.area_name}} {% endfor %}</p>
             {% endif %}
         
         </div>
@@ -86,7 +86,7 @@
                     <td data-label="Raiser">{{techFarm.raiser}}</td>
                     <td data-label="Contact No.">{{techFarm.contact}}</td>
                     <td data-label="Address">{{techFarm.address}}</td>
-                    <td data-label="Last Update" class="farm-last-update" value="{{techFarm.updated}}">{{techFarm.updated|date:'N j, Y'}}</td>
+                    <td data-label="Last Update" class="farm-last-update">{{techFarm.updated|date:'N j, Y'}}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewTechFarm" onclick="viewTechFarm(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button>
                     </td>

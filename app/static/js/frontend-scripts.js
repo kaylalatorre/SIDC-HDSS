@@ -1,15 +1,39 @@
-function formatDate(date) {
+/**
+ * Helper function to format date objects 
+ * for frontend display.
+ * @param {date} date 
+ * @returns a formatted date YYYY-MM-DD
+ */
+ function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
-        year = d.getFullYear();
-    
+        year = d.getFullYear();   
+
     if (month.length < 2) 
         month = '0' + month;
     if (day.length < 2) 
         day = '0' + day;
 
     return [year, month, day].join('-');
+}
+
+/**
+ * Helper function to get the difference 
+ * between the date passed as param and
+ * the date today
+ * @param {date} date 
+ * @returns difference of two dates
+ */
+function getDiffDays(date) {
+    var today = new Date();
+
+    const diffTime = Math.abs(today - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    // console.log(diffTime + " milliseconds");
+    // console.log(diffDays + " days");
+
+    return diffDays;
 }
 
 /* 
@@ -127,18 +151,22 @@ for(var i = 0; i < rowStatus.length; i++) {
  * - Checks farms last updated more than 7 days ago
  * - Highlights row to red
  */
-let farmRow = document.querySelectorAll('.farm-row');
-for (var i = 0; i < farmRow.length; i++) {
-    let farm = farmRow[i];
-
-    var lastUpdated = farm.querySelector('.farm-last-update');
-    var date = lastUpdated.innerHTML;
-    
-    var newDate = new Date(formatDate(date));
-    console.log(formatDate(date));
-    // console.log(newDate);
-}
-
+ let farmRow = document.querySelectorAll('.farm-row');
+ for (var i = 0; i < farmRow.length; i++) {
+     let farm = farmRow[i];
+ 
+     var lastUpdated = farm.querySelector('.farm-last-update');
+     var date = lastUpdated.innerHTML;
+     
+     var newDate = new Date(formatDate(date));
+         
+     var diffDays = getDiffDays(newDate);
+     if (diffDays > 7) {
+         console.log(lastUpdated.parentElement);
+         lastUpdated.parentElement.classList.add("red");
+     }
+ }
+ 
 /**
  * Toggling view to Member Announcement btn-grp
  */
