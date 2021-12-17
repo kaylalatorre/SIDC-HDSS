@@ -70,7 +70,7 @@
                             <input type="hidden" id="hidden-status-{{incident.id}}" value="{{incident.report_status}}">
 
                             <div class="mb-3">
-                                <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select status" disabled>
+                                <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select" disabled=true>
                                     {% if incident.report_status == 'Active' %}
                                         <option value="Active" class="status" selected>Active</option>
                                     {% else %}
@@ -94,8 +94,8 @@
                         {% if editStat %}
                         <td class="symptoms-btn-grp">
                             <div class="btn-group" style="justify-content: end; padding: 0;">
-                                <button class="secondary-btn symptomsEdit"><span class="material-icons md-18">edit</span>Edit</button>
-                                <button class="secondary-btn symptomsSave"><span class="material-icons md-18">save</span>Save</button>
+                                <button class="secondary-btn symptomsEdit" id="edit-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
+                                <button class="secondary-btn symptomsSave" id="save-{{incident.id}}"><span class="material-icons md-18">save</span>Save</button>
                             </div>
                         </td>
                         {% endif%}
