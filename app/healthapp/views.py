@@ -195,7 +195,7 @@ def selectedHogsHealth(request, farmID):
     total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
     farmObject = {
-        "code":  farmID,
+        "code":  int(farmID),
         "raiser": " ".join((selectFarm["fname"], selectFarm["lname"])),
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
