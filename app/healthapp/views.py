@@ -102,7 +102,7 @@ def hogsHealth(request):
             "ave_currWeight"
             # "is_starterWeight"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
@@ -135,14 +135,14 @@ def hogsHealth(request):
             "ave_currWeight": str(f["ave_currWeight"]),
             # "is_starterWeight": str(f["is_starterWeight"]),
 
-                "mortality_rate": mortality_rate,
-                "total_incidents": total_incidents,
-                "total_active": total_active,
-            }
-            farmsData.append(farmObject)
+            "mortality_rate": mortality_rate,
+            "total_incidents": total_incidents,
+            "total_active": total_active,
+        }
+        farmsData.append(farmObject)
 
-            total_pigs += f["total_pigs"]
-        # debug(farmsData)
+        total_pigs += f["total_pigs"]
+        debug(farmsData)
 
 
         return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
@@ -438,7 +438,7 @@ def selectedHealthSymptoms(request, farmID):
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"farm_code": farmID, "incident_symptomsList": incident_symptomsList,
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"farm_code": int(farmID), "incident_symptomsList": incident_symptomsList,
                                                                         "mortalityList": mortalityList})
 
 
