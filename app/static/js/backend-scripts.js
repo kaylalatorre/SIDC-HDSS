@@ -1061,12 +1061,6 @@ $('.symptomsSave').on('click', function () {
     var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
     var currStat = $("#hidden-status-" + incidID).val();
 
-    // Get dropdown & hidden input tag through DOM selection
-    var dropdownStat = $(this).parent().parent().siblings(":eq(4)").children(":eq(1)").children(":eq(0)");
-    var hiddenStat = $(this).parent().parent().siblings(":eq(4)").children(":eq(0)").val();
-
-
-
     if (selectedStat !== currStat){
         ajaxCSRF();
 
@@ -1081,16 +1075,10 @@ $('.symptomsSave').on('click', function () {
                     var updatedStat = response.updated_status;
                     // alert("updatedStat -- " + updatedStat);
                     
-                    
-                    console.log("dropdownStat -- ");
-                    console.log(dropdownStat);
-                    setSelectedValue($(dropdownStat).attr('id'), updatedStat);
+                    setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
 
                     // update value of hidden input tag
-
                     $("#hidden-status-" + incidID).val(updatedStat);
-                    console.log("hiddenStat --");
-                    console.log($("#hidden-status-" + incidID).val());
 
                     console.log("Status for incident ID [" + incidID + "] has been updated.");                    
                 } 

@@ -260,7 +260,7 @@ def selectedHogsHealth(request, farmID):
     
     # for getting length of Incident records
     total_incidents = incidentQry.count()
-    debug("total_incidents -- " + str(total_incidents))
+    # debug("total_incidents -- " + str(total_incidents))
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, 
                                                                     "incident_symptomsList": incident_symptomsList,
@@ -442,7 +442,10 @@ def selectedHealthSymptoms(request, farmID):
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"farm_code": int(farmID), "incident_symptomsList": incident_symptomsList,
+    # for getting length of Incident records
+    total_incidents = incidentQry.count()
+
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "farm_code": int(farmID), "incident_symptomsList": incident_symptomsList,
                                                                         "mortalityList": mortalityList})
 
 
