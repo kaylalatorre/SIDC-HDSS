@@ -659,7 +659,7 @@ def search_bioChecklist(request, biosecID):
             return JsonResponse({"error": "Invalid biosecurity ID."}, status=400)
             
         else:
-            debug("in search_bioChecklist(): bioID -- " + str(bioID))
+            # debug("in search_bioChecklist(): bioID -- " + str(bioID))
 
             # SELECT id,<checklist fields from EXTERNAL>,<checklist fields from INTERNAL>
             # FROM ExternalBiosec, InternalBiosec 
@@ -891,8 +891,6 @@ def post_addChecklist(request, farmID):
                     messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
                     return redirect('/add-checklist/' + farmID)
 
-                # int(value)
-                # print(list((index, value)))
 
             if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
 
@@ -913,7 +911,7 @@ def post_addChecklist(request, farmID):
                     "fiveh_m_dist"
                 ).first()
 
-                debug("BIOMEASURE: -- " + str(bioMeasure))
+                # debug("BIOMEASURE: -- " + str(bioMeasure))
 
                 # init Biosec and Farm models
                 extBio = ExternalBiosec() 
@@ -958,7 +956,7 @@ def post_addChecklist(request, farmID):
                 # Format time to be passed on message.success
                 ts = extBio.last_updated 
                 df = ts.strftime("%m/%d/%Y, %H:%M")
-                debug(extBio.last_updated)
+                # debug(extBio.last_updated)
                 
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
                 messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
@@ -1918,9 +1916,7 @@ def computeBioscore(farmID, intbioID, extbioID):
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
-    if intbioID is None: # (ERROR) no intbioID passed
-        debug("(ERROR) intbioID is null.")
-    else:
+    if intbioID is not None: 
         # Get Intbio record based in farmID & biosec IDs
         intBio = InternalBiosec.objects.filter(id=intbioID, ref_farm_id=farmID).first()
 
@@ -1983,9 +1979,7 @@ def computeBioscore(farmID, intbioID, extbioID):
 
 
     # (2) EXTERNAL BIOSEC SCORE
-    if extbioID is None: # (ERROR) no extbioID passed
-        debug("(ERROR) extbioID is null.")
-    else:
+    if extbioID is not None:
 
         total_measures = 0
         total_checks = 0
@@ -2079,23 +2073,22 @@ def farmsAssessment(request):
     areaQry = Area.objects.all()
 
     # Get technician name assigned per Farm
-    # Farm > Area > User (tech)
     farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
-    debug("techQry -- " + str(farmQry.query))
+    # debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No farm records found.
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
         return render(request, 'farmstemp/rep-farms-assessment.html', {"isFiltered": isFiltered,'areaList': areaQry,'dateStart': dateToday,'dateEnd': dateToday})
 
-    debug("list for -- Farm > Area > User (tech)")
+    # debug("list for -- Farm > Area > User (tech)")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)    
+    # debug(techList)    
 
 
     # (3) Farm details 
@@ -2117,7 +2110,7 @@ def farmsAssessment(request):
             "intbioID",
             "extbioID"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
@@ -2274,21 +2267,21 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "extbioID"
                 ).order_by("id")
    
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
         return render(request, 'farmstemp/rep-farms-assessment.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
 
-    debug("list for -- Farm > Area > User (tech)")
+    # debug("list for -- Farm > Area > User (tech)")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)  
+    # debug(techList)  
 
     farmsData = []
     total_pigs = 0
@@ -2392,15 +2385,15 @@ def intBiosecurity(request):
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
         return render(request, 'farmstemp/rep-int-biosec.html', {"isFiltered": isFiltered,'areaList': areaQry,'dateStart': dateToday,'dateEnd': dateToday})
 
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)    
+    # debug(techList)    
 
 
     # (3) Farm details
@@ -2427,7 +2420,7 @@ def intBiosecurity(request):
             "intbio_disinfect_prem",
             "intbio_disinfect_vet_supp"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): #(ERROR) No Internal biosecurity records found.
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
@@ -2584,15 +2577,15 @@ def filter_intBiosec(request, startDate, endDate, areaName):
         return render(request, 'farmstemp/rep-int-biosec.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
         
     # format Technician names per Farm
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)   
+    # debug(techList)   
 
     farmsData = []
     ave_intbio = 0
@@ -2667,15 +2660,15 @@ def extBiosecurity(request):
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
         return render(request, 'farmstemp/rep-ext-biosec.html', {"isFiltered": isFiltered,'areaList': areaQry,'dateStart': dateToday,'dateEnd': dateToday})
 
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)    
+    # debug(techList)    
 
 
     # (3) Farm details
@@ -2710,7 +2703,7 @@ def extBiosecurity(request):
             "extbio_prsnl_sanit_hands",
             "extbio_chg_disinfect_daily"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): #(ERROR) No External biosecurity records found.
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
@@ -2883,15 +2876,15 @@ def filter_extBiosec(request, startDate, endDate, areaName):
         return render(request, 'farmstemp/rep-ext-biosec.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
         
     # format Technician names per Farm
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)   
+    # debug(techList)   
 
     farmsData = []
     ave_extbio = 0
