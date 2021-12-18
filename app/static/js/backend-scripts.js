@@ -1041,7 +1041,7 @@ function rejectActivity(actFormID, userType) {
     
         if (option_value == valueToSet){
             option_element.selected = true;
-            // console.log("option selected is -- [" + option_value + "]");
+            console.log("option selected is -- [" + option_value + "]");
         }
     });
 }
@@ -1061,6 +1061,12 @@ $('.symptomsSave').on('click', function () {
     var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
     var currStat = $("#hidden-status-" + incidID).val();
 
+    // Get dropdown & hidden input tag through DOM selection
+    var dropdownStat = $(this).parent().parent().siblings(":eq(4)").children(":eq(1)").children(":eq(0)");
+    var hiddenStat = $(this).parent().parent().siblings(":eq(4)").children(":eq(0)").val();
+
+
+
     if (selectedStat !== currStat){
         ajaxCSRF();
 
@@ -1070,20 +1076,21 @@ $('.symptomsSave').on('click', function () {
             data: {"selectStat": selectedStat}, 
             success: function (response) {
                 
-
                 if (response.status_code === "200"){
                     // update selected rep_status in dropdown acc. to returned db value
                     var updatedStat = response.updated_status;
                     // alert("updatedStat -- " + updatedStat);
                     
-                    // TODO: convert dropdown to DOM selection
-                    var dropdownStat = $(this).parent().parent().siblings(":eq(4):nth-child(2)");
-                    console.log("dropdownStat");
+                    
+                    console.log("dropdownStat -- ");
                     console.log(dropdownStat);
-                    // setSelectedValue(dropdownStat, updatedStat);
+                    setSelectedValue($(dropdownStat).attr('id'), updatedStat);
 
                     // update value of hidden input tag
+
                     $("#hidden-status-" + incidID).val(updatedStat);
+                    console.log("hiddenStat --");
+                    console.log($("#hidden-status-" + incidID).val());
 
                     console.log("Status for incident ID [" + incidID + "] has been updated.");                    
                 } 
