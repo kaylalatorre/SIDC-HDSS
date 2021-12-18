@@ -413,17 +413,11 @@ def addFarm(request):
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
-        # collect non-Django form inputs
-        # farmID = request.POST.get("input-code", None)
-        # print("TEST LOG farmID: " + farmID)
-
         areaName = request.POST.get("input-area", None)
         # print("TEST LOG areaName: " + areaName)
 
         # get ID of selected area
         areaIDQry = Area.objects.filter(area_name=areaName).first()
-        # print("TEST LOG areaIDQry: " + str(areaIDQry))
-
         areaID = areaIDQry.id
         # print("TEST LOG areaID: " + str(areaID))
 
@@ -530,22 +524,15 @@ def addFarm(request):
                     print("TEST LOG: Hog Raiser Form not valid")
                     print(hogRaiserForm.errors)
 
-                    # print(hogRaiserForm.errors.as_text)
-                    # print(hogRaiserForm.non_field_errors().as_text)
-
-                    # formError = str(hogRaiserForm.non_field_errors().as_text)
-                    # print(re.split("\'.*?",formError)[1])
-
-                    # messages.error(request, "Error adding farm. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-farm')
                     messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
 
             else:
                 # find selected raiser id
                 hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
-                # print(str(hogRaiser.values("id")))
 
                 # save raiser ID to farm
                 farm.hog_raiser_id = raiserID
+
 
             # pass data as FKs for farm
             farm.extbio = externalBiosec
@@ -553,11 +540,8 @@ def addFarm(request):
             farm.area_id = areaID
             farm.id = farmID
 
-            # print("TEST LOG farm.area_id: " + str(farm.area_id))
-
             farm.save()
             print("TEST LOG: Added new farm")
-
             messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
 
             # get recently created internal and external biosec IDs and update ref_farm_id
@@ -580,7 +564,6 @@ def addFarm(request):
                 
                 for pigpen in pigpenList:
                     pigpen = pigpenList[x]
-                    # print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
 
                     # create new instance of Pigpen_Measures model
                     pigpen_measure = Pigpen_Measures.objects.create(
@@ -592,10 +575,8 @@ def addFarm(request):
                     
                     # add all num_heads (pigpen measure) for total_pigs (farm)
                     numTotal += int(pigpen_measure.num_heads)
-                    # print(str(pigpen_measure))
 
                     pigpen_measure.save()
-                    # print("TEST LOG: Added new pigpen measure")
 
                     x += 1
                 
@@ -605,8 +586,6 @@ def addFarm(request):
                 farm.total_pigs = numTotal
                 farm.save()
                 
-                # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
-
                 return redirect('/')
 
             else:
@@ -620,7 +599,6 @@ def addFarm(request):
             print(farmForm.errors)
 
             messages.error(request, "Error adding farm. " + str(farmForm.errors), extra_tags='add-farm')
-
      
     else:
         print("TEST LOG: Form is not a POST method")
