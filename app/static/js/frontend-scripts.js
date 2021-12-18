@@ -30,8 +30,6 @@ function getDiffDays(date) {
 
     const diffTime = Math.abs(today - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    // console.log(diffTime + " milliseconds");
-    // console.log(diffDays + " days");
 
     return diffDays;
 }
@@ -348,8 +346,6 @@ function viewActivityForm(activity) {
 }
 
 function viewAnnounce(elem) {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
     id = $(elem).attr('id');
     location.href = "/view-announcement/"+id;
 }
