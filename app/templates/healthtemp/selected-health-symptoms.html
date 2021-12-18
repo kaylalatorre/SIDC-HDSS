@@ -8,6 +8,18 @@
 
 {% block section %}
 
+<!-- TEMP PLACEHOLDER to test Django messages -->
+{% for mssg in messages %}
+    {% if mssg.tags == "add-incidCase" %}
+    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
+        <div class="msg flex-item">{{ mssg }}</div>
+        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+{% endfor %}
+
 <div class="main-div">
     <div class="flex subheading">
         <h1 class="heading flex-item"> <a href="/health-symptoms">Hogs Health & Symptoms </a> > {{ farm_code }} </h1>
@@ -16,7 +28,10 @@
               + Add New
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><a class="dropdown-item" href="/add-case">Incident Case</a></li>
+            <!-- TEST URL redirect w farmID-->
+              <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</a></li>
+
+              <!-- <li><a class="dropdown-item" href="/add-case">Incident Case</a></li> -->
               <li><a class="dropdown-item" href="/add-mortality">Mortality Record</a></li>
             </ul>
         </div>
@@ -30,7 +45,9 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="/add-case">Incident Case</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</a></li>
+
+                  <!-- <li><a class="dropdown-item" href="/add-case">Incident Case</a></li> -->
                   <li><a class="dropdown-item" href="/add-mortality">Mortality Record</a></li>
                 </ul>
             </div>

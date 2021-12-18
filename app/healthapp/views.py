@@ -13,6 +13,7 @@ from farmsapp.models import Farm, Area, Hog_Raiser, Farm_Weight, Mortality, Hog_
 from django.db.models.expressions import F, Value
 from django.db.models import Q
 # from django.forms.formsets import formset_factory
+from django.db import connections
 
 # for date and time fields in Models
 from datetime import date, datetime, timezone, timedelta
@@ -498,8 +499,113 @@ def edit_incidStat(request, incidID):
 
 
 
-def addCase(request):
-    return render(request, 'healthtemp/add-case.html', {})
+def addCase(request, farmID):
+    return render(request, 'healthtemp/add-case.html', {"farmID": farmID})
+
+# (POST) AJAX function for adding a Symptoms list under a Farm
+def post_addCase(request, farmID):
+    print("TEST LOG: in post_addCase/n")
+
+    if request.method == "POST":
+        
+        # Get farmID from URL param and check if farmID exists
+        if Farm.objects.filter(id=farmID).exists():
+
+            debug("in POST addCase /n: farmID -- " + str(farmID))
+            
+            # get num_pigs & symptoms Array from AJAX post 
+            num_pigsAffected = request.POST.get("num_pigsAffected")
+
+            sList = request.POST.getlist("symptomsArr[]")
+            symptomsArr = []
+            for s in sList:
+                if s == "true":
+                    symptomsArr.append(True)
+                else:
+                    symptomsArr.append(False)
+            
+
+            # Array length must be 22 for the fields in Symptoms list.
+            debug("sympArr len(): " + str(len(symptomsArr)))
+            debug("num_pigsAffected: " + str(num_pigsAffected))
+
+            debug(symptomsArr);
+
+            if len(symptomsArr) > 0 and int(num_pigsAffected) > 0: # (SUCCESS) Symptoms list is complete, proceed to add in db
+
+                # init Hog_Symptoms and Farm models
+                incidObj = Hog_Symptoms() 
+                farmQuery = Farm.objects.get(pk=farmID)
+
+                # Put num_pigs, symptoms list into Hog_Symptoms model
+                incidObj.ref_farm           = farmQuery
+                incidObj.num_pigs_affected  = num_pigsAffected
+                incidObj.high_fever         = symptomsArr[0]
+                incidObj.loss_appetite      = symptomsArr[1]
+                incidObj.depression         = symptomsArr[2]
+                incidObj.lethargic          = symptomsArr[3]
+                incidObj.constipation       = symptomsArr[4]
+                incidObj.vomit_diarrhea     = symptomsArr[5]
+                incidObj.colored_pigs       = symptomsArr[6]
+                incidObj.skin_lesions       = symptomsArr[7]
+                incidObj.hemorrhages        = symptomsArr[8]
+                incidObj.abn_breathing      = symptomsArr[9]
+                incidObj.discharge_eyesnose = symptomsArr[10]
+                incidObj.death_isDays       = symptomsArr[11]
+                incidObj.death_isWeek       = symptomsArr[12]
+                incidObj.cough              = symptomsArr[13]
+                incidObj.sneeze             = symptomsArr[14]
+                incidObj.runny_nose         = symptomsArr[15]
+                incidObj.waste              = symptomsArr[16]
+                incidObj.boar_dec_libido    = symptomsArr[17]
+                incidObj.farrow_miscarriage = symptomsArr[18]
+                incidObj.weight_loss        = symptomsArr[19]
+                incidObj.trembling          = symptomsArr[20]
+                incidObj.conjunctivitis     = symptomsArr[21]
+
+                # for updating pk counter of Hog_Symptoms
+                # References: 
+                # - https://stackoverflow.com/questions/9108833/postgres-autoincrement-not-updated-on-explicit-id-inserts
+                # - https://newbedev.com/duplicate-key-value-violates-unique-constraint-detail-key-user-id-1-already-exists-code-example
+                query = "SELECT setval('farmsapp_hog_symptoms_id_seq', (SELECT MAX(id) from farmsapp_hog_symptoms))"
+                cursor = connections['default'].cursor()
+                cursor.execute(query) 
+                row = cursor.fetchone()
+
+                # save data to table
+                incidObj.save()
+                incidObj.date_filed = incidObj.date_updated
+                incidObj.save()
+
+                # Format time to be passed on message.success
+                ts = incidObj.date_filed
+                df = ts.strftime("%m/%d/%Y, %H:%M")
+                debug(incidObj.date_filed)
+                
+
+                debug("(SUCCESS) Incident report added.")
+                # (SUCCESS) Incident has been added. Properly redirect to selected view page
+                messages.success(request, "Incident report made on " + df + " has been successfully added!", extra_tags='add-incidCase')
+                return JsonResponse({"status_code":"200"}, status=200)
+        
+            else:
+                # (ERROR) No selected input/s for Incident Case.
+                debug("ERROR: No selected input/s for Incident Case.")
+                messages.error(request, "No selected input/s for Incident Case.", extra_tags='add-incidCase')
+                return JsonResponse({"error": "No selected input/s for Incident Case.", "status_code":"400"}, status=400)
+        else:
+            # (ERROR) Invalid farmID
+            debug("ERROR: Invalid/None-type farmID from parameter.")
+            messages.error(request, "Farm record not found.", extra_tags='add-incidCase')
+            # return redirect('/selected-health-symptoms'+ farmID)
+            return JsonResponse({"error": "Farm record not found.", "status_code":"400"}, status=400)
+
+    else:
+        # (ERROR) not an AJAX Post request
+        messages.error(request, "No selected input/s for Incident Case.", extra_tags='add-incidCase')
+        # return redirect('/add-case/' + farmID)
+        return JsonResponse({"error": "No selected input/s for Incident Case.", "status_code":"400"}, status=400)
+
 
 def addMortality(request):
     return render(request, 'healthtemp/add-mortality.html', {})

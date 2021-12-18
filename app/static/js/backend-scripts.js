@@ -1096,51 +1096,74 @@ $('.symptomsSave').on('click', function () {
     }
 });
 
+
+/**
+*   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
+*   - Appends selected farm ID to url that will display an empty symptoms checklist.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addSymptomsPage(farmID) {
+
+    var farmID = $(farmID).val(); 
+    console.log(farmID);
+
+    try{
+        url = "/add-case/" + farmID;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
 /** 
  * on-click POST AJAX function for adding an Incident Case.
+ * @param farmID string ID of select Farm record
 */
-function addCase(){
+function addCase(farmID){
 
-    console.log("in addCase() /n/r");
+    // console.log("in addCase() /n/r");
 
     // get no. of pigs affected
     var num_pigs = $(".input-numAffected").val();
-
+    // console.log("num_pigs -- " + num_pigs);
 
     // get symptoms list based on HTML class of input checkbox tag; put in Array
     var symptomsArr = [];
     $(".check-symp").each(function() {
-        console.log($(this).prop('checked'));
+        // console.log($(this).prop('checked'));
         symptomsArr.push($(this).prop('checked'));
     });
     
-    // TEST LOG: for check symptoms array contents
-    console.log("symptomsArr.length -- " + symptomsArr.length);
-    let i, sElem;
-    for(i=0; i<symptomsArr.length; i++){
-        sElem = symptomsArr[i];
-        console.log("index [" +[i]+ "]: " + sElem);
-    }
-    // END TEST LOG
+    // // TEST LOG: for check symptoms array contents
+    // console.log("symptomsArr.length -- " + symptomsArr.length);
+    // let i, sElem;
+    // for(i=0; i<symptomsArr.length; i++){
+    //     sElem = symptomsArr[i];
+    //     console.log("index [" +[i]+ "]: " + sElem);
+    // }
+    // // END TEST LOG
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/add-incident-case', // url for add-incident-case
+        url: '/post-addCase/' + farmID, // url for add-incident-case
         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
         success: function (response) {
             
             if (response.status_code === "200"){
                 // redirect back to select-health-symptoms   
-                // try{
-                //     url = "/add-case/" + farmID;
-                //     console.log(url);
-                //     location.href = url;
-                // }catch (error){
-                //     console.log("Something went wrong. Restarting...");
-                //     location.reload(true);
-                // }              
+                try{
+                    url = "/selected-health-symptoms/" + farmID;
+                    console.log(url);
+                    location.href = url;
+                }catch (error){
+                    console.log("Something went wrong. Restarting...");
+                    location.reload(true);
+                }              
             } 
             else {
                 // alert("ERROR [" + response.status_code + "]: " + response.error);
@@ -1150,7 +1173,7 @@ function addCase(){
 
         },
         error: function (res){
-            console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            console.log("ERROR [" + res.status + "]: " +  res.error);
         }
     }); 
 
