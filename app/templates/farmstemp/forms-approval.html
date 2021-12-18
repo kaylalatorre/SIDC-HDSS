@@ -63,15 +63,9 @@
                 {% load login_extras %}
                 {% if act.prepared_by == user.first_name|addStr:user.last_name %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
-                    <td>{{act.date_added}}</td>
-                    <td>Activities Record</td>
-                    {% if act.status == 'Approved' %}
-                        <td>Approved</td>
-                    {% elif act.status == 'Rejected' %}
-                        <td>Rejected</td>
-                    {% else %}
-                        <td>Pending</td>
-                    {% endif %}    
+                    <td data-label="Date">{{act.date_added}}</td>
+                    <td data-label="Form">Activities Record</td>
+                    <td data-label="Status" class="status">{{act.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>

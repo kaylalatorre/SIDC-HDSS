@@ -21,9 +21,40 @@
             </ul>
         </div>
     </div>
+
+    <div class="flex mobile-subheading">
+        <div class="flex" style="width: 72%">
+            <h1 class="heading flex-item"> <a href="/health-symptoms">Hogs Health & Symptoms </a> > [id] </h1>
+            <div class="dropdown">
+                <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  + Add New
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <li><a class="dropdown-item" href="/add-case">Incident Case</a></li>
+                  <li><a class="dropdown-item" href="/add-mortality">Mortality Record</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <section>
-        <div class="flex">
-            <h2 class="subheading flex-item">Incidents Reported</h2>
+        <div class="flex subheading">
+            <h2 class="flex-item">Incidents Reported</h2>
+            <div class="dropdown">
+                <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Filters
+                </button>
+                <ul class="dropdown-menu" style="padding: 8px;">
+                    <label style="font-weight: 600;">Status</label>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Active" onclick="filterRepStatus()"/>&nbsp;Active</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Pending" onclick="filterRepStatus()"/>&nbsp;Pending</a></li>
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Resolved" onclick="filterRepStatus()"/>&nbsp;Resolved</a></li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <div class="flex mobile-subheading " style="width: 72%">
+            <h2 class="flex-item">Incidents Reported</h2>
             <div class="dropdown">
                 <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Filters
@@ -38,6 +69,7 @@
         </div>
         
         <div class="box-style">
+            {% if incident_symptomsList|length > 0 %}
             <table class="table" id="symptoms-reported">
                 <thead>
                     <tr>
@@ -58,9 +90,9 @@
                         <td data-label="Symptoms Observed">  
                             {% load healthapp_extras %}
                             {% for sKey, sVal in symptoms.items %}
-                            <ul>
+                            <ul class="ul-symptoms">
                                 {% if sVal %}
-                                    <li>{{ sKey|formatField }}</li>
+                                    <li class="li-symptoms">{{ sKey|formatField }}</li>
                                 {% endif %}
                             </ul>
                             {% endfor %}
@@ -70,7 +102,7 @@
                             <input type="hidden" id="hidden-status-{{incident.id}}" value="{{incident.report_status}}">
 
                             <div class="mb-3">
-                                <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select status" disabled>
+                                <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select" disabled=true>
                                     {% if incident.report_status == 'Active' %}
                                         <option value="Active" class="status" selected>Active</option>
                                     {% else %}
@@ -94,8 +126,8 @@
                         {% if editStat %}
                         <td class="symptoms-btn-grp">
                             <div class="btn-group" style="justify-content: end; padding: 0;">
-                                <button class="secondary-btn symptomsEdit"><span class="material-icons md-18">edit</span>Edit</button>
-                                <button class="secondary-btn symptomsSave"><span class="material-icons md-18">save</span>Save</button>
+                                <button class="secondary-btn symptomsEdit" id="edit-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
+                                <button class="secondary-btn symptomsSave" id="save-{{incident.id}}"><span class="material-icons md-18">save</span>Save</button>
                             </div>
                         </td>
                         {% endif%}
@@ -103,11 +135,17 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div>
+                <p>No incidents to display.</p>
+            </div>
+            {% endif %}
         </div>
     </section>
     <section>
         <h2>Mortality Records</h2>
         <div class="box-style">
+            {% if mortalityList|length > 0 %}
             <table class="table" id="mortality-records">
                 <thead>
                     <tr>
@@ -138,6 +176,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div>
+                <p>No mortality records to display.</p>
+            </div>
+            {% endif %}
         </div>
     </section>
 </div>

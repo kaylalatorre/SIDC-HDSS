@@ -4,7 +4,7 @@
  * @param {date} date 
  * @returns a formatted date YYYY-MM-DD
  */
-function formatDate(date) {
+ function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
@@ -100,11 +100,8 @@ for(var i = 0; i < biosecSave.length; i++) {
  let symptomsEdit = document.querySelectorAll('.symptomsEdit');
  for(var i = 0; i < symptomsEdit.length; i++) { 
     symptomsEdit[i].addEventListener("click", (e)=> {
-         let editParent = e.target.parentElement.parentElement.parentElement.parentElement;
-         
+         let editParent = e.target.parentElement.parentElement.parentElement;
          let dropdown = editParent.querySelector(".form-select");
-         console.log("from edit");
-         console.log(dropdown);
          let symptomsSave = editParent.querySelector(".symptomsSave");
          let symptomsEdit = editParent.querySelector(".symptomsEdit");
          
@@ -115,13 +112,10 @@ for(var i = 0; i < biosecSave.length; i++) {
  }
  
  let symptomsSave = document.querySelectorAll('.symptomsSave');
- 
  for(var i = 0; i < symptomsSave.length; i++) { 
     symptomsSave[i].addEventListener("click", (e)=> {
-         let saveParent = e.target.parentElement.parentElement.parentElement.parentElement;
+         let saveParent = e.target.parentElement.parentElement.parentElement;
          let dropdown = saveParent.querySelector(".form-select");
-         console.log("from edit");
-         console.log(dropdown);
          let symptomsSave = saveParent.querySelector(".symptomsSave");
          let symptomsEdit = saveParent.querySelector(".symptomsEdit");
  
@@ -141,7 +135,7 @@ for(var i = 0; i < rowStatus.length; i++) {
     if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
-    else if ( val === "Active" | val === "Rejected") {
+    else if ( val === "Active") {
         rowStatus[i].classList.add("red");
     }
     else if ( val === "Pending") {
@@ -157,22 +151,22 @@ for(var i = 0; i < rowStatus.length; i++) {
  * - Checks farms last updated more than 7 days ago
  * - Highlights row to red
  */
-let farmRow = document.querySelectorAll('.farm-row');
-for (var i = 0; i < farmRow.length; i++) {
-    let farm = farmRow[i];
-
-    var lastUpdated = farm.querySelector('.farm-last-update');
-    var date = lastUpdated.innerHTML;
-    
-    var newDate = new Date(formatDate(date));
-        
-    var diffDays = getDiffDays(newDate);
-    if (diffDays > 7) {
-        console.log(lastUpdated.parentElement);
-        lastUpdated.parentElement.classList.add("red");
-    }
-}
-
+ let farmRow = document.querySelectorAll('.farm-row');
+ for (var i = 0; i < farmRow.length; i++) {
+     let farm = farmRow[i];
+ 
+     var lastUpdated = farm.querySelector('.farm-last-update');
+     var date = lastUpdated.innerHTML;
+     
+     var newDate = new Date(formatDate(date));
+         
+     var diffDays = getDiffDays(newDate);
+     if (diffDays > 7) {
+         console.log(lastUpdated.parentElement);
+         lastUpdated.parentElement.classList.add("red");
+     }
+ }
+ 
 /**
  * Toggling view to Member Announcement btn-grp
  */
@@ -322,47 +316,19 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    // console.log(actDate);
-    console.log(formatDate(actDate));
-    var actFormID = activity.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
+    console.log(actDate)
+    console.log(formatDate(actDate))
 
     try{
-        url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
+        url = "/selected-activity-form/" + formatDate(actDate);
         console.log(url);
         location.href = url;
     }catch (error){
         console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
+        // location.reload(true);
     }
 }
-
-/**
- *   From selected-activity-form.html
- *   - Toggle activity form approve/reject buttons on checkbox toggle
- */
-let actitivty_checkbox = document.querySelectorAll('.cb-activity-form');
-for(var i = 0; i < actitivty_checkbox.length; i++) { 
-
-    actitivty_checkbox[i].addEventListener('click', (e) => {
-        var isChecked = e.target.checked;
-
-        // get activity form approve/reject buttons
-        var actFormsBtn = document.getElementsByClassName('act-forms-btn');
-
-        if(isChecked) { // enable buttons when checkbox is selected
-            for(var j = 0; j < actFormsBtn.length; j++) {
-                actFormsBtn[j].disabled = false;
-            }   
-        } else { // disable buttons when checkbox is not selected
-            for(var j = 0; j < actFormsBtn.length; j++) {
-                actFormsBtn[j].disabled = true;
-            }
-        }
-        
-    });
- } 
 
 function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template
@@ -419,6 +385,7 @@ $(document).ready(function(){
         $("#div-raiser-name").remove();
         $("#div-raiser-contact").remove();
     });
+
 });
 
 //---- MODULE 2 functions ----//

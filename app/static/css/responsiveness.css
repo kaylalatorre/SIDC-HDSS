@@ -13,12 +13,14 @@
     h2 { font-size: 1rem; font-family: 'Public Sans'; font-weight: 600; }
     h3 { font-size: 0.875rem; font-family: 'Public Sans'; font-weight: 600; }
     p, label { font-size: 0.875rem; font-family: 'Roboto'; }
-    
+    ul .li-symptoms { list-style: none!important;}
+    .ul-symptoms { padding-left: 0;}
+
     .flex-item { padding: 0; }
     .main-div { margin: 16px!important; }
 
     .subheading { display: none; }
-    .mobile-subheading { opacity: 1; padding-bottom: 8px; height: 40px;}
+    .mobile-subheading { opacity: 1; margin-bottom: 8px; min-height: 40px;}
     .button i, button i { text-align: center; align-items: center;}
 
     .flex-form {
