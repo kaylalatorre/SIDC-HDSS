@@ -23,9 +23,9 @@
                 </button>
                 <ul class="dropdown-menu" style="padding: 8px;">
                     <label style="font-weight: 600;">Area</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_TISS" onclick="filterHogsHealth()"/>&nbsp;TSISI</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_EAST" onclick="filterHogsHealth()"/>&nbsp;East</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" id="ch_hog_WEST" onclick="filterHogsHealth()"/>&nbsp;West</a></li>
+                    {% for area in areaList %}
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_hog_area" id="{{area.area_name}}"  onclick="filterHogsHealth()"/>&nbsp;{{area.area_name}}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -50,17 +50,23 @@
                 <!-- Data -->
                 {% for farm in farmList %}
                 <tr>
+                    {% if farm.code < 10 %}
+                    <td data-label="Farm Code">00{{ farm.code }}</td>
+                    {% elif farm.code < 100 %}
+                    <td data-label="Farm Code">0{{ farm.code }}</td>
+                    {% else %}
                     <td data-label="Farm Code">{{ farm.code }}</td>
+                    {% endif %}
                     <td data-label="Raiser">{{ farm.raiser }}</td>
                     <td data-label="Area">{{ farm.area }}</td>
                     <td data-label="No. of Pigs">{{ farm.pigs }}</td>
-                    <td data-label="Ave. Starter Weight">{{ farm.is_starterWeight }}</td>
-                    <td data-label="Ave. Current Weight"> {{ farm.ave_currWeight }} </td>
-                    <td data-label="Mortality Rate"> {{ farm.mortality_rate }} </td>
-                    <td data-label="Incidents Reported"> {{ farm.total_incidents }} </td>
-                    <td data-label="Active Incidents"> 19 </td>
+                    <td data-label="Ave. Starter Weight"> - </td>
+                    <td data-label="Ave. Current Weight">{{ farm.ave_currWeight }}</td>
+                    <td data-label="Mortality Rate">{{ farm.mortality_rate }}</td>
+                    <td data-label="Incidents Reported">{{ farm.total_incidents }}</td>
+                    <td data-label="Active Incidents">{{ farm.total_active }}</td>
                     <td data-label="" class="td-btn">
-                        <button class="secondary-btn"><span class="material-icons md-18">visibility</span>View</button>
+                        <button class="secondary-btn" id="view-HogsHealth" onclick="viewHogsHealth(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>
                 </tr>
                 {% endfor %}                

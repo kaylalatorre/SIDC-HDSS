@@ -21,11 +21,11 @@
 .content-section .topbar .text,
 .content-section .topbar .notification {
     color: #333;
-    font-size: 24px;
+    font-size: 1rem;
 }
 
 .content-section .topbar .text {
-    font-size: 14px;
+    font-size: 0.875rem;
     padding-top: 2px;
     font-weight: 500px;
 }

@@ -1319,31 +1319,185 @@ def formsApproval(request):
                 ).order_by("-date_added").order_by("-id")
     # print(str(actQuery))
 
-    actList = []
+    approvedList = []
+    rejectedList = []
+    pendingList = []
+    # print(request.user)
+
+    loggedTech = User.objects.filter(username=request.user).annotate(
+        name = Concat('first_name', Value(' '), 'last_name'),
+        ).values("name").first()
+
     for act in actQuery:       
         getTech = User.objects.filter(id=act["act_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
         # print(str(getTech))
 
-        # set status for each activity form
-        if act["is_noted"] == True and act["is_checked"] == True and act["is_reported"] == True :
-            status = 'Approved'
-        elif act["is_noted"] == False or act["is_checked"] == False or act["is_reported"] == False :
-            status = 'Rejected'
-        else : 
-            status = 'Pending'
+        if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+            if act["is_checked"] == True:
+                status = 'Approved'
 
-        actObject = {
-            "id" : act["id"],
-            "date_added" : act["date_added"],
-            "status" : status,
-            "prepared_by" : getTech["name"]
-        }
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
 
-        actList.append(actObject)
+                approvedList.append(approved)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'activityList' : actList })
+            elif act["is_checked"] == False:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            else:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+                
+        elif request.user.groups.all()[0].name == "Extension Veterinarian":
+            if act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                approvedList.append(approved)
+
+            elif act["is_reported"] == False and act["is_checked"] == True:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            elif act["is_reported"] == None and act["is_checked"] == True:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+
+        elif request.user.groups.all()[0].name == "Assistant Manager":
+            if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                approvedList.append(approved)
+
+            elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                rejectedList.append(rejected)
+
+            elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                pendingList.append(pending)
+
+        elif request.user.groups.all()[0].name == "Field Technician":
+                
+            if getTech["name"] == loggedTech["name"]:
+
+                if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    approvedList.append(approved)
+
+                elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    rejectedList.append(rejected)
+
+                elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    pendingList.append(pending)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList, 'rejected' : rejectedList, 'pending' : pendingList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1353,7 +1507,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
     activityDate = is_added value of activity form selected
     """
 
-    # get adetails of activity form
+    # get details of activity form
     actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
                 "id",
                 "is_checked",
@@ -1364,32 +1518,63 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # print(str(actFormQuery))
 
     # set status of activity form
-    if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
-        status = 'Approved'
-    elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == False or actFormQuery["is_reported"] == False :
-        status = 'Rejected'
-    else : 
-        status = 'Pending'
+    if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+        if actFormQuery["is_checked"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_checked"] == False :
+            status = 'Rejected'
+        elif actFormQuery["is_checked"] == None :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Extension Veterinarian":
+        if actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_reported"] == False and actFormQuery["is_checked"] == True :
+            status = 'Rejected'
+        elif actFormQuery["is_reported"] == None and actFormQuery["is_checked"] == True :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Assistant Manager":
+        if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_noted"] == False and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Rejected'
+        elif actFormQuery["is_noted"] == None and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True : 
+            status = 'Pending'
+    
+    elif request.user.groups.all()[0].name == "Field Technician":
+        if actFormQuery["is_noted"] == True and actFormQuery["is_checked"] == True and actFormQuery["is_reported"] == True :
+            status = 'Approved'
+        elif actFormQuery["is_noted"] == False or actFormQuery["is_checked"] == False or actFormQuery["is_reported"] == False :
+            status = 'Rejected'
+        else :
+        # elif actFormQuery["is_noted"] == None or actFormQuery["is_checked"] == None or actFormQuery["is_reported"] == None : 
+            status = 'Pending'
 
     # get all activities under activity form
-    actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("-date").order_by("time_arrival")
+    actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("id")
 
     actList = []
 
     # store all data to an array
     for activity in actQuery:
+        farm = Farm.objects.filter(id=activity.ref_farm_id).values("id").first()
+
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
+            'format_date' : (activity.date).strftime('%Y-%m-%d'),
             'trip_type' : activity.trip_type,
             'time_arrival' : activity.time_arrival,
+            'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
             'time_departure' : activity.time_departure,
+            'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
             'description' : activity.description,
             'remarks' : activity.remarks,
         })
 
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate,
+    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'farm' : farm, 'activityForm' : ActivityForm(),
                                                                         'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
 
 def approveActivityForm(request, activityFormID):
@@ -1411,13 +1596,17 @@ def approveActivityForm(request, activityFormID):
         print(request.POST)
 
         # update activity form fields for user approvals
-        # is_noted for asst. manager
-        if request.POST.get("is_noted") == 'true' :
-            activity_form.is_noted = True
+            # is_checked for live op
+        if request.POST.get("is_checked") == 'true' :
+            activity_form.is_checked = True
 
-            if request.user.groups.all()[0].name == "Assistant Manager":
-                activity_form.act_asm_id = request.user.id
-        
+            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+                activity_form.act_liveop_id = request.user.id
+
+                # NOTIFY USER (EXTENSION VETERINARIAN) - An Activity Form has been sent for approval or is pending for approval
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Livestock Operation Specialist
+    
         # is_reported for ext vet
         elif request.POST.get("is_reported") == 'true' :
             activity_form.is_reported = True
@@ -1425,12 +1614,20 @@ def approveActivityForm(request, activityFormID):
             if request.user.groups.all()[0].name == "Extension Veterinarian":
                 activity_form.act_extvet_id = request.user.id
 
-        # is_checked for live op
-        elif request.POST.get("is_checked") == 'true' :
-            activity_form.is_checked = True
+                # NOTIFY USER (ASSISTANT MANAGER) - An Activity Form has been sent for approval or is pending for approval
 
-            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-                activity_form.act_liveop_id = request.user.id
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Extension Veterinarian
+
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'true' :
+            activity_form.is_noted = True
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                activity_form.act_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Assistant Manager
+
         
         activity_form.save()
 
@@ -1445,6 +1642,7 @@ def approveActivityForm(request, activityFormID):
 
             activity.save()
     
+
         messages.success(request, "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
@@ -1493,10 +1691,6 @@ def rejectActivityForm(request, activityFormID):
         
         activity_form.save()
 
-        # create duplicate of current activity form
-        # create activity form
-
-
         # get all activities under activity form
         actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
@@ -1508,12 +1702,98 @@ def rejectActivityForm(request, activityFormID):
             activity.save()
 
 
-            # create activities and connect to created activity form (FK)
-    
+        # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been rejected by <user>
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
     messages.error(request, "Failed to reject activities.", extra_tags='update-activity')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def resubmitActivityForm(request, activityFormID, farmID, activityDate):
+    """
+    - Resubmit rejected activity form and modify approval status
+    - Add new activities to database and connect to activity form (as FK)
+    - Save details to activity and add FK of current farm table
+    """
+    
+    # get farm id for FK
+    # print("FarmID: " + str(farmID))
+
+    # get ID of current technician
+    techID = request.user.id
+
+    # get activity form from ID
+    activity_form = Activities_Form.objects.filter(id=activityFormID).first()
+
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        # print(request.POST)
+        numActivities = int(len(request.POST)/6)
+
+        # pass all values into each of the array activityList
+        activityList = []
+
+        i = 0
+        while i < numActivities:
+            actDate = str('activityList[') + str(i) + str('][date]')
+            actType = str('activityList[') + str(i) + str('][trip_type]')
+            actArrival = str('activityList[') + str(i) + str('][time_arrival]')
+            actDeparture = str('activityList[') + str(i) + str('][time_departure]')
+            actDescription = str('activityList[') + str(i) + str('][description]')
+            actRemarks = str('activityList[') + str(i) + str('][remarks]')
+
+            activityObject = {
+                "date" : request.POST.get(actDate, default=None),
+                "trip_type" : request.POST.get(actType, default=None),
+                "time_arrival" : request.POST.get(actArrival, default=None),
+                "time_departure" : request.POST.get(actDeparture, default=None),
+                "description" : request.POST.get(actDescription, default=None),
+                "remarks" : request.POST.get(actRemarks, default=None),
+            }
+
+            activityList.append(activityObject)
+
+            i += 1
+        
+        print("TEST LOG activityList: " + str(activityList))
+
+        # reset approval status of activity form
+        activity_form.is_checked = None
+        activity_form.is_reported = None
+        activity_form.is_noted = None
+
+        activity_form.save()
+        
+        # pass all activityList objects into Activity model
+        x = 0
+
+        for act in activityList:
+            act = activityList[x]
+
+            # create new instance of Activity model
+            activity = Activity.objects.create(
+                ref_farm_id = farmID,
+                date = act['date'],
+                trip_type = act['trip_type'],
+                time_arrival = act['time_arrival'],
+                time_departure = act['time_departure'],
+                description = act['description'],
+                remarks = act['remarks'],
+                activity_form_id = activity_form.id
+            )
+
+            activity.save()
+
+            x += 1
+        
+
+        # NOTIFY USER (LIVESTOCK OPERATION SPECIALIST) - An Activity Form has been resubmitted by Field Technician; needs approval
+        messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
+        return JsonResponse({"success": "Activity Form has been resubmitted."}, status=200)
+
+    messages.error(request, "Failed to resubmit Activity Form.", extra_tags='update-activity')
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def addActivity(request, farmID):
@@ -1597,9 +1877,9 @@ def addActivity(request, farmID):
 
                 x += 1
             
-            
+
+            # NOTIFY USER (LIVESTOCK OPERATION SPECIALIST) - New Activity Form has been submitted by Field Technician OR New Activity Form needs approval
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
-            
             return redirect('/biosecurity/' + str(farmID))
             
         else:
@@ -1638,16 +1918,17 @@ def saveActivity(request, farmID, activityID):
         print("TEST LOG: Edit Activity is a POST Method")
         
         # collect data from inputs
-        date = request.POST.get("date", None)
-        trip_type = request.POST.get("trip_type", None)
-        time_departure = request.POST.get("time_departure", None)
-        time_arrival = request.POST.get("time_arrival", None)
-        description = request.POST.get("description", None)
-        remarks = request.POST.get("remarks", None)
+        date = request.POST.get("date")
+        trip_type = request.POST.get("trip_type")
+        time_departure = request.POST.get("time_departure")
+        time_arrival = request.POST.get("time_arrival")
+        description = request.POST.get("description")
+        remarks = request.POST.get("remarks")
+        # print("DATA COLLECTED: " + str(date) + " - " + str(trip_type) + " - " + str(time_arrival) + " to " + str(time_departure) )
 
         # get activity to be updated
-        activity = Activity.objects.get(pk=activityID)
-        print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+        activity = Activity.objects.filter(id=activityID).first()
+        # print("OLD ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
 
         # assign new values
         activity.date = date
@@ -1659,19 +1940,18 @@ def saveActivity(request, farmID, activityID):
         activity.last_updated = dateToday
         
         activity.save()
-        print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_departure) + " to " + str(activity.time_arrival) )
+        # print("UPDATED ACTIVITY: " + str(activity.date) + " - " + str(activity.trip_type) + " - " + str(activity.time_arrival) + " to " + str(activity.time_departure) )
         messages.success(request, "Activity has been updated.", extra_tags='update-activity')
 
         return JsonResponse({"success": "Activity has been updated."}, status=200)
 
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
-def deleteActivity(request, farmID, activityID):
+def deleteActivity(request, activityID):
     """
     - Delete selected activity under current farm
     
     activityID - selected activityID passed as parameter
-    farmID - selected farmID passed as parameter
     """
     
     if request.method == 'POST':
@@ -1720,17 +2000,29 @@ def memAnnouncements_Approval(request, decision):
     :param decision: "approve" or "reject" depending on the ajax call
     :type decision: String
     """
+    if decision:
+        idQry = request.POST.get("idList")    
+        idList = json.loads(idQry)
+        
+        if decision == "approve":
+            debug("Messages approved.")
+            Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
+            messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
 
-    idQry = request.POST.get("idList")
+            return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
-    idList = json.loads(idQry)
+        elif decision == "reject":
+            debug("Messages rejected.")
+            Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = False)
+            messages.success(request, "Messages rejected.", extra_tags='announcement')
+
+            return JsonResponse({"success": "Messages rejected."}, status=200)
     
-    if decision == "approve":
-        Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
     else:
-        Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = False)
-
-    return HttpResponse(status=200)
+        debug("There was an error in saving the approval.")
+        messages.error(request, "There was an error in saving the approval.", extra_tags='announcement')
+        return JsonResponse({"error": "There was an error in saving the approval."}, status=400)
+    
 
 def createAnnouncement(request):
     """
@@ -2121,7 +2413,7 @@ def farmsAssessment(request):
 
     # Get technician name assigned per Farm
     # Farm > Area > User (tech)
-    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No farm records found.
@@ -2157,7 +2449,7 @@ def farmsAssessment(request):
             "last_updated",
             "intbioID",
             "extbioID"
-            )
+            ).order_by("id")
     debug(qry)
 
     if not qry.exists(): 
@@ -2201,18 +2493,18 @@ def farmsAssessment(request):
     farmtechList = zip(farmsData, techList)
 
     # compute for -- total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-    ave_pigs = total_pigs / len(farmsData)
-    ave_pens = total_pens / len(farmsData)
-    ave_intbio = ave_intbio / len(farmsData)
-    ave_extbio = ave_extbio / len(farmsData)
+    ave_pigs   = round((total_pigs / len(farmsData)), 2)
+    ave_pens   = round((total_pens / len(farmsData)), 2)
+    ave_intbio = round((ave_intbio / len(farmsData)), 2)
+    ave_extbio = round((ave_extbio / len(farmsData)), 2)
     
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
         "ave_pigs": ave_pigs,
         "ave_pens": ave_pens,
-        "ave_intbio": round(ave_intbio, 2),
-        "ave_extbio": round(ave_extbio, 2),
+        "ave_intbio": ave_intbio,
+        "ave_extbio": ave_extbio,
     }
 
 
@@ -2261,7 +2553,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No farm records found.
             messages.error(request, "No farm records found.", extra_tags="farmass-report")
@@ -2284,13 +2576,13 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "last_updated",
                 "intbioID",
                 "extbioID"
-                )
+                ).order_by("id")
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/ filter_farmsAssessment")
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No farm records found.
             messages.error(request, "No farm records found.", extra_tags="farmass-report")
@@ -2313,7 +2605,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "last_updated",
                 "intbioID",
                 "extbioID"
-                )
+                ).order_by("id")
    
     debug(qry)
 
@@ -2368,18 +2660,18 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
     farmtechList = zip(farmsData, techList)
 
     # compute for -- total (pigs, pens) and ave columns (pigs, pens, intbio, extbio)
-    ave_pigs = total_pigs / len(farmsData)
-    ave_pens = total_pens / len(farmsData)
-    ave_intbio = ave_intbio / len(farmsData)
-    ave_extbio = ave_extbio / len(farmsData)
+    ave_pigs   = round((total_pigs / len(farmsData)), 2)
+    ave_pens   = round((total_pens / len(farmsData)), 2)
+    ave_intbio = round((ave_intbio / len(farmsData)), 2)
+    ave_extbio = round((ave_extbio / len(farmsData)), 2)
     
     farmTotalAve = {
         "total_pigs": total_pigs,
         "total_pens": total_pens,
         "ave_pigs": ave_pigs,
         "ave_pens": ave_pens,
-        "ave_intbio": round(ave_intbio, 2),
-        "ave_extbio": round(ave_extbio, 2),
+        "ave_intbio": ave_intbio,
+        "ave_extbio": ave_extbio,
     }
 
     return render(request, 'farmstemp/rep-farms-assessment.html', {"areaName": areaName, "isFiltered": isFiltered,"farmTotalAve": farmTotalAve,'dateStart': sDate,'dateEnd': truEndDate,'areaList': areaQry,'farmtechList': farmtechList})
@@ -2426,7 +2718,7 @@ def intBiosecurity(request):
     areaQry = Area.objects.all()
 
     # Get technician name assigned per Farm
-    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     # debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
@@ -2467,7 +2759,7 @@ def intBiosecurity(request):
             "intbio_waste_mgt",
             "intbio_disinfect_prem",
             "intbio_disinfect_vet_supp"
-            )
+            ).order_by("id")
     debug(qry)
 
     if not qry.exists(): #(ERROR) No Internal biosecurity records found.
@@ -2554,7 +2846,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
         # Get technician name assigned per Farm
         # Farm > Area > User (tech)
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
             messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
@@ -2583,13 +2875,13 @@ def filter_intBiosec(request, startDate, endDate, areaName):
                     "intbio_waste_mgt",
                     "intbio_disinfect_prem",
                     "intbio_disinfect_vet_supp"
-                    )
+                    ).order_by("id")
 
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
         # Get technician name assigned per Farm
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No Internal biosecurity records found.
             messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
@@ -2617,7 +2909,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
                 "intbio_waste_mgt",
                 "intbio_disinfect_prem",
                 "intbio_disinfect_vet_supp"
-                )
+                ).order_by("id")
 
 
     if not qry.exists(): # (ERROR) No Internal biosecurity records found.
@@ -2701,7 +2993,7 @@ def extBiosecurity(request):
     areaQry = Area.objects.all()
 
     # Get technician name assigned per Farm
-    farmQry = Farm.objects.all().prefetch_related("area", "area__tech")
+    farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     # debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No External biosecurity records found.
@@ -2750,7 +3042,7 @@ def extBiosecurity(request):
             "extbio_prsnl_dip_footwear",
             "extbio_prsnl_sanit_hands",
             "extbio_chg_disinfect_daily"
-            )
+            ).order_by("id")
     debug(qry)
 
     if not qry.exists(): #(ERROR) No External biosecurity records found.
@@ -2838,7 +3130,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
         debug("TRACE: in areaName == 'All'")
 
         # Get technician name assigned per Farm
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No External biosecurity records found.
             messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
@@ -2874,13 +3166,13 @@ def filter_extBiosec(request, startDate, endDate, areaName):
                     "extbio_prsnl_dip_footwear",
                     "extbio_prsnl_sanit_hands",
                     "extbio_chg_disinfect_daily"
-                    )
+                    ).order_by("id")
 
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
         # Get technician name assigned per Farm
-        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech")
+        farmQry = Farm.objects.filter(last_updated__range=(sDate, eDate)).filter(area__area_name=areaName).all().prefetch_related("area", "area__tech").order_by("id")
 
         if not farmQry.exists(): # (ERROR) No External biosecurity records found.
             messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
@@ -2916,7 +3208,7 @@ def filter_extBiosec(request, startDate, endDate, areaName):
                     "extbio_prsnl_dip_footwear",
                     "extbio_prsnl_sanit_hands",
                     "extbio_chg_disinfect_daily"
-                    )
+                    ).order_by("id")
 
 
     if not qry.exists(): # (ERROR) No External biosecurity records found.
@@ -3027,7 +3319,7 @@ def dashboard_view(request):
 
     total_farms = len(farmQry)
     # compute for -- total (pigs) and ave columns (intbio, extbio)
-    ave_pigs = total_pigs / len(farmQry)
+    ave_pigs   = round((total_pigs / len(farmQry)), 2)
     ave_intbio = round((ave_intbio / len(farmQry)), 2)
     ave_extbio = round((ave_extbio / len(farmQry)), 2)
     
@@ -3037,8 +3329,8 @@ def dashboard_view(request):
         "total_farms": total_farms,
         "total_pigs": total_pigs,
         "total_needInspect": total_needInspect,
-        "ave_intbio": ave_intbio,
-        "ave_extbio": ave_extbio,
+        "ave_intbio": round(ave_intbio, 2),
+        "ave_extbio": round(ave_extbio, 2),
         "rem_intbio": round((100 - ave_intbio), 2),
         "rem_extbio": round((100 - ave_extbio), 2),
     }

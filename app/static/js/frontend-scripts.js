@@ -107,13 +107,13 @@ for(var i = 0; i < biosecSave.length; i++) {
  * Changing style of statuses
  */
 let rowStatus = document.querySelectorAll('.status');
-console.log(rowStatus);
+// console.log(rowStatus);
 for(var i = 0; i < rowStatus.length; i++) { 
     let val = rowStatus[i].innerText;
     if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
-    else if ( val === "Active") {
+    else if ( val === "Active" | val === "Rejected") {
         rowStatus[i].classList.add("red");
     }
     else if ( val === "Pending") {
@@ -198,6 +198,64 @@ function viewFarm(farm) {
 }
 
 /**
+*   - Redirects current user (technician) to the selected farm. 
+*   - Appends selected farm ID to url that will display farm details.
+*   
+*   techFarm = row of selected farm
+*/
+function viewTechFarm(techFarm) {
+
+    try{
+        url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
+*   - Appends selected farm ID to url that will display an empty biosecurity checklist.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addBiosecPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-checklist/" + techFarm;
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-activity page for selected farm.
+*   - Appends selected farm ID to url that will display an empty activity record.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addActivityPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-activity/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
 *   - Appends new pigpen row for when adding a new farm
 *   
 *   pigpen-table = table body that the row will be appended to
@@ -231,6 +289,22 @@ function removePigpenRow(currRow){
     table.deleteRow(rowIndex);
 }
 
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeActivityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-table');
+    table.deleteRow(rowIndex);
+}
+
 /**
 *   - Appends new activity row to activity table
 *   
@@ -253,22 +327,6 @@ function addActivityRow() {
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
-}
-
-/*
-*   - Deletes activity row input in Add Activity
-*   
-*   currRow = selected activity row
-*   activity-table = table body that the row will be deleted from
-*/
-function removeActivityRow(currRow){
-
-    var row = currRow.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
-
-    var table = document.getElementById('activity-table');
-    table.deleteRow(rowIndex);
 }
 
 /**
@@ -305,32 +363,6 @@ function viewActivityForm(activity) {
         location.reload(true);
     }
 }
-
-/**
- *   From selected-activity-form.html
- *   - Toggle activity form approve/reject buttons on checkbox toggle
- */
-let actitivty_checkbox = document.querySelectorAll('.cb-activity-form');
-for(var i = 0; i < actitivty_checkbox.length; i++) { 
-
-    actitivty_checkbox[i].addEventListener('click', (e) => {
-        var isChecked = e.target.checked;
-
-        // get activity form approve/reject buttons
-        var actFormsBtn = document.getElementsByClassName('act-forms-btn');
-
-        if(isChecked) { // enable buttons when checkbox is selected
-            for(var j = 0; j < actFormsBtn.length; j++) {
-                actFormsBtn[j].disabled = false;
-            }   
-        } else { // disable buttons when checkbox is not selected
-            for(var j = 0; j < actFormsBtn.length; j++) {
-                actFormsBtn[j].disabled = true;
-            }
-        }
-        
-    });
- } 
 
 function viewAnnounce(elem) {
     // Note: This links to a temporary navigation to template
@@ -395,29 +427,28 @@ $(document).ready(function(){
 * @summary Filters and searches farms for assistant manager (hogs-health.html)
 */
 function filterHogsHealth(){ 
-    var input, filter, table, tr, raiser, address, area, i;        
+    var input, filter, table, tr, raiser, area, i;        
     input   = document.getElementById("hog_searchTextBoxid"); //to get typed in keyword    
     filter  = input.value.toUpperCase(); //to avoid case sensitive search, if case sensitive search is required then comment this line    
     table   = document.getElementById("hog_mainTableid"); //to get the html table    
     tr      = table.getElementsByTagName("tr"); //to access rows in the table    
     
-    var 
-    tiss = document.getElementById("ch_hog_TISS").checked,
-    east = document.getElementById("ch_hog_EAST").checked,
-    west = document.getElementById("ch_hog_WEST").checked;
+    // get array of Area names in checkbox filter
+    var checkedValues = $('input:checkbox:checked.ch_hog_area').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
 
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
         area = tr[i].getElementsByTagName("td")[2];
         if(raiser && area){    
             if(
-                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) && 
-                (
+                (raiser.innerHTML.toUpperCase().indexOf(filter)>-1) 
+                &&(
                     (
-                        (tiss && area.innerHTML.toUpperCase().indexOf("TISISI")>-1) || 
-                        (east && area.innerHTML.toUpperCase().indexOf("EAST")>-1) || 
-                        (west && area.innerHTML.toUpperCase().indexOf("WEST")>-1) ||
-                        (!tiss && !east && !west)
+                        ($.inArray(area.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
                     ) 
                 )
             ){    
@@ -437,3 +468,44 @@ $('#select_all').change(function() {
     var checkboxes = $(this).closest('table').find(':checkbox');
     checkboxes.prop('checked', $(this).is(':checked'));
 });
+
+/** 
+* Checkbox filters incident reports according to status for technician view (selected-health-symptoms.html)
+* Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
+*/
+function filterRepStatus(){ 
+    var table, tr, i;
+    var repStatus;          
+    table   = document.getElementById("symptoms-reported"); //to get the html table    
+    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+    
+    // get array of report_status text in checkbox filter
+    var checkedValues = $('input:checkbox:checked.ch_stat').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedValues);
+
+    // console.log(table);
+
+    for(i=0;i<tr.length;i++){    
+        repStatus = tr[i].getElementsByTagName("td")[4].firstElementChild;
+
+        console.log(repStatus);
+
+        if(repStatus){    
+            if(
+                (
+                    (
+                        ($.inArray(repStatus.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        (checkedValues.length == 0)
+                    ) 
+                )
+            ){    
+                tr[i].style.display="";        
+            }    
+            else{    
+                tr[i].style.display = "none";   
+            }    
+        }    
+    }
+} 

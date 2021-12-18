@@ -96,16 +96,16 @@ def home_view(request):
     if request.user.is_authenticated :
         userGroup = request.user.groups.all()[0].name
 
-        if userGroup == "Assistant Manager":
-            debug("User is an Assistant Manager. Render dashboard.")
-            farmStats = dashboard_view(request)
-            return render(request, 'home.html', {"farmStats": farmStats})
-        
-        elif userGroup == "Field Technician":
-            debug("User is a Field Technician. Render tech farms.")
+        if userGroup == "Field Technician" :
             tech_farms = techFarms(request)
 
             return render(request, 'home.html', { "techFarms": tech_farms })
+
+        # if userGroup == "Assistant Manager" or userGroup == "Extension Veterinarian" or userGroup == "Livestock Operation Specialist":
+        else :
+            farmStats = dashboard_view(request)
+            return render(request, 'home.html', {"farmStats": farmStats})
+
         
     else :
         # redirect to login page if user is not logged in

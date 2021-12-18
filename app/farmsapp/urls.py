@@ -16,11 +16,12 @@ urlpatterns = [
     path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
     path('technician-assignment/savearea', views.save_area, name="save_area"),
 
-    # asst. manager - forms
+    # forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
     path('selected-activity-form/<str:activityFormID>/<str:activityDate>', views.selectedActivityForm, name="selectedActivityForm"),
     path('approve-activity-form/<str:activityFormID>', views.approveActivityForm, name="approveActivityForm"),
     path('reject-activity-form/<str:activityFormID>', views.rejectActivityForm, name="rejectActivityForm"),
+    path('resubmit-activity-form/<str:activityFormID>/<str:farmID>/<str:activityDate>', views.resubmitActivityForm, name="resubmitActivityForm"),
     
     # technician - view and add farms
     path('add-farm', views.addFarm, name="addFarm"),
@@ -40,8 +41,8 @@ urlpatterns = [
 
     # technician - biosecurity activity
     path('add-activity/<str:farmID>', views.addActivity, name="addActivity"),
-    path('biosecurity/<str:farmID>/save-activity/<str:activityID>', views.saveActivity, name="saveActivity"),
-    path('biosecurity/<str:farmID>/delete-activity/<str:activityID>', views.deleteActivity, name="deleteActivity"),
+    path('save-activity/<str:farmID>/<str:activityID>', views.saveActivity, name="saveActivity"),
+    path('delete-activity/<str:activityID>', views.deleteActivity, name="deleteActivity"),
 
     # announcements
     path('member-announcements', views.memAnnouncements, name="memAnnouncements"),

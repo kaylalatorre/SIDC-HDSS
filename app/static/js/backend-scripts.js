@@ -1,3 +1,17 @@
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+    
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 /* BACKEND-specific Functions */
 
 
@@ -167,19 +181,6 @@ $('#farm-code').change(function() {
     }
 });
 
-
-/**
- * Helper function for setting dropdown acc. to selected option
- */
- function setSelectedValue(selectObj, valueToSet) {
-    for (var i = 0; i < selectObj.options.length; i++) {
-        if (selectObj.options[i].text == valueToSet) {
-            selectObj.options[i].selected = true;
-            console.log("option [" + selectObj.options[i].text + "] is selected.");
-            return;
-        }
-    }
-}
 
 /**
  * function filtering Farm Assessment report based on (1) date range and (2) areaName
@@ -414,13 +415,13 @@ function saveBiocheck(elem){
         data: {"checkArr": checkArr}, 
         success: function (response) {
             
-            if (response.status_code == '200'){
-                alert("Biosec checklist successfully updated!");
-            }
+            // if (response.status_code == '200'){
+            //     alert("Biosec checklist successfully updated!");
+            // }
 
-            if (response.status == 400){
-                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-            }
+            // if (response.status == 400){
+            //     alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            // }
 
             var biofields = JSON.parse(response["instance"]);
 
@@ -551,87 +552,6 @@ function deleteBiocheck(elem){
 
 }
 
-/**
-*   - Redirects current user (technician) to the selected farm. 
-*   - Appends selected farm ID to url that will display farm details.
-*   
-*   techFarm = row of selected farm
-*/
-function viewTechFarm(techFarm) {
-
-    try{
-        url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
-    }
-}
-
-/**
-*   - Redirects current technician from selected farm page to designated biosecurity page.
-*   - Appends selected farm ID to url that will display biosecurity measure, checklists, and activities.
-*   
-*   farmID = button value (carries ID of selected farm)
-*/
-function viewBiosec(farmID) {
-
-    var techFarm = $(farmID).val(); 
-    console.log(techFarm)
-
-    try{
-        url = "/biosecurity/" + techFarm;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
-    }
-}
-
-/**
-*   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
-*   - Appends selected farm ID to url that will display an empty biosecurity checklist.
-*   
-*   farmID = button value (carries ID of selected farm)
-*/
-function addBiosecPage(farmID) {
-
-    var techFarm = $(farmID).val(); 
-    console.log(techFarm)
-
-    try{
-        url = "/add-checklist/" + techFarm;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
-    }
-}
-
-/**
-*   - Redirects current technician from biosecurity page to add-activity page for selected farm.
-*   - Appends selected farm ID to url that will display an empty activity record.
-*   
-*   farmID = button value (carries ID of selected farm)
-*/
-function addActivityPage(farmID) {
-
-    var techFarm = $(farmID).val(); 
-    console.log(techFarm)
-
-    try{
-        url = "/add-activity/" + techFarm;
-        console.log(url);
-        location.href = url;
-    } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
-    }
-}
-
 /** 
 * Used to assign technicians to area.
 */
@@ -661,7 +581,7 @@ $('.assignSave').on('click', function () {
 });
 
 /** 
-* Create new area.
+* Create new area
 */
 $('#save-area').on('click', function(){
     area = $(this).siblings('.form-control').val();
@@ -710,14 +630,15 @@ function for_approval(button, decision){
         dataType : "json",
         data:{"idList":JSON.stringify(forApproval_IDs)},
         success: function(response){
-            console.log(response);
+            if (response.status == 200){
+                console.log(response.responseJSON.success);
+            }
+
+            window.location.replace("/member-announcements");
         },
-        error: function(response){
-            console.log(response);
-            
-        },
-        complete: function(){
-            location.reload(true);
+        error: function (res){
+            console.log(res.responseJSON.error);
+           // alert("Error in submitting the approval.")
         }
     });
 }
@@ -733,31 +654,28 @@ $('#rejectChecked.primary-btn-red').on('click', function(){
 });
 
 /**
-*   - Deletes selected activity row from database.
+*   - Deletes selected activity row from database
 *   
 *   actID = button value (carries ID of selected activity)
 */
 function deleteActivity(actID) {
 
     var activityID = $(actID).val(); 
-    console.log(activityID)
+    console.log("Activity ID: " + activityID);
 
-    var farmID = $("#farm-code option:selected").val();
-    console.log(farmID)
-    
     if (confirm("Delete selected activity?")){
         ajaxCSRF();
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/delete-activity/' + activityID,
+            url: '/delete-activity/' + activityID,
 
             success: function(response){
                 if (response.status == 200){
                     console.log(response.responseJSON.success)
                 }
 
-                window.location.replace("/biosecurity/" + farmID);
+                location.reload(true);
             },
             error: function (res){
                 console.log(res.responseJSON.error)
@@ -784,10 +702,10 @@ function editActivity(actID) {
     console.log("Activity ID: " + activityID);
 
     var toShow = row.getElementsByClassName("activity-input");
-    console.log(toShow.length);
+    // console.log(toShow.length);
    
     var toHide = row.getElementsByClassName("activity-data");
-    console.log(toHide.length);
+    // console.log(toHide.length);
     for(var i = 0; i < toHide.length; i++){
         // show displayed data of current row
         toHide[i].style.display = "none";
@@ -843,28 +761,29 @@ function cancelActivity(actID) {
 *   - Check if date input is not later than today
 *   - Check if arrival time is after departure time
 *
-*   actID = button value (carries ID of selected activity)   
+*   actID = button value (carries ID of selected activity)
+*   farmID = id value of farm activities are connected to   
 */
-function saveActivity(actID) {
+function saveActivity(actID, farmID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
-    var rowIndex = row.rowIndex - 1
+    var rowIndex = row.rowIndex;
     console.log("Row ID: " + rowIndex);
 
     var activityID = $(actID).val(); 
     console.log("Activity ID: " + activityID);
 
-    var farmID = $("#farm-code option:selected").val();
-    console.log(farmID)
+    console.log("Farm ID: " + farmID)
 
     var checkTrue = 2;
     var today = new Date(); // date today
-    var date = document.getElementById("input-date").value;
-    var type = document.getElementById("input-type").value;
-    var departure = document.getElementById("input-departure").value;
-    var arrival = document.getElementById("input-arrival").value;
-    var description = document.getElementById("input-description").value;
-    var remarks = document.getElementById("input-remarks").value;
+    var date = row.getElementsByClassName("activity-input")[0].value;
+    var tripVar = row.getElementsByClassName("activity-input")[1];
+    var trip_type = tripVar.options[tripVar.selectedIndex].text;
+    var arrival = row.getElementsByClassName("activity-input")[2].value;
+    var departure = row.getElementsByClassName("activity-input")[3].value;
+    var description = row.getElementsByClassName("activity-input")[4].value;
+    var remarks = row.getElementsByClassName("activity-input")[5].value;
 
     // check if date is not later than today
     if (new Date(date) > today){
@@ -883,11 +802,11 @@ function saveActivity(actID) {
 
         $.ajax({
             type: 'POST',
-            url: '/biosecurity/' + farmID + '/save-activity/' + activityID,
+            url: '/save-activity/' + farmID + '/' + activityID,
             data: {"date" : date,
-                    "trip_type" : type,
-                    "time_departure" : departure,
+                    "trip_type" : trip_type,
                     "time_arrival" : arrival,
+                    "time_departure" : departure,
                     "description" : description,
                     "remarks" : remarks},
 
@@ -896,7 +815,7 @@ function saveActivity(actID) {
                     console.log(response.responseJSON.success)
                 }
 
-                window.location.replace("/biosecurity/" + farmID);
+                location.reload(true);
             },
             error: function (res){
                 console.log(res.responseJSON.error)
@@ -905,6 +824,139 @@ function saveActivity(actID) {
     }
 }
 
+/**
+*   - Send data to backend function save to database
+*   - Check if date input is not later than today
+*   - Check if arrival time is after departure time
+*
+*   actFormID = id value of selected activity form
+*   actDate = date_added value of selected activity form   
+*/
+function resubmitActivity(actDate, actFormID, farmID) {
+    // console.log(actDate);
+    // console.log(actFormID);
+
+    // var table = document.getElementById("activity-form-table");
+
+    // get all data from each column
+    var date = document.getElementsByClassName("act-date-input");
+    var trip = document.getElementsByClassName("act-trip-type-input");
+    var arrival = document.getElementsByClassName("act-arrival-input");
+    var departure = document.getElementsByClassName("act-departure-input");
+    var description = document.getElementsByClassName("act-description-input");
+    var remarks = document.getElementsByClassName("act-remarks-input");
+
+    const convertTime = timeStr => {
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':');
+        // console.log(hours, minutes, time, modifier)
+
+        if (hours === '12') {
+           hours = '00';
+        };
+        if (modifier === 'p.m.') {
+           hours = parseInt(hours, 10) + 12;
+        };
+        if (minutes === undefined) {
+            minutes = '00';
+        };
+        return `${hours}:${minutes}`;
+     };
+    
+    var x = 0;
+    // pass each row into one object    
+    var activityList = [];
+    for (var i = 0; i < date.length; i++){
+        // console.log([i].value)
+        if (date[i].value !== '') {
+        // if ((date[i].innerHTML !== null && trip_type[i].innerHTML !== null) && (time_arrival[i].innerHTML !== null && time_departure[i].innerHTML !== null)){
+            var activity = {
+                date : formatDate(date[i].value),
+                trip_type : trip[i].value,
+                time_arrival : convertTime(arrival[i].value),
+                time_departure : convertTime(departure[i].value),
+                description : description[i].value,
+                remarks : remarks[i].value
+            };
+            
+            activityList[x] = activity;
+            x++;
+        };
+       
+    }
+
+    console.log(activityList);
+    // // check if date is not later than today
+    // if (new Date(date) > today){
+    //     checkTrue -= 1;
+    //     console.log("Date should not be later than today.");
+    // }
+
+    // // check if arrival is after departure
+    // if (arrival > departure){
+    //     checkTrue -= 1;
+    //     console.log("Departure time should be after arrival time.");
+    // }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/resubmit-activity-form/' + actFormID +'/' + farmID + '/' + actDate,
+        data: {"activityList" : activityList},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+//---- MODULE 2 functions ----//
+
+/**
+ * Links to detailed view of selected Hogs Health record (for Asst. Manager view)
+ * @param farmHTML the HTML tag of farm code column in table data
+ */
+function viewHogsHealth(farmHTML) {
+
+    var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log("farmID -- " + farmID);
+
+    try{
+        url = "/selected-hogs-health/" + farmID;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        location.reload(true);
+    }
+}
+
+/**
+ * Links to detailed view of selected Hogs Health record (for Technician view)
+ * @param farmHTML the HTML tag of farm code column in table data
+ */
+function viewHealthSymptoms(farmHTML) {
+
+    var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log("farmID -- " + farmID);
+
+    try{
+        url = "/selected-health-symptoms/" + farmID;
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        location.reload(true);
+    }
+}
 /**
 *   - Approves all activities under selected activity form
 *   
@@ -999,4 +1051,59 @@ function rejectActivity(actFormID, userType) {
     })
 }
 
-//---- MODULE 2 functions ----//
+
+/**
+ * Helper function for setting dropdown acc. to selected option
+ * Code modified from: https://usefulangle.com/post/254/javascript-loop-through-select-options
+ * @param selectID HTML ID name of the dropdown
+ * @param valueToSet string value of option tag to be selected
+ */
+ function setSelectedValue(selectID, valueToSet) {
+    Array.from(document.getElementById(selectID).options).forEach(function(option_element) {
+        let option_text = option_element.text;
+        let option_value = option_element.value;
+        let is_option_selected = option_element.selected;
+    
+        if (option_value == valueToSet){
+            option_element.selected = true;
+            console.log("option selected is -- [" + option_value + "]");
+        }
+    });
+}
+
+
+/**
+ * on-click AJAX for edit status btn for Incident Report
+ * @param incidID string ID of Incident record to be edited
+ */
+ function editRepStatus(incidID){
+
+    // Get selected report_status in dropdown
+    var selectedStat = $("#dropdown-repstatus option:selected").val();
+    var currStat = $("#hidden-status").val();
+
+    if (selectedStat !== currStat){
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/update-incident-status/' + incidID,
+            data: {"selectStat": selectedStat}, 
+            success: function (response) {
+                
+                // update selected rep_status in dropdown acc. to returned db value
+                var updatedStat = response.updated_status;
+                setSelectedValue("dropdown-repstatus", updatedStat);
+
+                // update value of hidden input tag
+                $("#hidden-status").val(updatedStat);
+
+                alert("Status for incident ID [" + incidID + "] has been updated.");
+            },
+            error: function (res){
+                console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            }
+        });
+    }
+
+}
