@@ -454,21 +454,23 @@ $('#select_all').change(function() {
 * Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
 */
 function filterRepStatus(){ 
-    var table, tr, i;
+    var i;
     var repStatus;          
-    table   = document.getElementById("symptoms-reported"); //to get the html table    
-    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+
+    var incidentRows = document.getElementsByClassName('incident-row');
+    
     
     // get array of report_status text in checkbox filter
     var checkedValues = $('input:checkbox:checked.ch_stat').map(function() {
         return this.id.toUpperCase();
     }).get();
     console.log(checkedValues);
-
+    console.log(incidentRows.length)
     // console.log(table);
 
-    for(i=0;i<tr.length;i++){    
-        repStatus = tr[i].getElementsByTagName("td")[4].firstElementChild;
+    for(i=0;i<incidentRows.length;i++){    
+        repStatus = incidentRows[i].getElementsByTagName("td")[4].firstElementChild.value;
+        // repStatus = repStatusRow
 
         console.log(repStatus);
 
@@ -476,15 +478,15 @@ function filterRepStatus(){
             if(
                 (
                     (
-                        ($.inArray(repStatus.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        ($.inArray(repStatus.toUpperCase(), checkedValues) != -1) ||
                         (checkedValues.length == 0)
                     ) 
                 )
             ){    
-                tr[i].style.display="";        
+                incidentRows[i].style.display="";        
             }    
             else{    
-                tr[i].style.display = "none";   
+                incidentRows[i].style.display = "none";   
             }    
         }    
     }

@@ -69,7 +69,6 @@
         </div>
         
         <div class="box-style">
-            {% if incident_symptomsList|length > 0 %}
             <table class="table" id="symptoms-reported">
                 <thead>
                     <tr>
@@ -82,8 +81,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for incident,symptoms,editStat in incident_symptomsList %}
-                    <tr>
+                     {% for incident,symptoms,editStat in incident_symptomsList %}
+                     <tr class="incident-row">
+                        
                         <td data-label="Incident Code">{{ incident.id }}</td>
                         <td data-label="Date Reported">{{ incident.date_filed }}</td>
                         <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }}</td>
@@ -135,11 +135,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {% else %}
-            <div>
-                <p>No incidents to display.</p>
-            </div>
-            {% endif %}
+
         </div>
     </section>
     <section>
