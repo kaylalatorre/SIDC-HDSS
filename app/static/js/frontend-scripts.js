@@ -163,7 +163,7 @@ for(var i = 0; i < rowStatus.length; i++) {
      var diffDays = getDiffDays(newDate);
      if (diffDays > 7) {
          console.log(lastUpdated.parentElement);
-         lastUpdated.parentElement.classList.add("red");
+         lastUpdated.parentElement.classList.add("highlight-red");
      }
  }
  

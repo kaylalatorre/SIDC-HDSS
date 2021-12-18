@@ -17,3 +17,18 @@
 }
 
 .msg { margin: auto; }
+
+/* Highlighted rows */
+.highlight-red { 
+    color: #FFF;
+    background-color: #ED1E40;
+}
+
+.highlight-red button {
+    color: #FFF;
+}
+
+.highlight-red button:hover {
+    color: #333;
+    background-color: #FFF;
+}
