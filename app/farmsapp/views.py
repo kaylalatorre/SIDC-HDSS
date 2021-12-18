@@ -2113,16 +2113,17 @@ def getNotifIDs(request):
     if request.user.groups.all()[0].name == "Assistant Manager":
         pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
         for item in pendingAnnouncements:
-            notifIDs.append(announceTable + str(item['id']) + "Pending")
+            notifIDs.append(';'.join([announceTable, str(item['id']), "Pending"]))
     else:
         rejectedAnnouncement = Mem_Announcement.objects.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']).values()
         for item in rejectedAnnouncement:
-            notifIDs.append(announceTable + str(item['id']) + "Rejected")
+            notifIDs.append(';'.join([announceTable, str(item['id']), "Rejected"]))
     
     return notifIDs 
 
 def getMemAncmtNotifs(request, notifIDList):
     notifList = []
+    new_notifIDList = []
     announceTable = Mem_Announcement._meta.db_table
     # Generate notifications to be displayed
     ## Current tags:
@@ -2134,36 +2135,35 @@ def getMemAncmtNotifs(request, notifIDList):
     if request.user.groups.all()[0].name == "Assistant Manager":
         pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
         for item in pendingAnnouncements:
-            notifID = announceTable + str(item['id'])+"Pending"
+            notifID = ';'.join([announceTable, str(item['id']), "Pending"])
+            new_notifIDList.append(notifID)
             if notifID not in notifIDList:
                 notif = {
-                    # "label_class": "notif-urgent test",
+                    "label_class": "text-warning",
                     "notificationID": notifID,
-                    "label": item["title"],
-                    "p": item["mssg"],
-                    "status": "Pending",
+                    "label": "Pending Announcement",
+                    "title": item["title"],
+                    "message": item["mssg"],
                     "href": "/member-announcements"
                 }
-                notifIDList.append(notifID)
                 notifList.append(notif)
     else:
         rejectedAnnouncement = Mem_Announcement.objects.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']).values()
         for item in rejectedAnnouncement:
-            notifID = announceTable + str(item['id'])+"Rejected"
+            notifID = ';'.join([announceTable, str(item['id']), "Rejected"])
+            new_notifIDList.append(notifID)
             if notifID not in notifIDList:
                 notif = {
-                    # "label_class": "notif-urgent test",
+                    "label_class": "text-danger",
                     "notificationID": notifID,
-                    "label": item["title"],
-                    "p": item["mssg"],
-                    "status": "Rejected",
-                    "href": "/member-announcements"
+                    "label": "Rejected Announcement",
+                    "p": item["title"],
+                    "message": item["mssg"]
                 }
-                notifIDList.append(notifID)
                 notifList.append(notif)
 
     return {
-        "notifIDList": notifIDList,
+        "notifIDList": new_notifIDList,
         "notifList": notifList
     }
 
@@ -2194,14 +2194,22 @@ def syncNotifications(request):
     except:
         debug('no notifs from session found')
         return HttpResponse({"error": "no notifs from session found"}, status=404) # no way for sessions notifs to be empty because this will always go after getNotifications
-
+    debug(User.objects.get(id=userID).accountdata.data['notifIDList'])
+    debug(sessionNotifs)
     if (Counter(User.objects.get(id=userID).accountdata.data['notifIDList']) != Counter(sessionNotifs)):
         new_dbNotifs = []
-        if len(sessionNotifs) != 0: #if sessionNotif is empty
+        if len(sessionNotifs) != 0: #if sessionNotifs is not empty
             notifIDs = getNotifIDs(request)
             for notifID in notifIDs:
                 if notifID in sessionNotifs:
-                    new_dbNotifs.append(notifID)
+                    if notifID.find("Rejected") != -1 and notifID.find("announce") != -1:
+                        try:
+                            result = Mem_Announcement.objects.filter(id=int(notifID.split(';')[1])).delete()
+                            debug(result)
+                        except:
+                            debug("could not delete Announcement ID: " + str(notifID.split(';')[1]))
+                    else:
+                        new_dbNotifs.append(notifID)
     
     try: # try to save user session 
         AccountData(
@@ -2211,6 +2219,7 @@ def syncNotifications(request):
     except:
         debug('session was not saved to database')
 
+    # Final check to see if data was saved
     if User.objects.get(id=userID).accountdata.data['notifIDList'] == new_dbNotifs:
         debug('true')
         return HttpResponse({"success":"session and database synced"}, status=200)

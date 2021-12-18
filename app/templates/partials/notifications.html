@@ -12,7 +12,8 @@
             {% endif %}
                 <div class="notif-item">
                     <label class="notif-label {{item.label_class}}"> {{item.label}} </label>
-                    <p class="notif-content"> {{item.p | truncatewords:10}} </p>
+                    <label class="notif-label"> {{item.p | truncatewords:10}} </label>
+                    <p class="notif-content {{item.message}}">{{item.message | truncatewords:10}}</p>
                 </div>
             </a>
             {% endfor %}
