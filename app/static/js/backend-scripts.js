@@ -1083,7 +1083,6 @@ $('.symptomsSave').on('click', function () {
                     console.log("Status for incident ID [" + incidID + "] has been updated.");                    
                 } 
                 else {
-                    // alert("ERROR [" + response.status_code + "]: " + response.error);
                     console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);
                 }
@@ -1120,60 +1119,46 @@ function addSymptomsPage(farmID) {
 
 /** 
  * on-click POST AJAX function for adding an Incident Case.
- * @param farmID string ID of select Farm record
+ * @param farmID string ID of selected Farm record
 */
 function addCase(farmID){
 
-    // console.log("in addCase() /n/r");
-
     // get no. of pigs affected
     var num_pigs = $(".input-numAffected").val();
-    // console.log("num_pigs -- " + num_pigs);
 
     // get symptoms list based on HTML class of input checkbox tag; put in Array
     var symptomsArr = [];
     $(".check-symp").each(function() {
-        // console.log($(this).prop('checked'));
         symptomsArr.push($(this).prop('checked'));
     });
-    
-    // // TEST LOG: for check symptoms array contents
-    // console.log("symptomsArr.length -- " + symptomsArr.length);
-    // let i, sElem;
-    // for(i=0; i<symptomsArr.length; i++){
-    //     sElem = symptomsArr[i];
-    //     console.log("index [" +[i]+ "]: " + sElem);
-    // }
-    // // END TEST LOG
 
     ajaxCSRF();
 
     $.ajax({
         type: 'POST',
-        url: '/post-addCase/' + farmID, // url for add-incident-case
+        url: '/post-addCase/' + farmID, 
         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
         success: function (response) {
             
             if (response.status_code === "200"){
-                // redirect back to select-health-symptoms   
-                try{
+
+                // redirect back to selected view page   
+                try {
                     url = "/selected-health-symptoms/" + farmID;
                     console.log(url);
                     location.href = url;
-                }catch (error){
+                } catch (error){
                     console.log("Something went wrong. Restarting...");
                     location.reload(true);
                 }              
             } 
             else {
-                // alert("ERROR [" + response.status_code + "]: " + response.error);
                 console.log("ERROR [" + response.status_code + "]: " + response.error);
-
             }
 
         },
         error: function (res){
-            console.log("ERROR [" + res.status + "]: " +  res.error);
+            console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
         }
     }); 
 
