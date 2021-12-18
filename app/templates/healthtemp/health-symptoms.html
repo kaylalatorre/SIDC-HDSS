@@ -32,7 +32,7 @@
                 <!-- Data -->
             
                 {% for farm in farmList %}
-                <tr>
+                <tr class="health-row">
                     <td data-label="Farm Code">{{ farm.code }}</td>
                     <td data-label="Raiser">{{ farm.raiser }}</td>
                     <td data-label="No. of Pigs">{{ farm.pigs }}</td>
@@ -40,7 +40,7 @@
                     <td data-label="Ave. Current Weight">{{ farm.ave_currWeight }}</td>
                     <td data-label="Mortality Rate">{{ farm.mortality_rate }}</td>
                     <td data-label="Incidents Reported">{{ farm.total_incidents }}</td>
-                    <td data-label="Active Incidents">{{ farm.total_active }}</td>
+                    <td data-label="Active Incidents" class="active-incid">{{ farm.total_active }}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="view-HealthSymptoms" onclick="viewHealthSymptoms(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>

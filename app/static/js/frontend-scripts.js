@@ -166,6 +166,23 @@ for(var i = 0; i < rowStatus.length; i++) {
          lastUpdated.parentElement.classList.add("highlight-red");
      }
  }
+
+ /**
+ * Checking for farms with active incidents
+ * - Checks if farm has more than 0 active incidents
+ * - Highlights row to red
+ */
+  let healthRow = document.querySelectorAll('.health-row');
+  for (var i = 0; i < healthRow.length; i++) {
+      let farm = healthRow[i];
+  
+      var activeIncid = farm.querySelector('.active-incid');
+      var active = activeIncid.innerText;
+      console.log(activeIncid);
+      if (active > 0) {
+        activeIncid.parentElement.classList.add("highlight-red");
+      }
+  }
  
 /**
  * Toggling view to Member Announcement btn-grp
