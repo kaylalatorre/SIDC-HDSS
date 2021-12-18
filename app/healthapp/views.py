@@ -352,8 +352,8 @@ def healthSymptoms(request):
             farmsData.append(farmObject)
 
             total_pigs += f["total_pigs"]
-        debug("-- farmsData ---")
-        debug(farmsData)
+        # debug("-- farmsData ---")
+        # debug(farmsData)
 
 
     # (ERROR) for checking technician Areas that have no assigned Farms
