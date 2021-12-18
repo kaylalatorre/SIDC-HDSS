@@ -17,5 +17,7 @@ urlpatterns = [
     path('update-incident-status/<str:incidID>', views.edit_incidStat, name="editIncidentStat"),
 
     path('add-case', views.addCase, name="addCase"),
+    path('add-incident-case', views.post_addCase, name="post-addCase")
+    
     path('add-mortality', views.addMortality, name="addMortality"),
 ]

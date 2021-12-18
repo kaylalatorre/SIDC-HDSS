@@ -1048,7 +1048,7 @@ function rejectActivity(actFormID, userType) {
 
 
 /** 
- * on-click AJAX for edit status btn for Incident Report
+ * on-click POST AJAX for edit status btn for Incident Report
  * @param incidID string ID of Incident record to be edited
 */
 $('.symptomsSave').on('click', function () {
@@ -1096,23 +1096,62 @@ $('.symptomsSave').on('click', function () {
     }
 });
 
+/** 
+ * on-click POST AJAX function for adding an Incident Case.
+*/
 function addCase(){
 
-    // REFERENCE: https://github.com/kaylalatorre/thevahubapp/blob/main/assets/js/scripts.js
+    console.log("in addCase() /n/r");
 
-    // get array of symptoms list based on HTML class (input check tag)
-    let checkedArr = [];
-    checkedArr = $(".check-symp");
-    console.log(checkedArr);
+    // get no. of pigs affected
+    var num_pigs = $(".input-numAffected").val();
 
-    for(var i=0; i<checkedArr.length; i++){
-        var sCheck = checkedArr[i].prop('checked');
-        console.log(sCheck);
+
+    // get symptoms list based on HTML class of input checkbox tag; put in Array
+    var symptomsArr = [];
+    $(".check-symp").each(function() {
+        console.log($(this).prop('checked'));
+        symptomsArr.push($(this).prop('checked'));
+    });
+    
+    // TEST LOG: for check symptoms array contents
+    console.log("symptomsArr.length -- " + symptomsArr.length);
+    let i, sElem;
+    for(i=0; i<symptomsArr.length; i++){
+        sElem = symptomsArr[i];
+        console.log("index [" +[i]+ "]: " + sElem);
     }
+    // END TEST LOG
 
-    // url for add-incident-case
+    ajaxCSRF();
 
-    console.log("in addCase()/n/r");
+    $.ajax({
+        type: 'POST',
+        url: '/add-incident-case', // url for add-incident-case
+        data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
+        success: function (response) {
+            
+            if (response.status_code === "200"){
+                // redirect back to select-health-symptoms   
+                // try{
+                //     url = "/add-case/" + farmID;
+                //     console.log(url);
+                //     location.href = url;
+                // }catch (error){
+                //     console.log("Something went wrong. Restarting...");
+                //     location.reload(true);
+                // }              
+            } 
+            else {
+                // alert("ERROR [" + response.status_code + "]: " + response.error);
+                console.log("ERROR [" + response.status_code + "]: " + response.error);
 
+            }
+
+        },
+        error: function (res){
+            console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+        }
+    }); 
 
 }
