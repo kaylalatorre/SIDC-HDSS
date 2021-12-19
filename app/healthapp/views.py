@@ -255,7 +255,7 @@ def selectedHogsHealth(request, farmID):
 
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by("id").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(is_approved=True).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -414,7 +414,7 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).order_by("id").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(is_approved=True).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -780,5 +780,5 @@ def rejectMortalityForm(request, mortalityFormID):
         messages.success(request, "Mortality Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-mortality')
         return JsonResponse({"success": "Mortality Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
-    messages.error(request, "Failed to reject mortality records.", extra_tags='update-activity')
+    messages.error(request, "Failed to reject mortality records.", extra_tags='update-mortality')
     return JsonResponse({"error": "Not a POST method"}, status=400)

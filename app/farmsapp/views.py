@@ -266,13 +266,25 @@ def techFarms(request):
     areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
     
     # collect number of areas assigned (for frontend purposes)
+    i = 1
     areaNum = len(areaQry)
+    areaString = ''
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
+        if i == areaNum:
+            areaString += str(area.area_name)
+        
+        else : 
+            areaString += str(area.area_name) + ', '
+
+        print("TEST LOG areaString: " + areaString)
+
+        i += 1
+
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
@@ -283,7 +295,6 @@ def techFarms(request):
                             "farm_address",
                             "last_updated").order_by('id')
 
-        # print("TEST LOG techFarmQry: " + str(techFarmQry))
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -301,7 +312,7 @@ def techFarms(request):
     techData = {
         "techFarms" : techFarmsList,
         "areaCount" : areaNum,
-        "areaList" : areaQry
+        "areaString" : areaString
     }
 
     # debug(techData)
@@ -1057,19 +1068,8 @@ def biosec_view(request):
             techFarmsList.append(farmObject)
 
     # debug("techFarmsList -- " + str(techFarmsList))
-
-
-    # (ERROR) for checking technician Areas that have no Farms and null farmID
-    if not techFarmsList: 
-        messages.error(request, "Farm record/s not found.", extra_tags="view-biosec")
-        return render(request, 'farmstemp/biosecurity.html', {})
-    else: 
-
-        # pass in context farmIDs under Technician user
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : 0, 'farmList': techFarmsList})
-        # return render(request, 'farmstemp/biosecurity.html', {}) 
     
-    return render(request, 'farmstemp/biosecurity.html', {}) 
+    return render(request, 'farmstemp/biosecurity.html', {'farmID' : 0, 'farmList': techFarmsList}) 
 
 # For getting all Biosec checklist versions under a Farm based on farmID.
 def select_biosec(request, farmID):
@@ -1087,8 +1087,7 @@ def select_biosec(request, farmID):
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
-    areaQry = Area.objects.filter(tech_id=techID).all()
-    # print("TEST LOG areaQry: " + str(areaQry))
+    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
 
     # array to store all farms under each area
     techFarmsList = []
@@ -1100,7 +1099,6 @@ def select_biosec(request, farmID):
         techFarmQry  = Farm.objects.filter(area_id=area.id).values(
             "id"
         ).order_by('id').all()
-        # debug("techFarmQry -- " + str(techFarmQry))
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -1110,10 +1108,6 @@ def select_biosec(request, farmID):
             techFarmsList.append(farmObject)
         
     # debug("techFarmsList -- " + str(techFarmsList))
-
-    # Get farmID passed from URL param
-    farmID = farmID
-    # debug("in select_biosec() farmID -- " + str(farmID))
 
     # (ERROR) for checking technician Areas that have no Farms and null farmID
     if not techFarmsList or farmID is None: 
@@ -1175,7 +1169,7 @@ def select_biosec(request, farmID):
         # - (2) latest intbio-extbio Checklist, 
         # - (3) all biocheck IDs and dates within that Farm, 
         # - (4) approved activities
-        return render(request, 'farmstemp/biosecurity.html', {'farmID' : farmID, 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
+        return render(request, 'farmstemp/biosecurity.html', {'farmID' : int(farmID), 'farmList': techFarmsList, 'currBio': currbioObj, 'bioList': extQuery, 'activity' : actList}) 
 
     return render(request, 'farmstemp/biosecurity.html', {}) 
 
@@ -1183,13 +1177,9 @@ def addChecklist_view(request, farmID):
     """
     For passing farmID from Biosecurity page to addChecklist page ("add-checklist.html")
     """
-
     debug("TEST LOG: in addChecklist_view/n")
 
-    farm_id = farmID
-    debug("TEST LOG: farm_id -- " + str(farm_id))
-
-    return render(request, 'farmstemp/add-checklist.html', { 'farmID' : farm_id })
+    return render(request, 'farmstemp/add-checklist.html', { 'farmID' : int(farmID) })
 
 def techAssignment(request):
     areasData = []
@@ -1468,7 +1458,6 @@ def formsApproval(request):
         getTech = User.objects.filter(id=mort["mort_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
-        # print(str(getTech))
 
         if request.user.groups.all()[0].name == "Paiwi Management Staff":
             if mort["is_posted"] == True:
@@ -1575,7 +1564,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                actRejectedList.append(rejected)
+                mortRejectedList.append(rejected)
 
             elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
                 status = 'Pending'
@@ -2028,7 +2017,7 @@ def addActivity(request, farmID):
         activityForm = ActivityForm()
 
     # pass django form and farmID to template
-    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : farmID })
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID) })
 
 def saveActivity(request, farmID, activityID):
     """
@@ -2339,9 +2328,9 @@ def computeBioscore(farmID, intbioID, extbioID):
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
-    if intbioID is None: # (ERROR) no intbioID passed
-        debug("(ERROR) intbioID is null.")
-    else:
+    # if intbioID is None: # (ERROR) no intbioID passed
+    #     debug("(ERROR) intbioID is null.")
+    if intbioID is not None:
         # Get Intbio record based in farmID & biosec IDs
         intBio = InternalBiosec.objects.filter(id=intbioID, ref_farm_id=farmID).first()
 
@@ -2404,9 +2393,9 @@ def computeBioscore(farmID, intbioID, extbioID):
 
 
     # (2) EXTERNAL BIOSEC SCORE
-    if extbioID is None: # (ERROR) no extbioID passed
-        debug("(ERROR) extbioID is null.")
-    else:
+    # if extbioID is None: # (ERROR) no extbioID passed
+    #     debug("(ERROR) extbioID is null.")
+    if extbioID is not None:
 
         total_measures = 0
         total_checks = 0
@@ -2502,21 +2491,21 @@ def farmsAssessment(request):
     # Get technician name assigned per Farm
     # Farm > Area > User (tech)
     farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
-    debug("techQry -- " + str(farmQry.query))
+    # debug("techQry -- " + str(farmQry.query))
 
     if not farmQry.exists(): # (ERROR) No farm records found.
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
         return render(request, 'farmstemp/rep-farms-assessment.html', {"isFiltered": isFiltered,'areaList': areaQry,'dateStart': dateToday,'dateEnd': dateToday})
 
-    debug("list for -- Farm > Area > User (tech)")
+    # debug("list for -- Farm > Area > User (tech)")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)    
+    # debug(techList)    
 
 
     # (3) Farm details 
@@ -2538,7 +2527,7 @@ def farmsAssessment(request):
             "intbioID",
             "extbioID"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
@@ -2612,18 +2601,18 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
 
     debug("TEST LOG: in filter_farmsAssessment Report()/n")
 
-    debug("URL params:")
-    debug("startDate -- " + startDate)
-    debug("endDate -- " + endDate)
-    debug("areaName -- " + areaName)
+    # debug("URL params:")
+    # debug("startDate -- " + startDate)
+    # debug("endDate -- " + endDate)
+    # debug("areaName -- " + areaName)
 
 
     # convert str Dates to date type; then to a timezone-aware datetime
     sDate = make_aware(datetime.strptime(startDate, "%Y-%m-%d")) 
     eDate = make_aware(datetime.strptime(endDate, "%Y-%m-%d")) + timedelta(1) # add 1 day to endDate
 
-    debug("converted sDate -- " + str(type(sDate)))
-    debug("converted eDate -- " + str(type(eDate)))
+    # debug("converted sDate -- " + str(type(sDate)))
+    # debug("converted eDate -- " + str(type(eDate)))
 
     # to revert endDate to same user date input
     truEndDate = eDate - timedelta(1)
@@ -2695,13 +2684,13 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
                 "extbioID"
                 ).order_by("id")
    
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): 
         messages.error(request, "No farm records found.", extra_tags="farmass-report")
         return render(request, 'farmstemp/rep-farms-assessment.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
 
-    debug("list for -- Farm > Area > User (tech)")
+    # debug("list for -- Farm > Area > User (tech)")
     techList = []
     for f in farmQry:
         techObject = {
@@ -2709,7 +2698,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         }
         print(techObject["name"])
         techList.append(techObject)
-    debug(techList)  
+    # debug(techList)  
 
     farmsData = []
     total_pigs = 0
@@ -2813,15 +2802,15 @@ def intBiosecurity(request):
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
         return render(request, 'farmstemp/rep-int-biosec.html', {"isFiltered": isFiltered,'areaList': areaQry,'dateStart': dateToday,'dateEnd': dateToday})
 
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)    
+    # debug(techList)    
 
 
     # (3) Farm details
@@ -2848,7 +2837,7 @@ def intBiosecurity(request):
             "intbio_disinfect_prem",
             "intbio_disinfect_vet_supp"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): #(ERROR) No Internal biosecurity records found.
         messages.error(request, "No Internal biosecurity records found.", extra_tags="intbio-report")
@@ -2907,18 +2896,18 @@ def filter_intBiosec(request, startDate, endDate, areaName):
         - IntBiosec score
     """
 
-    debug("URL params:")
-    debug("startDate -- " + startDate)
-    debug("endDate -- " + endDate)
-    debug("areaName -- " + areaName)
+    # debug("URL params:")
+    # debug("startDate -- " + startDate)
+    # debug("endDate -- " + endDate)
+    # debug("areaName -- " + areaName)
 
 
     # convert str Dates to date type; then to a timezone-aware datetime
     sDate = make_aware(datetime.strptime(startDate, "%Y-%m-%d")) 
     eDate = make_aware(datetime.strptime(endDate, "%Y-%m-%d")) + timedelta(1) # add 1 day to endDate
 
-    debug("converted sDate -- " + str(type(sDate)))
-    debug("converted eDate -- " + str(type(eDate)))
+    # debug("converted sDate -- " + str(type(sDate)))
+    # debug("converted eDate -- " + str(type(eDate)))
 
     # for checking if filters were used in the displayed Report
     isFiltered = True
@@ -3005,15 +2994,15 @@ def filter_intBiosec(request, startDate, endDate, areaName):
         return render(request, 'farmstemp/rep-int-biosec.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
         
     # format Technician names per Farm
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)   
+    # debug(techList)   
 
     farmsData = []
     ave_intbio = 0
@@ -3088,15 +3077,15 @@ def extBiosecurity(request):
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
         return render(request, 'farmstemp/rep-ext-biosec.html', {"isFiltered": isFiltered,'areaList': areaQry,'dateStart': dateToday,'dateEnd': dateToday})
 
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)    
+    # debug(techList)    
 
 
     # (3) Farm details
@@ -3131,7 +3120,7 @@ def extBiosecurity(request):
             "extbio_prsnl_sanit_hands",
             "extbio_chg_disinfect_daily"
             ).order_by("id")
-    debug(qry)
+    # debug(qry)
 
     if not qry.exists(): #(ERROR) No External biosecurity records found.
         messages.error(request, "No External biosecurity records found.", extra_tags="extbio-report")
@@ -3192,18 +3181,18 @@ def filter_extBiosec(request, startDate, endDate, areaName):
         - ExtBiosec fields and score
     """
 
-    debug("URL params:")
-    debug("startDate -- " + startDate)
-    debug("endDate -- " + endDate)
-    debug("areaName -- " + areaName)
+    # debug("URL params:")
+    # debug("startDate -- " + startDate)
+    # debug("endDate -- " + endDate)
+    # debug("areaName -- " + areaName)
 
 
     # convert str Dates to date type; then to a timezone-aware datetime
     sDate = make_aware(datetime.strptime(startDate, "%Y-%m-%d")) 
     eDate = make_aware(datetime.strptime(endDate, "%Y-%m-%d")) + timedelta(1) # add 1 day to endDate
 
-    debug("converted sDate -- " + str(type(sDate)))
-    debug("converted eDate -- " + str(type(eDate)))
+    # debug("converted sDate -- " + str(type(sDate)))
+    # debug("converted eDate -- " + str(type(eDate)))
 
     # for checking if filters were used in the displayed Report
     isFiltered = True
@@ -3304,15 +3293,15 @@ def filter_extBiosec(request, startDate, endDate, areaName):
         return render(request, 'farmstemp/rep-ext-biosec.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
         
     # format Technician names per Farm
-    debug("list for -- Field Technicians")
+    # debug("list for -- Field Technicians")
     techList = []
     for f in farmQry:
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
-    debug(techList)   
+    # debug(techList)   
 
     farmsData = []
     ave_extbio = 0
