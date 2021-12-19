@@ -555,12 +555,12 @@ def addMortality(request):
                     mortality_form_id = mortality_form.id
                 )
             
-            mortality.save()
-            x += 1
+                mortality.save()
+                x += 1
 
 
             # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
-            messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-activity')
+            messages.success(request, "Mortality Record has been sent for approval.")
             return redirect('/health-symptoms')
 
         else:
