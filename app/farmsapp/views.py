@@ -1727,11 +1727,8 @@ def approveActivityForm(request, activityFormID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        print("TEST LOG: Approve Activity Form is a POST Method")
-        print(request.POST)
-
         # update activity form fields for user approvals
-            # is_checked for live op
+        # is_checked for live op
         if request.POST.get("is_checked") == 'true' :
             activity_form.is_checked = True
 
@@ -1771,7 +1768,7 @@ def approveActivityForm(request, activityFormID):
         for activity in actQuery:
             activity.last_updated = dateToday
             
-            if activity_form.is_noted == True and activity_form.is_checked == True and activity_form.is_reported == True :
+            if activity_form.is_noted == True and activity_form.is_reported == True and activity_form.is_checked == True :
                 activity.is_approved = True
                 activity.date_approved = dateToday
 
@@ -1781,12 +1778,12 @@ def approveActivityForm(request, activityFormID):
         messages.success(request, "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
-    messages.error(request, "Failed to approve activity form.", extra_tags='update-activity')
+    messages.error(request, "Failed to approve activities.", extra_tags='update-activity')
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
 def rejectActivityForm(request, activityFormID):
     """
-    - Modify is_checked, is_reported, and is_noted values of all activities with the same activity form
+    - Modify is_checked, is_reported, and is_noted values of selected activity form
     - Update last_updated
 
     activityFormID = id value of activity form selected
@@ -1799,16 +1796,13 @@ def rejectActivityForm(request, activityFormID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        print("TEST LOG: Approve Activity Form is a POST Method")
-        print(request.POST)
-
         # update activity form fields for user approvals
-        # is_noted for asst. manager
-        if request.POST.get("is_noted") == 'false' :
-            activity_form.is_noted = False
+        # is_checked for live op
+        if request.POST.get("is_checked") == 'false' :
+            activity_form.is_checked = False
 
-            if request.user.groups.all()[0].name == "Assistant Manager":
-                activity_form.act_asm_id = request.user.id
+            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+                activity_form.act_liveop_id = request.user.id
         
         # is_reported for ext vet
         elif request.POST.get("is_reported") == 'false' :
@@ -1817,12 +1811,13 @@ def rejectActivityForm(request, activityFormID):
             if request.user.groups.all()[0].name == "Extension Veterinarian":
                 activity_form.act_extvet_id = request.user.id
 
-        # is_checked for live op
-        elif request.POST.get("is_checked") == 'false' :
-            activity_form.is_checked = False
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'false' :
+            activity_form.is_noted = False
 
-            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-                activity_form.act_liveop_id = request.user.id
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                activity_form.act_asm_id = request.user.id
+
         
         activity_form.save()
 
@@ -1831,7 +1826,7 @@ def rejectActivityForm(request, activityFormID):
         for activity in actQuery:
             activity.last_updated = dateToday
             
-            if activity_form.is_noted == False or activity_form.is_checked == False or activity_form.is_reported == False :
+            if activity_form.is_noted == False or activity_form.is_reported == False or activity_form.is_checked == False :
                 activity.is_approved = False
 
             activity.save()

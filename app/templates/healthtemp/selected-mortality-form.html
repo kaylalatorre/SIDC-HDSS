@@ -19,8 +19,8 @@
         <div class="flex">
             <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
-                <button class="primary-btn-red act-forms-btn" id="reject-activity" onclick="rejectActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
+                <button class="primary-btn" id="approve-mortality" style="margin-right: 4px;" onclick="approveMortality('{{ mortalityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+                <button class="primary-btn-red" id="reject-mortality" onclick="rejectMortality('{{ mortalityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
             </div>
         </div>
         {% else %}
@@ -181,21 +181,6 @@
                 </thead>
                 <tbody id="mortality-table">
                     <tr style="display: none">
-                        <td data-label="Farm Code" id="farms"> 
-                            <div class="mb-3">
-                                <select id="farm-code-list" name="farm-code-list" class="form-select">
-                                    <!-- {% for farm in farms %}
-                                        {% if farm.id < 10 %}
-                                            <option value="{{ farm.id }}" class="status">00{{farm.id}}</option>
-                                        {% elif farm.id < 100 %}
-                                            <option value="{{ farm.id }}" class="status">0{{farm.id}}</option>
-                                        {% else %}
-                                            <option value="{{ farm.id }}" class="status">{{farm.id}}</option>
-                                        {% endif %}
-                                    {% endfor %} -->
-                                </select>
-                            </div>
-                        </td>
                         <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
                         <td data-label="Beg. Inv." id="num_begInv"> {{mortalityForm.num_begInv}} </td>
                         <td data-label="Today" id="num_today"> {{mortalityForm.num_today}} </td>

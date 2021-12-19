@@ -351,7 +351,6 @@ function removeMortalityRow(currRow){
 *   activity-table = table body that the row will be appended to
 */
 function addMortalityRow() {
-    const farms = document.getElementById('farms').innerHTML;
     const mortality_date = document.getElementById('mortality_date').innerHTML;
     const num_begInv = document.getElementById('num_begInv').innerHTML;
     const num_today = document.getElementById('num_today').innerHTML;
@@ -361,7 +360,6 @@ function addMortalityRow() {
     const mortality_rate = document.getElementById('mortality_rate').innerHTML;
 
     $("#mortality-table").append("<tr> \
-        <td data-label='Farm Code'> " + farms + " </td> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
         <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
         <td data-label='Today'> " + num_today + " </td> \

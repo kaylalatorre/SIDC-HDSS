@@ -39,7 +39,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Farm Code</th>
                             <th>Mortality Date</th>
                             <th width="10%">Beg. Inv.</th>
                             <th width="10%">Today</th>
@@ -52,21 +51,6 @@
                     </thead>
                     <tbody id="mortality-table">
                         <tr>
-                            <td data-label="Farm Code" id="farms"> 
-                                <div class="mb-3">
-                                    <select id="farm-code-list" name="farm-code-list" class="form-select">
-                                        {% for farm in farms %}
-                                            {% if farm.id < 10 %}
-                                                <option value="{{ farm.id }}" class="status">00{{farm.id}}</option>
-                                            {% elif farm.id < 100 %}
-                                                <option value="{{ farm.id }}" class="status">0{{farm.id}}</option>
-                                            {% else %}
-                                                <option value="{{ farm.id }}" class="status">{{farm.id}}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </td>
                             <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
                             <td data-label="Beg. Inv." id="num_begInv"> {{mortalityForm.num_begInv}} </td>
                             <td data-label="Today" id="num_today"> {{mortalityForm.num_today}} </td>

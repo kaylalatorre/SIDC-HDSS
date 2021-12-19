@@ -918,6 +918,94 @@ function resubmitActivity(actDate, actFormID, farmID) {
     })
 }
 
+/**
+*   - Approves all activities under selected activity form
+*   
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
+*/
+function approveActivity(actFormID, userType) {
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Livestock Operation Specialist") {
+        is_checked = true;
+    }
+    else if (userType == "Extension Veterinarian") {
+        is_reported = true;   
+    }
+    else {
+        is_noted = true;
+    }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_checked" : is_checked,
+                "is_reported" : is_reported,
+                "is_noted" : is_noted },
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+*   - Rejects all activities under selected activity form
+*   
+*   actFormID = id value of selected activity form
+*   userType = user group of currently logged in user
+*/
+function rejectActivity(actFormID, userType) {
+    var is_checked = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Livestock Operation Specialist") {
+        is_checked = false;
+    }
+    else if (userType == "Extension Veterinarian") {
+        is_reported = false;   
+    }
+    else {
+        is_noted = false;
+    }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-activity-form/' + actFormID,
+        data: {"id" : actFormID,
+                "is_checked" : is_checked,
+                "is_reported" : is_reported,
+                "is_noted" : is_noted },
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
 //---- MODULE 2 functions ----//
 
 /**
@@ -957,100 +1045,6 @@ function viewHealthSymptoms(farmHTML) {
         location.reload(true);
     }
 }
-/**
-*   - Approves all activities under selected activity form
-*   
-*   actFormID = id value of selected activity form
-*   userType = user group of currently logged in user
-*/
-function approveActivity(actFormID, userType) {
-    // console.log(actFormID);
-    // console.log(userType);
-
-    var is_checked = null;
-    var is_reported = null;
-    var is_noted = null;
-
-    if (userType == "Assistant Manager"){
-        is_noted = true;
-    }
-    else if (userType == "Extension Veterinarian"){
-        is_reported = true;   
-    }
-    else { // if (userType == "Livestock Operation Specialist"){
-        is_checked = true;
-    }
-
-    ajaxCSRF();
-
-    $.ajax({
-        type: 'POST',
-        url: '/approve-activity-form/' + actFormID,
-        data: {"id" : actFormID,
-                "is_noted" : is_noted,
-                "is_reported" : is_reported,
-                "is_checked" : is_checked },
-
-        success: function(response){
-            if (response.status == 200){
-                console.log(response.responseJSON.success)
-            }
-
-            window.location.replace("/forms-approval");
-        },
-        error: function (res){
-            console.log(res.responseJSON.error)
-        }
-    })
-}
-
-/**
-*   - Rejects all activities under selected activity form
-*   
-*   actFormID = id value of selected activity form
-*   userType = user group of currently logged in user
-*/
-function rejectActivity(actFormID, userType) {
-    // console.log(actFormID);
-    // console.log(userType);
-
-    var is_checked = null;
-    var is_reported = null;
-    var is_noted = null;
-
-    if (userType == "Assistant Manager"){
-        is_noted = false;
-    }
-    else if (userType == "Extension Veterinarian"){
-        is_reported = false;   
-    }
-    else { // if (userType == "Livestock Operation Specialist"){
-        is_checked = false;
-    }
-
-    ajaxCSRF();
-
-    $.ajax({
-        type: 'POST',
-        url: '/reject-activity-form/' + actFormID,
-        data: {"id" : actFormID,
-                "is_noted" : is_noted,
-                "is_reported" : is_reported,
-                "is_checked" : is_checked },
-
-        success: function(response){
-            if (response.status == 200){
-                console.log(response.responseJSON.success)
-            }
-
-            window.location.replace("/forms-approval");
-        },
-        error: function (res){
-            console.log(res.responseJSON.error)
-        }
-    })
-}
-
 
 /**
  * Helper function for setting dropdown acc. to selected option
@@ -1070,7 +1064,6 @@ function rejectActivity(actFormID, userType) {
         }
     });
 }
-
 
 /**
  * on-click AJAX for edit status btn for Incident Report
@@ -1106,4 +1099,92 @@ function rejectActivity(actFormID, userType) {
         });
     }
 
+}
+
+/**
+*   - Approves all mortalities under selected mortality form
+*   
+*   mortFormID = id value of selected mortality form
+*   userType = user group of currently logged in user
+*/
+function approveMortality(mortFormID, userType) {
+    var is_posted = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Paiwi Management Staff") {
+        is_posted = true;
+    }
+    else if (userType == "Extension Veterinarian") {
+        is_reported = true;   
+    }
+    else {
+        is_noted = true;
+    }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-mortality-form/' + mortFormID,
+        data: {"id" : mortFormID,
+                "is_posted" : is_posted,
+                "is_reported" : is_reported,
+                "is_noted" : is_noted },
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+*   - Rejects all mortalities under selected mortality form
+*   
+*   mortFormID = id value of selected mortality form
+*   userType = user group of currently logged in user
+*/
+function rejectMortality(mortFormID, userType) {
+    var is_posted = null;
+    var is_reported = null;
+    var is_noted = null;
+
+    if (userType == "Paiwi Management Staff") {
+        is_posted = false;
+    }
+    else if (userType == "Extension Veterinarian") {
+        is_reported = false;   
+    }
+    else {
+        is_noted = false;
+    }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-mortality-form/' + mortFormID,
+        data: {"id" : mortFormID,
+                "is_posted" : is_posted,
+                "is_reported" : is_reported,
+                "is_noted" : is_noted },
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
 }

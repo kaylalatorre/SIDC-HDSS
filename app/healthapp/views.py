@@ -22,6 +22,9 @@ import json
 # for string regex
 import re
 
+# for random number (mortality series)
+import random
+
 # for Forms
 from farmsapp.forms import (
     MortalityForm
@@ -423,7 +426,7 @@ def selectedHealthSymptoms(request, farmID):
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"farm_code": farmID, "incident_symptomsList": incident_symptomsList,
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"farm_code": int(farmID), "incident_symptomsList": incident_symptomsList,
                                                                         "mortalityList": mortalityList})
 
 
@@ -467,7 +470,7 @@ def edit_incidStat(request, incidID):
 def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})
 
-def addMortality(request):
+def addMortality(request, farmID):
     """
     - Redirect to Add Mortality Page and render corresponding Django form
     - Add new mortality record to database and connect to new instance of Mortality Form (as FK)
@@ -477,7 +480,7 @@ def addMortality(request):
     """
     
     # generate series number
-    series = int(101010)
+    series = random.randint(100000, 999999)
 
     # get today's date
     dateToday = datetime.now(timezone.utc)
@@ -504,7 +507,7 @@ def addMortality(request):
 
     if request.method == 'POST':
         print("TEST LOG: Add Mortality has POST method") 
-        print(request.POST)
+        # print(request.POST)
 
         mortalityForm = MortalityForm(request.POST)
 
@@ -514,7 +517,6 @@ def addMortality(request):
         i = 0
         for mortality_date in request.POST.getlist('mortality_date', default=None):
             mortalityObject = {
-                "farmID" : request.POST.getlist("farm-code-list")[i],
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_begInv" : request.POST.getlist('num_begInv', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
@@ -528,7 +530,7 @@ def addMortality(request):
             i += 1
 
         if mortalityForm.is_valid():
-            print("TEST LOG: mortalityForm is valid")
+            # print("TEST LOG: mortalityForm is valid")
 
             # create instance of Mortality Form model
             mortality_form = Mortality_Form.objects.create(
@@ -545,7 +547,7 @@ def addMortality(request):
                 # create new instance of Mortality model
                 mortality = Mortality.objects.create(
                     series = series,
-                    ref_farm_id = mort['farmID'],
+                    ref_farm_id = farmID,
                     mortality_date = mort['mortality_date'],
                     num_begInv = mort['num_begInv'],
                     num_today = mort['num_today'],
@@ -560,19 +562,15 @@ def addMortality(request):
 
 
             # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
-            messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-activity')
+            messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-mortality')
             return redirect('/health-symptoms')
 
         else:
-            print("TEST LOG: mortalityForm is not valid")
-            
-            print(mortalityForm.errors.as_text)
-            print(mortalityForm.non_field_errors().as_text)
-
+            # print("TEST LOG: mortalityForm is not valid")
             formError = str(mortalityForm.non_field_errors().as_text)
             print(re.split("\'.*?",formError)[1])
 
-            messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-mortality')
 
     else:
         print("TEST LOG: Add Mortality is not a POST method")
@@ -639,10 +637,10 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     # store all data to an array
     for mortality in mortQuery:
         farm = Farm.objects.filter(id=mortality.ref_farm_id).values("id").first()
+        series = mortality.series
 
         mortList.append({
             'id' : mortality.id,
-            'series' : mortality.series,
             'mortality_date' : mortality.mortality_date,
             'format_date' : (mortality.mortality_date).strftime('%Y-%m-%d'),
             'num_begInv' : mortality.num_begInv,
@@ -654,4 +652,133 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
 
 
     return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityFormID' : mortalityFormID, 'mortDate' : mortalityDate, 'farm' : farm, 'mortalityForm' : MortalityForm(),
-                                                                        'mortalities' : mortList, 'formStatus' : status, 'mortFormDetails' : mortFormQuery })
+                                                                        'mortalities' : mortList, 'formStatus' : status, 'mortFormDetails' : mortFormQuery, 'series' : series })
+
+def approveMortalityForm(request, mortalityFormID):
+    """
+    - Modify is_posted, is_reported, and is_noted values of selected mortality form
+    - Update last_updated and date_approved
+
+    mortalityFormID = id value of mortality form selected
+    """
+
+    mortality_form = Mortality_Form.objects.filter(id=mortalityFormID).first()
+
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        # update activity form fields for user approvals
+        # is_posted for paiwi mgt
+        if request.POST.get("is_posted") == 'true' :
+            mortality_form.is_posted = True
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                mortality_form.mort_mgtStaff_id = request.user.id
+
+                # NOTIFY USER (EXTENSION VETERINARIAN) - An Activity Form has been sent for approval or is pending for approval
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Paiwi Management Staff
+    
+        # is_reported for ext vet
+        elif request.POST.get("is_reported") == 'true' :
+            mortality_form.is_reported = True
+
+            if request.user.groups.all()[0].name == "Extension Veterinarian":
+                mortality_form.mort_extvet_id = request.user.id
+
+                # NOTIFY USER (ASSISTANT MANAGER) - An Activity Form has been sent for approval or is pending for approval
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Extension Veterinarian
+
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'true' :
+            mortality_form.is_noted = True
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                mortality_form.mort_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Assistant Manager
+
+        
+        mortality_form.save()
+
+        # get all mortalities under mortality form
+        mortQuery = Mortality.objects.filter(mortality_form_id=mortalityFormID).all()
+        for mortality in mortQuery:
+            mortality.last_updated = dateToday
+            
+            if mortality_form.is_noted == True and mortality_form.is_reported == True and mortality_form.is_posted == True :
+                mortality.is_approved = True
+                mortality.date_approved = dateToday
+
+            mortality.save()
+    
+
+        messages.success(request, "Mortality Form has been approved by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-mortality')
+        return JsonResponse({"success": "Mortality Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
+
+    messages.error(request, "Failed to approve Mortality Form.", extra_tags='update-mortality')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def rejectMortalityForm(request, mortalityFormID):
+    """
+    - Modify is_posted, is_reported, and is_noted values of selected mortality form
+    - Update last_updated
+
+    mortalityFormID = id value of mortality form selected
+    """
+
+    mortality_form = Mortality_Form.objects.filter(id=mortalityFormID).first()
+
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        # update activity form fields for user approvals
+        # is_noted for asst. manager
+        if request.POST.get("is_posted") == 'false' :
+            mortality_form.is_posted = False
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                mortality_form.mort_mgtStaff_id = request.user.id
+        
+        # is_reported for ext vet
+        elif request.POST.get("is_reported") == 'false' :
+            mortality_form.is_reported = False
+
+            if request.user.groups.all()[0].name == "Extension Veterinarian":
+                mortality_form.mort_extvet_id = request.user.id
+
+        # is_checked for live op
+        elif request.POST.get("is_noted") == 'false' :
+            mortality_form.is_noted = False
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                mortality_form.mort_asm_id = request.user.id
+        
+
+        mortality_form.save()
+
+        # get all mortalities under mortality form
+        mortQuery = Mortality.objects.filter(mortality_form_id=mortalityFormID).all()
+        for mortality in mortQuery:
+            mortality.last_updated = dateToday
+            
+            if mortality_form.is_noted == False or mortality_form.is_checked == False or mortality_form.is_reported == False :
+                mortality.is_approved = False
+
+            mortality.save()
+
+
+        # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been rejected by <user>
+        messages.success(request, "Mortality Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-mortality')
+        return JsonResponse({"success": "Mortality Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
+
+    messages.error(request, "Failed to reject mortality records.", extra_tags='update-activity')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
