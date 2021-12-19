@@ -329,6 +329,50 @@ function addActivityRow() {
         </tr>");
 }
 
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeMortalityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('mortality-table');
+    table.deleteRow(rowIndex);
+}
+
+/**
+*   - Appends new activity row to activity table
+*   
+*   activity-table = table body that the row will be appended to
+*/
+function addMortalityRow() {
+    const farms = document.getElementById('farms').innerHTML;
+    const mortality_date = document.getElementById('mortality_date').innerHTML;
+    const num_begInv = document.getElementById('num_begInv').innerHTML;
+    const num_today = document.getElementById('num_today').innerHTML;
+    const num_toDate = document.getElementById('num_toDate').innerHTML;
+    const source = document.getElementById('source').innerHTML;
+    const remarks = document.getElementById('remarks').innerHTML;
+    const mortality_rate = document.getElementById('mortality_rate').innerHTML;
+
+    $("#mortality-table").append("<tr> \
+        <td data-label='Farm Code'> " + farms + " </td> \
+        <td data-label='Mortality Date'> " + mortality_date + " </td> \
+        <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
+        <td data-label='Today'> " + num_today + " </td> \
+        <td data-label='To Date'> " + num_toDate + " </td> \
+        <td data-label='Source'> " + source + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
+        <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \
+        <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
+        </tr>");
+}
+
 /**
 *   - Displays input field when waste mgt option is "Others"
 *   

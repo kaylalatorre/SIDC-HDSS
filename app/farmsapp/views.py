@@ -263,19 +263,15 @@ def techFarms(request):
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
-    # print("TEST LOG areaQry: " + str(areaQry))
     
     # collect number of areas assigned (for frontend purposes)
     areaNum = len(areaQry)
-    # print("TEST LOG areaNum: " + str(areaNum))
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
-        # print(str(area.id) + str(area.area_name))
-
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
@@ -1043,20 +1039,14 @@ def biosec_view(request):
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
-    areaQry = Area.objects.filter(tech_id=techID).all()
-    # print("TEST LOG areaQry: " + str(areaQry))
+    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
 
     # array to store all farms under each area
     techFarmsList = []
 
     for area in areaQry :
-        # print(str(area.id) + str(area.area_name))
-
         # collect the corresponding hog raiser details for each farm 
-        techFarmQry  = Farm.objects.filter(area_id=area.id).values(
-            "id"
-        ).order_by('id').all()
-        # debug("techFarmQry -- " + str(techFarmQry))
+        techFarmQry  = Farm.objects.filter(area_id=area.id).values("id").order_by('id').all()
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -1780,7 +1770,7 @@ def addActivity(request, farmID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        print("TEST LOG: Activity Form has POST method") 
+        print("TEST LOG: Add Activity has POST method") 
         print(request.POST)
 
         activityForm = ActivityForm(request.POST)
@@ -1819,7 +1809,6 @@ def addActivity(request, farmID):
 
             for act in activityList:
                 act = activityList[x]
-                # print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
 
                 # create new instance of Activity model
                 activity = Activity.objects.create(
@@ -1837,7 +1826,7 @@ def addActivity(request, farmID):
                 # print(str(activity))
 
                 activity.save()
-                print("TEST LOG: Added new activity")
+                # print("TEST LOG: Added new activity")
 
                 x += 1
             
@@ -1858,7 +1847,7 @@ def addActivity(request, farmID):
             messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
 
     else:
-        print("TEST LOG: Activity Form is not a POST method")
+        print("TEST LOG: Add Activity is not a POST method")
 
         # if form has no input yet, only display an empty form
         activityForm = ActivityForm()

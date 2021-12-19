@@ -191,8 +191,8 @@ class Activity(models.Model):
     trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
-    description         = models.CharField(max_length=500, null=True, blank=True)
-    remarks             = models.CharField(max_length=500, null=True, blank=True)
+    description         = models.CharField(max_length=200, null=True, blank=True)
+    remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     date_approved       = models.DateTimeField(null=True, blank=True)
@@ -218,15 +218,15 @@ class Activities_Form(models.Model):
 
 # MORTALITY Table
 class Mortality(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)        
-    series              = models.IntegerField()
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)        
+    series              = models.IntegerField(null=True, blank=True)
 
-    mortality_date      = models.DateTimeField()
+    mortality_date      = models.DateField()
     num_begInv          = models.IntegerField()
     num_today           = models.IntegerField()
     num_toDate          = models.IntegerField()
-    source              = models.CharField(max_length=200)
-    remarks             = models.CharField(max_length=500)
+    source              = models.CharField(max_length=200, null=True, blank=True)
+    remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     date_approved       = models.DateTimeField(null=True, blank=True)

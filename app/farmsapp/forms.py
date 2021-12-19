@@ -218,9 +218,61 @@ class ActivityForm(forms.ModelForm):
             raise forms.ValidationError("Arrival time should be before departure time.")
 
 class MortalityForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['mortality_date'].widget.attrs.update({
+            'type' : 'date', 
+            'class' : 'form-control',
+            'id' : 'mortality-date', 
+        })
+        self.fields['num_begInv'].widget.attrs.update({
+            'type' : 'number', 
+            'class' : 'form-control',
+            'id' : 'beg-inv', 
+            'placeholder' : 'ex. 20',
+        })
+        self.fields['num_today'].widget.attrs.update({
+            'type' : 'number', 
+            'class' : 'form-control',
+            'id' : 'beg-inv', 
+            'placeholder' : 'ex. 20',
+        })        
+        self.fields['num_toDate'].widget.attrs.update({
+            'type' : 'number', 
+            'class' : 'form-control',
+            'id' : 'beg-inv', 
+            'placeholder' : 'ex. 20',
+        })        
+        self.fields['source'].widget.attrs.update({
+            'type' : 'text', 
+            'class' : 'form-control',
+            'id' : 'mortality-source', 
+        })        
+        self.fields['remarks'].widget.attrs.update({
+            'type' : 'text', 
+            'class' : 'form-control',
+            'id' : 'mortality-remarks', 
+        })
+
     class Meta:
         model = Mortality
         fields = ('__all__')
+        widgets = {
+            'mortality_date' : widgets.DateInput(attrs={'type' : 'date'}),
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        mortality_date = cleaned_data.get("mortality_date")
+        today = datetime.date.today()
+
+        # print("Input Date: " + str(mortality_date))
+        # print("Date today: " + str(today))
+
+        if mortality_date > today:
+            raise forms.ValidationError("Date can not be later than today.")
+
 
 class MemAnnouncementForm(ModelForm):
     def __init__(self, *args, **kwargs):

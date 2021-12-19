@@ -19,6 +19,14 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
+# for string regex
+import re
+
+# for Forms
+from farmsapp.forms import (
+    MortalityForm
+)
+
 def debug(m):
     """
     For debugging purposes
@@ -280,15 +288,12 @@ def healthSymptoms(request):
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
-    areaQry = Area.objects.filter(tech_id=techID).all()
-    print("TEST LOG areaQry: " + str(areaQry))
+    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
 
     # array to store all farms under each area
     farmsData = []
 
     for area in areaQry :
-        # print(str(area.id) + str(area.area_name))
-
         # (1) filter by area, then collect details for each Farm 
         qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser','farm_weight').annotate(
             fname=F("hog_raiser__fname"), 
@@ -323,7 +328,7 @@ def healthSymptoms(request):
             total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
             farmObject = {
-                "code":  str(f["id"]),
+                "code":  f["id"],
                 "raiser": " ".join((f["fname"],f["lname"])),
                 "pigs": str(f["total_pigs"]),
                 "updated": f["last_updated"],
@@ -337,8 +342,8 @@ def healthSymptoms(request):
             farmsData.append(farmObject)
 
             total_pigs += f["total_pigs"]
-        debug("-- farmsData ---")
-        debug(farmsData)
+        # debug("-- farmsData ---")
+        # debug(farmsData)
 
 
     # (ERROR) for checking technician Areas that have no assigned Farms
@@ -357,7 +362,7 @@ def selectedHealthSymptoms(request, farmID):
     :type farmID: string
     """
 
-    debug("TEST LOG: in selectedHealthSymptoms()/n")
+    debug("TEST LOG: in selectedHealthSymptoms()")
     debug("farmID -- " + str(farmID))
 
 
@@ -455,4 +460,60 @@ def addCase(request):
     return render(request, 'healthtemp/add-case.html', {})
 
 def addMortality(request):
-    return render(request, 'healthtemp/add-mortality.html', {})
+    """
+    - Redirect to Add Mortality Page and render corresponding Django form
+    - Add new mortality record to database and connect to new instance of Mortality Form (as FK)
+    - Save details to mortality and add FK of selected farm table
+    - Django forms will first check the validity of input (based on the fields within models.py)
+
+    """
+    
+    # generate series number
+    series = int(101010)
+
+    # get all farms under current technician
+    techID = request.user.id
+
+    # collect all IDs of assigned areas under technician
+    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
+
+    # array to store all farms under each area
+    techFarms = []
+
+    for area in areaQry :
+        # collect the corresponding hog raiser details for each farm 
+        techFarmQry  = Farm.objects.filter(area_id=area.id).values("id").order_by('id').all()
+
+        # pass all data into an array
+        for farm in techFarmQry:
+            farmObject = {
+                "id": farm["id"],
+            }
+            techFarms.append(farmObject)
+
+    if request.method == 'POST':
+        print("TEST LOG: Add Mortality has POST method") 
+        print(request.POST)
+
+        mortalityForm = MortalityForm(request.POST)
+
+        if mortalityForm.is_valid():
+            print("TEST LOG: mortalityForm is valid")
+
+        else:
+            print("TEST LOG: mortalityForm is not valid")
+            
+            print(mortalityForm.errors.as_text)
+            print(mortalityForm.non_field_errors().as_text)
+
+            formError = str(mortalityForm.non_field_errors().as_text)
+            print(re.split("\'.*?",formError)[1])
+
+            messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+
+    else:
+        print("TEST LOG: Add Activity is not a POST method")
+
+        mortalityForm = MortalityForm()
+    
+    return render(request, 'healthtemp/add-mortality.html', {'series' : series, 'farms' : techFarms, 'mortalityForm' : mortalityForm})
