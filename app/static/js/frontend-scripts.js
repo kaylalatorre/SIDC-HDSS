@@ -351,7 +351,6 @@ function removeMortalityRow(currRow){
 *   activity-table = table body that the row will be appended to
 */
 function addMortalityRow() {
-    const farms = document.getElementById('farms').innerHTML;
     const mortality_date = document.getElementById('mortality_date').innerHTML;
     const num_begInv = document.getElementById('num_begInv').innerHTML;
     const num_today = document.getElementById('num_today').innerHTML;
@@ -361,7 +360,6 @@ function addMortalityRow() {
     const mortality_rate = document.getElementById('mortality_rate').innerHTML;
 
     $("#mortality-table").append("<tr> \
-        <td data-label='Farm Code'> " + farms + " </td> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
         <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
         <td data-label='Today'> " + num_today + " </td> \
@@ -385,20 +383,42 @@ function wasteMgtOther(option){
 }
 
 /**
-*   - Redirects user from farm list to selected farm page
+*   - Redirects user from forms approval page to selected activity form page
 *   
-*   farm = value of selected farm row
+*   activity = selected activity row
 */
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    // console.log(actDate);
     console.log(formatDate(actDate));
     var actFormID = activity.parentNode.parentNode.parentNode.id;
     // console.log(actFormID);
 
     try{
         url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log(error);
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects user from forms approval page to selected mortality form page
+*   
+*   mortality = selected mortality row
+*/
+function viewMortalityForm(mortality) {
+
+    var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log(formatDate(mortDate));
+    var mortFormID = mortality.parentNode.parentNode.parentNode.id;
+    // console.log(actFormID);
+
+    try{
+        url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
         console.log(url);
         location.href = url;
     }catch (error){

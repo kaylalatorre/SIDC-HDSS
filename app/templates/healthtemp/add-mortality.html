@@ -39,7 +39,6 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Farm Code</th>
                             <th>Mortality Date</th>
                             <th width="10%">Beg. Inv.</th>
                             <th width="10%">Today</th>
@@ -51,23 +50,7 @@
                         </tr>
                     </thead>
                     <tbody id="mortality-table">
-
                         <tr>
-                            <td data-label="Farm Code" id="farms"> 
-                                <div class="mb-3">
-                                    <select id="farm-code-list" name="farm-code-list" class="form-select">
-                                        {% for farm in farms %}
-                                            {% if farm.id < 10 %}
-                                                <option value="{{ farm.id }}" class="status">00{{farm.id}}</option>
-                                            {% elif farm.id < 100 %}
-                                                <option value="{{ farm.id }}" class="status">0{{farm.id}}</option>
-                                            {% else %}
-                                                <option value="{{ farm.id }}" class="status">{{farm.id}}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </td>
                             <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
                             <td data-label="Beg. Inv." id="num_begInv"> {{mortalityForm.num_begInv}} </td>
                             <td data-label="Today" id="num_today"> {{mortalityForm.num_today}} </td>
@@ -82,26 +65,6 @@
                         
                     </tbody>
                 </table>
-
-            </div>
-            <br>
-
-            <!-- Hidden depending on user -->
-
-            <div id="activity-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-pms">
-                    <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-ext-vet">
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" id="cb-am">
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
             </div>
         </div>
         <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>

@@ -16,7 +16,13 @@
     <div class="main-div">
         <h1 class="flex-item heading"><a href="/biosecurity/{{farmID}}">Biosecurity</a> > Add Checklist</h1>
         <div class="flex subheading">
+            {% if farmID < 10 %}
+            <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">00{{ farmID }}</p>
+            {% elif farmID < 100 %}
+            <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">0{{ farmID }}</p>
+            {% else %}
             <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">{{ farmID }}</p>
+            {% endif %}
             <div><button class="primary-btn">Save</button></div>
         </div>
         <hr>

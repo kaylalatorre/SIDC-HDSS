@@ -18,12 +18,12 @@
     {% if user.groups.all.0.name == 'Assistant Manager' or user.groups.all.0.name == 'Extension Veterinarian' %}
     <div class="box-style small-table">
         <h2>Activity Forms</h2> <br>
-        {% if actPending|length > 0 or actAccepted|length > 0 or actRejected|length > 0 %}
+        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Form</th>
+                    <th>Farm Code</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -33,8 +33,8 @@
             {% for act in actPending %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>Activities Record</td>
-                    <td class="status">{{ act.status }}</td>
+                    <td>{{act.farmID}}</td>
+                    <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -46,8 +46,8 @@
             {% for act in actApproved %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>Activities Record</td>
-                <td class="status">{{ act.status }}</td>
+                <td>{{act.farmID}}</td>
+                <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
                     <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -59,8 +59,8 @@
             {% for act in actRejected %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>Activities Record</td>
-                <td class="status">{{ act.status }}</td>
+                <td>{{act.farmID}}</td>
+                <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
                     <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -80,12 +80,12 @@
     <br>
     <div class="box-style small-table">
         <h2>Mortality Forms</h2> <br>
-        {% if mortPending|length > 0 or mortAccepted|length > 0 or mortRejected|length > 0 %}
+        {% if mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Form</th>
+                    <th>Farm Code</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -95,12 +95,12 @@
                 {% for mort in mortPending %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -108,12 +108,12 @@
                 {% for mort in mortApproved %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -121,12 +121,12 @@
                 {% for mort in mortRejected %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -143,12 +143,12 @@
     {% elif user.groups.all.0.name == 'Livestock Operation Specialist' %}
     <div class="box-style small-table">
         <h2>Activity Forms</h2> <br>
-        {% if actPending|length > 0 or actAccepted|length > 0 or actRejected|length > 0 %}
+        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Form</th>
+                    <th>Farm Code</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -158,8 +158,8 @@
             {% for act in actPending %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>Activities Record</td>
-                    <td class="status">{{ act.status }}</td>
+                    <td>{{act.farmID}}</td>
+                    <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -171,8 +171,8 @@
             {% for act in actApproved %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>Activities Record</td>
-                <td class="status">{{ act.status }}</td>
+                <td>{{act.farmID}}</td>
+                <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
                     <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -184,8 +184,8 @@
             {% for act in actRejected %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>Activities Record</td>
-                <td class="status">{{ act.status }}</td>
+                <td>{{act.farmID}}</td>
+                <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
                     <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -206,12 +206,12 @@
     {% elif user.groups.all.0.name == 'Paiwi Management Staff' %}
     <div class="box-style small-table">
         <h2>Mortality Forms</h2> <br>
-        {% if mortPending|length > 0 or mortAccepted|length > 0 or mortRejected|length > 0 %}
+        {% if mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Form</th>
+                    <th>Farm Code</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -221,12 +221,12 @@
                 {% for mort in mortPending %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -234,12 +234,12 @@
                 {% for mort in mortApproved %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -247,12 +247,12 @@
                 {% for mort in mortRejected %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -269,12 +269,12 @@
     {% elif user.groups.all.0.name == 'Field Technician' %}
     <div class="box-style small-table">
         <h2>Activity Forms</h2> <br>
-        {% if actPending|length > 0 or actAccepted|length > 0 or actRejected|length > 0 %}
+        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Form</th>
+                    <th>Farm Code</th>
                     <th>Status</th>
                     <th></th>
                 </tr>
@@ -283,8 +283,8 @@
                 {% for act in actPending %}
                     <tr id="{{act.id}}" value="{{ act.id }}">
                         <td>{{act.date_added}}</td>
-                        <td>Activities Record</td>
-                        <td class="status">{{ act.status }}</td>
+                        <td>{{act.farmID}}</td>
+                        <td class="status">{{act.status}}</td>
                         <td>
                             <div class="btn-group" style="justify-content: end; padding: 0;">
                                 <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -295,8 +295,8 @@
                 {% for act in actApproved %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>Activities Record</td>
-                    <td class="status">{{ act.status }}</td>
+                    <td>{{act.farmID}}</td>
+                    <td class="status">{{act.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -307,8 +307,8 @@
                 {% for act in actRejected %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>Activities Record</td>
-                    <td class="status">{{ act.status }}</td>
+                    <td>{{act.farmID}}</td>
+                    <td class="status">{{act.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -327,12 +327,12 @@
     <br>
     <div class="box-style small-table">
         <h2>Mortality Forms</h2> <br>
-        {% if mortPending|length > 0 or mortAccepted|length > 0 or mortRejected|length > 0 %}
+        {% if mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Form</th>
+                    <th>Farm Code</th>
                     <th>Status</th>
                     <th></th>
                 </tr>
@@ -341,11 +341,11 @@
                 {% for mort in mortPending %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -353,11 +353,11 @@
                 {% for mort in mortApproved %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
@@ -365,11 +365,11 @@
                 {% for mort in mortRejected %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>Mortalities Record</td>
-                    <td class="status">{{ mort.status }}</td>
+                    <td>{{mort.farmID}}</td>
+                    <td class="status">{{mort.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
                         </div>
                     </td>
                 </tr>
