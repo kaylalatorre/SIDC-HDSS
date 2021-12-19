@@ -385,20 +385,42 @@ function wasteMgtOther(option){
 }
 
 /**
-*   - Redirects user from farm list to selected farm page
+*   - Redirects user from forms approval page to selected activity form page
 *   
-*   farm = value of selected farm row
+*   activity = selected activity row
 */
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    // console.log(actDate);
     console.log(formatDate(actDate));
     var actFormID = activity.parentNode.parentNode.parentNode.id;
     // console.log(actFormID);
 
     try{
         url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log(error);
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects user from forms approval page to selected mortality form page
+*   
+*   mortality = selected mortality row
+*/
+function viewMortalityForm(mortality) {
+
+    var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log(formatDate(mortDate));
+    var mortFormID = mortality.parentNode.parentNode.parentNode.id;
+    // console.log(actFormID);
+
+    try{
+        url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
         console.log(url);
         location.href = url;
     }catch (error){

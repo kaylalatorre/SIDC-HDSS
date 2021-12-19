@@ -560,7 +560,7 @@ def addMortality(request):
 
 
             # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
-            messages.success(request, "Mortality Record has been sent for approval.")
+            messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-activity')
             return redirect('/health-symptoms')
 
         else:
@@ -575,8 +575,83 @@ def addMortality(request):
             messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
 
     else:
-        print("TEST LOG: Add Activity is not a POST method")
+        print("TEST LOG: Add Mortality is not a POST method")
 
         mortalityForm = MortalityForm()
     
     return render(request, 'healthtemp/add-mortality.html', {'series' : series, 'farms' : techFarms, 'mortalityForm' : mortalityForm})
+
+def selectedMortalityForm(request, mortalityFormID, mortalityDate):
+    """
+    - Display all mortality rows for the selected mortality form
+
+    mortalityFormID = id value of selected mortality form
+    mortalityDate = date_added value of mortality form selected
+    """
+
+    # get details of mortality form
+    mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).values(
+                "id",
+                "is_posted",
+                "is_reported",
+                "is_noted",
+                "mort_tech"
+                ).first()
+
+    # set status of mortality form
+    if request.user.groups.all()[0].name == "Paiwi Management Staff":
+        if mortFormQuery["is_posted"] == True :
+            status = 'Approved'
+        elif mortFormQuery["is_posted"] == False :
+            status = 'Rejected'
+        elif mortFormQuery["is_posted"] == None :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Extension Veterinarian":
+        if mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+            status = 'Approved'
+        elif mortFormQuery["is_reported"] == False and mortFormQuery["is_posted"] == True :
+            status = 'Rejected'
+        elif mortFormQuery["is_reported"] == None and mortFormQuery["is_posted"] == True :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Assistant Manager":
+        if mortFormQuery["is_noted"] == True and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+            status = 'Approved'
+        elif mortFormQuery["is_noted"] == False and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+            status = 'Rejected'
+        elif mortFormQuery["is_noted"] == None and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True : 
+            status = 'Pending'
+    
+    elif request.user.groups.all()[0].name == "Field Technician":
+        if mortFormQuery["is_noted"] == True and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+            status = 'Approved'
+        elif mortFormQuery["is_noted"] == False or mortFormQuery["is_reported"] == False or mortFormQuery["is_posted"] == False :
+            status = 'Rejected'
+        else :
+            status = 'Pending'
+
+    # get all mortalities under mortality form
+    mortQuery = Mortality.objects.filter(mortality_form_id=mortalityFormID).all().order_by("id")
+
+    mortList = []
+
+    # store all data to an array
+    for mortality in mortQuery:
+        farm = Farm.objects.filter(id=mortality.ref_farm_id).values("id").first()
+
+        mortList.append({
+            'id' : mortality.id,
+            'series' : mortality.series,
+            'mortality_date' : mortality.mortality_date,
+            'format_date' : (mortality.mortality_date).strftime('%Y-%m-%d'),
+            'num_begInv' : mortality.num_begInv,
+            'num_today' : mortality.num_today,
+            'num_toDate' : mortality.num_toDate,
+            'source' : mortality.source,
+            'remarks' : mortality.remarks,
+        })
+
+
+    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityFormID' : mortalityFormID, 'mortDate' : mortalityDate, 'farm' : farm, 'mortalityForm' : MortalityForm(),
+                                                                        'mortalities' : mortList, 'formStatus' : status, 'mortFormDetails' : mortFormQuery })

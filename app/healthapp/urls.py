@@ -18,4 +18,8 @@ urlpatterns = [
 
     path('add-case', views.addCase, name="addCase"),
     path('add-mortality', views.addMortality, name="addMortality"),
+
+    # forms
+    path('selected-mortality-form/<str:mortalityFormID>/<str:mortalityDate>', views.selectedMortalityForm, name="selectedMortalityForm"),
+
 ]
