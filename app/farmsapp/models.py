@@ -70,6 +70,8 @@ class Farm_Weight(models.Model):
 # FARM SYMPTOMS Table
 class Hog_Symptoms(models.Model):
     date_filed          = models.DateTimeField(default=now)
+    date_updated        = models.DateTimeField(auto_now=True, editable=True)
+
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     report_status       = models.CharField(max_length=50, default='Active')
     num_pigs_affected   = models.IntegerField(default=0)
@@ -189,8 +191,8 @@ class Activity(models.Model):
     trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
-    description         = models.CharField(max_length=500, null=True, blank=True)
-    remarks             = models.CharField(max_length=500, null=True, blank=True)
+    description         = models.CharField(max_length=200, null=True, blank=True)
+    remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
     date_approved       = models.DateTimeField(null=True, blank=True)
@@ -199,24 +201,8 @@ class Activity(models.Model):
 
     activity_form       = models.ForeignKey('Activities_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
-
     # def __str__(self):
     #     return self.id
-
-# MORTALITY Table
-class Mortality(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)        
-    series              = models.IntegerField()
-
-    mortality_date      = models.DateTimeField()
-    num_begInv          = models.IntegerField()
-    num_today           = models.IntegerField()
-    num_toDate          = models.IntegerField()
-    source              = models.CharField(max_length=200)
-    remarks             = models.CharField(max_length=500)
-    
-    # def __str__(self):
-    #     return self.
 
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
@@ -230,6 +216,40 @@ class Activities_Form(models.Model):
     act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_asm', null=True, blank=True)
     is_noted            = models.BooleanField(null=True, editable=True)
 
+# MORTALITY Table
+class Mortality(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)        
+    series              = models.IntegerField(null=True, blank=True)
+
+    mortality_date      = models.DateField()
+    num_begInv          = models.IntegerField()
+    num_today           = models.IntegerField()
+    num_toDate          = models.IntegerField()
+    source              = models.CharField(max_length=200, null=True, blank=True)
+    remarks             = models.CharField(max_length=200, null=True, blank=True)
+
+    last_updated        = models.DateTimeField(auto_now=True, editable=True)
+    date_approved       = models.DateTimeField(null=True, blank=True)
+
+    is_approved         = models.BooleanField(null=True, editable=True)
+
+    mortality_form       = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    
+    # def __str__(self):
+    #     return self.
+
+# MORTALITY FORM Table
+class Mortality_Form(models.Model):
+    date_added          = models.DateField(null=True, blank=True)
+
+    mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
+    mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
+    is_posted           = models.BooleanField(null=True, editable=True)
+    mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
+    is_reported         = models.BooleanField(null=True, editable=True)
+    mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
+    is_noted            = models.BooleanField(null=True, editable=True)
+
 # PPE FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
@@ -239,18 +259,6 @@ class PPE_Form(models.Model):
     is_checked          = models.BooleanField(default=False)
     ppe_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
     is_approved         = models.BooleanField(default=False)
-
-# MORTALITY FORM Table
-class Mortality_Form(models.Model):
-    ref_mortality       = models.ForeignKey('Mortality', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
-    mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
-    mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
-    is_posted           = models.BooleanField(default=False)
-    mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(default=False)
-    mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(default=False)
 
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):

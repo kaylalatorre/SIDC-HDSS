@@ -7,15 +7,20 @@
 {% endblock page_title %}
 
 {% block section %}
+
+{% include 'partials/messages.html' %}
+
 <div class="main-div">
     <form action="" method="POST">
+
+        {% csrf_token %}
         <h1 class="heading"><a href="/selected-health-symptoms">Hogs Health & Symptoms</a> >  Add Mortality Record</h1>
         <div class="flex subheading">
-            <p class="flex-item"> <strong>Series: </strong> 001010 </p>
+            <p class="flex-item"> <strong>Series: </strong> {{series}} </p>
             <div><button class="primary-btn" type="submit">Send for Approval</button></div>
         </div>
         <div class="mobile-subheading">
-            <p> <strong>Series: </strong> 001010 </p>
+            <p> <strong>Series: </strong> {{series}} </p>
         </div>
         <hr>
 
@@ -23,11 +28,11 @@
             <div class="flex subheading">
                 <p class="flex-item">Add all mortality records here. </p>
                 <div>
-                    <button class="secondary-btn" type="button" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
+                    <button class="secondary-btn" type="button" onclick="addMortalityRow()" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
                 </div>
             </div>
             <div class="mobile-subheading">
-                <button class="secondary-btn" type="button" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
+                <button class="secondary-btn" type="button" onclick="addMortalityRow()" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
            </div>
 
             <div class="input-group">
@@ -45,40 +50,34 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="activity-table">
+                    <tbody id="mortality-table">
 
                         <tr>
-                            <td data-label="Farm Code"> 
+                            <td data-label="Farm Code" id="farms"> 
                                 <div class="mb-3">
-                                    <select aria-label="Farm Code" class="form-select">
-                                        <option value="code" class="status">001</option>
+                                    <select id="farm-code-list" name="farm-code-list" class="form-select">
+                                        {% for farm in farms %}
+                                            {% if farm.id < 10 %}
+                                                <option value="{{ farm.id }}" class="status">00{{farm.id}}</option>
+                                            {% elif farm.id < 100 %}
+                                                <option value="{{ farm.id }}" class="status">0{{farm.id}}</option>
+                                            {% else %}
+                                                <option value="{{ farm.id }}" class="status">{{farm.id}}</option>
+                                            {% endif %}
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </td>
-                            <td data-label="Mortality Date"> 
-                                <input type="date" class="form-control" id="mortality-date">
-                            </td>                            
-                            <td data-label="Beg. Inv.">
-                                <input type="number" class="form-control" id="beg-inv" placeholder="ex. 20"> 
-                            </td>
-                            <td data-label="Today">
-                                <input type="number" class="form-control" id="mortality-today" placeholder="ex. 5">
-                            </td>
-                            <td data-label="To Date" >
-                                <input type="number" class="form-control" id="inv-to-date" placeholder="ex. 15">
-                            </td>
-                            <td data-label="Source">
-                                <input type="text" class="form-control" id="mortality-source" placeholder="">
-                            </td>
-                            <td data-label="Remarks">
-                                <input type="text" class="form-control" id="mortality-remarks" placeholder="">
-                            </td>
-                            <td style="text-align: right;">
+                            <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
+                            <td data-label="Beg. Inv." id="num_begInv"> {{mortalityForm.num_begInv}} </td>
+                            <td data-label="Today" id="num_today"> {{mortalityForm.num_today}} </td>
+                            <td data-label="To Date" id="num_toDate"> {{mortalityForm.num_toDate}} </td>
+                            <td data-label="Source" id="source"> {{mortalityForm.source}} </td>
+                            <td data-label="Remarks" id="remarks"> {{mortalityForm.remarks}} </td>
+                            <td data-label="Mortality Rate" style="text-align: right;" id="mortality_rate">
                                 99%
                             </td>
                             <td></td>
-                            <!-- <td><button id="remove-activity-row" type="button" class="secondary-btn-red"><i class="bx bx-minus"></i></button></td> -->
-                            <!-- Remove row: ask kimi about how -->
                         </tr>
                         
                     </tbody>

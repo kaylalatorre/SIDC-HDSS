@@ -44,7 +44,8 @@ from .models import (
     Pigpen_Measures, 
     Activity, 
     Mem_Announcement,
-    Activities_Form
+    Activities_Form,
+    Mortality_Form
 )
 from django.db.models.functions import Concat
 
@@ -263,19 +264,15 @@ def techFarms(request):
 
     # collect all IDs of assigned areas under technician
     areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
-    # print("TEST LOG areaQry: " + str(areaQry))
     
     # collect number of areas assigned (for frontend purposes)
     areaNum = len(areaQry)
-    # print("TEST LOG areaNum: " + str(areaNum))
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
-        # print(str(area.id) + str(area.area_name))
-
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
@@ -413,17 +410,11 @@ def addFarm(request):
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
-        # collect non-Django form inputs
-        # farmID = request.POST.get("input-code", None)
-        # print("TEST LOG farmID: " + farmID)
-
         areaName = request.POST.get("input-area", None)
         # print("TEST LOG areaName: " + areaName)
 
         # get ID of selected area
         areaIDQry = Area.objects.filter(area_name=areaName).first()
-        # print("TEST LOG areaIDQry: " + str(areaIDQry))
-
         areaID = areaIDQry.id
         # print("TEST LOG areaID: " + str(areaID))
 
@@ -544,22 +535,15 @@ def addFarm(request):
                     print("TEST LOG: Hog Raiser Form not valid")
                     print(hogRaiserForm.errors)
 
-                    # print(hogRaiserForm.errors.as_text)
-                    # print(hogRaiserForm.non_field_errors().as_text)
-
-                    # formError = str(hogRaiserForm.non_field_errors().as_text)
-                    # print(re.split("\'.*?",formError)[1])
-
-                    # messages.error(request, "Error adding farm. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-farm')
                     messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
 
             else:
                 # find selected raiser id
                 hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
-                # print(str(hogRaiser.values("id")))
 
                 # save raiser ID to farm
                 farm.hog_raiser_id = raiserID
+
 
             # pass data as FKs for farm
             farm.extbio = externalBiosec
@@ -567,11 +551,8 @@ def addFarm(request):
             farm.area_id = areaID
             farm.id = farmID
 
-            # print("TEST LOG farm.area_id: " + str(farm.area_id))
-
             farm.save()
             print("TEST LOG: Added new farm")
-
             messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
 
             # get recently created internal and external biosec IDs and update ref_farm_id
@@ -594,7 +575,6 @@ def addFarm(request):
                 
                 for pigpen in pigpenList:
                     pigpen = pigpenList[x]
-                    # print("TEST LOG Pigpen " + str(x) + ": " + str(pigpenList[x]))
 
                     # create new instance of Pigpen_Measures model
                     pigpen_measure = Pigpen_Measures.objects.create(
@@ -606,10 +586,8 @@ def addFarm(request):
                     
                     # add all num_heads (pigpen measure) for total_pigs (farm)
                     numTotal += int(pigpen_measure.num_heads)
-                    # print(str(pigpen_measure))
 
                     pigpen_measure.save()
-                    # print("TEST LOG: Added new pigpen measure")
 
                     x += 1
                 
@@ -619,8 +597,6 @@ def addFarm(request):
                 farm.total_pigs = numTotal
                 farm.save()
                 
-                # print("TEST LOG farm.total_pigs: " + str(farm.total_pigs))
-
                 return redirect('/')
 
             else:
@@ -634,7 +610,6 @@ def addFarm(request):
             print(farmForm.errors)
 
             messages.error(request, "Error adding farm. " + str(farmForm.errors), extra_tags='add-farm')
-
      
     else:
         print("TEST LOG: Form is not a POST method")
@@ -1079,20 +1054,14 @@ def biosec_view(request):
     techID = request.user.id
 
     # collect all IDs of assigned areas under technician
-    areaQry = Area.objects.filter(tech_id=techID).all()
-    # print("TEST LOG areaQry: " + str(areaQry))
+    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
 
     # array to store all farms under each area
     techFarmsList = []
 
     for area in areaQry :
-        # print(str(area.id) + str(area.area_name))
-
         # collect the corresponding hog raiser details for each farm 
-        techFarmQry  = Farm.objects.filter(area_id=area.id).values(
-            "id"
-        ).order_by('id').all()
-        # debug("techFarmQry -- " + str(techFarmQry))
+        techFarmQry  = Farm.objects.filter(area_id=area.id).values("id").order_by('id').all()
 
         # pass all data into an array
         for farm in techFarmQry:
@@ -1308,7 +1277,7 @@ def formsApproval(request):
     """
 
     ## ACTIVITY FORMS
-    # get all activities under each farm
+    # get all activity forms
     actQuery = Activities_Form.objects.values(
                 "id",
                 "date_added",
@@ -1317,12 +1286,10 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted"
                 ).order_by("-date_added").order_by("-id")
-    # print(str(actQuery))
 
-    approvedList = []
-    rejectedList = []
-    pendingList = []
-    # print(request.user)
+    actApprovedList = []
+    actRejectedList = []
+    actPendingList = []
 
     loggedTech = User.objects.filter(username=request.user).annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
@@ -1346,7 +1313,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                approvedList.append(approved)
+                actApprovedList.append(approved)
 
             elif act["is_checked"] == False:
                 status = 'Rejected'
@@ -1359,7 +1326,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                rejectedList.append(rejected)
+                actRejectedList.append(rejected)
 
             else:
                 status = 'Pending'
@@ -1372,7 +1339,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                pendingList.append(pending)
+                actPendingList.append(pending)
                 
         elif request.user.groups.all()[0].name == "Extension Veterinarian":
             if act["is_reported"] == True and act["is_checked"] == True:
@@ -1386,7 +1353,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                approvedList.append(approved)
+                actApprovedList.append(approved)
 
             elif act["is_reported"] == False and act["is_checked"] == True:
                 status = 'Rejected'
@@ -1399,7 +1366,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                rejectedList.append(rejected)
+                actRejectedList.append(rejected)
 
             elif act["is_reported"] == None and act["is_checked"] == True:
                 status = 'Pending'
@@ -1412,7 +1379,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                pendingList.append(pending)
+                actPendingList.append(pending)
 
         elif request.user.groups.all()[0].name == "Assistant Manager":
             if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
@@ -1426,7 +1393,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                approvedList.append(approved)
+                actApprovedList.append(approved)
 
             elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
                 status = 'Rejected'
@@ -1439,7 +1406,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                rejectedList.append(rejected)
+                actRejectedList.append(rejected)
 
             elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
                 status = 'Pending'
@@ -1452,7 +1419,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                pendingList.append(pending)
+                actPendingList.append(pending)
 
         elif request.user.groups.all()[0].name == "Field Technician":
                 
@@ -1469,7 +1436,7 @@ def formsApproval(request):
                         "prepared_by" : getTech["name"]
                     }
 
-                    approvedList.append(approved)
+                    actApprovedList.append(approved)
 
                 elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
                     status = 'Rejected'
@@ -1482,7 +1449,7 @@ def formsApproval(request):
                         "prepared_by" : getTech["name"]
                     }
 
-                    rejectedList.append(rejected)
+                    actRejectedList.append(rejected)
 
                 elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
                     status = 'Pending'
@@ -1495,9 +1462,193 @@ def formsApproval(request):
                         "prepared_by" : getTech["name"]
                     }
 
-                    pendingList.append(pending)
+                    actPendingList.append(pending)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList, 'rejected' : rejectedList, 'pending' : pendingList })
+        ## MORTALITY FORMS
+        # get all mortality forms
+        mortQuery = Mortality_Form.objects.values(
+            "id",
+            "date_added",
+            "mort_tech",
+            "is_posted",
+            "is_reported",
+            "is_noted"
+        ).order_by("-date_added").order_by("-id")
+
+        mortApprovedList = []
+        mortRejectedList= []
+        mortPendingList = []
+
+        for mort in mortQuery:
+            getTech = User.objects.filter(id=act["act_tech"]).annotate(
+                name = Concat('first_name', Value(' '), 'last_name'),
+            ).values("name").first()
+            # print(str(getTech))
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                if mort["is_posted"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortApprovedList.append(approved)
+
+                elif mort["is_posted"] == False:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortRejectedList.append(rejected)
+
+                else:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortPendingList.append(pending)
+
+            elif request.user.groups.all()[0].name == "Extension Veterinarian":
+                if mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortApprovedList.append(approved)
+
+                elif mort["is_reported"] == False and mort["is_posted"] == True:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortRejectedList.append(rejected)
+
+                elif mort["is_reported"] == None and mort["is_posted"] == True:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortPendingList.append(pending)
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortApprovedList.append(approved)
+
+                elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    actRejectedList.append(rejected)
+
+                elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortPendingList.append(pending)
+
+            elif request.user.groups.all()[0].name == "Field Technician":
+                    
+                if getTech["name"] == loggedTech["name"]:
+                    if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
+                        status = 'Approved'
+
+                        # pass into object and append to list 
+                        approved = {
+                            "id" : mort["id"],
+                            "date_added" : mort["date_added"],
+                            "status" : status,
+                            "prepared_by" : getTech["name"]
+                        }
+
+                        mortApprovedList.append(approved)
+
+                    elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
+                        status = 'Rejected'
+
+                        # pass into object and append to list 
+                        rejected = {
+                            "id" : mort["id"],
+                            "date_added" : mort["date_added"],
+                            "status" : status,
+                            "prepared_by" : getTech["name"]
+                        }
+
+                        mortRejectedList.append(rejected)
+
+                    elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
+                        status = 'Pending'
+
+                        # pass into object and append to list 
+                        pending = {
+                            "id" : act["id"],
+                            "date_added" : act["date_added"],
+                            "status" : status,
+                            "prepared_by" : getTech["name"]
+                        }
+
+                        mortPendingList.append(pending)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'actApproved' : actApprovedList, 'actRejected' : actRejectedList, 'actPending' : actPendingList,
+                                                                'mortApproved' : mortApprovedList, 'mortRejected' : mortRejectedList, 'mortPending' : mortPendingList, })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1816,12 +1967,12 @@ def addActivity(request, farmID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        print("TEST LOG: Activity Form has POST method") 
+        print("TEST LOG: Add Activity has POST method") 
         print(request.POST)
 
         activityForm = ActivityForm(request.POST)
 
-        # pass all values into each of the array activityList
+        # pass all values into one record in activityList
         activityList = []
 
         i = 0
@@ -1852,10 +2003,8 @@ def addActivity(request, farmID):
 
             # pass all activityList objects into Activity model
             x = 0
-
             for act in activityList:
                 act = activityList[x]
-                # print("TEST LOG Activity " + str(x) + ": " + str(activityList[x]))
 
                 # create new instance of Activity model
                 activity = Activity.objects.create(
@@ -1866,14 +2015,13 @@ def addActivity(request, farmID):
                     time_departure = act['time_departure'],
                     description = act['description'],
                     remarks = act['remarks'],
-                    # is_approved = None
                     activity_form_id = activity_form.id
                 )
 
                 # print(str(activity))
 
                 activity.save()
-                print("TEST LOG: Added new activity")
+                # print("TEST LOG: Added new activity")
 
                 x += 1
             
@@ -1894,7 +2042,7 @@ def addActivity(request, farmID):
             messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
 
     else:
-        print("TEST LOG: Activity Form is not a POST method")
+        print("TEST LOG: Add Activity is not a POST method")
 
         # if form has no input yet, only display an empty form
         activityForm = ActivityForm()
