@@ -44,7 +44,8 @@ from .models import (
     Pigpen_Measures, 
     Activity, 
     Mem_Announcement,
-    Activities_Form
+    Activities_Form,
+    Mortality_Form
 )
 from django.db.models.functions import Concat
 
@@ -1262,7 +1263,7 @@ def formsApproval(request):
     """
 
     ## ACTIVITY FORMS
-    # get all activities under each farm
+    # get all activity forms
     actQuery = Activities_Form.objects.values(
                 "id",
                 "date_added",
@@ -1271,12 +1272,10 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted"
                 ).order_by("-date_added").order_by("-id")
-    # print(str(actQuery))
 
-    approvedList = []
-    rejectedList = []
-    pendingList = []
-    # print(request.user)
+    actApprovedList = []
+    actRejectedList = []
+    actPendingList = []
 
     loggedTech = User.objects.filter(username=request.user).annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
@@ -1300,7 +1299,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                approvedList.append(approved)
+                actApprovedList.append(approved)
 
             elif act["is_checked"] == False:
                 status = 'Rejected'
@@ -1313,7 +1312,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                rejectedList.append(rejected)
+                actRejectedList.append(rejected)
 
             else:
                 status = 'Pending'
@@ -1326,7 +1325,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                pendingList.append(pending)
+                actPendingList.append(pending)
                 
         elif request.user.groups.all()[0].name == "Extension Veterinarian":
             if act["is_reported"] == True and act["is_checked"] == True:
@@ -1340,7 +1339,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                approvedList.append(approved)
+                actApprovedList.append(approved)
 
             elif act["is_reported"] == False and act["is_checked"] == True:
                 status = 'Rejected'
@@ -1353,7 +1352,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                rejectedList.append(rejected)
+                actRejectedList.append(rejected)
 
             elif act["is_reported"] == None and act["is_checked"] == True:
                 status = 'Pending'
@@ -1366,7 +1365,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                pendingList.append(pending)
+                actPendingList.append(pending)
 
         elif request.user.groups.all()[0].name == "Assistant Manager":
             if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
@@ -1380,7 +1379,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                approvedList.append(approved)
+                actApprovedList.append(approved)
 
             elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
                 status = 'Rejected'
@@ -1393,7 +1392,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                rejectedList.append(rejected)
+                actRejectedList.append(rejected)
 
             elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
                 status = 'Pending'
@@ -1406,7 +1405,7 @@ def formsApproval(request):
                     "prepared_by" : getTech["name"]
                 }
 
-                pendingList.append(pending)
+                actPendingList.append(pending)
 
         elif request.user.groups.all()[0].name == "Field Technician":
                 
@@ -1423,7 +1422,7 @@ def formsApproval(request):
                         "prepared_by" : getTech["name"]
                     }
 
-                    approvedList.append(approved)
+                    actApprovedList.append(approved)
 
                 elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
                     status = 'Rejected'
@@ -1436,7 +1435,7 @@ def formsApproval(request):
                         "prepared_by" : getTech["name"]
                     }
 
-                    rejectedList.append(rejected)
+                    actRejectedList.append(rejected)
 
                 elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
                     status = 'Pending'
@@ -1449,9 +1448,193 @@ def formsApproval(request):
                         "prepared_by" : getTech["name"]
                     }
 
-                    pendingList.append(pending)
+                    actPendingList.append(pending)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'approved' : approvedList, 'rejected' : rejectedList, 'pending' : pendingList })
+        ## MORTALITY FORMS
+        # get all mortality forms
+        mortQuery = Mortality_Form.objects.values(
+            "id",
+            "date_added",
+            "mort_tech",
+            "is_posted",
+            "is_reported",
+            "is_noted"
+        ).order_by("-date_added").order_by("-id")
+
+        mortApprovedList = []
+        mortRejectedList= []
+        mortPendingList = []
+
+        for mort in mortQuery:
+            getTech = User.objects.filter(id=act["act_tech"]).annotate(
+                name = Concat('first_name', Value(' '), 'last_name'),
+            ).values("name").first()
+            # print(str(getTech))
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                if mort["is_posted"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortApprovedList.append(approved)
+
+                elif mort["is_posted"] == False:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortRejectedList.append(rejected)
+
+                else:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortPendingList.append(pending)
+
+            elif request.user.groups.all()[0].name == "Extension Veterinarian":
+                if mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortApprovedList.append(approved)
+
+                elif mort["is_reported"] == False and mort["is_posted"] == True:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortRejectedList.append(rejected)
+
+                elif mort["is_reported"] == None and mort["is_posted"] == True:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortPendingList.append(pending)
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+
+                    # pass into object and append to list 
+                    approved = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortApprovedList.append(approved)
+
+                elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Rejected'
+
+                    # pass into object and append to list 
+                    rejected = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    actRejectedList.append(rejected)
+
+                elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Pending'
+
+                    # pass into object and append to list 
+                    pending = {
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
+                        "status" : status,
+                        "prepared_by" : getTech["name"]
+                    }
+
+                    mortPendingList.append(pending)
+
+            elif request.user.groups.all()[0].name == "Field Technician":
+                    
+                if getTech["name"] == loggedTech["name"]:
+                    if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
+                        status = 'Approved'
+
+                        # pass into object and append to list 
+                        approved = {
+                            "id" : mort["id"],
+                            "date_added" : mort["date_added"],
+                            "status" : status,
+                            "prepared_by" : getTech["name"]
+                        }
+
+                        mortApprovedList.append(approved)
+
+                    elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
+                        status = 'Rejected'
+
+                        # pass into object and append to list 
+                        rejected = {
+                            "id" : mort["id"],
+                            "date_added" : mort["date_added"],
+                            "status" : status,
+                            "prepared_by" : getTech["name"]
+                        }
+
+                        mortRejectedList.append(rejected)
+
+                    elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
+                        status = 'Pending'
+
+                        # pass into object and append to list 
+                        pending = {
+                            "id" : act["id"],
+                            "date_added" : act["date_added"],
+                            "status" : status,
+                            "prepared_by" : getTech["name"]
+                        }
+
+                        mortPendingList.append(pending)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'actApproved' : actApprovedList, 'actRejected' : actRejectedList, 'actPending' : actPendingList,
+                                                                'mortApproved' : mortApprovedList, 'mortRejected' : mortRejectedList, 'mortPending' : mortPendingList, })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """

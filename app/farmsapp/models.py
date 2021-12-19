@@ -244,11 +244,11 @@ class Mortality_Form(models.Model):
 
     mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
     mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
-    is_posted           = models.BooleanField(default=False)
+    is_posted           = models.BooleanField(null=True, editable=True)
     mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(default=False)
+    is_reported         = models.BooleanField(null=True, editable=True)
     mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(default=False)
+    is_noted            = models.BooleanField(null=True, editable=True)
 
 # PPE FORM (Pigpen Evaluation) Table
 class PPE_Form(models.Model):
