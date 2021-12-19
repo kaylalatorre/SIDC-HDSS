@@ -55,10 +55,10 @@
                         <tr>
                             <td data-label="Farm Code" id="farms"> 
                                 <div class="mb-3">
-                                    <select aria-label="Farm Code" class="form-select">
+                                    <select id="farm-code-list" name="farm-code-list" class="form-select">
                                         {% for farm in farms %}
                                             {% if farm.id < 10 %}
-                                            <option value="{{ farm.id }}" class="status">00{{farm.id}}</option>
+                                                <option value="{{ farm.id }}" class="status">00{{farm.id}}</option>
                                             {% elif farm.id < 100 %}
                                                 <option value="{{ farm.id }}" class="status">0{{farm.id}}</option>
                                             {% else %}

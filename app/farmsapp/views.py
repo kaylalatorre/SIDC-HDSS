@@ -1775,7 +1775,7 @@ def addActivity(request, farmID):
 
         activityForm = ActivityForm(request.POST)
 
-        # pass all values into each of the array activityList
+        # pass all values into one record in activityList
         activityList = []
 
         i = 0
@@ -1806,7 +1806,6 @@ def addActivity(request, farmID):
 
             # pass all activityList objects into Activity model
             x = 0
-
             for act in activityList:
                 act = activityList[x]
 
@@ -1819,7 +1818,6 @@ def addActivity(request, farmID):
                     time_departure = act['time_departure'],
                     description = act['description'],
                     remarks = act['remarks'],
-                    # is_approved = None
                     activity_form_id = activity_form.id
                 )
 

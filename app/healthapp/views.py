@@ -7,7 +7,7 @@ from django.contrib import messages
 
 # for Model imports
 from django.contrib.auth.models import User
-from farmsapp.models import Farm, Area, Hog_Raiser, Farm_Weight, Mortality, Hog_Symptoms
+from farmsapp.models import Farm, Area, Hog_Raiser, Farm_Weight, Mortality, Hog_Symptoms, Mortality_Form
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -26,6 +26,14 @@ import re
 from farmsapp.forms import (
     MortalityForm
 )
+
+# for date and time fields in Models
+from datetime import date, datetime, timezone, timedelta
+from django.utils.timezone import (
+    make_aware, # for date and time fields in Models
+    now, # for getting date today
+    localtime # for getting date today
+) 
 
 def debug(m):
     """
@@ -471,6 +479,9 @@ def addMortality(request):
     # generate series number
     series = int(101010)
 
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
     # get all farms under current technician
     techID = request.user.id
 
@@ -497,8 +508,60 @@ def addMortality(request):
 
         mortalityForm = MortalityForm(request.POST)
 
+        # pass all values into one record in mortalityList
+        mortalityList = []
+        
+        i = 0
+        for mortality_date in request.POST.getlist('mortality_date', default=None):
+            mortalityObject = {
+                "farmID" : request.POST.getlist("farm-code-list")[i],
+                "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
+                "num_begInv" : request.POST.getlist('num_begInv', default=None)[i],
+                "num_today" : request.POST.getlist('num_today', default=None)[i],
+                "num_toDate" : request.POST.getlist('num_toDate', default=None)[i],
+                "source" : request.POST.getlist('source', default=None)[i],
+                "remarks" : request.POST.getlist('remarks', default=None)[i],
+
+            }
+            
+            mortalityList.append(mortalityObject)
+            i += 1
+
         if mortalityForm.is_valid():
             print("TEST LOG: mortalityForm is valid")
+
+            # create instance of Mortality Form model
+            mortality_form = Mortality_Form.objects.create(
+                date_added = dateToday,
+                mort_tech_id = techID,
+            )
+            mortality_form.save()
+
+            # pass all objects in mortalityList into Mortality model
+            x = 0
+            for mort in mortalityList:
+                mort = mortalityList[x]
+
+                # create new instance of Mortality model
+                mortality = Mortality.objects.create(
+                    series = series,
+                    ref_farm_id = mort['farmID'],
+                    mortality_date = mort['mortality_date'],
+                    num_begInv = mort['num_begInv'],
+                    num_today = mort['num_today'],
+                    num_toDate = mort['num_toDate'],
+                    source = mort['source'],
+                    remarks = mort['remarks'],
+                    mortality_form_id = mortality_form.id
+                )
+            
+            mortality.save()
+            x += 1
+
+
+            # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
+            messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-activity')
+            return redirect('/health-symptoms')
 
         else:
             print("TEST LOG: mortalityForm is not valid")
