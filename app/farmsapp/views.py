@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
-from django.db.models.expressions import F, Value
-from django.db.models import Q
+from django.db.models import (
+    F,Q,
+    Case,
+    When,
+    Value)
 from django.forms.formsets import formset_factory
 import re
 
@@ -77,11 +80,16 @@ def debug(m):
         print("---------------------[Print_ERROR]---------------------")
     else:     
         print("--------------------[Print_SUCCESS]--------------------")
-    
+
+def debugFunc(func, message):
+    print("-----------------------------[{}]------------------------START".format(str(message).upper()))
+    func()
+    print("-----------------------------[{}]-------------------------STOP ".format(str(message).upper()))
 
 # Farms Management Module Views
 
 def getMapData(request):
+    # TODO investigate why is_ajax is included
     if request.is_ajax and request.method == 'POST':
         data = []
         qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
@@ -392,7 +400,10 @@ def addFarm(request):
     """
     
     latestFarm = Farm.objects.last()
-    farmID = int(latestFarm.id) + 1
+    try:
+        farmID = int(latestFarm.id) + 1
+    except:
+        farmID = 1
     print(farmID)
 
     # get all hog raisers to be passed as dropdown
@@ -519,7 +530,7 @@ def addFarm(request):
             # save hog raiser
             raiserID = request.POST.get("input-exist-raiser", None)
 
-            if raiserID == "" :
+            if raiserID == None or raiserID == "" :
 
                 # if empty, new raiser is inputted; validate django hog raiser form
                 if hogRaiserForm.is_valid():
@@ -563,7 +574,7 @@ def addFarm(request):
             print("TEST LOG: Added new internal biosec")
 
             externalBiosec.save()
-            print("TEST LOG: Added new internal biosec")
+            print("TEST LOG: Added new external biosec")
 
             if pigpenMeasuresForm.is_valid():
                 
@@ -1464,29 +1475,151 @@ def formsApproval(request):
 
                     actPendingList.append(pending)
 
-        ## MORTALITY FORMS
-        # get all mortality forms
-        mortQuery = Mortality_Form.objects.values(
-            "id",
-            "date_added",
-            "mort_tech",
-            "is_posted",
-            "is_reported",
-            "is_noted"
-        ).order_by("-date_added").order_by("-id")
+    ## MORTALITY FORMS
+    # get all mortality forms
+    mortQuery = Mortality_Form.objects.values(
+        "id",
+        "date_added",
+        "mort_tech",
+        "is_posted",
+        "is_reported",
+        "is_noted"
+    ).order_by("-date_added").order_by("-id")
 
-        mortApprovedList = []
-        mortRejectedList= []
-        mortPendingList = []
+    mortApprovedList = []
+    mortRejectedList= []
+    mortPendingList = []
 
-        for mort in mortQuery:
-            getTech = User.objects.filter(id=act["act_tech"]).annotate(
-                name = Concat('first_name', Value(' '), 'last_name'),
-            ).values("name").first()
-            # print(str(getTech))
+    for mort in mortQuery:
+        getTech = User.objects.filter(id=act["act_tech"]).annotate(
+            name = Concat('first_name', Value(' '), 'last_name'),
+        ).values("name").first()
+        # print(str(getTech))
 
-            if request.user.groups.all()[0].name == "Paiwi Management Staff":
-                if mort["is_posted"] == True:
+        if request.user.groups.all()[0].name == "Paiwi Management Staff":
+            if mort["is_posted"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortApprovedList.append(approved)
+
+            elif mort["is_posted"] == False:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortRejectedList.append(rejected)
+
+            else:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortPendingList.append(pending)
+
+        elif request.user.groups.all()[0].name == "Extension Veterinarian":
+            if mort["is_reported"] == True and mort["is_posted"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortApprovedList.append(approved)
+
+            elif mort["is_reported"] == False and mort["is_posted"] == True:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortRejectedList.append(rejected)
+
+            elif mort["is_reported"] == None and mort["is_posted"] == True:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortPendingList.append(pending)
+
+        elif request.user.groups.all()[0].name == "Assistant Manager":
+            if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
+                status = 'Approved'
+
+                # pass into object and append to list 
+                approved = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortApprovedList.append(approved)
+
+            elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
+                status = 'Rejected'
+
+                # pass into object and append to list 
+                rejected = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                actRejectedList.append(rejected)
+
+            elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
+                status = 'Pending'
+
+                # pass into object and append to list 
+                pending = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"]
+                }
+
+                mortPendingList.append(pending)
+
+        elif request.user.groups.all()[0].name == "Field Technician":
+                
+            if getTech["name"] == loggedTech["name"]:
+                if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Approved'
 
                     # pass into object and append to list 
@@ -1499,7 +1632,7 @@ def formsApproval(request):
 
                     mortApprovedList.append(approved)
 
-                elif mort["is_posted"] == False:
+                elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
                     status = 'Rejected'
 
                     # pass into object and append to list 
@@ -1512,140 +1645,18 @@ def formsApproval(request):
 
                     mortRejectedList.append(rejected)
 
-                else:
+                elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
                     status = 'Pending'
 
                     # pass into object and append to list 
                     pending = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
+                        "id" : act["id"],
+                        "date_added" : act["date_added"],
                         "status" : status,
                         "prepared_by" : getTech["name"]
                     }
 
                     mortPendingList.append(pending)
-
-            elif request.user.groups.all()[0].name == "Extension Veterinarian":
-                if mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Approved'
-
-                    # pass into object and append to list 
-                    approved = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortApprovedList.append(approved)
-
-                elif mort["is_reported"] == False and mort["is_posted"] == True:
-                    status = 'Rejected'
-
-                    # pass into object and append to list 
-                    rejected = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortRejectedList.append(rejected)
-
-                elif mort["is_reported"] == None and mort["is_posted"] == True:
-                    status = 'Pending'
-
-                    # pass into object and append to list 
-                    pending = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortPendingList.append(pending)
-
-            elif request.user.groups.all()[0].name == "Assistant Manager":
-                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Approved'
-
-                    # pass into object and append to list 
-                    approved = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortApprovedList.append(approved)
-
-                elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Rejected'
-
-                    # pass into object and append to list 
-                    rejected = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    actRejectedList.append(rejected)
-
-                elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Pending'
-
-                    # pass into object and append to list 
-                    pending = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortPendingList.append(pending)
-
-            elif request.user.groups.all()[0].name == "Field Technician":
-                    
-                if getTech["name"] == loggedTech["name"]:
-                    if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
-                        status = 'Approved'
-
-                        # pass into object and append to list 
-                        approved = {
-                            "id" : mort["id"],
-                            "date_added" : mort["date_added"],
-                            "status" : status,
-                            "prepared_by" : getTech["name"]
-                        }
-
-                        mortApprovedList.append(approved)
-
-                    elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
-                        status = 'Rejected'
-
-                        # pass into object and append to list 
-                        rejected = {
-                            "id" : mort["id"],
-                            "date_added" : mort["date_added"],
-                            "status" : status,
-                            "prepared_by" : getTech["name"]
-                        }
-
-                        mortRejectedList.append(rejected)
-
-                    elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
-                        status = 'Pending'
-
-                        # pass into object and append to list 
-                        pending = {
-                            "id" : act["id"],
-                            "date_added" : act["date_added"],
-                            "status" : status,
-                            "prepared_by" : getTech["name"]
-                        }
-
-                        mortPendingList.append(pending)
 
     return render(request, 'farmstemp/forms-approval.html', { 'actApproved' : actApprovedList, 'actRejected' : actRejectedList, 'actPending' : actPendingList,
                                                                 'mortApproved' : mortApprovedList, 'mortRejected' : mortRejectedList, 'mortPending' : mortPendingList, })
@@ -1914,6 +1925,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
         activity_form.is_checked = None
         activity_form.is_reported = None
         activity_form.is_noted = None
+        activity_form.date_added = datetime.now(timezone.utc)
 
         activity_form.save()
         
@@ -2258,15 +2270,53 @@ def getNotifIDs(request):
     """
     notifIDs = []
     announceTable = Mem_Announcement._meta.db_table
-    if request.user.groups.all()[0].name == "Assistant Manager":
-        pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
-        for item in pendingAnnouncements:
+    actFormTable = Activities_Form._meta.db_table
+
+    userID = request.session['_auth_user_id']
+    userGroup = request.user.groups.all()[0].name
+
+    memancmtForms = Mem_Announcement.objects
+    activityForms = Activities_Form.objects
+
+    if userGroup == "Assistant Manager":
+        # Announcements
+        pendingAnnouncements = memancmtForms.filter(is_approved = None)
+        for item in pendingAnnouncements.values():
             notifIDs.append(';'.join([announceTable, str(item['id']), "Pending"]))
-    else:
-        rejectedAnnouncement = Mem_Announcement.objects.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']).values()
-        for item in rejectedAnnouncement:
+        # Activity Forms
+        asmaNotifs = activityForms.filter(is_noted = None).filter(is_reported = True)
+        for item in asmaNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+
+    elif userGroup == "Field Technician":
+        # Announcements
+        rejectedAnnouncement = memancmtForms.filter(is_approved = False).filter(author_id = userID)
+        for item in rejectedAnnouncement.values():
             notifIDs.append(';'.join([announceTable, str(item['id']), "Rejected"]))
-    
+        # Activity Forms
+        techActFormNotifs = activityForms.filter(act_tech_id = request.session['_auth_user_id'])
+        qry = techActFormNotifs.filter(Q(is_checked = True)).filter(is_reported = None)
+        for item in qry.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "lo"]))
+        qry = techActFormNotifs.filter(is_reported = True).filter(is_noted = None)
+        for item in qry.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "ev"]))
+        qry = techActFormNotifs.filter(is_noted = True)
+        for item in qry.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "am"]))
+        qry = techActFormNotifs.filter(Q(is_checked = False) | Q(is_noted = False) | Q(is_reported = False))
+        for item in qry.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "rj"]))
+
+    elif userGroup == "Livestock Operation Specialist":
+        lopsNotifs = activityForms.filter(is_checked = None)
+        for item in lopsNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+    elif userGroup == "Extension Veterinarian":
+        evetNotifs = activityForms.filter(is_reported = None).filter(is_checked = True)
+        for item in evetNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+
     return notifIDs 
 
 def getMemAncmtNotifs(request, notifIDList):
@@ -2286,29 +2336,182 @@ def getMemAncmtNotifs(request, notifIDList):
             notifID = ';'.join([announceTable, str(item['id']), "Pending"])
             new_notifIDList.append(notifID)
             if notifID not in notifIDList:
-                notif = {
+                notifList.append({
                     "label_class": "text-warning",
                     "notificationID": notifID,
                     "label": "Pending Announcement",
                     "title": item["title"],
                     "message": item["mssg"],
                     "href": "/member-announcements"
-                }
-                notifList.append(notif)
+                })
     else:
         rejectedAnnouncement = Mem_Announcement.objects.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']).values()
         for item in rejectedAnnouncement:
             notifID = ';'.join([announceTable, str(item['id']), "Rejected"])
             new_notifIDList.append(notifID)
             if notifID not in notifIDList:
-                notif = {
+                notifList.append({
                     "label_class": "text-danger",
                     "notificationID": notifID,
                     "label": "Rejected Announcement",
                     "p": item["title"],
                     "message": item["mssg"]
-                }
-                notifList.append(notif)
+                })
+
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
+def getActFormsNotifs(request, notifIDList):
+    """
+    Get notifications on Activity Forms for a specific user
+
+    :param notifIDList: List of notifications already seen by the user
+    :type notifIDList: list
+    """
+    notifList = []
+    new_notifIDList = []
+    tableName = Activities_Form._meta.db_table
+    userGroup = request.user.groups.all()[0].name
+    activityForms = Activities_Form.objects
+    
+    if userGroup == "Field Technician":
+        techNotifs = activityForms.filter(act_tech_id = request.session['_auth_user_id'])
+        # notification for activity approved by liveop
+        qry = techNotifs.filter(Q(is_checked = True)).filter(is_reported = None)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "lo"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} Activity(s) has been approved by livestock operation specialist".format(count),
+                "href": "/forms-approval"
+            })
+
+        # notification for activity approved by ext vet
+        qry = techNotifs.filter(is_reported = True).filter(is_noted = None)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "ev"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} Activity(s) has been approved by extension veterinarian".format(count),
+                "href": "/forms-approval"
+            })
+
+        # notification for activity approved by asm
+        qry = techNotifs.filter(is_noted = True)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "am"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} Activity(s) has been approved by assistant manager".format(count),
+                "href": "/forms-approval"
+            })
+
+        # notification for for rejected activity
+        qry = techNotifs.filter(Q(is_checked = False) | Q(is_noted = False) | Q(is_reported = False))
+        locount = 0
+        amcount = 0
+        evcount = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "rj"])
+            new_notifIDList.append(notifID)
+            conv = lambda n: 0 if n is None or n is True else 1
+            if notifID not in notifIDList:
+                locount = locount + conv(item['is_checked'])
+                amcount = amcount + conv(item['is_noted'])
+                evcount = evcount + conv(item['is_reported'])
+        if locount != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "notificationID": notifID,
+                "label": "{} Activity(s) has been rejected by livestock operation specialist".format(locount),
+                "href": "/forms-approval"
+            })
+        if amcount != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "notificationID": notifID,
+                "label": "{} Activity(s) has been rejected by assistant manager".format(amcount),
+                "href": "/forms-approval"
+            })
+        if evcount != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "notificationID": notifID,
+                "label": "{} Activity(s) has been rejected by extension veterinarian".format(evcount),
+                "href": "/forms-approval"
+            })
+
+    elif userGroup == "Livestock Operation Specialist":
+        lopsNotifs = activityForms.filter(is_checked = None)
+        # notification for newly submitted activity forms
+        count = 0
+        for item in lopsNotifs.values():
+            notifID = ';'.join([tableName, str(item['id'])])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Activity(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+        # notification for resubmitted activity forms
+    elif userGroup == "Extension Veterinarian":
+        evetNotifs = activityForms.filter(is_reported = None).filter(is_checked = True)
+        debug(evetNotifs.values())
+        # notification for pending Extension Veterinarian approval
+        count = 0
+        for item in evetNotifs.values():
+            notifID = ';'.join([tableName, str(item['id'])])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Activity(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+    elif userGroup == "Assistant Manager":
+        asmaNotifs = activityForms.filter(is_noted = None).filter(is_reported = True)
+        debug(asmaNotifs.values())
+        # notification for pending assistant manager approval
+        count = 0
+        for item in asmaNotifs.values():
+            notifID = ';'.join([tableName, str(item['id'])])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Activity(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
 
     return {
         "notifIDList": new_notifIDList,
@@ -2320,10 +2523,12 @@ def getNotifications(request):
     # for key, value in request.session.items():
     #     print('GETNOTIF 1 {} => {}'.format(key, value))
     request.session['notifIDList'] = initNotifIDList(request)
+    notifIDList = request.session['notifIDList']
+    memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
+    actFormsNotifs = getActFormsNotifs(request, notifIDList)
 
-    memAncmtNotifs = getMemAncmtNotifs(request, request.session['notifIDList'])
-    notifIDList = memAncmtNotifs["notifIDList"]
-    notifList = memAncmtNotifs["notifList"]
+    notifIDList = memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"]
+    notifList = memAncmtNotifs["notifList"] + actFormsNotifs["notifList"]
 
     request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
 
@@ -2342,8 +2547,23 @@ def syncNotifications(request):
     except:
         debug('no notifs from session found')
         return HttpResponse({"error": "no notifs from session found"}, status=404) # no way for sessions notifs to be empty because this will always go after getNotifications
-    debug(User.objects.get(id=userID).accountdata.data['notifIDList'])
-    debug(sessionNotifs)
+
+    try:
+        User.objects.get(id=userID).accountdata.data
+        User.objects.get(id=userID).accountdata.data['notifIDList']
+    except:
+        AccountData(
+            user_id = userID,
+            data = {'notifIDList':[]}
+        ).save()
+    
+    try:
+        User.objects.get(id=userID).accountdata.data['notifIDList']
+    except:
+        notifQry = AccountData.objects.get(user_id = userID)
+        notifQry.data['notifIDList'] = []
+        notifQry.save()
+
     if (Counter(User.objects.get(id=userID).accountdata.data['notifIDList']) != Counter(sessionNotifs)):
         new_dbNotifs = []
         if len(sessionNotifs) != 0: #if sessionNotifs is not empty
@@ -2352,18 +2572,16 @@ def syncNotifications(request):
                 if notifID in sessionNotifs:
                     if notifID.find("Rejected") != -1 and notifID.find("announce") != -1:
                         try:
-                            result = Mem_Announcement.objects.filter(id=int(notifID.split(';')[1])).delete()
-                            debug(result)
+                            Mem_Announcement.objects.filter(id=int(notifID.split(';')[1])).delete()
                         except:
                             debug("could not delete Announcement ID: " + str(notifID.split(';')[1]))
                     else:
                         new_dbNotifs.append(notifID)
     
     try: # try to save user session 
-        AccountData(
-            user_id = userID,
-            data = {'notifIDList':new_dbNotifs}
-        ).save()
+        notifQry = AccountData.objects.get(user_id = userID)
+        notifQry.data['notifIDList'] = new_dbNotifs
+        notifQry.save()
     except:
         debug('session was not saved to database')
 
@@ -2379,10 +2597,10 @@ def countNotifications(request):
     totalNotifs = 0
     notifIDList = initNotifIDList(request)
 
-    notifIDs = getNotifIDs(request)
-    for notifID in notifIDs:
-        if notifID not in notifIDList:
-            totalNotifs = totalNotifs + 1
+    memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
+    actFormsNotifs = getActFormsNotifs(request, notifIDList)
+
+    totalNotifs = len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"])
     
     return HttpResponse(str(totalNotifs), status=200)
 
@@ -3446,7 +3664,7 @@ def dashboard_view(request):
 
     if not farmQry.exists(): 
         messages.error(request, "No farm details found.", extra_tags="farm-dashboard")
-        return render(request, 'templates/dashboard.html', {})
+        return render(request, 'dashboard.html', {})
 
     total_farms = 0
     total_pigs = 0
