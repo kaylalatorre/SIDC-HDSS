@@ -70,7 +70,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # app middlewares
 
-    'farmsapp.middleware.ErrorPageRedirectMiddleware',
+    # 'farmsapp.middleware.ErrorPageRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'src.urls'
@@ -112,26 +112,7 @@ WSGI_APPLICATION = 'src.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# for LOCAL db
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#         'NAME': 'sidcDB',
-#         'USER': 'sidcdbuser',
-#         'PASSWORD': 'sidcdb123',
-#         'HOST': 'localhost',
-#         'PORT': '5432'
-#     }
-# }
-
-# for CLOUD RDS db
+# for CLOUD db
 DATABASES = {
     'default': {
         'ENGINE': os.getenv("ENGINE"),

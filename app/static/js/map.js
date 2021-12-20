@@ -47,7 +47,7 @@ $(document).ready(async function () {
         var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-
+        console.log("map loaded");
 
         /**
          * Populate map
@@ -74,23 +74,31 @@ $(document).ready(async function () {
         //     [13.826096993746729, 121.14817479977627, 44],
         //     [13.764797506521253, 121.05729027875648, 32],
         // ];
-
+       console.log(metadata);
         // initialize layer groups
         var allFarms = new L.layerGroup();
         var pigsPerFarm = new L.layerGroup();
-        // var mortalityRates = new L.layerGroup();
-        // var symptomsRep = new L.layerGroup();
+        var mortalityRates = new L.layerGroup();
+        var symptomsRep = new L.layerGroup();
 
         // add markers and popups to layer groups
+        var test = {'long':null}
+        console.log(Boolean(test['long'] && test['long']));
         for (var i = 0; i < metadata.length; i++) {
+            if(!(metadata[i]['latitude'] && metadata[i]['longitude']))
+                continue;
+
             var farmLat = metadata[i]['latitude'];
             var farmLong = metadata[i]['longitude'];
             var numPigs = metadata[i]['numPigs'];
-            var radiusSize = numPigs *100;
-
+            var radiusSize = numPigs * 100;
+            var mortRts = metadata[i]['mortRts'] * 100;
+            var sxRept = metadata[i]['sxRept'] * 100;
+            var sxActv = metadata[i]['sxActv'] * 100;
+        
             allFarms.addLayer(new L.marker([farmLat, farmLong])
-                .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
-                    '<label class="bold-lbl">Address:</label>' + metadata[i]['address'])).addTo(map);
+            .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
+                '<label class="bold-lbl">Address:</label>' + metadata[i]['address'])).addTo(map);
 
             pigsPerFarm.addLayer(new L.circle([farmLat, farmLong], {
                 radius: radiusSize,
@@ -102,26 +110,26 @@ $(document).ready(async function () {
                 '<label class="bold-lbl">No. of pigs: </label>' + numPigs + '<br>' +
                 '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
 
-            // mortalityRates.addLayer(new L.circle([farmLat, farmLong], {
-            //     radius: 500,
-            //     color: '#FFFFFF',
-            //     fillColor: 'red',
-            //     weight: 1,
-            //     fillOpacity: 0.6,
-            // }).bindTooltip('<label class="bold-lbl">Farm Code:</label> 001 <br>' +
-            //     '<label class="bold-lbl">Mortality Rate:</label> 10 <br>' +
-            //     '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
+            mortalityRates.addLayer(new L.circle([farmLat, farmLong], {
+                radius: mortRts,
+                color: '#FFFFFF',
+                fillColor: 'red',
+                weight: 1,
+                fillOpacity: 0.6,
+            }).bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
+                '<label class="bold-lbl">Mortality Rate:</label> ' + mortRts + ' <br>' +
+                '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
 
-            // symptomsRep.addLayer(new L.circle([farmLat, farmLong], {
-            //     radius: 500,
-            //     color: '#FFFFFF',
-            //     fillColor: 'orange',
-            //     weight: 1,
-            //     fillOpacity: 0.6,
-            // }).bindTooltip('<label class="bold-lbl">Farm Code:</label> 001 <br>' +
-            //     '<label class="bold-lbl">Symptoms Reported:</label> 10 <br>' +
-            //     '<label class="bold-lbl">Symptoms Active:</label> 10 <br>' +
-            //     '<label class="bold-lbl">Last Updated:</label> 1/1/201')).addTo(map);
+            symptomsRep.addLayer(new L.circle([farmLat, farmLong], {
+                radius: sxActv,
+                color: '#FFFFFF',
+                fillColor: 'orange',
+                weight: 1,
+                fillOpacity: 0.6,
+            }).bindTooltip('<label class="bold-lbl">Farm Code:</label> ' + metadata[i]['code'] + ' <br>' +
+                '<label class="bold-lbl">Symptoms Reported:</label> ' + sxRept + ' <br>' +
+                '<label class="bold-lbl">Symptoms Active:</label> ' + sxActv + ' <br>' +
+                '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
         }
 
 
@@ -130,14 +138,30 @@ $(document).ready(async function () {
          */
         var baseMaps = {
             "OpenStreetMap": osm
-        }
+        }   
 
         var overlayMaps = {
             "Farms": allFarms,
             "No. of Pigs per farm": pigsPerFarm,
-            // "Moratlity Rates": mortalityRates,
-            // "Symptoms Reported": symptomsRep,
+            "Moratlity Rates": mortalityRates,
+            "Symptoms Reported": symptomsRep,
         }
+        
+        // if(allFarms.getLayers().length != 0){
+        //     overlayMaps["Farms"] = allFarms;
+        //     // inside if to make sure overlays are only checked when there are farms
+        //     if(pigsPerFarm.getLayers().length != 0){
+        //         overlayMaps["No. of Pigs per farm"] = pigsPerFarm;
+        //     }
+        //     if(mortalityRates.getLayers().length != 0){
+        //         overlayMaps["Moratlity Rates"] = mortalityRates;
+        //     }
+        //     if(symptomsRep.getLayers().length != 0){
+        //         overlayMaps["Symptoms Reported"] = symptomsRep;
+        //     }
+        // }
+
+        
 
         var legend = L.control({
             position: "bottomleft"
@@ -147,8 +171,8 @@ $(document).ready(async function () {
             var div = L.DomUtil.create("div", "legend");
             div.innerHTML += "<h4>Legend</h4>";
             div.innerHTML += '<i style="background: violet"></i><span>No. of Pigs</span><br>';
-            // div.innerHTML += '<i style="background: red"></i><span>Mortality Rates</span><br>';
-            // div.innerHTML += '<i style="background: orange"></i><span>Symptoms Reported</span><br>';
+            div.innerHTML += '<i style="background: red"></i><span>Mortality Rates</span><br>';
+            div.innerHTML += '<i style="background: orange"></i><span>Symptoms Reported</span><br>';
 
             return div;
         };

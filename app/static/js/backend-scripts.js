@@ -3,10 +3,10 @@ function formatDate(date) {
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
-    
-    if (month.length < 2) 
+
+    if (month.length < 2)
         month = '0' + month;
-    if (day.length < 2) 
+    if (day.length < 2)
         day = '0' + day;
 
     return [year, month, day].join('-');
@@ -19,9 +19,9 @@ function formatDate(date) {
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
  */
- function ajaxCSRF(){
-    $.ajaxSetup({ 
-        beforeSend: function(xhr, settings) {
+function ajaxCSRF() {
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie != '') {
@@ -41,15 +41,15 @@ function formatDate(date) {
                 // Only send the token to relative URLs i.e. locally.
                 xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
             }
-        } 
-   });
+        }
+    });
 }
 
 /**
  * Function for preparing reports in pdf. 
  * @param htmlID the string ID name of an HTML tag 
  */
-function printReport(htmlID){
+function printReport(htmlID) {
     // get only Report portion of HTML page
     var printCont = document.getElementById(htmlID).innerHTML;
     var orig = document.body.innerHTML; // revert to whole HTML page
@@ -64,9 +64,9 @@ function printReport(htmlID){
 /** 
  * on-change AJAX for Biochecklist search dropdown
  */
-$('.checklist-date').change(function() {
+$('.checklist-date').change(function () {
 
-// function searchBiocheck(){
+    // function searchBiocheck(){
     disableCheck();
 
     // Get biosec ID of selected option tag
@@ -77,19 +77,18 @@ $('.checklist-date').change(function() {
     $.ajax({
         type: 'POST',
         url: '/biosecurity/getchecklist/' + biosecID,
-        success: function (response){
+        success: function (response) {
 
             // alert("in AJAX success");
             var biofields = JSON.parse(response["instance"]);
 
             // check if Checklist can still be editable
-            if (biofields["isEditable"] === false){
+            if (biofields["isEditable"] === false) {
                 $('#edit-grp-desktop').hide();
                 $('#edit-grp-mobile').hide();
-            }
-            else {
+            } else {
                 $('#edit-grp-desktop').show();
-                $('#edit-grp-mobile').show();                
+                $('#edit-grp-mobile').show();
             }
 
             // select btn in btn group based on db value
@@ -114,7 +113,7 @@ $('.checklist-date').change(function() {
                 $('#obs_no_visitors_radio2').prop("checked", true);
             else
                 $('#obs_no_visitors_radio3').prop("checked", true);
-            
+
             if (biofields["prsnl_dip_footwear"] == 0)
                 $('#prsnl_dip_footwear_radio1').prop("checked", true);
             else if (biofields["prsnl_dip_footwear"] == 1)
@@ -152,29 +151,29 @@ $('.checklist-date').change(function() {
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
 
         },
-        error: function (res){
-            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+        error: function (res) {
+            alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
-// }
+    // }
 });
 
 /** 
  * on-change AJAX for Farm search dropdown
  */
-$('#farm-code').change(function() { 
+$('#farm-code').change(function () {
     console.log("Farm Code: " + this.value);
-    if ( this.value > 0){
+    if (this.value > 0) {
         $('#biosec-details').show();
         $('#biosec-checklists').show();
         $('farm-activities').show();
 
         farmID = $("#farm-code option:selected").val();
-        try{
+        try {
             url = "/biosecurity/" + farmID;
             console.log(url);
             location.href = url;
-        } catch (error){
+        } catch (error) {
             console.log("Fetching biosec details failed.");
             // location.reload(true);
         }
@@ -187,7 +186,7 @@ $('#farm-code').change(function() {
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
-function filterFarmRep(){
+function filterFarmRep() {
 
     var sDate = $("#farm-start-date").val();
     var eDate = $("#farm-end-date").val();
@@ -199,7 +198,7 @@ function filterFarmRep(){
     console.log("arName -- " + arName);
 
 
-    try{
+    try {
 
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
@@ -212,17 +211,17 @@ function filterFarmRep(){
             var alertHTML = $(response).find('.alert.farmass-report');
             // console.log(alertHTML);
             $('#farmrep-container').prepend(alertHTML);
-            
+
         });
 
         // for loading report subheader
         $('.farmrep-subheading').load(url + ' .farmrep-subheading', function () {
             $(this).children().unwrap();
-            
-        });
-        
 
-    } catch (error){
+        });
+
+
+    } catch (error) {
         console.log("Fetching farm details failed.");
         location.reload(true);
     }
@@ -234,7 +233,7 @@ function filterFarmRep(){
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
- function filterIntBioRep(){
+function filterIntBioRep() {
 
     var sDate = $("#intbio-start-date").val();
     var eDate = $("#intbio-end-date").val();
@@ -245,7 +244,7 @@ function filterFarmRep(){
     console.log("eDate -- " + eDate);
     console.log("arName -- " + arName);
 
-    try{
+    try {
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
 
@@ -257,16 +256,16 @@ function filterFarmRep(){
             var alertHTML = $(response).find('.alert.intbio-report');
             // console.log(alertHTML);
             $('#intbioRep-container').prepend(alertHTML);
-            
+
         });
 
         // for loading report subheader
         $('.intbioRep-subheading').load(url + ' .intbioRep-subheading', function () {
             $(this).children().unwrap();
-            
+
         });
-        
-    } catch (error){
+
+    } catch (error) {
         console.log("Fetching farm details failed.");
         location.reload(true);
     }
@@ -278,7 +277,7 @@ function filterFarmRep(){
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
- function filterExtBioRep(){
+function filterExtBioRep() {
 
     var sDate = $("#extbio-start-date").val();
     var eDate = $("#extbio-end-date").val();
@@ -289,7 +288,7 @@ function filterFarmRep(){
     console.log("eDate -- " + eDate);
     console.log("arName -- " + arName);
 
-    try{
+    try {
         url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
         console.log(url);
 
@@ -301,15 +300,15 @@ function filterFarmRep(){
             var alertHTML = $(response).find('.alert.extbio-report');
             // console.log(alertHTML);
             $('#extbioRep-container').prepend(alertHTML);
-            
+
         });
 
         // for loading report subheader
         $('.extbioRep-subheading').load(url + ' .extbioRep-subheading', function () {
             $(this).children().unwrap();
-            
+
         });
-    } catch (error){
+    } catch (error) {
         console.log("Fetching farm details failed.");
         location.reload(true);
     }
@@ -319,26 +318,26 @@ function filterFarmRep(){
 /**
  * functions for enabling/disabling Biochecklist btns; 
  */
-function enableBiocheck(){
+function enableBiocheck() {
     // remove disabled attribute from biosec grp btns 
     var bioBtns = document.getElementsByClassName('btn-check');
-    for(var i = 0; i < bioBtns.length; i++) {
+    for (var i = 0; i < bioBtns.length; i++) {
         bioBtns[i].disabled = false;
-    }    
+    }
 }
 
-function disableCheck(){
+function disableCheck() {
     // disable biosec grp btns 
     var bioBtns = document.getElementsByClassName('btn-check');
-    for(var i = 0; i < bioBtns.length; i++) {
+    for (var i = 0; i < bioBtns.length; i++) {
         bioBtns[i].disabled = true;
-    }    
+    }
 }
 
 /**
  * on-click AJAX for save Biochecklist btn
  */
-function saveBiocheck(elem){
+function saveBiocheck(elem) {
 
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
@@ -350,61 +349,61 @@ function saveBiocheck(elem){
     // EXTERNAL biosec fields
     if ($('#prvdd_foot_dip_radio1').prop('checked') == true)
         checkArr[0] = 0;
-    else if ($('#prvdd_foot_dip_radio2').prop('checked') == true) 
+    else if ($('#prvdd_foot_dip_radio2').prop('checked') == true)
         checkArr[0] = 1;
     else
-        checkArr[0] = 2;  
-        
+        checkArr[0] = 2;
+
     if ($('#prvdd_alco_soap_radio1').prop('checked') == true)
         checkArr[1] = 0;
-    else if ($('#prvdd_alco_soap_radio2').prop('checked') == true) 
+    else if ($('#prvdd_alco_soap_radio2').prop('checked') == true)
         checkArr[1] = 1;
     else
-        checkArr[1] = 2;        
+        checkArr[1] = 2;
 
     if ($('#obs_no_visitors_radio1').prop('checked') == true)
         checkArr[2] = 0;
-    else if ($('#obs_no_visitors_radio2').prop('checked') == true) 
+    else if ($('#obs_no_visitors_radio2').prop('checked') == true)
         checkArr[2] = 1;
     else
-        checkArr[2] = 2;  
-        
+        checkArr[2] = 2;
+
     if ($('#prsnl_dip_footwear_radio1').prop('checked') == true)
         checkArr[3] = 0;
-    else if ($('#prsnl_dip_footwear_radio2').prop('checked') == true) 
+    else if ($('#prsnl_dip_footwear_radio2').prop('checked') == true)
         checkArr[3] = 1;
     else
-        checkArr[3] = 2;  
+        checkArr[3] = 2;
 
     if ($('#prsnl_sanit_hands_radio1').prop('checked') == true)
         checkArr[4] = 0;
-    else if ($('#prsnl_sanit_hands_radio2').prop('checked') == true) 
+    else if ($('#prsnl_sanit_hands_radio2').prop('checked') == true)
         checkArr[4] = 1;
     else
-        checkArr[4] = 2;  
+        checkArr[4] = 2;
 
     if ($('#cng_disinfect_daily_radio1').prop('checked') == true)
         checkArr[5] = 0;
-    else if ($('#cng_disinfect_daily_radio2').prop('checked') == true) 
+    else if ($('#cng_disinfect_daily_radio2').prop('checked') == true)
         checkArr[5] = 1;
     else
-        checkArr[5] = 2;  
+        checkArr[5] = 2;
 
     // INTERNAL biosec fields
     if ($('#disinfect_prem_radio1').prop('checked') == true)
         checkArr[6] = 0;
-    else if ($('#disinfect_prem_radio2').prop('checked') == true) 
+    else if ($('#disinfect_prem_radio2').prop('checked') == true)
         checkArr[6] = 1;
     else
-        checkArr[6] = 2;  
+        checkArr[6] = 2;
 
     if ($('#disinfect_vet_supp_radio1').prop('checked') == true)
         checkArr[7] = 0;
-    else if ($('#disinfect_vet_supp_radio2').prop('checked') == true) 
+    else if ($('#disinfect_vet_supp_radio2').prop('checked') == true)
         checkArr[7] = 1;
     else
         checkArr[7] = 2;
-        
+
     // alert("checkArr length: " + checkArr.length);
 
     ajaxCSRF();
@@ -412,9 +411,11 @@ function saveBiocheck(elem){
     $.ajax({
         type: 'POST',
         url: '/biosecurity/edit-checklist/' + biosecID,
-        data: {"checkArr": checkArr}, 
+        data: {
+            "checkArr": checkArr
+        },
         success: function (response) {
-            
+
             // if (response.status_code == '200'){
             //     alert("Biosec checklist successfully updated!");
             // }
@@ -447,7 +448,7 @@ function saveBiocheck(elem){
                 $('#obs_no_visitors_radio2').prop("checked", true);
             else
                 $('#obs_no_visitors_radio3').prop("checked", true);
-            
+
             if (biofields["prsnl_dip_footwear"] == 0)
                 $('#prsnl_dip_footwear_radio1').prop("checked", true);
             else if (biofields["prsnl_dip_footwear"] == 1)
@@ -483,7 +484,7 @@ function saveBiocheck(elem){
                 $('#disinfect_vet_supp_radio2').prop("checked", true);
             else
                 $('#disinfect_vet_supp_radio3').prop("checked", true);
-            
+
             // Get farmID for biosec URL redirect
             var farmID = $("#farm-code option:selected").val();
             // alert("in saveBiocheck() -- farmID: " +  farmID);
@@ -493,30 +494,30 @@ function saveBiocheck(elem){
             // window.location.replace("/biosecurity");
             // window.location.replace("/biosecurity/" + farmID);
 
-            try{
+            try {
                 url = "/biosecurity/" + farmID;
                 console.log(url);
                 location.href = url;
-            } catch (error){
+            } catch (error) {
                 console.log("Fetching biosec details failed.");
                 location.reload(true);
             }
 
 
         },
-        error: function (res){
+        error: function (res) {
             // alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
 
-            alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
-    
+
     disableCheck();
 }
 
-function deleteBiocheck(elem){
+function deleteBiocheck(elem) {
 
     // Get biosec ID of selected option tag
     var biosecID = $(elem).parent().siblings(".input-group").children(".checklist-date").val();
@@ -532,7 +533,7 @@ function deleteBiocheck(elem){
             type: 'POST',
             url: '/biosecurity/delete-checklist/' + biosecID + '/' + farmID,
             // data: {"checkArr": checkArr}, 
-            success: function (response){
+            success: function (response) {
 
                 // console.log(response);
                 // if (response.status == 200){
@@ -542,10 +543,10 @@ function deleteBiocheck(elem){
                 // // window.location.reload(true);
                 window.location.replace("/biosecurity/" + farmID);
                 alert(response.success);
-                
+
             },
-            error: function (res){
-                alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            error: function (res) {
+                alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
             }
         });
     }
@@ -553,27 +554,27 @@ function deleteBiocheck(elem){
 }
 
 /** 
-* Used to assign technicians to area.
-*/
+ * Used to assign technicians to area.
+ */
 $('.assignSave').on('click', function () {
     var area = $(this).parent().parent().siblings(":eq(0)").text();
     var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
     ajaxCSRF();
-    if(technician){
+    if (technician) {
         $.ajax({
-            type:'POST',
-            url:'technician-assignment/assign',
-            data:{
-                "area":area,
-                "technician":technician
+            type: 'POST',
+            url: 'technician-assignment/assign',
+            data: {
+                "area": area,
+                "technician": technician
             },
-            success: function(response){
+            success: function (response) {
                 console.log(response);
             },
-            error: function(response){
+            error: function (response) {
                 console.log(response);
             },
-            complete: function(){
+            complete: function () {
                 location.reload(true);
             }
         });
@@ -581,25 +582,27 @@ $('.assignSave').on('click', function () {
 });
 
 /** 
-* Create new area
-*/
-$('#save-area').on('click', function(){
+ * Create new area
+ */
+$('#save-area').on('click', function () {
     area = $(this).siblings('.form-control').val();
     ajaxCSRF();
-    if(area){
-        if(area.length <=15){
+    if (area) {
+        if (area.length <= 15) {
             $.ajax({
-                type:'POST',
-                url:'technician-assignment/savearea',
-                data:{"area":area},
-                success: function(response){
+                type: 'POST',
+                url: 'technician-assignment/savearea',
+                data: {
+                    "area": area
+                },
+                success: function (response) {
                     console.log(response);
                 },
-                error: function(response){
+                error: function (response) {
                     console.log(response);
-                    
+
                 },
-                complete: function(){
+                complete: function () {
                     location.reload(true);
                 }
             });
@@ -611,73 +614,75 @@ $('#save-area').on('click', function(){
     alert("No area name provided");
 });
 
-function for_approval(button, decision){
+function for_approval(button, decision) {
     var forApproval_IDs = [];
-    button.closest('div.flex').siblings('div.box-style').children('table.table').children('tbody').find(':checkbox:checked').each(function(){
+    button.closest('div.flex').siblings('div.box-style').children('table.table').children('tbody').find(':checkbox:checked').each(function () {
         forApproval_IDs.push(parseInt(this.id));
     });
-    if(forApproval_IDs.length === 0){
+    if (forApproval_IDs.length === 0) {
         console.log('skip');
         return;
     }
-    
+
     console.log(forApproval_IDs);
-    console.log('member-announcements/'+decision);
+    console.log('member-announcements/' + decision);
     ajaxCSRF()
     $.ajax({
-        type:'POST',
-        url:'/member-announcements/'+decision,
-        dataType : "json",
-        data:{"idList":JSON.stringify(forApproval_IDs)},
-        success: function(response){
-            if (response.status == 200){
+        type: 'POST',
+        url: '/member-announcements/' + decision,
+        dataType: "json",
+        data: {
+            "idList": JSON.stringify(forApproval_IDs)
+        },
+        success: function (response) {
+            if (response.status == 200) {
                 console.log(response.responseJSON.success);
             }
 
             window.location.replace("/member-announcements");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error);
-           // alert("Error in submitting the approval.")
+            // alert("Error in submitting the approval.")
         }
     });
 }
 
 /** 
-* Create array of announcement to be approved then send to backend through ajax.
-*/
-$('#approveChecked.primary-btn').on('click', function(){
+ * Create array of announcement to be approved then send to backend through ajax.
+ */
+$('#approveChecked.primary-btn').on('click', function () {
     for_approval($(this), 'approve');
 });
-$('#rejectChecked.primary-btn-red').on('click', function(){
+$('#rejectChecked.primary-btn-red').on('click', function () {
     for_approval($(this), 'reject');
 });
 
 /**
-*   - Deletes selected activity row from database
-*   
-*   actID = button value (carries ID of selected activity)
-*/
+ *   - Deletes selected activity row from database
+ *   
+ *   actID = button value (carries ID of selected activity)
+ */
 function deleteActivity(actID) {
 
-    var activityID = $(actID).val(); 
+    var activityID = $(actID).val();
     console.log("Activity ID: " + activityID);
 
-    if (confirm("Delete selected activity?")){
+    if (confirm("Delete selected activity?")) {
         ajaxCSRF();
 
         $.ajax({
             type: 'POST',
             url: '/delete-activity/' + activityID,
 
-            success: function(response){
-                if (response.status == 200){
+            success: function (response) {
+                if (response.status == 200) {
                     console.log(response.responseJSON.success)
                 }
 
                 location.reload(true);
             },
-            error: function (res){
+            error: function (res) {
                 console.log(res.responseJSON.error)
             }
         })
@@ -686,30 +691,30 @@ function deleteActivity(actID) {
 }
 
 /**
-*   - Updates selected activity row
-*   - Disable all other edit buttons and delete buttons
-*   - Display data inputs and send to saveActivity() function
-*
-*   actID = button value (carries ID of selected activity)
-*/
+ *   - Updates selected activity row
+ *   - Disable all other edit buttons and delete buttons
+ *   - Display data inputs and send to saveActivity() function
+ *
+ *   actID = button value (carries ID of selected activity)
+ */
 function editActivity(actID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex;
     console.log("Row ID: " + rowIndex);
 
-    var activityID = $(actID).val(); 
+    var activityID = $(actID).val();
     console.log("Activity ID: " + activityID);
 
     var toShow = row.getElementsByClassName("activity-input");
     // console.log(toShow.length);
-   
+
     var toHide = row.getElementsByClassName("activity-data");
     // console.log(toHide.length);
-    for(var i = 0; i < toHide.length; i++){
+    for (var i = 0; i < toHide.length; i++) {
         // show displayed data of current row
         toHide[i].style.display = "none";
-        
+
         // hide data inputs
         toShow[i].style.display = "block";
     }
@@ -717,7 +722,7 @@ function editActivity(actID) {
     // enable other edit buttons and delete buttons
     var disableEdit = document.getElementsByName("editActBtn");
     var disableDelete = document.getElementsByName("deleteActBtn");
-    for(var i = 0; i < disableEdit.length; i++){
+    for (var i = 0; i < disableEdit.length; i++) {
         disableEdit[i].disabled = true;
         disableDelete[i].disabled = true;
     }
@@ -725,10 +730,10 @@ function editActivity(actID) {
 }
 
 /**
-*   - Cancels edit of selected activity
-*
-*   actID = button value (carries ID of selected activity)
-*/
+ *   - Cancels edit of selected activity
+ *
+ *   actID = button value (carries ID of selected activity)
+ */
 function cancelActivity(actID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
@@ -738,10 +743,10 @@ function cancelActivity(actID) {
     var toShow = row.getElementsByClassName("activity-input");
     var toHide = row.getElementsByClassName("activity-data");
 
-    for(var i = 0; i < toHide.length; i++){
+    for (var i = 0; i < toHide.length; i++) {
         // hide displayed data of current row
         toHide[i].style.display = "block";
-        
+
         // display data inputs
         toShow[i].style.display = "none";
     }
@@ -749,7 +754,7 @@ function cancelActivity(actID) {
     // disable other edit buttons and delete buttons
     var disableEdit = document.getElementsByName("editActBtn");
     var disableDelete = document.getElementsByName("deleteActBtn");
-    for(var i = 0; i < disableEdit.length; i++){
+    for (var i = 0; i < disableEdit.length; i++) {
         disableEdit[i].disabled = false;
         disableDelete[i].disabled = false;
     }
@@ -757,20 +762,20 @@ function cancelActivity(actID) {
 }
 
 /**
-*   - Send data to backend function save to database
-*   - Check if date input is not later than today
-*   - Check if arrival time is after departure time
-*
-*   actID = button value (carries ID of selected activity)
-*   farmID = id value of farm activities are connected to   
-*/
+ *   - Send data to backend function save to database
+ *   - Check if date input is not later than today
+ *   - Check if arrival time is after departure time
+ *
+ *   actID = button value (carries ID of selected activity)
+ *   farmID = id value of farm activities are connected to   
+ */
 function saveActivity(actID, farmID) {
 
     var row = actID.parentNode.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex;
     console.log("Row ID: " + rowIndex);
 
-    var activityID = $(actID).val(); 
+    var activityID = $(actID).val();
     console.log("Activity ID: " + activityID);
 
     console.log("Farm ID: " + farmID)
@@ -786,38 +791,40 @@ function saveActivity(actID, farmID) {
     var remarks = row.getElementsByClassName("activity-input")[5].value;
 
     // check if date is not later than today
-    if (new Date(date) > today){
+    if (new Date(date) > today) {
         checkTrue -= 1;
         console.log("Date should not be later than today.");
     }
 
     // check if arrival is after departure
-    if (arrival > departure){
+    if (arrival > departure) {
         checkTrue -= 1;
         console.log("Departure time should be after arrival time.");
     }
 
-    if(checkTrue == 2){
+    if (checkTrue == 2) {
         ajaxCSRF();
 
         $.ajax({
             type: 'POST',
             url: '/save-activity/' + farmID + '/' + activityID,
-            data: {"date" : date,
-                    "trip_type" : trip_type,
-                    "time_arrival" : arrival,
-                    "time_departure" : departure,
-                    "description" : description,
-                    "remarks" : remarks},
+            data: {
+                "date": date,
+                "trip_type": trip_type,
+                "time_arrival": arrival,
+                "time_departure": departure,
+                "description": description,
+                "remarks": remarks
+            },
 
-            success: function(response){
-                if (response.status == 200){
+            success: function (response) {
+                if (response.status == 200) {
                     console.log(response.responseJSON.success)
                 }
 
                 location.reload(true);
             },
-            error: function (res){
+            error: function (res) {
                 console.log(res.responseJSON.error)
             }
         })
@@ -825,13 +832,13 @@ function saveActivity(actID, farmID) {
 }
 
 /**
-*   - Send data to backend function save to database
-*   - Check if date input is not later than today
-*   - Check if arrival time is after departure time
-*
-*   actFormID = id value of selected activity form
-*   actDate = date_added value of selected activity form   
-*/
+ *   - Send data to backend function save to database
+ *   - Check if date input is not later than today
+ *   - Check if arrival time is after departure time
+ *
+ *   actFormID = id value of selected activity form
+ *   actDate = date_added value of selected activity form   
+ */
 function resubmitActivity(actDate, actFormID, farmID) {
     // get all data from each column
     var date = document.getElementsByClassName("act-date-input");
@@ -847,35 +854,35 @@ function resubmitActivity(actDate, actFormID, farmID) {
         // console.log(hours, minutes, time, modifier)
 
         if (hours === '12') {
-           hours = '00';
+            hours = '00';
         };
         if (modifier === 'p.m.') {
-           hours = parseInt(hours, 10) + 12;
+            hours = parseInt(hours, 10) + 12;
         };
         if (minutes === undefined) {
             minutes = '00';
         };
         return `${hours}:${minutes}`;
-     };
-    
+    };
+
     var x = 0;
     // pass each row into one object    
     var activityList = [];
     for (var i = 0; i < date.length; i++){
         if (date[i].value !== '') {
             var activity = {
-                date : formatDate(date[i].value),
-                trip_type : trip[i].value,
-                time_arrival : convertTime(arrival[i].value),
-                time_departure : convertTime(departure[i].value),
-                description : description[i].value,
-                remarks : remarks[i].value
+                date: formatDate(date[i].value),
+                trip_type: trip[i].value,
+                time_arrival: convertTime(arrival[i].value),
+                time_departure: convertTime(departure[i].value),
+                description: description[i].value,
+                remarks: remarks[i].value
             };
-            
+
             activityList[x] = activity;
             x++;
         };
-       
+
     }
 
     console.log(activityList);
@@ -895,28 +902,30 @@ function resubmitActivity(actDate, actFormID, farmID) {
 
     $.ajax({
         type: 'POST',
-        url: '/resubmit-activity-form/' + actFormID +'/' + farmID + '/' + actDate,
-        data: {"activityList" : activityList},
+        url: '/resubmit-activity-form/' + actFormID + '/' + farmID + '/' + actDate,
+        data: {
+            "activityList": activityList
+        },
 
-        success: function(response){
-            if (response.status == 200){
+        success: function (response) {
+            if (response.status == 200) {
                 console.log(response.responseJSON.success)
             }
 
             window.location.replace("/forms-approval");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error)
         }
     })
 }
 
 /**
-*   - Approves all activities under selected activity form
-*   
-*   actFormID = id value of selected activity form
-*   userType = user group of currently logged in user
-*/
+ *   - Approves all activities under selected activity form
+ *   
+ *   actFormID = id value of selected activity form
+ *   userType = user group of currently logged in user
+ */
 function approveActivity(actFormID, userType) {
     var is_checked = null;
     var is_reported = null;
@@ -924,11 +933,9 @@ function approveActivity(actFormID, userType) {
 
     if (userType == "Livestock Operation Specialist") {
         is_checked = true;
-    }
-    else if (userType == "Extension Veterinarian") {
-        is_reported = true;   
-    }
-    else {
+    } else if (userType == "Extension Veterinarian") {
+        is_reported = true;
+    } else {
         is_noted = true;
     }
 
@@ -937,30 +944,32 @@ function approveActivity(actFormID, userType) {
     $.ajax({
         type: 'POST',
         url: '/approve-activity-form/' + actFormID,
-        data: {"id" : actFormID,
-                "is_checked" : is_checked,
-                "is_reported" : is_reported,
-                "is_noted" : is_noted },
+        data: {
+            "id": actFormID,
+            "is_checked": is_checked,
+            "is_reported": is_reported,
+            "is_noted": is_noted
+        },
 
-        success: function(response){
-            if (response.status == 200){
+        success: function (response) {
+            if (response.status == 200) {
                 console.log(response.responseJSON.success)
             }
 
             window.location.replace("/forms-approval");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error)
         }
     })
 }
 
 /**
-*   - Rejects all activities under selected activity form
-*   
-*   actFormID = id value of selected activity form
-*   userType = user group of currently logged in user
-*/
+ *   - Rejects all activities under selected activity form
+ *   
+ *   actFormID = id value of selected activity form
+ *   userType = user group of currently logged in user
+ */
 function rejectActivity(actFormID, userType) {
     var is_checked = null;
     var is_reported = null;
@@ -968,11 +977,9 @@ function rejectActivity(actFormID, userType) {
 
     if (userType == "Livestock Operation Specialist") {
         is_checked = false;
-    }
-    else if (userType == "Extension Veterinarian") {
-        is_reported = false;   
-    }
-    else {
+    } else if (userType == "Extension Veterinarian") {
+        is_reported = false;
+    } else {
         is_noted = false;
     }
 
@@ -981,19 +988,21 @@ function rejectActivity(actFormID, userType) {
     $.ajax({
         type: 'POST',
         url: '/reject-activity-form/' + actFormID,
-        data: {"id" : actFormID,
-                "is_checked" : is_checked,
-                "is_reported" : is_reported,
-                "is_noted" : is_noted },
+        data: {
+            "id": actFormID,
+            "is_checked": is_checked,
+            "is_reported": is_reported,
+            "is_noted": is_noted
+        },
 
-        success: function(response){
-            if (response.status == 200){
+        success: function (response) {
+            if (response.status == 200) {
                 console.log(response.responseJSON.success)
             }
 
             window.location.replace("/forms-approval");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error)
         }
     })
@@ -1010,11 +1019,11 @@ function viewHogsHealth(farmHTML) {
     var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
     console.log("farmID -- " + farmID);
 
-    try{
+    try {
         url = "/selected-hogs-health/" + farmID;
         console.log(url);
         location.href = url;
-    }catch (error){
+    } catch (error) {
         console.log("Something went wrong. Restarting...");
         location.reload(true);
     }
@@ -1029,11 +1038,11 @@ function viewHealthSymptoms(farmHTML) {
     var farmID = farmHTML.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
     console.log("farmID -- " + farmID);
 
-    try{
+    try {
         url = "/selected-health-symptoms/" + farmID;
         console.log(url);
         location.href = url;
-    }catch (error){
+    } catch (error) {
         console.log("Something went wrong. Restarting...");
         location.reload(true);
     }
@@ -1045,85 +1054,84 @@ function viewHealthSymptoms(farmHTML) {
  * @param selectID HTML ID name of the dropdown
  * @param valueToSet string value of option tag to be selected
  */
- function setSelectedValue(selectID, valueToSet) {
-    Array.from(document.getElementById(selectID).options).forEach(function(option_element) {
+function setSelectedValue(selectID, valueToSet) {
+    Array.from(document.getElementById(selectID).options).forEach(function (option_element) {
         let option_text = option_element.text;
         let option_value = option_element.value;
         let is_option_selected = option_element.selected;
-    
-        if (option_value == valueToSet){
+
+        if (option_value == valueToSet) {
             option_element.selected = true;
             console.log("option selected is -- [" + option_value + "]");
         }
     });
 }
 
-
 /** 
  * on-click POST AJAX for edit status btn for Incident Report
  * @param incidID string ID of Incident record to be edited
-*/
+ */
 $('.symptomsSave').on('click', function () {
     // TODO: get incident ID based on DOM access
     var incidID = $(this).parent().parent().siblings(":eq(0)").text();
-    
+
     console.log(".symptomsSave [incidID] -- " + incidID);
-    
+
     // Get selected report_status in dropdown
     var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
     var currStat = $("#hidden-status-" + incidID).val();
 
-    if (selectedStat !== currStat){
+    if (selectedStat !== currStat) {
         ajaxCSRF();
 
         $.ajax({
             type: 'POST',
             url: '/update-incident-status/' + incidID,
-            data: {"selectStat": selectedStat}, 
+            data: {
+                "selectStat": selectedStat
+            },
             success: function (response) {
-                
-                if (response.status_code === "200"){
+
+                if (response.status_code === "200") {
                     // update selected rep_status in dropdown acc. to returned db value
                     var updatedStat = response.updated_status;
                     // alert("updatedStat -- " + updatedStat);
-                    
+
                     setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
 
                     // update value of hidden input tag
                     $("#hidden-status-" + incidID).val(updatedStat);
 
-                    console.log("Status for incident ID [" + incidID + "] has been updated.");                    
-                } 
-                else {
+                    console.log("Status for incident ID [" + incidID + "] has been updated.");
+                } else {
                     console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);
                 }
 
             },
-            error: function (res){
-                console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            error: function (res) {
+                console.log("ERROR [" + res.status + "]: " + res.responseJSON.error);
             }
         });
     }
 });
 
-
 /**
-*   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
-*   - Appends selected farm ID to url that will display an empty symptoms checklist.
-*   
-*   farmID = button value (carries ID of selected farm)
-*/
+ *   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
+ *   - Appends selected farm ID to url that will display an empty symptoms checklist.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
 function addSymptomsPage(farmID) {
 
-    var farmID = $(farmID).val(); 
+    var farmID = $(farmID).val();
     console.log(farmID);
 
-    try{
+    try {
         url = "/add-case/" + farmID;
         console.log(url);
         location.href = url;
-    } catch (error){
+    } catch (error) {
         console.log("Fetching farm details failed.");
         location.reload(true);
     }
@@ -1232,11 +1240,11 @@ function resubmitMortality(mortDate, mortFormID, farmID) {
 }
 
 /**
-*   - Approves all mortalities under selected mortality form
-*   
-*   mortFormID = id value of selected mortality form
-*   userType = user group of currently logged in user
-*/
+ *   - Approves all mortalities under selected mortality form
+ *   
+ *   mortFormID = id value of selected mortality form
+ *   userType = user group of currently logged in user
+ */
 function approveMortality(mortFormID, userType) {
     var is_posted = null;
     var is_reported = null;
@@ -1244,11 +1252,9 @@ function approveMortality(mortFormID, userType) {
 
     if (userType == "Paiwi Management Staff") {
         is_posted = true;
-    }
-    else if (userType == "Extension Veterinarian") {
-        is_reported = true;   
-    }
-    else {
+    } else if (userType == "Extension Veterinarian") {
+        is_reported = true;
+    } else {
         is_noted = true;
     }
 
@@ -1257,30 +1263,32 @@ function approveMortality(mortFormID, userType) {
     $.ajax({
         type: 'POST',
         url: '/approve-mortality-form/' + mortFormID,
-        data: {"id" : mortFormID,
-                "is_posted" : is_posted,
-                "is_reported" : is_reported,
-                "is_noted" : is_noted },
+        data: {
+            "id": mortFormID,
+            "is_posted": is_posted,
+            "is_reported": is_reported,
+            "is_noted": is_noted
+        },
 
-        success: function(response){
-            if (response.status == 200){
+        success: function (response) {
+            if (response.status == 200) {
                 console.log(response.responseJSON.success)
             }
 
             window.location.replace("/forms-approval");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error)
         }
     })
 }
 
 /**
-*   - Rejects all mortalities under selected mortality form
-*   
-*   mortFormID = id value of selected mortality form
-*   userType = user group of currently logged in user
-*/
+ *   - Rejects all mortalities under selected mortality form
+ *   
+ *   mortFormID = id value of selected mortality form
+ *   userType = user group of currently logged in user
+ */
 function rejectMortality(mortFormID, userType) {
     var is_posted = null;
     var is_reported = null;
@@ -1288,11 +1296,9 @@ function rejectMortality(mortFormID, userType) {
 
     if (userType == "Paiwi Management Staff") {
         is_posted = false;
-    }
-    else if (userType == "Extension Veterinarian") {
-        is_reported = false;   
-    }
-    else {
+    } else if (userType == "Extension Veterinarian") {
+        is_reported = false;
+    } else {
         is_noted = false;
     }
 
@@ -1306,12 +1312,10 @@ function rejectMortality(mortFormID, userType) {
                 "is_reported" : is_reported,
                 "is_noted" : is_noted },
 
-        success: function(response){
-            if (response.status == 200){
-                console.log(response.responseJSON.success)
-            }
-
-            window.location.replace("/forms-approval");
+        url: '/post-addCase/' + farmID,
+        data: {
+            "num_pigsAffected": num_pigs,
+            "symptomsArr": symptomsArr
         },
         error: function (res){
             console.log(res.responseJSON.error)
