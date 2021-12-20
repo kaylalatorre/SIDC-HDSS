@@ -53,6 +53,9 @@ from .models import (
 )
 from django.db.models.functions import Concat
 
+# from other apps
+from healthapp.views import compute_MortRate
+
 #Creating a cursor object using the cursor() method
 # from django.shortcuts import render
 
@@ -91,7 +94,7 @@ def debugFunc(func, message):
 
 def getMapData(request):
     # TODO investigate why is_ajax is included
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
         data = []
         qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
                 fname=F("hog_raiser__fname"), 
@@ -113,6 +116,9 @@ def getMapData(request):
                 "longitude": f["loc_long"],
                 "numPigs": str(f["total_pigs"]),
                 "address": f["farm_address"],
+                "mortRts": compute_MortRate(f["id"], None),
+                "sxRept": Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).count(),
+                "sxActv": Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(report_status="Active").count(),
                 "latest": f["last_updated"]
             }
             data.append(farmObject)
@@ -1244,13 +1250,11 @@ def assign_technician(request):
     ## check if technician exists
     area = Area.objects.filter(area_name=areaQry)
     technician = User.objects.filter(id=techQry)
-    debug(area.get())
     if(area.exists() and technician.exists()):
         # save changes
         a = area.get()
         a.tech_id = technician.get()
         a.save()
-        debug(area.get())
         # return output
         return HttpResponse("Technician assigned",status=200)
     # else abort
@@ -2198,7 +2202,6 @@ def viewAnnouncement(request, id):
         "recip_area",
         "mssg"
     ).first()
-    debug(qry)
     context = {
         "announcement":qry
     }
@@ -2477,7 +2480,6 @@ def getActFormsNotifs(request, notifIDList):
 
     elif userGroup == "Extension Veterinarian":
         evetNotifs = activityForms.filter(is_reported = None).filter(is_checked = True)
-        debug(evetNotifs.values())
         # notification for pending Extension Veterinarian approval
         count = 0
         for item in evetNotifs.values():
@@ -2494,7 +2496,6 @@ def getActFormsNotifs(request, notifIDList):
             })
     elif userGroup == "Assistant Manager":
         asmaNotifs = activityForms.filter(is_noted = None).filter(is_reported = True)
-        debug(asmaNotifs.values())
         # notification for pending assistant manager approval
         count = 0
         for item in asmaNotifs.values():
@@ -2632,7 +2633,6 @@ def getMortFormsNotifs(request, notifIDList):
 
     elif userGroup == "Extension Veterinarian":
         evetNotifs = mortalityForms.filter(is_reported = None).filter(is_posted = True)
-        debug(evetNotifs.values())
         # notification for pending Extension Veterinarian approval
         count = 0
         for item in evetNotifs.values():
@@ -2649,7 +2649,6 @@ def getMortFormsNotifs(request, notifIDList):
             })
     elif userGroup == "Assistant Manager":
         asmaNotifs = mortalityForms.filter(is_noted = None).filter(is_reported = True)
-        debug(asmaNotifs.values())
         # notification for pending assistant manager approval
         count = 0
         for item in asmaNotifs.values():
@@ -2671,9 +2670,9 @@ def getMortFormsNotifs(request, notifIDList):
     }
  
 def getNotifications(request):
-    # print all session items / debug
-    # for key, value in request.session.items():
-    #     print('GETNOTIF 1 {} => {}'.format(key, value))
+    """
+    Collects all notifications from different tables
+    """
     request.session['notifIDList'] = initNotifIDList(request)
     notifIDList = request.session['notifIDList']
     memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
@@ -2717,8 +2716,11 @@ def syncNotifications(request):
         notifQry.data['notifIDList'] = []
         notifQry.save()
 
+    debug(sessionNotifs)
+    debug(User.objects.get(id=userID).accountdata.data['notifIDList'])
     if (Counter(User.objects.get(id=userID).accountdata.data['notifIDList']) != Counter(sessionNotifs)):
-        new_dbNotifs = []
+        debug("create new db notif")
+        new_dbNotifs = [] # inside if statement so that it does not overwrite accountData.notifIDList
         if len(sessionNotifs) != 0: #if sessionNotifs is not empty
             notifIDs = getNotifIDs(request)
             for notifID in notifIDs:
@@ -2738,13 +2740,8 @@ def syncNotifications(request):
     except:
         debug('session was not saved to database')
 
-    # Final check to see if data was saved
-    if User.objects.get(id=userID).accountdata.data['notifIDList'] == new_dbNotifs:
-        debug('true')
-        return HttpResponse({"success":"session and database synced"}, status=200)
-    else:
-        debug('false')
-        return HttpResponse({"failure":"session and database not synced"}, status=500)
+    return HttpResponse({"success":"session and database synced"}, status=200)
+    
 
 def countNotifications(request):
     totalNotifs = 0
