@@ -12,7 +12,11 @@
 
 <div class="table-container main-div">
     <h1 class="heading">Hogs Health & Symptoms</h1>
+    <div class="legend legend-no-bg">
+        <i style="background: #ED1E40"></i><span>Has Active Incidents</span><br>
+    </div>
     <div class="box-style">
+        {% if farmList|length > 0 %}
         <table class="table" id="mainTableid">
             <thead>
                 <tr>
@@ -29,8 +33,9 @@
             </thead>
             <tbody>
                 <!-- Data -->
+            
                 {% for farm in farmList %}
-                <tr>
+                <tr class="health-row">
                     {% if farm.code < 10 %}
                     <td data-label="Farm Code">00{{ farm.code }}</td>
                     {% elif farm.code < 100 %}
@@ -44,14 +49,19 @@
                     <td data-label="Ave. Current Weight">{{ farm.ave_currWeight }}</td>
                     <td data-label="Mortality Rate">{{ farm.mortality_rate }}</td>
                     <td data-label="Incidents Reported">{{ farm.total_incidents }}</td>
-                    <td data-label="Active Incidents">{{ farm.total_active }}</td>
+                    <td data-label="Active Incidents" class="active-incid">{{ farm.total_active }}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="view-HealthSymptoms" onclick="viewHealthSymptoms(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>
                 </tr>    
-                {% endfor %}            
+                {% endfor %}          
             </tbody>            
         </table>
+        {% else %}
+        <div>
+            <p> No farms to display. </p>
+        </div>
+        {% endif %}  
     </div>
 </div>
 {% endblock section %}

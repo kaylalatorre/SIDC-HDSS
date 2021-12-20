@@ -3,16 +3,33 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Add Case</title>
+    <title>SIDC-HDSS | Add Incident Case</title>
 {% endblock page_title %}
 
+
 {% block section %}
+
+<!-- TEMP PLACEHOLDER to test Django messages -->
+{% for mssg in messages %}
+    {% if mssg.tags == "add-incidCase" %}
+    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
+        <div class="msg flex-item">{{ mssg }}</div>
+        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+{% endfor %}
+
 <div class="main-div">
-    <form action="" method="POST">
+    <!-- <form action="/post-addCase/{{farmID}}" method="POST">
+
+        {% csrf_token %} -->
         <h1 class="heading"><a href="/selected-health-symptoms">Hogs Health & Symptoms</a> >  Add Incident Case</h1>
         <div class="flex subheading">
             <p class="flex-item">Add new incidents cases here. Record all symptoms observed. </p>
-            <div><button class="primary-btn" type="submit">Save</button></div>
+            <div class="desktop-subheading"><button class="primary-btn" type="submit" id="desktop-addCase-btn" onclick="addCase('{{farmID}}')">Save</button></div>
+
         </div>
         <div class="mobile-subheading">
             <p>Add new incidents cases here. Record all symptoms observed. </p>
@@ -23,147 +40,148 @@
             <section>
                 <div class="mb-3">
                     <label for="input-code" class="form-label">No. of Pigs Affected</label>
-                    <input type="number" class="form-control" id="input-title" placeholder="ex. 10">
+                    <input type="number" class="form-control input-numAffected" id="input-title" placeholder="ex. 10" min="1" max="{{total_pigs}}">
                 </div>
             </section>
             <section>
                 <ul class="symptoms-checklist">   
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="high_fever" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="high_fever"> 
                             <label class="form-check-label" for="high_fever">High Fever</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="loss_appetite" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="loss_appetite"> 
                             <label class="form-check-label" for="loss_appetite">Loss of Appetite</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="depression" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="depression"> 
                             <label class="form-check-label" for="depression">Depression</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="lethargic" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="lethargic"> 
                             <label class="form-check-label" for="lethargic">Lethargic</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="constipation" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="constipation"> 
                             <label class="form-check-label" for="constipation">Constipation</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="vomiting_diarrhea" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="vomiting_diarrhea"> 
                             <label class="form-check-label" for="vomiting_diarrhea">Vomitting/diarrhea with bloody discharge</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="colored_pigs" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="colored_pigs"> 
                             <label class="form-check-label" for="colored_pigs">White-skinned or cyanotic</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="skin_lesions" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="skin_lesions"> 
                             <label class="form-check-label" for="skin_lesions">Red/blotchy skin lesions</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="hemorrhages" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="hemorrhages"> 
                             <label class="form-check-label" for="hemorrhages">Discrete hemorrhages</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="abn_breathing" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="abn_breathing"> 
                             <label class="form-check-label" for="abn_breathing">Abnormal breathing</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="discharge_eyesnose" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="discharge_eyesnose"> 
                             <label class="form-check-label" for="discharge_eyesnose">Heavy discharge from eyes and/or nose</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="death_days" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="death_days"> 
                             <label class="form-check-label" for="death_days">Death within 6-13 days</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="death_week" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="death_week"> 
                             <label class="form-check-label" for="death_week">Death (in less than 1 week old)</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="cough" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="cough"> 
                             <label class="form-check-label" for="cough">Coughing</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="sneeze" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="sneeze"> 
                             <label class="form-check-label" for="sneeze">Sneezing</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="runny_nose" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="runny_nose"> 
                             <label class="form-check-label" for="runny_nose">Runny nose</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="waste" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="waste"> 
                             <label class="form-check-label" for="waste">Wasting</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="boar_dec_libido" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="boar_dec_libido"> 
                             <label class="form-check-label" for="boar_dec_libido">Reduced libido (boars)</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="farrow_miscarriage" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="farrow_miscarriage"> 
                             <label class="form-check-label" for="farrow_miscarriage">Miscarriage (farrows)</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="weight_loss" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="weight_loss"> 
                             <label class="form-check-label" for="weight_loss">Weight loss</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="trembling" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="trembling"> 
                             <label class="form-check-label" for="trembling">Trembling and incoordination</label>
                         </div>
                     </li>
                     <li>
                         <div class="mb-3">
-                            <input type="checkbox" class="form-check-input" id="conjunctivitis" value="true"> 
+                            <input type="checkbox" class="form-check-input check-symp" id="conjunctivitis"> 
                             <label class="form-check-label" for="conjunctivitis">Conjunctivitis</label>
                         </div>
                     </li>
                 </ul>
             </section>
         </div>
-        <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
-    </form>
+        <div class="mobile-subheading"><button class="primary-btn" type="submit" id="mobile-addCase-btn" onclick="addCase('{{farmID}}')">Save</button></div>
+
+    <!-- </form> -->
 </div>
 {% endblock section %}

@@ -1,15 +1,37 @@
-function formatDate(date) {
+/**
+ * Helper function to format date objects 
+ * for frontend display.
+ * @param {date} date 
+ * @returns a formatted date YYYY-MM-DD
+ */
+ function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
-        year = d.getFullYear();
-    
+        year = d.getFullYear();   
+
     if (month.length < 2) 
         month = '0' + month;
     if (day.length < 2) 
         day = '0' + day;
 
     return [year, month, day].join('-');
+}
+
+/**
+ * Helper function to get the difference 
+ * between the date passed as param and
+ * the date today
+ * @param {date} date 
+ * @returns difference of two dates
+ */
+function getDiffDays(date) {
+    var today = new Date();
+
+    const diffTime = Math.abs(today - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+    return diffDays;
 }
 
 /* 
@@ -76,10 +98,8 @@ for(var i = 0; i < biosecSave.length; i++) {
  let symptomsEdit = document.querySelectorAll('.symptomsEdit');
  for(var i = 0; i < symptomsEdit.length; i++) { 
     symptomsEdit[i].addEventListener("click", (e)=> {
-         let editParent = e.target.parentElement.parentElement.parentElement.parentElement;
-         
+         let editParent = e.target.parentElement.parentElement.parentElement;
          let dropdown = editParent.querySelector(".form-select");
-         console.log(dropdown);
          let symptomsSave = editParent.querySelector(".symptomsSave");
          let symptomsEdit = editParent.querySelector(".symptomsEdit");
          
@@ -92,7 +112,7 @@ for(var i = 0; i < biosecSave.length; i++) {
  let symptomsSave = document.querySelectorAll('.symptomsSave');
  for(var i = 0; i < symptomsSave.length; i++) { 
     symptomsSave[i].addEventListener("click", (e)=> {
-         let saveParent = e.target.parentElement.parentElement.parentElement.parentElement;
+         let saveParent = e.target.parentElement.parentElement.parentElement;
          let dropdown = saveParent.querySelector(".form-select");
          let symptomsSave = saveParent.querySelector(".symptomsSave");
          let symptomsEdit = saveParent.querySelector(".symptomsEdit");
@@ -113,7 +133,7 @@ for(var i = 0; i < rowStatus.length; i++) {
     if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
-    else if ( val === "Active" | val === "Rejected") {
+    else if ( val === "Active") {
         rowStatus[i].classList.add("red");
     }
     else if ( val === "Pending") {
@@ -129,18 +149,39 @@ for(var i = 0; i < rowStatus.length; i++) {
  * - Checks farms last updated more than 7 days ago
  * - Highlights row to red
  */
-let farmRow = document.querySelectorAll('.farm-row');
-for (var i = 0; i < farmRow.length; i++) {
-    let farm = farmRow[i];
+ let farmRow = document.querySelectorAll('.farm-row');
+ for (var i = 0; i < farmRow.length; i++) {
+     let farm = farmRow[i];
+ 
+     var lastUpdated = farm.querySelector('.farm-last-update');
+     var date = lastUpdated.innerHTML;
+     
+     var newDate = new Date(formatDate(date));
+         
+     var diffDays = getDiffDays(newDate);
+     if (diffDays > 7) {
+         console.log(lastUpdated.parentElement);
+         lastUpdated.parentElement.classList.add("highlight-red");
+     }
+ }
 
-    var lastUpdated = farm.querySelector('.farm-last-update');
-    var date = lastUpdated.innerHTML;
-    
-    var newDate = new Date(formatDate(date));
-    console.log(formatDate(date));
-    // console.log(newDate);
-}
-
+ /**
+ * Checking for farms with active incidents
+ * - Checks if farm has more than 0 active incidents
+ * - Highlights row to red
+ */
+  let healthRow = document.querySelectorAll('.health-row');
+  for (var i = 0; i < healthRow.length; i++) {
+      let farm = healthRow[i];
+  
+      var activeIncid = farm.querySelector('.active-incid');
+      var active = activeIncid.innerText;
+      console.log(activeIncid);
+      if (active > 0) {
+        activeIncid.parentElement.classList.add("highlight-red");
+      }
+  }
+ 
 /**
  * Toggling view to Member Announcement btn-grp
  */
@@ -390,18 +431,17 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(formatDate(actDate));
-    var actFormID = activity.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
+    console.log(actDate)
+    console.log(formatDate(actDate))
 
     try{
-        url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
+        url = "/selected-activity-form/" + formatDate(actDate);
         console.log(url);
         location.href = url;
     }catch (error){
         console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
+        // location.reload(true);
     }
 }
 
@@ -429,8 +469,6 @@ function viewMortalityForm(mortality) {
 }
 
 function viewAnnounce(elem) {
-    // Note: This links to a temporary navigation to template
-        // not sure if this can be used with actual implementation? with data
     id = $(elem).attr('id');
     location.href = "/view-announcement/"+id;
 }
@@ -483,6 +521,7 @@ $(document).ready(function(){
         $("#div-raiser-name").remove();
         $("#div-raiser-contact").remove();
     });
+
 });
 
 //---- MODULE 2 functions ----//
@@ -538,21 +577,23 @@ $('#select_all').change(function() {
 * Code modified from: https://www.c-sharpcorner.com/article/custom-search-using-client-side-code/
 */
 function filterRepStatus(){ 
-    var table, tr, i;
+    var i;
     var repStatus;          
-    table   = document.getElementById("symptoms-reported"); //to get the html table    
-    tr      = table.getElementsByTagName("tr"); //to access rows in the table    
+
+    var incidentRows = document.getElementsByClassName('incident-row');
+    
     
     // get array of report_status text in checkbox filter
     var checkedValues = $('input:checkbox:checked.ch_stat').map(function() {
         return this.id.toUpperCase();
     }).get();
     console.log(checkedValues);
-
+    console.log(incidentRows.length)
     // console.log(table);
 
-    for(i=0;i<tr.length;i++){    
-        repStatus = tr[i].getElementsByTagName("td")[4].firstElementChild;
+    for(i=0;i<incidentRows.length;i++){    
+        repStatus = incidentRows[i].getElementsByTagName("td")[4].firstElementChild.value;
+        // repStatus = repStatusRow
 
         console.log(repStatus);
 
@@ -560,15 +601,15 @@ function filterRepStatus(){
             if(
                 (
                     (
-                        ($.inArray(repStatus.innerHTML.toUpperCase(), checkedValues) != -1) ||
+                        ($.inArray(repStatus.toUpperCase(), checkedValues) != -1) ||
                         (checkedValues.length == 0)
                     ) 
                 )
             ){    
-                tr[i].style.display="";        
+                incidentRows[i].style.display="";        
             }    
             else{    
-                tr[i].style.display = "none";   
+                incidentRows[i].style.display = "none";   
             }    
         }    
     }

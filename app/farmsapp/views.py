@@ -48,7 +48,8 @@ from .models import (
     Activity, 
     Mem_Announcement,
     Activities_Form,
-    Mortality_Form
+    Mortality_Form,
+    Hog_Symptoms
 )
 from django.db.models.functions import Concat
 
@@ -669,7 +670,7 @@ def search_bioChecklist(request, biosecID):
             return JsonResponse({"error": "Invalid biosecurity ID."}, status=400)
             
         else:
-            debug("in search_bioChecklist(): bioID -- " + str(bioID))
+            # debug("in search_bioChecklist(): bioID -- " + str(bioID))
 
             # SELECT id,<checklist fields from EXTERNAL>,<checklist fields from INTERNAL>
             # FROM ExternalBiosec, InternalBiosec 
@@ -901,8 +902,6 @@ def post_addChecklist(request, farmID):
                     messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
                     return redirect('/add-checklist/' + farmID)
 
-                # int(value)
-                # print(list((index, value)))
 
             if checkComplete: # (SUCCESS) Checklist input complete, proceed to add in db
 
@@ -923,7 +922,7 @@ def post_addChecklist(request, farmID):
                     "fiveh_m_dist"
                 ).first()
 
-                debug("BIOMEASURE: -- " + str(bioMeasure))
+                # debug("BIOMEASURE: -- " + str(bioMeasure))
 
                 # init Biosec and Farm models
                 extBio = ExternalBiosec() 
@@ -968,7 +967,7 @@ def post_addChecklist(request, farmID):
                 # Format time to be passed on message.success
                 ts = extBio.last_updated 
                 df = ts.strftime("%m/%d/%Y, %H:%M")
-                debug(extBio.last_updated)
+                # debug(extBio.last_updated)
                 
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
                 messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
@@ -2781,9 +2780,7 @@ def computeBioscore(farmID, intbioID, extbioID):
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
-    # if intbioID is None: # (ERROR) no intbioID passed
-    #     debug("(ERROR) intbioID is null.")
-    if intbioID is not None:
+    if intbioID is not None: 
         # Get Intbio record based in farmID & biosec IDs
         intBio = InternalBiosec.objects.filter(id=intbioID, ref_farm_id=farmID).first()
 
@@ -2846,8 +2843,6 @@ def computeBioscore(farmID, intbioID, extbioID):
 
 
     # (2) EXTERNAL BIOSEC SCORE
-    # if extbioID is None: # (ERROR) no extbioID passed
-    #     debug("(ERROR) extbioID is null.")
     if extbioID is not None:
 
         total_measures = 0
@@ -2942,7 +2937,6 @@ def farmsAssessment(request):
     areaQry = Area.objects.all()
 
     # Get technician name assigned per Farm
-    # Farm > Area > User (tech)
     farmQry = Farm.objects.all().prefetch_related("area", "area__tech").order_by("id")
     # debug("techQry -- " + str(farmQry.query))
 
@@ -3149,7 +3143,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         techObject = {
             "name": " ".join((f.area.tech.first_name,f.area.tech.last_name)) 
         }
-        print(techObject["name"])
+        # print(techObject["name"])
         techList.append(techObject)
     # debug(techList)  
 
@@ -3824,6 +3818,7 @@ def dashboard_view(request):
     total_farms = 0
     total_pigs = 0
     total_needInspect = 0
+    total_active = 0
     ave_intbio = 0
     ave_extbio = 0
 
@@ -3840,10 +3835,11 @@ def dashboard_view(request):
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
         
-        # debug("bioDateDiff.days -- " + str(bioDateDiff.days))
-
         if bioDateDiff.days > 7:
             total_needInspect += 1
+
+        # counts no of. Symptoms record with "Active" status
+        total_active += Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(report_status="Active").count()
 
     # debug(farmsData)
 
@@ -3859,6 +3855,7 @@ def dashboard_view(request):
         "total_farms": total_farms,
         "total_pigs": total_pigs,
         "total_needInspect": total_needInspect,
+        "total_active": total_active,
         "ave_intbio": round(ave_intbio, 2),
         "ave_extbio": round(ave_extbio, 2),
         "rem_intbio": round((100 - ave_intbio), 2),
