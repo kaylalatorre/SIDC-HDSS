@@ -670,7 +670,7 @@ def approveMortalityForm(request, mortalityFormID):
     if request.method == 'POST':
         print(request.POST)
 
-        # update activity form fields for user approvals
+        # update mortality form fields for user approvals
         # is_posted for paiwi mgt
         if request.POST.get("is_posted") == 'true' :
             mortality_form.is_posted = True
@@ -678,9 +678,9 @@ def approveMortalityForm(request, mortalityFormID):
             if request.user.groups.all()[0].name == "Paiwi Management Staff":
                 mortality_form.mort_mgtStaff_id = request.user.id
 
-                # NOTIFY USER (EXTENSION VETERINARIAN) - An Activity Form has been sent for approval or is pending for approval
+                # NOTIFY USER (EXTENSION VETERINARIAN) - A Mortality Form has been sent for approval or is pending for approval
 
-                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Paiwi Management Staff
+                # NOTIFY USER (FIELD TECHNICIAN) - A Mortality Form has been approved by Paiwi Management Staff
     
         # is_reported for ext vet
         elif request.POST.get("is_reported") == 'true' :
@@ -689,9 +689,9 @@ def approveMortalityForm(request, mortalityFormID):
             if request.user.groups.all()[0].name == "Extension Veterinarian":
                 mortality_form.mort_extvet_id = request.user.id
 
-                # NOTIFY USER (ASSISTANT MANAGER) - An Activity Form has been sent for approval or is pending for approval
+                # NOTIFY USER (ASSISTANT MANAGER) - A Mortality Form has been sent for approval or is pending for approval
 
-                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Extension Veterinarian
+                # NOTIFY USER (FIELD TECHNICIAN) - A Mortality Form has been approved by Extension Veterinarian
 
 
         # is_noted for asst. manager
@@ -701,7 +701,7 @@ def approveMortalityForm(request, mortalityFormID):
             if request.user.groups.all()[0].name == "Assistant Manager":
                 mortality_form.mort_asm_id = request.user.id
 
-                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Assistant Manager
+                # NOTIFY USER (FIELD TECHNICIAN) - A Mortality Form has been approved by Assistant Manager
 
         
         mortality_form.save()
@@ -740,7 +740,7 @@ def rejectMortalityForm(request, mortalityFormID):
     if request.method == 'POST':
         print(request.POST)
 
-        # update activity form fields for user approvals
+        # update mortality form fields for user approvals
         # is_noted for asst. manager
         if request.POST.get("is_posted") == 'false' :
             mortality_form.is_posted = False
@@ -776,9 +776,94 @@ def rejectMortalityForm(request, mortalityFormID):
             mortality.save()
 
 
-        # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been rejected by <user>
+        # NOTIFY USER (FIELD TECHNICIAN) - A Mortality Form has been rejected by <user>
         messages.success(request, "Mortality Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-mortality')
         return JsonResponse({"success": "Mortality Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
     messages.error(request, "Failed to reject mortality records.", extra_tags='update-mortality')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
+    """
+    - Resubmit rejected mortality form and modify approval status
+    - Add new mortality records to database and connect to mortality form (as FK)
+    - Save details to mortality and add FK of current farm table
+    """
+
+    # get ID of current technician
+    techID = request.user.id
+
+    # get mortality form from ID
+    mortality_form = Mortality_Form.objects.filter(id=mortalityFormID).first()
+
+    # get today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        # print(request.POST)
+        numMortalities = int(len(request.POST)/6)
+
+        # pass all values into each of the array mortalityList
+        mortalityList = []
+
+        i = 0
+        while i < numMortalities:
+            mort_date = str('mortalityList[') + str(i) + str('][mort_date]')
+            beg_inv = str('mortalityList[') + str(i) + str('][beg_inv]')
+            today = str('mortalityList[') + str(i) + str('][today]')
+            to_date = str('mortalityList[') + str(i) + str('][to_date]')
+            source = str('mortalityList[') + str(i) + str('][source]')
+            remarks = str('mortalityList[') + str(i) + str('][remarks]')
+
+            mortalityObject = {
+                "mortDate" : request.POST.get(mort_date, default=None),
+                "mortBegInv" : request.POST.get(beg_inv, default=None),
+                "mortToday" : request.POST.get(today, default=None),
+                "mortToDate" : request.POST.get(to_date, default=None),
+                "mortSource" : request.POST.get(source, default=None),
+                "mortRemarks" : request.POST.get(remarks, default=None),
+            }
+
+            mortalityList.append(mortalityObject)
+
+            i += 1
+        
+        print("TEST LOG mortalityList: " + str(mortalityList))
+
+        # reset approval status of mortality form
+        mortality_form.is_posted = None
+        mortality_form.is_reported = None
+        mortality_form.is_noted = None
+        mortality_form.date_added = datetime.now(timezone.utc)
+
+        mortality_form.save()
+        
+        # pass all mortalityList objects into Mortality model
+        x = 0
+
+        for mort in mortalityList:
+            mort = mortalityList[x]
+
+            # create new instance of Mortality model for new records
+            mortality = Mortality.objects.create(
+                ref_farm_id = farmID,
+                mortality_date = mort['mortDate'],
+                num_begInv = mort['mortBegInv'],
+                num_today = mort['mortToday'],
+                num_toDate = mort['mortToDate'],
+                source = mort['mortSource'],
+                remarks = mort['mortRemarks'],
+                mortality_form_id = mortality_form.id
+            )
+
+            mortality.save()
+
+            x += 1
+        
+
+        # NOTIFY USER (PAIWI MANAGEMENT STAFF) - A Mortality Form has been resubmitted by Field Technician; needs approval
+        messages.success(request, "Mortality Form has been resubmitted.", extra_tags='update-mortality')
+        return JsonResponse({"success": "Mortality Form has been resubmitted."}, status=200)
+
+    messages.error(request, "Failed to resubmit Mortality Form.", extra_tags='update-mortality')
     return JsonResponse({"error": "Not a POST method"}, status=400)

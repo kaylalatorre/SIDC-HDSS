@@ -23,5 +23,6 @@ urlpatterns = [
     path('selected-mortality-form/<str:mortalityFormID>/<str:mortalityDate>', views.selectedMortalityForm, name="selectedMortalityForm"),
     path('approve-mortality-form/<str:mortalityFormID>', views.approveMortalityForm, name="approveMortalityForm"),
     path('reject-mortality-form/<str:mortalityFormID>', views.rejectMortalityForm, name="rejectMortalityForm"),
+    path('resubmit-mortality-form/<str:mortalityFormID>/<str:farmID>/<str:mortalityDate>', views.resubmitMortalityForm, name="resubmitMortalityForm"),
 
 ]

@@ -31,7 +31,7 @@
         <div class="flex">
             <p class="flex-item">Resubmit form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitActivity('{{ mortDate }}', '{{ mortalityFormID }}', '{{ farm.id }}')">Resubmit</button> 
+                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitMortality('{{ mortDate }}', '{{ mortalityFormID }}', '{{ farm.id }}')">Resubmit</button> 
             </div>
         </div>
         {% else %}
@@ -168,7 +168,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Farm Code</th>
                         <th>Mortality Date</th>
                         <th width="10%">Beg. Inv.</th>
                         <th width="10%">Today</th>
@@ -181,12 +180,18 @@
                 </thead>
                 <tbody id="mortality-table">
                     <tr style="display: none">
-                        <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
-                        <td data-label="Beg. Inv." id="num_begInv"> {{mortalityForm.num_begInv}} </td>
-                        <td data-label="Today" id="num_today"> {{mortalityForm.num_today}} </td>
-                        <td data-label="To Date" id="num_toDate"> {{mortalityForm.num_toDate}} </td>
-                        <td data-label="Source" id="source"> {{mortalityForm.source}} </td>
-                        <td data-label="Remarks" id="remarks"> {{mortalityForm.remarks}} </td>
+                        <td data-label="Mortality Date" id="mortality_date"> 
+                            <input type="date" class="form-control mort-date-input" id="mortality-date"> </td>                            
+                        <td data-label="Beg. Inv." id="num_begInv"> 
+                            <input type="number" class="form-control mort-beg-inv-inpit" id="beg-inv" placeholder="ex. 20"> </td>
+                        <td data-label="Today" id="num_today"> 
+                            <input type="number" class="form-control mort-today-input" id="mortality-today" placeholder="ex. 5"> </td>
+                        <td data-label="To Date" id="num_toDate">
+                            <input type="number" class="form-control mort-to-date-input" id="inv-to-date" placeholder="ex. 15"> </td>
+                        <td data-label="Source" id="source"> 
+                            <input type="text" class="form-control mort-source-input" id="mortality-source" placeholder=""> </td>
+                        <td data-label="Remarks" id="remarks"> 
+                            <input type="text" class="form-control mort-remarks-input" id="mortality-remarks" placeholder=""> </td>
                         <td data-label="Mortality Rate" style="text-align: right;" id="mortality_rate">
                             99%
                         </td>

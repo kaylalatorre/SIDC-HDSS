@@ -833,11 +833,6 @@ function saveActivity(actID, farmID) {
 *   actDate = date_added value of selected activity form   
 */
 function resubmitActivity(actDate, actFormID, farmID) {
-    // console.log(actDate);
-    // console.log(actFormID);
-
-    // var table = document.getElementById("activity-form-table");
-
     // get all data from each column
     var date = document.getElementsByClassName("act-date-input");
     var trip = document.getElementsByClassName("act-trip-type-input");
@@ -867,9 +862,7 @@ function resubmitActivity(actDate, actFormID, farmID) {
     // pass each row into one object    
     var activityList = [];
     for (var i = 0; i < date.length; i++){
-        // console.log([i].value)
         if (date[i].value !== '') {
-        // if ((date[i].innerHTML !== null && trip_type[i].innerHTML !== null) && (time_arrival[i].innerHTML !== null && time_departure[i].innerHTML !== null)){
             var activity = {
                 date : formatDate(date[i].value),
                 trip_type : trip[i].value,
@@ -1099,6 +1092,65 @@ function viewHealthSymptoms(farmHTML) {
         });
     }
 
+}
+
+/**
+*   - Send data to backend function save to database
+*
+*   morttFormID = id value of selected mortality form
+*   mortDate = date_added value of selected mortality form   
+*/
+function resubmitMortality(mortDate, mortFormID, farmID) {
+    // get all data from each column
+    var mort_date = document.getElementsByClassName("mort-date-input");
+    var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
+    var today = document.getElementsByClassName("mort-today-input");
+    var to_date = document.getElementsByClassName("mort-to-date-input");
+    var source = document.getElementsByClassName("mort-source-input");
+    var remarks = document.getElementsByClassName("mort-remarks-input");
+
+    var x = 0;
+    // pass each row into one object    
+    var mortalityList = [];
+    for (var i = 0; i < mort_date.length; i++){
+        // console.log([i].value)
+        if (mort_date[i].value !== '') {
+        // if ((date[i].innerHTML !== null && trip_type[i].innerHTML !== null) && (time_arrival[i].innerHTML !== null && time_departure[i].innerHTML !== null)){
+            var mortality = {
+                mort_date : mort_date[i].value,
+                beg_inv : beg_inv[i].value,
+                today : today[i].value,
+                to_date : to_date[i].value,
+                source : source[i].value,
+                remarks : remarks[i].value
+            };
+            
+            mortalityList[x] = mortality;
+            x++;
+        };
+       
+    }
+
+    console.log(mortalityList);
+    
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/resubmit-mortality-form/' + mortFormID +'/' + farmID + '/' + mortDate,
+        data: {"mortalityList" : mortalityList},
+
+        success: function(response){
+            if (response.status == 200){
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res){
+            console.log(res.responseJSON.error)
+        }
+    })
 }
 
 /**
