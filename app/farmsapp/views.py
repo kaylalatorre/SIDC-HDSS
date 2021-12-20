@@ -1748,10 +1748,6 @@ def approveActivityForm(request, activityFormID):
 
             if request.user.groups.all()[0].name == "Livestock Operation Specialist":
                 activity_form.act_liveop_id = request.user.id
-
-                # NOTIFY USER (EXTENSION VETERINARIAN) - An Activity Form has been sent for approval or is pending for approval
-
-                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Livestock Operation Specialist
     
         # is_reported for ext vet
         elif request.POST.get("is_reported") == 'true' :
@@ -1760,20 +1756,12 @@ def approveActivityForm(request, activityFormID):
             if request.user.groups.all()[0].name == "Extension Veterinarian":
                 activity_form.act_extvet_id = request.user.id
 
-                # NOTIFY USER (ASSISTANT MANAGER) - An Activity Form has been sent for approval or is pending for approval
-
-                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Extension Veterinarian
-
-
         # is_noted for asst. manager
         elif request.POST.get("is_noted") == 'true' :
             activity_form.is_noted = True
 
             if request.user.groups.all()[0].name == "Assistant Manager":
                 activity_form.act_asm_id = request.user.id
-
-                # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been approved by Assistant Manager
-
         
         activity_form.save()
 
@@ -1845,8 +1833,6 @@ def rejectActivityForm(request, activityFormID):
 
             activity.save()
 
-
-        # NOTIFY USER (FIELD TECHNICIAN) - An Activity Form has been rejected by <user>
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
 
@@ -1933,8 +1919,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
 
             x += 1
         
-
-        # NOTIFY USER (LIVESTOCK OPERATION SPECIALIST) - An Activity Form has been resubmitted by Field Technician; needs approval
         messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
         return JsonResponse({"success": "Activity Form has been resubmitted."}, status=200)
 
@@ -2019,8 +2003,6 @@ def addActivity(request, farmID):
 
                 x += 1
             
-
-            # NOTIFY USER (LIVESTOCK OPERATION SPECIALIST) - New Activity Form has been submitted by Field Technician OR New Activity Form needs approval
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
@@ -2253,12 +2235,14 @@ def getNotifIDs(request):
     notifIDs = []
     announceTable = Mem_Announcement._meta.db_table
     actFormTable = Activities_Form._meta.db_table
+    mortFormTable = Mortality_Form._meta.db_table
 
     userID = request.session['_auth_user_id']
     userGroup = request.user.groups.all()[0].name
 
     memancmtForms = Mem_Announcement.objects
     activityForms = Activities_Form.objects
+    mortalityForms = Mortality_Form.objects
 
     if userGroup == "Assistant Manager":
         # Announcements
@@ -2269,6 +2253,10 @@ def getNotifIDs(request):
         asmaNotifs = activityForms.filter(is_noted = None).filter(is_reported = True)
         for item in asmaNotifs.values():
             notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+        # Mortality Forms
+        asmaNotifs = mortalityForms.filter(is_noted = None).filter(is_reported = True)
+        for item in asmaNotifs.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id'])]))
 
     elif userGroup == "Field Technician":
         # Announcements
@@ -2276,7 +2264,7 @@ def getNotifIDs(request):
         for item in rejectedAnnouncement.values():
             notifIDs.append(';'.join([announceTable, str(item['id']), "Rejected"]))
         # Activity Forms
-        techActFormNotifs = activityForms.filter(act_tech_id = request.session['_auth_user_id'])
+        techActFormNotifs = activityForms.filter(act_tech_id = userID)
         qry = techActFormNotifs.filter(Q(is_checked = True)).filter(is_reported = None)
         for item in qry.values():
             notifIDs.append(';'.join([actFormTable, str(item['id']), "lo"]))
@@ -2290,14 +2278,42 @@ def getNotifIDs(request):
         for item in qry.values():
             notifIDs.append(';'.join([actFormTable, str(item['id']), "rj"]))
 
+        # Mortality Forms
+        techActFormNotifs = mortalityForms.filter(mort_tech_id = userID)
+        qry = techActFormNotifs.filter(Q(is_posted = True)).filter(is_reported = None)
+        for item in qry.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id']), "lo"]))
+        qry = techActFormNotifs.filter(is_reported = True).filter(is_noted = None)
+        for item in qry.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id']), "ev"]))
+        qry = techActFormNotifs.filter(is_noted = True)
+        for item in qry.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id']), "am"]))
+        qry = techActFormNotifs.filter(Q(is_posted = False) | Q(is_noted = False) | Q(is_reported = False))
+        for item in qry.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id']), "rj"]))
+
     elif userGroup == "Livestock Operation Specialist":
+        # Activity Forms
         lopsNotifs = activityForms.filter(is_checked = None)
         for item in lopsNotifs.values():
             notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+
+    elif userGroup == "Paiwi Management Staff":
+        # Mortality Forms
+        pamsNotifs = mortalityForms.filter(is_checked = None)
+        for item in pamsNotifs.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id'])]))
+    
     elif userGroup == "Extension Veterinarian":
-        evetNotifs = activityForms.filter(is_reported = None).filter(is_checked = True)
+        # Activity Forms
+        evetNotifs = activityForms.filter(is_reported = None).filter(is_posted = True)
         for item in evetNotifs.values():
             notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+        # Mortality Forms
+        evetNotifs = mortalityForms.filter(is_reported = None).filter(is_posted = True)
+        for item in evetNotifs.values():
+            notifIDs.append(';'.join([mortFormTable, str(item['id'])]))
 
     return notifIDs 
 
@@ -2372,7 +2388,7 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-success",
                 "notificationID": notifID,
-                "label": "{} Activity(s) has been approved by livestock operation specialist".format(count),
+                "label": "{} Activity Form(s) has been approved by livestock operation specialist".format(count),
                 "href": "/forms-approval"
             })
 
@@ -2388,7 +2404,7 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-success",
                 "notificationID": notifID,
-                "label": "{} Activity(s) has been approved by extension veterinarian".format(count),
+                "label": "{} Activity Form(s) has been approved by extension veterinarian".format(count),
                 "href": "/forms-approval"
             })
 
@@ -2404,7 +2420,7 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-success",
                 "notificationID": notifID,
-                "label": "{} Activity(s) has been approved by assistant manager".format(count),
+                "label": "{} Activity Form(s) has been approved by assistant manager".format(count),
                 "href": "/forms-approval"
             })
 
@@ -2425,21 +2441,21 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-danger",
                 "notificationID": notifID,
-                "label": "{} Activity(s) has been rejected by livestock operation specialist".format(locount),
+                "label": "{} Activity Form(s) has been rejected by livestock operation specialist".format(locount),
                 "href": "/forms-approval"
             })
         if amcount != 0:
             notifList.append({
                 "label_class": "text-danger",
                 "notificationID": notifID,
-                "label": "{} Activity(s) has been rejected by assistant manager".format(amcount),
+                "label": "{} Activity Form(s) has been rejected by assistant manager".format(amcount),
                 "href": "/forms-approval"
             })
         if evcount != 0:
             notifList.append({
                 "label_class": "text-danger",
                 "notificationID": notifID,
-                "label": "{} Activity(s) has been rejected by extension veterinarian".format(evcount),
+                "label": "{} Activity Form(s) has been rejected by extension veterinarian".format(evcount),
                 "href": "/forms-approval"
             })
 
@@ -2456,10 +2472,10 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-warning",
                 "notificationID": notifID,
-                "label": "{} Activity(s) are pending approval".format(count),
+                "label": "{} Activity Form(s) are pending approval".format(count),
                 "href": "/forms-approval"
             })
-        # notification for resubmitted activity forms
+
     elif userGroup == "Extension Veterinarian":
         evetNotifs = activityForms.filter(is_reported = None).filter(is_checked = True)
         debug(evetNotifs.values())
@@ -2474,7 +2490,7 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-warning",
                 "notificationID": notifID,
-                "label": "{} Activity(s) are pending approval".format(count),
+                "label": "{} Activity Form(s) are pending approval".format(count),
                 "href": "/forms-approval"
             })
     elif userGroup == "Assistant Manager":
@@ -2491,7 +2507,7 @@ def getActFormsNotifs(request, notifIDList):
             notifList.append({
                 "label_class": "text-warning",
                 "notificationID": notifID,
-                "label": "{} Activity(s) are pending approval".format(count),
+                "label": "{} Activity Form(s) are pending approval".format(count),
                 "href": "/forms-approval"
             })
 
@@ -2500,6 +2516,161 @@ def getActFormsNotifs(request, notifIDList):
         "notifList": notifList
     }
 
+def getMortFormsNotifs(request, notifIDList):
+    """
+    Get notifications on Mortality Forms for a specific user
+
+    :param notifIDList: List of notifications already seen by the user
+    :type notifIDList: list
+    """
+    notifList = []
+    new_notifIDList = []
+    mortFormTable = Mortality_Form._meta.db_table
+    userGroup = request.user.groups.all()[0].name
+    mortalityForms = Mortality_Form.objects
+    
+    if userGroup == "Field Technician":
+        techNotifs = mortalityForms.filter(mort_tech_id = request.session['_auth_user_id'])
+        # notification for mortality approved by paiwimgt
+        qry = techNotifs.filter(Q(is_posted = True)).filter(is_reported = None)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([mortFormTable, str(item['id']), "pm"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) has been approved by paiwi management staff".format(count),
+                "href": "/forms-approval"
+            })
+
+        # notification for mortality approved by ext vet
+        qry = techNotifs.filter(is_reported = True).filter(is_noted = None)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([mortFormTable, str(item['id']), "ev"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) has been approved by extension veterinarian".format(count),
+                "href": "/forms-approval"
+            })
+
+        # notification for mortality approved by asm
+        qry = techNotifs.filter(is_noted = True)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([mortFormTable, str(item['id']), "am"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) has been approved by assistant manager".format(count),
+                "href": "/forms-approval"
+            })
+
+        # notification for for rejected mortality
+        qry = techNotifs.filter(Q(is_posted = False) | Q(is_noted = False) | Q(is_reported = False))
+        pmcount = 0
+        amcount = 0
+        evcount = 0
+        for item in qry.values():
+            notifID = ';'.join([mortFormTable, str(item['id']), "rj"])
+            new_notifIDList.append(notifID)
+            conv = lambda n: 0 if n is None or n is True else 1
+            if notifID not in notifIDList:
+                pmcount = pmcount + conv(item['is_posted'])
+                amcount = amcount + conv(item['is_noted'])
+                evcount = evcount + conv(item['is_reported'])
+        if pmcount != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) has been rejected by paiwi management staff".format(pmcount),
+                "href": "/forms-approval"
+            })
+        if amcount != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) has been rejected by assistant manager".format(amcount),
+                "href": "/forms-approval"
+            })
+        if evcount != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) has been rejected by extension veterinarian".format(evcount),
+                "href": "/forms-approval"
+            })
+
+    elif userGroup == "Paiwi Management Staff":
+        pamsNotifs = mortalityForms.filter(is_posted = None)
+        # notification for newly submitted mortality forms
+        count = 0
+        for item in pamsNotifs.values():
+            notifID = ';'.join([mortFormTable, str(item['id'])])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Mortality Forms(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+
+    elif userGroup == "Extension Veterinarian":
+        evetNotifs = mortalityForms.filter(is_reported = None).filter(is_posted = True)
+        debug(evetNotifs.values())
+        # notification for pending Extension Veterinarian approval
+        count = 0
+        for item in evetNotifs.values():
+            notifID = ';'.join([mortFormTable, str(item['id'])])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+    elif userGroup == "Assistant Manager":
+        asmaNotifs = mortalityForms.filter(is_noted = None).filter(is_reported = True)
+        debug(asmaNotifs.values())
+        # notification for pending assistant manager approval
+        count = 0
+        for item in asmaNotifs.values():
+            notifID = ';'.join([mortFormTable, str(item['id'])])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Mortality Form(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+ 
 def getNotifications(request):
     # print all session items / debug
     # for key, value in request.session.items():
@@ -2508,9 +2679,10 @@ def getNotifications(request):
     notifIDList = request.session['notifIDList']
     memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
     actFormsNotifs = getActFormsNotifs(request, notifIDList)
+    mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
 
-    notifIDList = memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"]
-    notifList = memAncmtNotifs["notifList"] + actFormsNotifs["notifList"]
+    notifIDList = memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
+    notifList = memAncmtNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
 
     request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
 
@@ -2581,8 +2753,9 @@ def countNotifications(request):
 
     memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
     actFormsNotifs = getActFormsNotifs(request, notifIDList)
+    mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
 
-    totalNotifs = len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"])
+    totalNotifs = len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
     
     return HttpResponse(str(totalNotifs), status=200)
 
