@@ -8,15 +8,30 @@
 
 {% block section %}
 
+<!-- TEMP PLACEHOLDER to test Django messages -->
+{% for mssg in messages %}
+    {% if mssg.tags == "add-incidCase" %}
+    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
+        <div class="msg flex-item">{{ mssg }}</div>
+        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+{% endfor %}
+
 <div class="main-div">
     <div class="flex subheading">
-        <h1 class="heading flex-item"> <a href="/health-symptoms">Hogs Health & Symptoms </a> > [display id here] </h1>
+        <h1 class="heading flex-item"> <a href="/health-symptoms">Hogs Health & Symptoms </a> > {{ farm_code }} </h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               + Add New
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><a class="dropdown-item" href="/add-case">Incident Case</a></li>
+            <!-- TEST URL redirect w farmID-->
+              <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</a></li>
+
+              <!-- <li><a class="dropdown-item" href="/add-case">Incident Case</a></li> -->
               <li><a class="dropdown-item" href="/add-mortality">Mortality Record</a></li>
             </ul>
         </div>
@@ -30,7 +45,9 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><a class="dropdown-item" href="/add-case">Incident Case</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</a></li>
+
+                  <!-- <li><a class="dropdown-item" href="/add-case">Incident Case</a></li> -->
                   <li><a class="dropdown-item" href="/add-mortality">Mortality Record</a></li>
                 </ul>
             </div>
@@ -69,6 +86,7 @@
         </div>
         
         <div class="box-style">
+            {% if total_incidents > 0 %}
             <table class="table" id="symptoms-reported">
                 <thead>
                     <tr>
@@ -85,7 +103,7 @@
                      <tr class="incident-row">
                         
                         <td data-label="Incident Code">{{ incident.id }}</td>
-                        <td data-label="Date Reported">{{ incident.date_filed }}</td>
+                        <td data-label="Date Reported">{{ incident.date_filed }} </td>
                         <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }}</td>
                         <td data-label="Symptoms Observed">  
                             {% load healthapp_extras %}
@@ -135,7 +153,11 @@
                     {% endfor %}
                 </tbody>
             </table>
-
+            {% else %}
+            <div>
+                <p>No incidents to display.</p>
+            </div>
+            {% endif %}
         </div>
     </section>
     <section>

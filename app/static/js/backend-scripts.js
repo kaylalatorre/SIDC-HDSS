@@ -1041,14 +1041,14 @@ function rejectActivity(actFormID, userType) {
     
         if (option_value == valueToSet){
             option_element.selected = true;
-            // console.log("option selected is -- [" + option_value + "]");
+            console.log("option selected is -- [" + option_value + "]");
         }
     });
 }
 
 
 /** 
- * on-click AJAX for edit status btn for Incident Report
+ * on-click POST AJAX for edit status btn for Incident Report
  * @param incidID string ID of Incident record to be edited
 */
 $('.symptomsSave').on('click', function () {
@@ -1070,7 +1070,6 @@ $('.symptomsSave').on('click', function () {
             data: {"selectStat": selectedStat}, 
             success: function (response) {
                 
-
                 if (response.status_code === "200"){
                     // update selected rep_status in dropdown acc. to returned db value
                     var updatedStat = response.updated_status;
@@ -1084,7 +1083,6 @@ $('.symptomsSave').on('click', function () {
                     console.log("Status for incident ID [" + incidID + "] has been updated.");                    
                 } 
                 else {
-                    // alert("ERROR [" + response.status_code + "]: " + response.error);
                     console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);
                 }
@@ -1096,3 +1094,72 @@ $('.symptomsSave').on('click', function () {
         });
     }
 });
+
+
+/**
+*   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
+*   - Appends selected farm ID to url that will display an empty symptoms checklist.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addSymptomsPage(farmID) {
+
+    var farmID = $(farmID).val(); 
+    console.log(farmID);
+
+    try{
+        url = "/add-case/" + farmID;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/** 
+ * on-click POST AJAX function for adding an Incident Case.
+ * @param farmID string ID of selected Farm record
+*/
+function addCase(farmID){
+
+    // get no. of pigs affected
+    var num_pigs = $(".input-numAffected").val();
+
+    // get symptoms list based on HTML class of input checkbox tag; put in Array
+    var symptomsArr = [];
+    $(".check-symp").each(function() {
+        symptomsArr.push($(this).prop('checked'));
+    });
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/post-addCase/' + farmID, 
+        data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
+        success: function (response) {
+            
+            if (response.status_code === "200"){
+
+                // redirect back to selected view page   
+                try {
+                    url = "/selected-health-symptoms/" + farmID;
+                    console.log(url);
+                    location.href = url;
+                } catch (error){
+                    console.log("Something went wrong. Restarting...");
+                    location.reload(true);
+                }              
+            } 
+            else {
+                console.log("ERROR [" + response.status_code + "]: " + response.error);
+            }
+
+        },
+        error: function (res){
+            console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+        }
+    }); 
+
+}
