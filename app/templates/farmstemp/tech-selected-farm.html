@@ -28,8 +28,8 @@
               View
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><button class="dropdown-item no-shadow viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
-              <li><button class="dropdown-item no-shadow" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
+              <li><a class="dropdown-item no-shadow viewBiosec" href="/biosecurity/{{ farm.id }}">Biosecurity Details</a></li> <!-- Redirect to assigned farm's biosec details -->
+              <li><a class="dropdown-item no-shadow" href="/selected-health-symptoms/{{ farm.id }}">Hogs Health & Symptoms</a></li> <!-- Redirect to assigned farm's hogs health details -->
             </ul>
         </div>
     </div>
@@ -49,8 +49,8 @@
                 View
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <li><button class="dropdown-item no-shadow viewBiosec" value="{{ farm.id }}" onclick="viewBiosec(this)">Biosecurity Details</button></li> <!-- Redirect to assigned farm's biosec details -->
-                <li><button class="dropdown-item no-shadow" value="{{ farm.id }}" onclick="viewHogsHealth(this)">Hogs Health & Symptoms</button></li> <!-- Redirect to assigned farm's hogs health details -->
+                <li><a class="dropdown-item no-shadow viewBiosec" href="/biosecurity/{{ farm.id }}">Biosecurity Details</a></li> <!-- Redirect to assigned farm's biosec details -->
+                <li><a class="dropdown-item no-shadow" href="/selected-hogs-health/{{ farm.id }}">Hogs Health & Symptoms</a></li> <!-- Redirect to assigned farm's hogs health details -->
                 </ul>
             </div>
         </div>

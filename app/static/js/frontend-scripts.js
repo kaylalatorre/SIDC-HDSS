@@ -239,6 +239,64 @@ function viewFarm(farm) {
 }
 
 /**
+*   - Redirects current user (technician) to the selected farm. 
+*   - Appends selected farm ID to url that will display farm details.
+*   
+*   techFarm = row of selected farm
+*/
+function viewTechFarm(techFarm) {
+
+    try{
+        url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
+*   - Appends selected farm ID to url that will display an empty biosecurity checklist.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addBiosecPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-checklist/" + techFarm;
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
+*   - Redirects current technician from biosecurity page to add-activity page for selected farm.
+*   - Appends selected farm ID to url that will display an empty activity record.
+*   
+*   farmID = button value (carries ID of selected farm)
+*/
+function addActivityPage(farmID) {
+
+    var techFarm = $(farmID).val(); 
+    console.log(techFarm)
+
+    try{
+        url = "/add-activity/" + techFarm;
+        console.log(url);
+        location.href = url;
+    } catch (error){
+        console.log("Fetching farm details failed.");
+        location.reload(true);
+    }
+}
+
+/**
 *   - Appends new pigpen row for when adding a new farm
 *   
 *   pigpen-table = table body that the row will be appended to
@@ -272,6 +330,22 @@ function removePigpenRow(currRow){
     table.deleteRow(rowIndex);
 }
 
+/*
+*   - Deletes activity row input in Add Activity
+*   
+*   currRow = selected activity row
+*   activity-table = table body that the row will be deleted from
+*/
+function removeActivityRow(currRow){
+
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex - 1;
+    console.log("Row ID: " + rowIndex);
+
+    var table = document.getElementById('activity-table');
+    table.deleteRow(rowIndex);
+}
+
 /**
 *   - Appends new activity row to activity table
 *   
@@ -302,14 +376,40 @@ function addActivityRow() {
 *   currRow = selected activity row
 *   activity-table = table body that the row will be deleted from
 */
-function removeActivityRow(currRow){
+function removeMortalityRow(currRow){
 
     var row = currRow.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex - 1;
     console.log("Row ID: " + rowIndex);
 
-    var table = document.getElementById('activity-table');
+    var table = document.getElementById('mortality-table');
     table.deleteRow(rowIndex);
+}
+
+/**
+*   - Appends new activity row to activity table
+*   
+*   activity-table = table body that the row will be appended to
+*/
+function addMortalityRow() {
+    const mortality_date = document.getElementById('mortality_date').innerHTML;
+    const num_begInv = document.getElementById('num_begInv').innerHTML;
+    const num_today = document.getElementById('num_today').innerHTML;
+    const num_toDate = document.getElementById('num_toDate').innerHTML;
+    const source = document.getElementById('source').innerHTML;
+    const remarks = document.getElementById('remarks').innerHTML;
+    const mortality_rate = document.getElementById('mortality_rate').innerHTML;
+
+    $("#mortality-table").append("<tr> \
+        <td data-label='Mortality Date'> " + mortality_date + " </td> \
+        <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
+        <td data-label='Today'> " + num_today + " </td> \
+        <td data-label='To Date'> " + num_toDate + " </td> \
+        <td data-label='Source'> " + source + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
+        <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \
+        <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
+        </tr>");
 }
 
 /**
@@ -324,15 +424,16 @@ function wasteMgtOther(option){
 }
 
 /**
-*   - Redirects user from farm list to selected farm page
+*   - Redirects user from forms approval page to selected activity form page
 *   
-*   farm = value of selected farm row
+*   activity = selected activity row
 */
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(actDate)
-    console.log(formatDate(actDate))
+    // console.log(formatDate(actDate));
+    var actFormID = activity.parentNode.parentNode.parentNode.id;
+    // console.log(actFormID);
 
     try{
         url = "/selected-activity-form/" + formatDate(actDate);
@@ -342,6 +443,29 @@ function viewActivityForm(activity) {
         console.log("Something went wrong. Restarting...");
         console.log(error);
         // location.reload(true);
+    }
+}
+
+/**
+*   - Redirects user from forms approval page to selected mortality form page
+*   
+*   mortality = selected mortality row
+*/
+function viewMortalityForm(mortality) {
+
+    var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    console.log(formatDate(mortDate));
+    var mortFormID = mortality.parentNode.parentNode.parentNode.id;
+    // console.log(actFormID);
+
+    try{
+        url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
+        console.log(url);
+        location.href = url;
+    }catch (error){
+        console.log("Something went wrong. Restarting...");
+        console.log(error);
+        location.reload(true);
     }
 }
 

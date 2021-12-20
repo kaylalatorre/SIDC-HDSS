@@ -18,10 +18,10 @@
                 <p class="flex-item"> </p>
             {% elif tFarms.areaCount == 1 %}
                 <label style="font-weight: 600;">Area Assigned:</label>
-                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}}{% endfor %}</p>
+                <p class="flex-item">{{tFarms.areaString}}</p>
             {% else %}
                 <label style="font-weight: 600;">Areas Assigned:</label>
-                <p class="flex-item">{% for area in tFarms.areaList %} {{area.area_name}} {% endfor %}</p>
+                <p class="flex-item">{{tFarms.areaString}}</p>
             {% endif %}
 
         <div>
@@ -43,10 +43,10 @@
                 <p> </p>
             {% elif tFarms.areaCount == 1 %}
                 <label style="font-weight: 600;">Area Assigned:</label>
-                <p>{% for area in tFarms.areaList %} {{area.area_name}}{% endfor %}</p>
+                <p class="flex-item">{{tFarms.areaString}}</p>
             {% else %}
                 <label style="font-weight: 600;">Areas Assigned:</label>
-                <p>{% for area in tFarms.areaList %} {{area.area_name}} {% endfor %}</p>
+                <p class="flex-item">{{tFarms.areaString}}</p>
             {% endif %}
         
         </div>

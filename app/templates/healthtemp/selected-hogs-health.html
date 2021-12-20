@@ -10,7 +10,15 @@
 
 <div class="main-div">
     <div class="flex">
-        <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code }}</h1>
+        
+        {% if farm.code < 10 %}
+            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  00{{ farm.code }}</h1>
+        {% elif farm.code < 100 %}
+            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  0{{ farm.code }}</h1>
+        {% else %}
+            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code }}</h1>
+        {% endif %}
+
         <div><a class="button primary-btn" href="/selected-farm/{{ farm.code }}">View Farm Details</a></div> <!--Redirect to assigned farm's page-->
     </div>
     <hr>
@@ -109,7 +117,6 @@
                         <thead>
                             <tr>
                                 <th>Series</th>
-                                <th>Farm Code</th>
                                 <th>Mortality Date</th>
                                 <th style="text-align: right;">Beg. Inv.</th>
                                 <th style="text-align: right;">Today</th>
@@ -123,7 +130,6 @@
                             {% for mort, mRate in mortalityList %}
                             <tr>
                                 <td data-label="Series">{{ mort.series }}</td>
-                                <td data-label="Farm Code">{{ farm.code }}</td>
                                 <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
                                 <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
                                 <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>
