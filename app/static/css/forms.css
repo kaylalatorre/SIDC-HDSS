@@ -78,6 +78,6 @@ textarea {
     }
 }
 
-.activity-input {
+.activity-input, .mortality-input {
     display: none;
 }

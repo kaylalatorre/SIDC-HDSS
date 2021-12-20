@@ -268,7 +268,3 @@ button[disabled]:hover, .button[disabled]:hover {
 .btn-outline-secondary {
     box-shadow: none;
 }
-
-/* #biosec-details, #biosec-checklists, #farm-activities {
-    display: none;
-} */

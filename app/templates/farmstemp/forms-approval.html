@@ -17,13 +17,13 @@
 
     {% if user.groups.all.0.name == 'Assistant Manager' or user.groups.all.0.name == 'Extension Veterinarian' %}
     <div class="box-style small-table">
-        <h2>Activity Forms</h2> <br>
-        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 %}
+        <h2>Forms</h2> <br>
+        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 or mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Farm Code</th>
+                    <th>Form Type</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -33,7 +33,7 @@
             {% for act in actPending %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>{{act.farmID}}</td>
+                    <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
                     <td>
@@ -46,7 +46,7 @@
             {% for act in actApproved %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>{{act.farmID}}</td>
+                <td>Activity Form</td>
                 <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
@@ -59,7 +59,7 @@
             {% for act in actRejected %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>{{act.farmID}}</td>
+                <td>Activity Form</td>
                 <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
@@ -69,73 +69,50 @@
                 </td>
             </tr>
             {% endfor %}
+            {% for mort in mortPending %}
+            <tr id="{{mort.id}}" value="{{ mort.id }}">
+                <td>{{mort.date_added}}</td>
+                <td>Mortality Form</td>
+                <td class="status">{{mort.status}}</td>
+                <td>{{mort.prepared_by}}</td>
+                <td>
+                    <div class="btn-group" style="justify-content: end; padding: 0;">
+                        <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% for mort in mortApproved %}
+            <tr id="{{mort.id}}" value="{{ mort.id }}">
+                <td>{{mort.date_added}}</td>
+                <td>Mortality Form</td>
+                <td class="status">{{mort.status}}</td>
+                <td>{{mort.prepared_by}}</td>
+                <td>
+                    <div class="btn-group" style="justify-content: end; padding: 0;">
+                        <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% for mort in mortRejected %}
+            <tr id="{{mort.id}}" value="{{ mort.id }}">
+                <td>{{mort.date_added}}</td>
+                <td>Mortality Form</td>
+                <td class="status">{{mort.status}}</td>
+                <td>{{mort.prepared_by}}</td>
+                <td>
+                    <div class="btn-group" style="justify-content: end; padding: 0;">
+                        <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
         {% else %}
         <div>
-            <p>No Activity Forms to display.</p>
-        </div>
-        {% endif %}
-    </div>
-    <br>
-    <div class="box-style small-table">
-        <h2>Mortality Forms</h2> <br>
-        {% if mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date Added</th>
-                    <th>Farm Code</th>
-                    <th>Status</th>
-                    <th>Prepared by</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for mort in mortPending %}
-                <tr id="{{mort.id}}" value="{{ mort.id }}">
-                    <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
-                    <td class="status">{{mort.status}}</td>
-                    <td>{{mort.prepared_by}}</td>
-                    <td>
-                        <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-                {% for mort in mortApproved %}
-                <tr id="{{mort.id}}" value="{{ mort.id }}">
-                    <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
-                    <td class="status">{{mort.status}}</td>
-                    <td>{{mort.prepared_by}}</td>
-                    <td>
-                        <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-                {% for mort in mortRejected %}
-                <tr id="{{mort.id}}" value="{{ mort.id }}">
-                    <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
-                    <td class="status">{{mort.status}}</td>
-                    <td>{{mort.prepared_by}}</td>
-                    <td>
-                        <div class="btn-group" style="justify-content: end; padding: 0;">
-                            <button class="secondary-btn" id="viewForm" onclick=viewMortalityForm(this)><span class="material-icons md-18">visibility</span>View</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div>
-            <p>No Mortality Forms to display.</p>
+            <p>No forms for approval to display.</p>
         </div>
         {% endif %}
     </div>
@@ -148,7 +125,7 @@
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Farm Code</th>
+                    <th>Form Type</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -158,7 +135,7 @@
             {% for act in actPending %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>{{act.farmID}}</td>
+                    <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
                     <td>
@@ -171,7 +148,7 @@
             {% for act in actApproved %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>{{act.farmID}}</td>
+                <td>Activity Form</td>
                 <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
@@ -184,7 +161,7 @@
             {% for act in actRejected %}
             <tr id="{{act.id}}" value="{{ act.id }}">
                 <td>{{act.date_added}}</td>
-                <td>{{act.farmID}}</td>
+                <td>Activity Form</td>
                 <td class="status">{{act.status}}</td>
                 <td>{{act.prepared_by}}</td>
                 <td>
@@ -211,7 +188,7 @@
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Farm Code</th>
+                    <th>Form Type</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th></th>
@@ -221,7 +198,7 @@
                 {% for mort in mortPending %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
+                    <td>Mortality Form</td>
                     <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
@@ -234,7 +211,7 @@
                 {% for mort in mortApproved %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
+                    <td>Mortality Form</td>
                     <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
@@ -247,7 +224,7 @@
                 {% for mort in mortRejected %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
+                    <td>Mortality Form</td>
                     <td class="status">{{mort.status}}</td>
                     <td>{{mort.prepared_by}}</td>
                     <td>
@@ -268,13 +245,13 @@
 
     {% elif user.groups.all.0.name == 'Field Technician' %}
     <div class="box-style small-table">
-        <h2>Activity Forms</h2> <br>
-        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 %}
+        <h2>Forms</h2> <br>
+        {% if actPending|length != 0 or actApproved|length != 0 or actRejected|length != 0 or mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Farm Code</th>
+                    <th>Form Type</th>
                     <th>Status</th>
                     <th></th>
                 </tr>
@@ -283,7 +260,7 @@
                 {% for act in actPending %}
                     <tr id="{{act.id}}" value="{{ act.id }}">
                         <td>{{act.date_added}}</td>
-                        <td>{{act.farmID}}</td>
+                        <td>Activity Form</td>
                         <td class="status">{{act.status}}</td>
                         <td>
                             <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -295,7 +272,7 @@
                 {% for act in actApproved %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>{{act.farmID}}</td>
+                    <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -307,7 +284,7 @@
                 {% for act in actRejected %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
-                    <td>{{act.farmID}}</td>
+                    <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -316,32 +293,10 @@
                     </td>
                 </tr>
                 {% endfor %}
-                </tbody>
-        </table>
-        {% else %}
-        <div>
-            <p>No Activity Forms to display.</p>
-        </div>
-        {% endif %}
-    </div>
-    <br>
-    <div class="box-style small-table">
-        <h2>Mortality Forms</h2> <br>
-        {% if mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Farm Code</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
                 {% for mort in mortPending %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
+                    <td>Mortality Form</td>
                     <td class="status">{{mort.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -353,7 +308,7 @@
                 {% for mort in mortApproved %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
+                    <td>Mortality Form</td>
                     <td class="status">{{mort.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -365,7 +320,7 @@
                 {% for mort in mortRejected %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
-                    <td>{{mort.farmID}}</td>
+                    <td>Mortality Form</td>
                     <td class="status">{{mort.status}}</td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
@@ -378,7 +333,7 @@
         </table>
         {% else %}
         <div>
-            <p>No Mortality Forms to display.</p>
+            <p>No forms to display.</p>
         </div>
         {% endif %}
     </div>

@@ -1113,9 +1113,7 @@ function resubmitMortality(mortDate, mortFormID, farmID) {
     // pass each row into one object    
     var mortalityList = [];
     for (var i = 0; i < mort_date.length; i++){
-        // console.log([i].value)
         if (mort_date[i].value !== '') {
-        // if ((date[i].innerHTML !== null && trip_type[i].innerHTML !== null) && (time_arrival[i].innerHTML !== null && time_departure[i].innerHTML !== null)){
             var mortality = {
                 mort_date : mort_date[i].value,
                 beg_inv : beg_inv[i].value,
@@ -1239,4 +1237,131 @@ function rejectMortality(mortFormID, userType) {
             console.log(res.responseJSON.error)
         }
     })
+}
+
+/**
+*   - Updates selected mortality row
+*   - Disable all other edit buttons and delete buttons
+*   - Display data inputs and send to saveMortality() function
+*
+*   mortID = button value (carries ID of selected mortality)
+*/
+function editMortality(mortID) {
+
+    var row = mortID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex;
+    console.log("Row ID: " + rowIndex);
+
+    var mortalityID = $(mortID).val(); 
+    console.log("Mortality ID: " + mortalityID);
+
+    var toShow = row.getElementsByClassName("mortality-input");
+    // console.log(toShow.length);
+   
+    var toHide = row.getElementsByClassName("mortality-data");
+    // console.log(toHide.length);
+    for(var i = 0; i < toHide.length; i++){
+        // show displayed data of current row
+        toHide[i].style.display = "none";
+        
+        // hide data inputs
+        toShow[i].style.display = "block";
+    }
+
+    // enable other edit buttons and delete buttons
+    var disableEdit = document.getElementsByName("editMortBtn");
+    var disableDelete = document.getElementsByName("deleteMortBtn");
+    for(var i = 0; i < disableEdit.length; i++){
+        disableEdit[i].disabled = true;
+        disableDelete[i].disabled = true;
+    }
+
+}
+
+/**
+*   - Cancels edit of selected mortality
+*
+*   mortID = button value (carries ID of selected mortality)
+*/
+function cancelMortality(mortID) {
+
+    var row = mortID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex;
+    console.log("Row ID: " + rowIndex);
+
+    var toShow = row.getElementsByClassName("mortality-input");
+    var toHide = row.getElementsByClassName("mortality-data");
+
+    for(var i = 0; i < toHide.length; i++){
+        // hide displayed data of current row
+        toHide[i].style.display = "block";
+        
+        // display data inputs
+        toShow[i].style.display = "none";
+    }
+
+    // disable other edit buttons and delete buttons
+    var disableEdit = document.getElementsByName("editMortBtn");
+    var disableDelete = document.getElementsByName("deleteMortBtn");
+    for(var i = 0; i < disableEdit.length; i++){
+        disableEdit[i].disabled = false;
+        disableDelete[i].disabled = false;
+    }
+
+}
+
+/**
+*   - Send data to backend function save to database
+*   - Check if date input is not later than today
+*
+*   mortID = button value (carries ID of selected mortality)
+*   farmID = id value of farm the mortality record is connected to   
+*/
+function saveMortality(mortID, farmID) {
+
+    var row = mortID.parentNode.parentNode.parentNode; //get row of clicked button
+    var rowIndex = row.rowIndex;
+    // console.log("Row ID: " + rowIndex);
+
+    var mortalityID = $(mortID).val(); 
+    console.log("Mortality ID: " + mortalityID);
+
+    console.log("Farm ID: " + farmID);
+
+    var today = new Date(); // date today
+    var mortality_date = row.getElementsByClassName("mortality-input")[0].value;
+    var num_begInv = row.getElementsByClassName("mortality-input")[1].value;
+    var num_today = row.getElementsByClassName("mortality-input")[2].value;
+    var num_toDate = row.getElementsByClassName("mortality-input")[3].value;
+    var source = row.getElementsByClassName("mortality-input")[4].value;
+    var remarks = row.getElementsByClassName("mortality-input")[5].value;
+
+    // check if date is not later than today
+    if (new Date(mortality_date) > today){
+        console.log("Date should not be later than today."); }
+    else {
+        ajaxCSRF();
+
+        $.ajax({
+            type: 'POST',
+            url: '/save-mortality/' + farmID + '/' + mortalityID,
+            data: {"mortality_date" : mortality_date,
+                    "num_begInv" : num_begInv,
+                    "num_today" : num_today,
+                    "num_toDate" : num_toDate,
+                    "source" : source,
+                    "remarks" : remarks},
+
+            success: function(response){
+                if (response.status == 200){
+                    console.log(response.responseJSON.success)
+                }
+
+                location.reload(true);
+            },
+            error: function (res){
+                console.log(res.responseJSON.error)
+            }
+        });
+    }
 }

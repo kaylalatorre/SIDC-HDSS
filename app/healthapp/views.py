@@ -867,3 +867,46 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
 
     messages.error(request, "Failed to resubmit Mortality Form.", extra_tags='update-mortality')
     return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def saveMortality(request, farmID, mortalityID):
+    """
+    - Update selected mortality record under current farm
+    - Collect data from backend-scripts.js
+    
+    mortalityID - selected mortalityID passed as parameter
+    farmID - selected farmID passed as parameter
+    """
+    # for setting Date input filters to today's date
+    dateToday = datetime.now(timezone.utc)
+
+    if request.method == 'POST':
+        print("TEST LOG: Edit Mortality is a POST Method")
+        
+        # collect data from inputs
+        mortality_date = request.POST.get("mortality_date")
+        num_begInv = request.POST.get("num_begInv")
+        num_today = request.POST.get("num_today")
+        num_toDate = request.POST.get("num_toDate")
+        source = request.POST.get("source")
+        remarks = request.POST.get("remarks")
+
+        # get mortality to be updated
+        mortality = Mortality.objects.filter(id=mortalityID).first()
+        print("OLD MORTALITY RECORD: " + str(mortality.mortality_date) + " - " + str(mortality.num_begInv) + " - " + str(mortality.num_today) + " to " + str(mortality.num_toDate) )
+
+        # assign new values
+        mortality.mortality_date = mortality_date
+        mortality.num_begInv = num_begInv
+        mortality.num_today = num_today
+        mortality.num_toDate = num_toDate
+        mortality.source = source
+        mortality.remarks = remarks
+        mortality.last_updated = dateToday
+        
+        mortality.save()
+        print("UPDATED MORTALITY RECORD: " + str(mortality.mortality_date) + " - " + str(mortality.num_begInv) + " - " + str(mortality.num_today) + " to " + str(mortality.num_toDate) )
+        messages.success(request, "Mortality Record has been updated.", extra_tags='update-mortality')
+
+        return JsonResponse({"success": "Mortality has been updated."}, status=200)
+
+    return JsonResponse({"error": "Not a POST method"}, status=400)

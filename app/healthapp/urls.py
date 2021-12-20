@@ -16,8 +16,11 @@ urlpatterns = [
     path('selected-health-symptoms/<str:farmID>', views.selectedHealthSymptoms, name="selectedHealthSymptoms"),
     path('update-incident-status/<str:incidID>', views.edit_incidStat, name="editIncidentStat"),
 
+    # technician - case and mortality record
     path('add-case', views.addCase, name="addCase"),
     path('add-mortality/<str:farmID>', views.addMortality, name="addMortality"),
+    path('save-mortality/<str:farmID>/<str:mortalityID>', views.saveMortality, name="saveMortality"),
+    # path('delete-activity/<str:mortalityID>', views.deleteMortality, name="deleteMortality"),
 
     # forms
     path('selected-mortality-form/<str:mortalityFormID>/<str:mortalityDate>', views.selectedMortalityForm, name="selectedMortalityForm"),
