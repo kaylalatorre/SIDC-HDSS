@@ -1641,8 +1641,8 @@ def formsApproval(request):
 
                     # pass into object and append to list 
                     pending = {
-                        "id" : act["id"],
-                        "date_added" : act["date_added"],
+                        "id" : mort["id"],
+                        "date_added" : mort["date_added"],
                         "status" : status,
                         "prepared_by" : getTech["name"]
                     }

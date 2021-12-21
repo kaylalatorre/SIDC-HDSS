@@ -48,7 +48,13 @@
 
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 72%">
-            <h1 class="heading flex-item"> <a href="/health-symptoms">Hogs Health & Symptoms </a> > [id] </h1>
+            {% if farm_code < 10 %}
+            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 00{{farm_code}}</h1>
+            {% elif farm_code < 100 %}
+            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 0{{farm_code}}</h1>
+            {% else %}
+            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code}}</h1>
+            {% endif %}
             <div class="dropdown">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   + Add New
