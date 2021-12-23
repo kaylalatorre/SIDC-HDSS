@@ -21,6 +21,17 @@
 
         <div><a class="button primary-btn" href="/selected-farm/{{ farm.code }}">View Farm Details</a></div> <!--Redirect to assigned farm's page-->
     </div>
+    <div class="flex">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Batch </label>
+            <select class="form-select" style="margin-bottom: 0; width: 100px">
+                <option value="">Current - Dec 21, 2021 to March 21, 2021</option>
+                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
     <hr>
     <div class="flex">
         <section style="width: 30%; margin-right: 16px;">
@@ -41,14 +52,6 @@
                             <td>{{ farm.pigs }}</td>
                         </tr>
                         <tr>
-                            <th>Ave. Starter Weight</td>
-                            <td> - </td>
-                        </tr>
-                        <tr>
-                            <th>Ave. Current Weight</td>
-                            <td>{{ farm.ave_currWeight }}</td>
-                        </tr>
-                        <tr>
                             <th>Mortality Rate</td>
                             <td>{{ farm.mortality_rate }}</td>
                         </tr>
@@ -59,6 +62,69 @@
                         <tr>
                             <th>Active Incidents</td>
                             <td>{{ farm.total_active }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2>Weight Slip Details (Starter)</h2>
+            <div class="box-style">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Date Filed</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Starter Weight</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Total No. of Heads</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Total Kls</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Amount</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Remarks</td>
+                            <td> - </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2>Weight Slip Details (Fattener)</h2>
+            <div class="box-style">
+                <!-- If no fattener record yet, display empty table -->
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Date Filed</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Fattener Weight</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Total No. of Heads</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Total Kls</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Amount</td>
+                            <td> - </td>
+                        </tr>
+                        <tr>
+                            <th>Remarks</td>
+                            <td> - </td>
                         </tr>
                     </tbody>
                 </table>
