@@ -14,7 +14,7 @@
 
 {% block section %}
 <div class="main-div">
-    <div class="flex subheading"> 
+    <div class="flex"> 
 
         {% if farm.id < 10 %}
             <h1 class="heading flex-item"><a href="/farms">Farms </a> >  00{{farm.id}}</h1>
@@ -25,6 +25,17 @@
         {% endif %}
 
         <div><a class="button primary-btn" href="/selected-hogs-health/{{ farm.id }}">View Hogs Health</a></div> <!-- Redirect to assigned farm's hogs health details -->
+    </div>
+    <div class="flex">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Batch </label>
+            <select class="form-select" style="margin-bottom: 0; width: 100px">
+                <option value="">Current - Dec 21, 2021 to March 21, 2021</option>
+                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
     </div>
     <hr>
     <div class="flex">
