@@ -30,6 +30,7 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
               <li><a class="dropdown-item" href="/add-mortality/{{farm_code}}">Mortality Record</a></li>
+              <li><a class="dropdown-item" href="/add-weight">Weight Slip Record</a></li>
             </ul>
         </div>
     </div>
@@ -43,6 +44,7 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
                     <li><a class="dropdown-item" href="/add-mortality/{{farm_code}}">Mortality Record</a></li>
+                    <li><a class="dropdown-item" href="/add-weight">Weight Slip Record</a></li>
                 </ul>
             </div>
         </div>
@@ -69,6 +71,61 @@
     </div>
     <hr>
     <section>
+        <div class="flex">
+            <div class="flex-item">
+                <h2>Weight Slip Details (Starter)</h2>
+                <div class="box-style">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Filed</td>
+                                <td> - </td>
+                            </tr>
+                            <tr>
+                                <th>Ave. Starter Weight</td>
+                                <td> - </td>
+                            </tr>
+                            <tr>
+                                <th>Total No. of Heads</td>
+                                <td> - </td>
+                            </tr>
+                            <tr>
+                                <th>Total Kls</td>
+                                <td> - </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex-item">
+                <h2>Weight Slip Details (Fattener)</h2>
+                <div class="box-style">
+                    <!-- If no fattener record yet, display empty table -->
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Filed</td>
+                                <td> - </td>
+                            </tr>
+                            <tr>
+                                <th>Ave. Fattener Weight</td>
+                                <td> - </td>
+                            </tr>
+                            <tr>
+                                <th>Total No. of Heads</td>
+                                <td> - </td>
+                            </tr>
+                            <tr>
+                                <th>Total Kls</td>
+                                <td> - </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
         <div class="flex subheading">
             <h2 class="flex-item">Incidents Reported</h2>
             <div class="dropdown">
@@ -83,7 +140,6 @@
                 </ul>
             </div>
         </div>
-        <br>
         <div class="flex mobile-subheading " style="width: 72%">
             <h2 class="flex-item">Incidents Reported</h2>
             <div class="dropdown">
