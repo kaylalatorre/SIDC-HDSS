@@ -422,30 +422,26 @@ def addFarm(request):
         farmID = int(latestFarm.id) + 1
     except:
         farmID = 1
-    print(farmID)
+    # print(farmID)
 
     # get all hog raisers to be passed as dropdown
     hogRaiserQry = Hog_Raiser.objects.all().order_by('lname')
-    # print("TEST LOG hogRaiserQry: " + str(hogRaiserQry))
 
     # get current user (technician) ID
     techID = request.user.id
 
     # collect all assigned areas under technician; to be passed to template
     areaQry = Area.objects.filter(tech_id=techID)
-    # print("TEST LOG areaQry: " + str(areaQry))
 
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
         areaName = request.POST.get("input-area", None)
-        # print("TEST LOG areaName: " + areaName)
 
         # get ID of selected area
         areaIDQry = Area.objects.filter(area_name=areaName).first()
         areaID = areaIDQry.id
-        # print("TEST LOG areaID: " + str(areaID))
 
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
@@ -526,113 +522,108 @@ def addFarm(request):
             farmAddress = ", ".join(filter(None, addressList))
             farm.farm_address = farmAddress
 
-            addressList[4] = ""
             try:
                 farmAddress = ", ".join(filter(None, addressList))
                 debug(farmAddress)
                 farmLoc = geocode([farmAddress]).geometry.iloc[0]
-                farm.loc_long = farmLoc.x
-                farm.loc_lat = farmLoc.y
-            except:
-                addressList[0] = ""
-                try:
-                    farmAddress = ", ".join(filter(None, addressList))
-                    debug(farmAddress)
-                    farmLoc = geocode([farmAddress]).geometry.iloc[0]
+                if farmLoc.x != 0 and farmLoc.y != 0:
                     farm.loc_long = farmLoc.x
                     farm.loc_lat = farmLoc.y
-                except:
-                    debug("farmLoc not obtained")
+
+                    # save hog raiser
+                    raiserID = request.POST.get("input-exist-raiser", None)
+
+                    if raiserID == None or raiserID == "" :
+
+                        # if empty, new raiser is inputted; validate django hog raiser form
+                        if hogRaiserForm.is_valid():
+                            hogRaiser = hogRaiserForm.save(commit=False)
+                            hogRaiser.save()
+
+                            print("TEST LOG: Added new raiser")
+
+                            # save raiser ID to farm
+                            farm.hog_raiser = hogRaiser
+                        
+                        else:
+                            print("TEST LOG: Hog Raiser Form not valid")
+                            print(hogRaiserForm.errors)
+
+                            messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
+
+                    else:
+                        # find selected raiser id
+                        hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
+
+                        # save raiser ID to farm
+                        farm.hog_raiser_id = raiserID
 
 
-            # save hog raiser
-            raiserID = request.POST.get("input-exist-raiser", None)
+                    # pass data as FKs for farm
+                    farm.extbio = externalBiosec
+                    farm.intbio = internalBiosec
+                    farm.area_id = areaID
+                    farm.id = farmID
 
-            if raiserID == None or raiserID == "" :
+                    farm.save()
+                    print("TEST LOG: Added new farm")
+                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
 
-                # if empty, new raiser is inputted; validate django hog raiser form
-                if hogRaiserForm.is_valid():
-                    hogRaiser = hogRaiserForm.save(commit=False)
-                    hogRaiser.save()
+                    # get recently created internal and external biosec IDs and update ref_farm_id
+                    externalBiosec.ref_farm_id = farm
+                    internalBiosec.ref_farm_id = farm
 
-                    print("TEST LOG: Added new raiser")
+                    internalBiosec.save()
+                    print("TEST LOG: Added new internal biosec")
 
-                    # save raiser ID to farm
-                    farm.hog_raiser = hogRaiser
+                    externalBiosec.save()
+                    print("TEST LOG: Added new external biosec")
+
+                    if pigpenMeasuresForm.is_valid():
+                        
+                        # temporary variable to store total of all num_heads
+                        numTotal = 0 
                 
-                else:
-                    print("TEST LOG: Hog Raiser Form not valid")
-                    print(hogRaiserForm.errors)
+                        # pass all pigpenList objects into Pigpen_Measures model
+                        x = 0
+                        
+                        for pigpen in pigpenList:
+                            pigpen = pigpenList[x]
 
-                    messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
+                            # create new instance of Pigpen_Measures model
+                            pigpen_measure = Pigpen_Measures.objects.create(
+                                ref_farm = farm,
+                                length = pigpen['length'],
+                                width = pigpen['width'],
+                                num_heads = pigpen['num_heads'],
+                            )
+                            
+                            # add all num_heads (pigpen measure) for total_pigs (farm)
+                            numTotal += int(pigpen_measure.num_heads)
 
-            else:
-                # find selected raiser id
-                hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
+                            pigpen_measure.save()
 
-                # save raiser ID to farm
-                farm.hog_raiser_id = raiserID
+                            x += 1
+                        
 
+                        # update num_pens and total_pigs of newly added farm
+                        farm.num_pens = len(pigpenList)
+                        farm.total_pigs = numTotal
+                        farm.save()
+                        
+                        return redirect('/')
 
-            # pass data as FKs for farm
-            farm.extbio = externalBiosec
-            farm.intbio = internalBiosec
-            farm.area_id = areaID
-            farm.id = farmID
+                    else:
+                        print("TEST LOG: Pigpen Measures Form not valid")
+                        print(pigpenMeasuresForm.errors)
 
-            farm.save()
-            print("TEST LOG: Added new farm")
-            messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
-
-            # get recently created internal and external biosec IDs and update ref_farm_id
-            externalBiosec.ref_farm_id = farm
-            internalBiosec.ref_farm_id = farm
-
-            internalBiosec.save()
-            print("TEST LOG: Added new internal biosec")
-
-            externalBiosec.save()
-            print("TEST LOG: Added new external biosec")
-
-            if pigpenMeasuresForm.is_valid():
-                
-                # temporary variable to store total of all num_heads
-                numTotal = 0 
-        
-                # pass all pigpenList objects into Pigpen_Measures model
-                x = 0
-                
-                for pigpen in pigpenList:
-                    pigpen = pigpenList[x]
-
-                    # create new instance of Pigpen_Measures model
-                    pigpen_measure = Pigpen_Measures.objects.create(
-                        ref_farm = farm,
-                        length = pigpen['length'],
-                        width = pigpen['width'],
-                        num_heads = pigpen['num_heads'],
-                    )
-                    
-                    # add all num_heads (pigpen measure) for total_pigs (farm)
-                    numTotal += int(pigpen_measure.num_heads)
-
-                    pigpen_measure.save()
-
-                    x += 1
-                
-
-                # update num_pens and total_pigs of newly added farm
-                farm.num_pens = len(pigpenList)
-                farm.total_pigs = numTotal
-                farm.save()
-                
-                return redirect('/')
-
-            else:
-                print("TEST LOG: Pigpen Measures Form not valid")
-                print(pigpenMeasuresForm.errors)
-
-                messages.error(request, "Error adding farm. " + str(pigpenMeasuresForm.errors), extra_tags='add-farm')
+                        messages.error(request, "Error adding farm. " + str(pigpenMeasuresForm.errors), extra_tags='add-farm')
+                else: 
+                    # debug("farmLoc not obtained")
+                    messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
+            except:
+                debug("farmLoc not obtained")
+                messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
         
         else:
             print("TEST LOG: Farm Form not valid")

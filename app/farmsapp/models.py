@@ -72,7 +72,7 @@ class Hog_Symptoms(models.Model):
     date_filed          = models.DateTimeField(default=now)
     date_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
     report_status       = models.CharField(max_length=50, default='Active')
     num_pigs_affected   = models.IntegerField(default=0)
 
@@ -114,51 +114,48 @@ class Hog_Raiser(models.Model):
 # AREA Table
 class Area(models.Model):
     area_name           = models.CharField(max_length=20, null=True, blank=True)
-    tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tech', null=True, blank=True)
+    tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='tech', null=True, blank=True)
 
     # def __str__(self):
     #     return self.id
 
 # FARM Table
 class Farm(models.Model): 
-    hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.CASCADE, null=True, blank=True)
+    hog_raiser          = models.ForeignKey('Hog_Raiser', on_delete=models.SET_NULL, null=True, blank=True)
+    directly_manage     = models.BooleanField(default=False)
 
     date_registered     = models.DateField(default=now, null=True, blank=True)
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    area                = models.ForeignKey('Area', related_name="area", on_delete=models.CASCADE, null=True, blank=True)
+    area                = models.ForeignKey('Area', related_name="area", on_delete=models.SET_NULL, null=True, blank=True)
     farm_address        = models.CharField(max_length=200, null=True, blank=True)
     loc_long            = models.FloatField(null=True, blank=True)
     loc_lat             = models.FloatField(null=True, blank=True)
 
-    directly_manage     = models.BooleanField(default=False)
-    wh_length           = models.FloatField()
-    wh_width            = models.FloatField()
     roof_height         = models.FloatField()
-    num_pens            = models.IntegerField(null=True, blank=True)
-    total_pigs          = models.IntegerField(null=True, blank=True)
-    
+    wh_length           = models.FloatField()
+    wh_width            = models.FloatField()   
     
     FEED_CHOICES        = [('Semi-automatic', 'Semi-automatic'),
                             ('Trough', 'Trough')]
 
     feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES, default='Semi-automatic')
-
     bldg_cap            = models.IntegerField()
-    bldg_curtain        = models.BooleanField(default=False)
 
     MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
                             ('50 GAL', '50 GAL')]
 
     medic_tank          = models.CharField(max_length=10, choices=MED_TANK_CHOICES, default='25 GAL')
+    bldg_curtain        = models.BooleanField(default=False)
     road_access         = models.BooleanField(default=False)
+
+    num_pens            = models.IntegerField(null=True, blank=True)
+    total_pigs          = models.IntegerField(null=True, blank=True)
     
     extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
     intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
-    farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
-
-    is_approved         = models.BooleanField(default=False)
+    farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.id
@@ -206,6 +203,7 @@ class Activity(models.Model):
 
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)        
     date_added          = models.DateField(null=True, blank=True)
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
@@ -240,6 +238,7 @@ class Mortality(models.Model):
 
 # MORTALITY FORM Table
 class Mortality_Form(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
     date_added          = models.DateField(null=True, blank=True)
 
     mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
