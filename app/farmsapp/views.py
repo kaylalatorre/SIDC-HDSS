@@ -1437,6 +1437,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # get details of activity form
     actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
                 "id",
+                "ref_farm_id",
                 "is_checked",
                 "is_reported",
                 "is_noted",
@@ -1479,13 +1480,10 @@ def selectedActivityForm(request, activityFormID, activityDate):
 
     # get all activities under activity form
     actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("id")
-
     actList = []
 
     # store all data to an array
     for activity in actQuery:
-        farm = Farm.objects.filter(id=activity.ref_farm_id).values("id").first()
-
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
@@ -1499,8 +1497,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'remarks' : activity.remarks,
         })
 
-
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'farm' : farm, 'activityForm' : ActivityForm(),
+    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'activityForm' : ActivityForm(),
                                                                         'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
 
 def approveActivityForm(request, activityFormID):
@@ -1623,9 +1620,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
     - Save details to activity and add FK of current farm table
     """
     
-    # get farm id for FK
-    # print("FarmID: " + str(farmID))
-
     # get ID of current technician
     techID = request.user.id
 
@@ -1742,11 +1736,8 @@ def addActivity(request, farmID):
             }
             
             activityList.append(activityObject)
-
             i += 1
         
-        # print("TEST LOG activityList: " + str(activityList))
-
         if activityForm.is_valid():
 
             # create instance of Activity Form model
@@ -1765,6 +1756,7 @@ def addActivity(request, farmID):
                 # create new instance of Activity model
                 activity = Activity.objects.create(
                     ref_farm = farmQuery,
+                    version = 1,
                     date = act['date'],
                     trip_type = act['trip_type'],
                     time_arrival = act['time_arrival'],
@@ -1774,22 +1766,14 @@ def addActivity(request, farmID):
                     activity_form_id = activity_form.id
                 )
 
-                # print(str(activity))
-
                 activity.save()
-                # print("TEST LOG: Added new activity")
-
                 x += 1
             
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
         else:
-            print("TEST LOG: activityForm is not valid")
-            
-            print(activityForm.errors.as_text)
-            print(activityForm.non_field_errors().as_text)
-
+            # print("TEST LOG: activityForm is not valid")
             formError = str(activityForm.non_field_errors().as_text)
             print(re.split("\'.*?",formError)[1])
 
