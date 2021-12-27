@@ -1063,3 +1063,6 @@ def saveMortality(request, farmID, mortalityID):
         return JsonResponse({"success": "Mortality has been updated."}, status=200)
 
     return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def addWeight(request):
+    return render(request, 'healthtemp/add-weight.html')
