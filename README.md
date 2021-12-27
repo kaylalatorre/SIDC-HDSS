@@ -167,6 +167,10 @@ sudo cp /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-available/
 cat /etc/nginx/sites-available/src_nginx.conf
 ```
 
+Step 1.2: BASH > remove default config in '/etc/nginx/sites-enabled/'
+```sudo rm /etc/nginx/sites-enabled/default
+```
+
 Step 2: BASH > restart nginx
 
 ```bash
