@@ -191,7 +191,7 @@ uwsgi --ini src_uwsgi.ini
 
 Step 12: Go to <http://localhost:8000> to test if working
 
-### Setup Database
+## Setup Database
 See DB setup documentation [DBSETUP](/DBSETUP.md)
 
 ## Running the Project Locally
