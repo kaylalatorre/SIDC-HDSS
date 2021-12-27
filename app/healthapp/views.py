@@ -684,13 +684,13 @@ def addMortality(request, farmID):
             i += 1
 
         if mortalityForm.is_valid():
-            # print("TEST LOG: mortalityForm is valid")
 
             # create instance of Mortality Form model
             mortality_form = Mortality_Form.objects.create(
                 date_added = dateToday,
                 mort_tech_id = techID,
                 ref_farm = farmQuery,
+                version = 1
             )
             mortality_form.save()
 

@@ -208,7 +208,7 @@ class Activity(models.Model):
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)  
-    version             = models.IntegerField()      
+    version             = models.IntegerField(null=True, blank=True)      
     date_added          = models.DateField(null=True, blank=True)
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)

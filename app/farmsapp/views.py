@@ -1745,6 +1745,7 @@ def addActivity(request, farmID):
                 date_added = dateToday,
                 act_tech_id = techID,
                 ref_farm = farmQuery,
+                version = 1,
             )
             activity_form.save()
 
@@ -1756,7 +1757,6 @@ def addActivity(request, farmID):
                 # create new instance of Activity model
                 activity = Activity.objects.create(
                     ref_farm = farmQuery,
-                    version = 1,
                     date = act['date'],
                     trip_type = act['trip_type'],
                     time_arrival = act['time_arrival'],
