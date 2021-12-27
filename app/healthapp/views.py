@@ -110,8 +110,8 @@ def hogsHealth(request):
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        ave_currWeight = F("farm_weight__ave_weight")
-        # is_starterWeight = F("farm_weight__is_starter")
+        # ave_currWeight = F("farm_weight__ave_weight")
+        # is_startWeight = F("farm_weight__is_starter")
         ).values(
             "id",
             "fname",
@@ -119,8 +119,8 @@ def hogsHealth(request):
             "farm_area",
             "total_pigs",
             "last_updated",
-            "ave_currWeight"
-            # "is_starterWeight"
+            # "ave_pWeight"
+            # "is_startWeight"
             ).order_by("id")
     # debug(qry)
 
@@ -133,9 +133,20 @@ def hogsHealth(request):
         total_pigs = 0
         total_incidents = 0
         total_active = 0
+        start_weight = 0
+        end_weight = 0
         for f in qry:
 
             farmID = f["id"]
+
+            # to check if ave. weight is for starter or fattener hogs
+            weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).all()
+
+            for w in weightQry: # loop records of farm_weight per farm
+                if w.is_starter is True:
+                    start_weight = w.ave_weight
+                else:
+                    end_weight = w.ave_weight
 
             # for computing Mortality %
             mortality_rate = compute_MortRate(farmID, None)
@@ -152,9 +163,8 @@ def hogsHealth(request):
                 "area": f["farm_area"],
                 "pigs": str(f["total_pigs"]),
                 "updated": f["last_updated"],
-                "ave_currWeight": str(f["ave_currWeight"]),
-                # "is_starterWeight": str(f["is_starterWeight"]),
-
+                "ave_startWeight": start_weight,
+                "ave_endWeight": end_weight,
                 "mortality_rate": mortality_rate,
                 "total_incidents": total_incidents,
                 "total_active": total_active,
