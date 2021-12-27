@@ -174,8 +174,7 @@ $('#farm-code').change(function () {
             console.log(url);
             location.href = url;
         } catch (error) {
-            console.log("Fetching biosec details failed.");
-            // location.reload(true);
+            console.log(error);
         }
     }
 });
@@ -222,8 +221,7 @@ function filterFarmRep() {
 
 
     } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -266,8 +264,7 @@ function filterIntBioRep() {
         });
 
     } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -309,8 +306,7 @@ function filterExtBioRep() {
 
         });
     } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -499,8 +495,7 @@ function saveBiocheck(elem) {
                 console.log(url);
                 location.href = url;
             } catch (error) {
-                console.log("Fetching biosec details failed.");
-                location.reload(true);
+                console.log(error);
             }
 
 
@@ -1024,8 +1019,7 @@ function viewHogsHealth(farmHTML) {
         console.log(url);
         location.href = url;
     } catch (error) {
-        console.log("Something went wrong. Restarting...");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -1043,8 +1037,7 @@ function viewHealthSymptoms(farmHTML) {
         console.log(url);
         location.href = url;
     } catch (error) {
-        console.log("Something went wrong. Restarting...");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -1116,27 +1109,6 @@ $('.symptomsSave').on('click', function () {
     }
 });
 
-/**
- *   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
- *   - Appends selected farm ID to url that will display an empty symptoms checklist.
- *   
- *   farmID = button value (carries ID of selected farm)
- */
-function addSymptomsPage(farmID) {
-
-    var farmID = $(farmID).val();
-    console.log(farmID);
-
-    try {
-        url = "/add-case/" + farmID;
-        console.log(url);
-        location.href = url;
-    } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
-    }
-}
-
 /** 
  * on-click POST AJAX function for adding an Incident Case.
  * @param farmID string ID of selected Farm record
@@ -1168,8 +1140,7 @@ function addCase(farmID) {
                     console.log(url);
                     location.href = url;
                 } catch (error){
-                    console.log("Something went wrong. Restarting...");
-                    location.reload(true);
+                    console.log(error);
                 }              
             } 
             else {

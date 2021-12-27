@@ -746,7 +746,7 @@ def addMortality(request, farmID):
 
         mortalityForm = MortalityForm()
     
-    return render(request, 'healthtemp/add-mortality.html', {'series' : series, 'farms' : techFarms, 'mortalityForm' : mortalityForm})
+    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'farms' : techFarms, 'mortalityForm' : mortalityForm})
 
 def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     """

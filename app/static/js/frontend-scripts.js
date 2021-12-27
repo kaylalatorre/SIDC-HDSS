@@ -232,9 +232,7 @@ function viewFarm(farm) {
         console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        // location.reload(true);
     }
 }
 
@@ -250,8 +248,7 @@ function viewTechFarm(techFarm) {
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -270,8 +267,7 @@ function addBiosecPage(farmID) {
         url = "/add-checklist/" + techFarm;
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -291,8 +287,7 @@ function addActivityPage(farmID) {
         console.log(url);
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -440,9 +435,7 @@ function viewActivityForm(activity) {
         console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
     }
 }
 
@@ -463,9 +456,7 @@ function viewMortalityForm(mortality) {
         console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
     }
 }
 
@@ -615,3 +606,41 @@ function filterRepStatus(){
         }    
     }
 } 
+
+/**
+ *   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
+ *   - Appends selected farm ID to url that will display an empty symptoms checklist.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
+ function addSymptomsPage(farmID) {
+
+    var farmID = $(farmID).val();
+    console.log(farmID);
+
+    try {
+        url = "/add-case/" + farmID;
+        console.log(url);
+        location.href = url;
+    } catch (error) {
+        location.reload(true);
+    }
+}
+
+/**
+ *   - Redirects current technician from selected health symptoms page to add-mortality page for selected farm.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
+ function addMortalityPage(farmID) {
+
+    var farmID = $(farmID).val();
+    console.log(farmID);
+
+    try {
+        url = "/add-mortality/" + farmID;
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+}

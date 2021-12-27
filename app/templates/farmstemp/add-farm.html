@@ -27,13 +27,7 @@
             <h2>Farm Details</h2>
             <div class="box-style">
                 <div class="mb-3">
-                    {% if farmCode < 10 %}
-                    <h3>Code: 00{{farmCode}}</h3>
-                    {% elif farmCode < 100 %}
-                    <h3>Code: 0{{farmCode}}</h3>
-                    {% else %}
-                    <h3>Code: {{farmCode}}</h3>
-                    {% endif %}
+                    <h3>Code: {{farmCode|stringformat:"03d"}}</h3>
                 </div> <br>
 
                 <h3>Raiser</h3>
