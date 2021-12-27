@@ -704,6 +704,7 @@ def addMortality(request, farmID):
             mortality_form = Mortality_Form.objects.create(
                 date_added = dateToday,
                 mort_tech_id = techID,
+                ref_farm_id = farmID,
             )
             mortality_form.save()
 

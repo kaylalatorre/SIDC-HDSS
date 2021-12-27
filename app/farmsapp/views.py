@@ -1278,7 +1278,8 @@ def formsApproval(request):
                 "act_tech",
                 "is_checked",
                 "is_reported",
-                "is_noted"
+                "is_noted",
+                "ref_farm"
                 ).order_by("-date_added").order_by("-id")
 
     activityList = []
@@ -1292,58 +1293,62 @@ def formsApproval(request):
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-            if act["is_checked"] == True:
-                status = 'Approved'
-            
-            elif act["is_checked"] == False:
-                status = 'Rejected'
-
-            else:
-                status = 'Pending'
-                
-        elif request.user.groups.all()[0].name == "Extension Veterinarian":
-            if act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Approved'
-
-            elif act["is_reported"] == False and act["is_checked"] == True:
-                status = 'Rejected'
-
-            elif act["is_reported"] == None and act["is_checked"] == True:
-                status = 'Pending'
-
-        elif request.user.groups.all()[0].name == "Assistant Manager":
-            if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Approved'
-
-            elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Rejected'
-
-            elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Pending'
-
-        elif request.user.groups.all()[0].name == "Field Technician":
-                
+        if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
 
                 if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
                     status = 'Approved'
-
                 elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
                     status = 'Rejected'
-
                 elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
                     status = 'Pending'
-        
-        # pass into object and append to list 
-        activityObject = {
-            "id" : act["id"],
-            "date_added" : act["date_added"],
-            "status" : status,
-            "prepared_by" : getTech["name"]
-        }
-        
-        activityList.append(activityObject)
+
+                # pass into object and append to list 
+                activityObject = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(act["ref_farm"])
+                }
+            
+                activityList.append(activityObject)
+
+        else :
+            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+                if act["is_checked"] == True:
+                    status = 'Approved'
+                elif act["is_checked"] == False:
+                    status = 'Rejected'
+                else:
+                    status = 'Pending'
+                    
+            elif request.user.groups.all()[0].name == "Extension Veterinarian":
+                if act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Approved'
+                elif act["is_reported"] == False and act["is_checked"] == True:
+                    status = 'Rejected'
+                elif act["is_reported"] == None and act["is_checked"] == True:
+                    status = 'Pending'
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Approved'
+                elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Rejected'
+                elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Pending'
+
+            # pass into object and append to list 
+            activityObject = {
+                "id" : act["id"],
+                "date_added" : act["date_added"],
+                "status" : status,
+                "prepared_by" : getTech["name"],
+                "farmID" : int(act["ref_farm"])
+            }
+            
+            activityList.append(activityObject)
 
     ## MORTALITY FORMS
     # get all mortality forms
@@ -1363,57 +1368,61 @@ def formsApproval(request):
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        if request.user.groups.all()[0].name == "Paiwi Management Staff":
-            if mort["is_posted"] == True:
-                status = 'Approved'
-
-            elif mort["is_posted"] == False:
-                status = 'Rejected'
-
-            else:
-                status = 'Pending'
-
-        elif request.user.groups.all()[0].name == "Extension Veterinarian":
-            if mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Approved'
-
-            elif mort["is_reported"] == False and mort["is_posted"] == True:
-                status = 'Rejected'
-
-            elif mort["is_reported"] == None and mort["is_posted"] == True:
-                status = 'Pending'
-
-        elif request.user.groups.all()[0].name == "Assistant Manager":
-            if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Approved'
-
-            elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Rejected'
-
-            elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Pending'
-            
-        elif request.user.groups.all()[0].name == "Field Technician":
-                
+        if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
                 if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Approved'
-
                 elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
                     status = 'Rejected'
-
                 elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
                     status = 'Pending'
+            
+                # pass into object and append to list 
+                mortalityObject = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(mort["ref_farm"])
+                }
 
-        # pass into object and append to list 
-        mortalityObject = {
-            "id" : mort["id"],
-            "date_added" : mort["date_added"],
-            "status" : status,
-            "prepared_by" : getTech["name"]
-        }
+                mortalityList.append(mortalityObject)
 
-        mortalityList.append(mortalityObject)
+        else :
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                if mort["is_posted"] == True:
+                    status = 'Approved'
+                elif mort["is_posted"] == False:
+                    status = 'Rejected'
+                else:
+                    status = 'Pending'
+
+            elif request.user.groups.all()[0].name == "Extension Veterinarian":
+                if mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+                elif mort["is_reported"] == False and mort["is_posted"] == True:
+                    status = 'Rejected'
+                elif mort["is_reported"] == None and mort["is_posted"] == True:
+                    status = 'Pending'
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+                elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Rejected'
+                elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Pending'
+
+            # pass into object and append to list 
+            mortalityObject = {
+                "id" : mort["id"],
+                "date_added" : mort["date_added"],
+                "status" : status,
+                "prepared_by" : getTech["name"],
+                "farmID" : int(mort["ref_farm"])
+            }
+
+            mortalityList.append(mortalityObject)
 
     return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList })
 
@@ -1744,6 +1753,7 @@ def addActivity(request, farmID):
             activity_form = Activities_Form.objects.create(
                 date_added = dateToday,
                 act_tech_id = techID,
+                ref_farm = farmQuery,
             )
             activity_form.save()
 

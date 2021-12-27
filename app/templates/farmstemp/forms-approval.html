@@ -18,7 +18,11 @@
     {% if user.groups.all.0.name == 'Assistant Manager' or user.groups.all.0.name == 'Extension Veterinarian' or user.groups.all.0.name == 'Field Technician' %}
     <div class="box-style small-table">
         <h2>Forms</h2> <br>
-        {% if actList != 0 or mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
+        {% if actList != 0 and mortList|length != 0 %}
+        <div>
+            <p>No forms to display.</p>
+        </div>
+        {% else %}
         <table class="table">
             <thead>
                 <tr>
@@ -26,6 +30,7 @@
                     <th>Form Type</th>
                     <th>Status</th>
                     <th>Prepared by</th>
+                    <th>Farm Code</th>
                     <th></th>
                 </tr>
             </thead>
@@ -37,6 +42,7 @@
                     <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
+                    <td>{{act.farmID | stringformat:"03d"}} </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -61,12 +67,13 @@
                 {% endif %}
             {% endfor %}
             {% for act in actList %}
-                {% if act.status == 'Accepted' %}
+                {% if act.status == 'Approved' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
                     <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
+                    <td>{{act.farmID | stringformat:"03d"}} </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -76,7 +83,7 @@
                 {% endif %}
             {% endfor %}
             {% for mort in mortList %}
-                {% if mort.status == 'Accepted' %}
+                {% if mort.status == 'Approved' %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
                     <td>Mortality Form</td>
@@ -97,6 +104,7 @@
                     <td>Activity Form</td>
                     <td class="status">{{act.status}}</td>
                     <td>{{act.prepared_by}}</td>
+                    <td>{{act.farmID | stringformat:"03d"}} </td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button class="secondary-btn" id="viewForm" onclick=viewActivityForm(this)><span class="material-icons md-18">visibility</span>View</button>
@@ -122,10 +130,6 @@
             {% endfor %}
             </tbody>
         </table>
-        {% else %}
-        <div>
-            <p>No forms to display.</p>
-        </div>
         {% endif %}
     </div>
     
@@ -160,7 +164,7 @@
                 {% endif %}
             {% endfor %}
             {% for act in actList %}
-                {% if act.status == 'Accepted' %}
+                {% if act.status == 'Approved' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td>{{act.date_added}}</td>
                     <td>Activity Form</td>
@@ -201,7 +205,7 @@
     {% elif user.groups.all.0.name == 'Paiwi Management Staff' %}
     <div class="box-style small-table">
         <h2>Mortality Forms</h2> <br>
-        {% if mortPending|length != 0 or mortApproved|length != 0 or mortRejected|length != 0 %}
+        {% if mortList|length != 0 %}
         <table class="table">
             <thead>
                 <tr>
@@ -229,7 +233,7 @@
                 {% endif %}
             {% endfor %}
             {% for mort in mortList %}
-                {% if mort.status == 'Accepted' %}
+                {% if mort.status == 'Approved' %}
                 <tr id="{{mort.id}}" value="{{ mort.id }}">
                     <td>{{mort.date_added}}</td>
                     <td>Mortality Form</td>
