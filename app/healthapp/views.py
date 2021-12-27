@@ -140,6 +140,8 @@ def hogsHealth(request):
             farmID = f["id"]
 
             # to check if ave. weight is for starter or fattener hogs
+            # TODO: PIGPEN > FARM_WEIGHT using select_related query
+            # TODO: delete 'amount' in frontend
             weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).all()
 
             for w in weightQry: # loop records of farm_weight per farm
