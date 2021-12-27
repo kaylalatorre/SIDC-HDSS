@@ -138,3 +138,22 @@
     background-size: 16px;
     background-color: rgba(255, 255, 255, 1);
 }
+
+/* Tab Styles / Overwriting bootstrap */
+.main-div .nav-tabs .nav-link {
+    box-shadow: none!important;
+    border: none;
+}
+
+.main-div .nav-tabs .nav-link {
+    color: #333;
+}
+
+.main-div .nav-tabs .nav-link:hover {
+    background: #00a854;
+    color:#FFF;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #DED3D3;
+}
