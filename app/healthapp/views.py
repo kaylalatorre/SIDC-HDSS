@@ -66,7 +66,7 @@ def compute_MortRate(farmID, mortalityID):
     Helper function that computes for the mortality rate of a Farm.
     mortality % = num_toDate / num_begInv
     """
-    mortality_rate = 0
+    mortality_rate = 0.0
 
     # compute mortality % with the given farmID (latest mortality record in a Farm)
     if farmID is not None:
@@ -96,7 +96,7 @@ def hogsHealth(request):
     (1) Farm details
         - farm code, raiser full name, area, technician assigned (?), num pigs
     (2) Farm Weight
-        - ave_startWeight, ave_currWeight
+        - average starter and fattener
     (3) Mortality
         - mortality_rate (mortality % = num_toDate / num_begInv)
     (4) Hog Symptoms
@@ -106,12 +106,10 @@ def hogsHealth(request):
     areaQry = Area.objects.only("area_name").all()
 
     # (1) Farm details 
-    qry = Farm.objects.select_related('hog_raiser', 'area', 'farm_weight').annotate(
+    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        # ave_currWeight = F("farm_weight__ave_weight")
-        # is_startWeight = F("farm_weight__is_starter")
         ).values(
             "id",
             "fname",
@@ -119,8 +117,6 @@ def hogsHealth(request):
             "farm_area",
             "total_pigs",
             "last_updated",
-            # "ave_pWeight"
-            # "is_startWeight"
             ).order_by("id")
     # debug(qry)
 
@@ -133,22 +129,23 @@ def hogsHealth(request):
         total_pigs = 0
         total_incidents = 0
         total_active = 0
-        start_weight = 0
-        end_weight = 0
+
         for f in qry:
+            start_weight = 0.0
+            end_weight   = 0.0
 
             farmID = f["id"]
 
-            # to check if ave. weight is for starter or fattener hogs
-            # TODO: PIGPEN > FARM_WEIGHT using select_related query
-            # TODO: delete 'amount' in frontend
-            weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).all()
+            # get current starter and fattener weights
+            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
+            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
 
-            for w in weightQry: # loop records of farm_weight per farm
-                if w.is_starter is True:
-                    start_weight = w.ave_weight
-                else:
-                    end_weight = w.ave_weight
+            # error checking for None weight values per Farm
+            if s_weightQry is not None:
+                start_weight = s_weightQry.ave_weight
+
+            if e_weightQry is not None:
+                end_weight = e_weightQry.ave_weight
 
             # for computing Mortality %
             mortality_rate = compute_MortRate(farmID, None)
@@ -160,22 +157,21 @@ def hogsHealth(request):
             total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
             farmObject = {
-                "code":  f["id"],
-                "raiser": " ".join((f["fname"],f["lname"])),
-                "area": f["farm_area"],
-                "pigs": str(f["total_pigs"]),
-                "updated": f["last_updated"],
-                "ave_startWeight": start_weight,
-                "ave_endWeight": end_weight,
-                "mortality_rate": mortality_rate,
-                "total_incidents": total_incidents,
-                "total_active": total_active,
+                "code":             f["id"],
+                "raiser":           " ".join((f["fname"],f["lname"])),
+                "area":             f["farm_area"],
+                "pigs":             f["total_pigs"],
+                "updated":          f["last_updated"],
+                "ave_startWeight":  start_weight,
+                "ave_endWeight":    end_weight,
+                "mortality_rate":   mortality_rate,
+                "total_incidents":  total_incidents,
+                "total_active":     total_active,
             }
             farmsData.append(farmObject)
 
             total_pigs += f["total_pigs"]
-        debug(farmsData)
-
+        # debug(farmsData)
 
         return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
 
@@ -192,12 +188,10 @@ def selectedHogsHealth(request, farmID):
     debug("farmID -- " + str(farmID))
 
     # (1) get farm based on farmID; get related data from hog_raiser, area, farm_weight
-    selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
+    selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        ave_currWeight = F("farm_weight__ave_weight")
-        # is_starterWeight = F("farm_weight__is_starter")
         ).values(
             "id",
             "fname",
@@ -205,8 +199,6 @@ def selectedHogsHealth(request, farmID):
             "farm_area",
             "total_pigs",
             "last_updated",
-            "ave_currWeight"
-            # "is_starterWeight"
             ).first()
     # debug(qry)
 
@@ -217,6 +209,10 @@ def selectedHogsHealth(request, farmID):
 
     total_incidents = 0
     total_active = 0
+
+    # to check if ave. weight is for starter or fattener hogs
+    # TODO: PIGPEN > FARM_WEIGHT using select_related query
+    
 
     # for computing Mortality %
     mortality_rate = compute_MortRate(farmID, None)
@@ -315,7 +311,7 @@ def healthSymptoms(request):
     (1) Farm details
         - farm code, raiser full name, num pigs
     (2) Farm Weight
-        - ave_startWeight, ave_currWeight
+        - average starter and fattener
     (3) Mortality
         - mortality_rate (mortality % = num_toDate / num_begInv)
     (4) Hog Symptoms
@@ -333,19 +329,15 @@ def healthSymptoms(request):
 
     for area in areaQry :
         # (1) filter by area, then collect details for each Farm 
-        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser','farm_weight').annotate(
+        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
-            ave_currWeight = F("farm_weight__ave_weight")
-            # is_starterWeight = F("farm_weight__is_starter")
             ).values(
                 "id",
                 "fname",
                 "lname", 
                 "total_pigs",
                 "last_updated",
-                "ave_currWeight"
-                # "is_starterWeight"
                 ).order_by("id")
         # debug(qry)
         
@@ -353,8 +345,21 @@ def healthSymptoms(request):
         total_incidents = 0
         total_active = 0
         for f in qry:
+            start_weight = 0.0
+            end_weight = 0.0
 
             farmID = f["id"]
+
+            # get current starter and fattener weights
+            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
+            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
+
+            # error checking for None weight values per Farm
+            if s_weightQry is not None:
+                start_weight = s_weightQry.ave_weight
+
+            if e_weightQry is not None:
+                end_weight = e_weightQry.ave_weight
 
             # for computing Mortality %
             mortality_rate = compute_MortRate(farmID, None)
@@ -366,16 +371,15 @@ def healthSymptoms(request):
             total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
 
             farmObject = {
-                "code":  f["id"],
-                "raiser": " ".join((f["fname"],f["lname"])),
-                "pigs": str(f["total_pigs"]),
-                "updated": f["last_updated"],
-                "ave_currWeight": str(f["ave_currWeight"]),
-                # "is_starterWeight": str(f["is_starterWeight"]),
-
-                "mortality_rate": mortality_rate,
-                "total_incidents": total_incidents,
-                "total_active": total_active,
+                "code":             f["id"],
+                "raiser":           " ".join((f["fname"],f["lname"])),
+                "pigs":             f["total_pigs"],
+                "updated":          f["last_updated"],
+                "ave_startWeight":  start_weight,
+                "ave_endWeight":    end_weight,
+                "mortality_rate":   mortality_rate,
+                "total_incidents":  total_incidents,
+                "total_active":     total_active,
             }
             farmsData.append(farmObject)
 
