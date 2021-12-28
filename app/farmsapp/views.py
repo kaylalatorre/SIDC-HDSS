@@ -2774,6 +2774,7 @@ def computeBioscore(farmID, intbioID, extbioID):
 
     total_measures = 0
     total_checks = 0
+    total_no_input = 0
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
@@ -2826,6 +2827,8 @@ def computeBioscore(farmID, intbioID, extbioID):
                 total_checks += 2
             elif check == 1:
                 total_checks += 0
+            # elif check == 3:
+            #     total_no_input += 
             else:
                 total_NA += 2
 

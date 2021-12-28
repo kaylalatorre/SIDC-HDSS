@@ -160,7 +160,7 @@ class Farm(models.Model):
 
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
 
-    is_approved         = models.BooleanField(default=False)
+    # is_approved         = models.BooleanField(default=False)
 
     def __str__(self):
         return self.id
