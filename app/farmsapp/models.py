@@ -168,12 +168,12 @@ class Farm(models.Model):
 # PIGPEN MEASURES Table
 class Pigpen_Measures(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
+    date_added          = models.DateField(default=now)
     length              = models.FloatField()
     width               = models.FloatField()
     num_heads           = models.IntegerField()
     start_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    end_weight          = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    final_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     # def __str__(self):
     #     return self.id

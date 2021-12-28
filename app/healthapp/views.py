@@ -7,7 +7,7 @@ from django.contrib import messages
 
 # for Model imports
 from django.contrib.auth.models import User
-from farmsapp.models import Farm, Area, Hog_Raiser, Farm_Weight, Mortality, Hog_Symptoms, Mortality_Form
+from farmsapp.models import Farm, Area, Hog_Raiser, Farm_Weight, Mortality, Hog_Symptoms, Mortality_Form, Pigpen_Measures
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -210,9 +210,15 @@ def selectedHogsHealth(request, farmID):
     total_incidents = 0
     total_active = 0
 
-    # to check if ave. weight is for starter or fattener hogs
-    # TODO: PIGPEN > FARM_WEIGHT using select_related query
-    
+    # get current starter and fattener weights acc. to current Pigpen
+    # TODO: change to dynamic id (passed from where?) OR get latest pigpen record by default?
+    pigpenQry = Pigpen_Measures.objects.filter(id=1).select_related("start_weight").select_related("final_weight").first()
+
+    start_weightObj = pigpenQry.start_weight
+    end_weightObj   = pigpenQry.final_weight
+
+    debug("pigpenQry.start_weight -- " + str(pigpenQry.start_weight))
+    debug("pigpenQry.final_weight -- " + str(pigpenQry.final_weight))
 
     # for computing Mortality %
     mortality_rate = compute_MortRate(farmID, None)
@@ -229,8 +235,9 @@ def selectedHogsHealth(request, farmID):
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
         "updated": selectFarm["last_updated"],
-        "ave_currWeight": selectFarm["ave_currWeight"],
-        # "is_starterWeight": str(f["is_starterWeight"]),
+
+        "start_weight": pigpenQry.start_weight,
+        "end_weight": pigpenQry.final_weight,
 
         "mortality_rate": mortality_rate,
         "total_incidents": total_incidents,
