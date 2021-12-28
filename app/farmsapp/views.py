@@ -20,7 +20,7 @@ import json
 from .forms import (
     HogRaiserForm, 
     FarmForm, 
-    PigpenMeasuresForm,
+    PigpenRowForm,
     ActivityForm, 
     AreaForm, 
     MemAnnouncementForm
@@ -43,8 +43,9 @@ from .models import (
     ExternalBiosec, 
     InternalBiosec, 
     Farm, 
-    Hog_Raiser, 
-    Pigpen_Measures, 
+    Hog_Raiser,
+    Pigpen_Group, 
+    Pigpen_Row,
     Activity, 
     Mem_Announcement,
     Activities_Form,
@@ -343,7 +344,7 @@ def techSelectedFarm(request, farmID):
 
     ## get details of selected farm
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
-    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
                     contact     = F("hog_raiser__contact_no"),
                     farm_area   = F("area__area_name"),
@@ -379,10 +380,9 @@ def techSelectedFarm(request, farmID):
         "fiveh_m_dist",
     ).first()
 
-    # print(str(selTechFarm))
-
     # collect the corresponding pigpens for selected farm
-    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
+    latestPigpens = Pigpen_Measures.objects.filter(ref_farm_id=farmID).values("date_added").last()
+    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).filter(date_added=latestPigpens["date_added"]).order_by("id")
 
     pen_no = 1
     pigpenList = []
@@ -398,12 +398,76 @@ def techSelectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    if request.method == 'POST':
+        print("TEST LOG: Form has POST method") 
+        print(request.POST)
+
+        pigpenRowForm = PigpenRowForm(request.POST)   
+        currFarm = Farm.objects.filter(id=farmID).first()
+
+        # pass all pigpens values into array newPigpenList
+        newPigpenList = []
+
+        i = 0
+        for num_heads in request.POST.getlist('num_heads', default=None):
+            pigpenObj = {
+                "length" : request.POST.getlist('length', default=None)[i],
+                "width" : request.POST.getlist('width', default=None)[i],
+                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
+            }
+
+            newPigpenList.append(pigpenObj)
+            i += 1
+        
+        if pigpenRowForm.is_valid():
+                        
+            # temporary variable to store total of all num_heads
+            numTotal = 0 
+    
+            # pass all newPigpenList objects into Pigpen_Measures model
+            x = 0
+            
+            for pigpen in newPigpenList:
+                pigpen = newPigpenList[x]
+
+                # create new instance of Pigpen_Measures model
+                pigpen_measure = Pigpen_Measures.objects.create(
+                    ref_farm = currFarm,
+                    length = pigpen['length'],
+                    width = pigpen['width'],
+                    num_heads = pigpen['num_heads'],
+                )
+                
+                # add all num_heads (pigpen measure) for total_pigs (farm)
+                numTotal += int(pigpen_measure.num_heads)
+                pigpen_measure.save()
+                x += 1
+
+            # update num_pens and total_pigs of newly added farm
+            currFarm.num_pens = len(newPigpenList)
+            currFarm.total_pigs = numTotal
+            currFarm.save()
+            
+            return redirect('/tech-selected-farm/' + str(farmID))
+            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+
+        else:
+            print("TEST LOG: Pigpen Measures Form not valid")
+            print(pigpenRowForm.errors)
+
+            messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors), extra_tags='add-farm')
+    else:
+        print("TEST LOG: Form is not a POST method")
+
+        # if the forms have no input yet, only display empty forms
+        pigpenRowForm  = PigpenRowForm()
+
     # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
     # print("TEST LOG pigpenList: " + str(pigpenList))
     # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm})
 
 def addFarm(request):
     """
@@ -444,7 +508,7 @@ def addFarm(request):
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
+        pigpenRowForm  = PigpenRowForm(request.POST)   
 
 
         # collect internal biosec checkbox inputs and convert to integer value
@@ -501,7 +565,6 @@ def addFarm(request):
             }
 
             pigpenList.append(pigpenObj)
-
             i += 1
 
         
@@ -577,7 +640,7 @@ def addFarm(request):
                     externalBiosec.save()
                     print("TEST LOG: Added new external biosec")
 
-                    if pigpenMeasuresForm.is_valid():
+                    if pigpenRowForm.is_valid():
                         
                         # temporary variable to store total of all num_heads
                         numTotal = 0 
@@ -598,12 +661,9 @@ def addFarm(request):
                             
                             # add all num_heads (pigpen measure) for total_pigs (farm)
                             numTotal += int(pigpen_measure.num_heads)
-
                             pigpen_measure.save()
-
                             x += 1
                         
-
                         # update num_pens and total_pigs of newly added farm
                         farm.num_pens = len(pigpenList)
                         farm.total_pigs = numTotal
@@ -613,9 +673,9 @@ def addFarm(request):
 
                     else:
                         print("TEST LOG: Pigpen Measures Form not valid")
-                        print(pigpenMeasuresForm.errors)
+                        print(pigpenRowForm.errors)
 
-                        messages.error(request, "Error adding farm. " + str(pigpenMeasuresForm.errors), extra_tags='add-farm')
+                        messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors), extra_tags='add-farm')
                 else: 
                     # debug("farmLoc not obtained")
                     messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
@@ -635,7 +695,7 @@ def addFarm(request):
         # if the forms have no input yet, only display empty forms
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
-        pigpenMeasuresForm  = PigpenMeasuresForm()
+        pigpenRowForm  = PigpenRowForm()
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'farmCode' : farmID,
@@ -643,7 +703,7 @@ def addFarm(request):
                                                         'raisers' : hogRaiserQry,
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
-                                                        'pigpenMeasuresForm' : pigpenMeasuresForm})
+                                                        'pigpenRowForm' : pigpenRowForm })
 
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request, biosecID):
@@ -1658,7 +1718,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
 
             i += 1
         
-        print("TEST LOG activityList: " + str(activityList))
+        # print("TEST LOG activityList: " + str(activityList))
 
         # reset approval status of activity form
         activity_form.is_checked = None

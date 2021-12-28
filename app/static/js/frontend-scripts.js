@@ -644,3 +644,37 @@ function filterRepStatus(){
         console.log(error);
     }
 }
+
+/**
+ *   - Hides current pigpen data
+ *   - Display pigpen input (django form)
+ */
+ function showPigpenInput() {
+    var toShow = document.getElementsByClassName("pigpen-input");
+    var toHide = document.getElementsByClassName("pigpen-data");
+
+    for (var i = 0; i < toHide.length; i++) {
+        toHide[i].style.display = "none";
+    }
+    for (var i = 0; i < toShow.length; i++) {
+        toShow[i].style.display = "block";
+    }
+
+}
+
+/**
+ *   - Cancel adding of new pigpen
+ *   - Hide pigpen input and display current pigpens
+ */
+ function cancelAddPigpen() {
+    var toHide = document.getElementsByClassName("pigpen-input");
+    var toShow = document.getElementsByClassName("pigpen-data");
+
+    for (var i = 0; i < toHide.length; i++) {
+        toHide[i].style.display = "none";
+    }
+    for (var i = 0; i < toShow.length; i++) {
+        toShow[i].style.display = "block";
+    }
+
+}

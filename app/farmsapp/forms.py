@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm, DateField, widgets, Select, Textarea
-from .models import Farm, Hog_Raiser, Pigpen_Measures, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
+from .models import Farm, Hog_Raiser, Pigpen_Row, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
 import datetime
 
 class DateInput(ModelForm):
@@ -125,7 +125,7 @@ class HogRaiserForm(ModelForm):
         model = Hog_Raiser
         fields = ('__all__')
 
-class PigpenMeasuresForm(ModelForm):
+class PigpenRowForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['length'].widget.attrs.update({
@@ -148,7 +148,7 @@ class PigpenMeasuresForm(ModelForm):
         })
     
     class Meta:
-        model = Pigpen_Measures
+        model = Pigpen_Row
         fields = ('__all__')
 
 class ActivityForm(forms.ModelForm):
