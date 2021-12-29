@@ -8,8 +8,12 @@ urlpatterns = [
     path('hogs-health', views.hogsHealth, name="hogsHealth"),
     path('selected-hogs-health/<str:farmID>', views.selectedHogsHealth, name="selectedHogsHealth"),
 
+    # reports (asm view)
     path('hogs-mortality', views.hogsMortality, name="hogsMortality"),
+    # path('hogs-mortality/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_mortalityRep, name="filter_mortalityRep"),
     path('incidents-reported', views.incidentsReported, name="incidentsReported"),
+    # path('incidents-reported/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_incidentRep, name="filter_incidentRep"),
+
 
     # for technician view
     path('health-symptoms', views.healthSymptoms, name="healthSymptoms"),
@@ -28,7 +32,6 @@ urlpatterns = [
     path('approve-mortality-form/<str:mortalityFormID>', views.approveMortalityForm, name="approveMortalityForm"),
     path('reject-mortality-form/<str:mortalityFormID>', views.rejectMortalityForm, name="rejectMortalityForm"),
     path('resubmit-mortality-form/<str:mortalityFormID>/<str:farmID>/<str:mortalityDate>', views.resubmitMortalityForm, name="resubmitMortalityForm"),
-
 
     path('add-weight', views.addWeight, name="addWeight"),
 ]

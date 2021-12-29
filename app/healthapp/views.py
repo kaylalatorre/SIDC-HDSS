@@ -302,14 +302,6 @@ def selectedHogsHealth(request, farmID):
                                                                     "mortalityList": mortalityList})
 
 
-
-def hogsMortality(request):
-    return render(request, 'healthtemp/rep-hogs-mortality.html', {})
-
-def incidentsReported(request):
-    return render(request, 'healthtemp/rep-incidents-reported.html', {})
-
-
 # for Technician view Hogs Health
 def healthSymptoms(request):
     """
@@ -1104,3 +1096,91 @@ def saveMortality(request, farmID, mortalityID):
 
 def addWeight(request):
     return render(request, 'healthtemp/add-weight.html')
+
+
+# REPORTS for Module 2
+def incidentsReported(request):
+    debug("TEST LOG: in incidentRep /n")
+
+    """
+    Gets all Incident (Hog_Symptoms) records within existing dates and all Areas due to no selected filters in dropdown
+
+    (1) date today
+    (2) all Area records
+    (3) Incident details
+        - ID, Farm Code, Area, No. of Pigs Affected, Symptoms, Status, Date Reported
+    """
+
+    # for checking if filters were used in the displayed Report
+    isFiltered = False
+
+    # (1) for setting Date input filters to today's date
+    dateToday = datetime.now(timezone.utc)
+
+    # (2) all Area records
+    areaQry = Area.objects.all()
+
+    # (3.1) Incident details
+    # TODO: ID, Farm Code, Area, No. of Pigs Affected, Symptoms, Status, Date Reported
+    incidQry = Hog_Symptoms.objects.select_related('ref_farm').annotate(
+        farm_code = F("ref_farm__id"),
+        farm_area = F("ref_farm__area__area_name"),
+        ).values(
+            "id",
+            "farm_code",
+            "farm_area",
+            "num_pigs_affected",
+            "report_status",
+            "date_filed"
+            ).order_by("id")
+
+    incidList = []
+    total_pigs_affect = 0
+    # total_symptoms = 0
+    for f in incidQry:
+
+        incidObject = {
+            "id":                f["id"],
+            "farm_code":         f["farm_code"],
+            "farm_area":         f["farm_area"],
+            "num_pigs_affected": f["num_pigs_affected"],
+            "report_status":     f["report_status"],
+            "date_filed":        f["date_filed"],
+        }
+        incidList.append(incidObject)
+
+    # (3.2) Incidents Reported (symptoms list)
+    symptomsList = Hog_Symptoms.objects.values(
+            'high_fever'        ,
+            'loss_appetite'     ,
+            'depression'        ,
+            'lethargic'         ,
+            'constipation'      ,
+            'vomit_diarrhea'    ,
+            'colored_pigs'      ,
+            'skin_lesions'      ,
+            'hemorrhages'       ,
+            'abn_breathing'     ,
+            'discharge_eyesnose',
+            'death_isDays'      ,
+            'death_isWeek'      ,
+            'cough'             ,
+            'sneeze'            ,
+            'runny_nose'        ,
+            'waste'             ,
+            'boar_dec_libido'   ,
+            'farrow_miscarriage',
+            'weight_loss'       ,
+            'trembling'         ,
+            'conjunctivitis').order_by("id").all()
+    
+
+    # combine the 2 previous queries into 1 temporary list
+    incident_symptomsList = zip(incidList, symptomsList)
+
+    return render(request, 'healthtemp/rep-incidents-reported.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
+                                                                    "areaList": areaQry,
+                                                                    "incident_symptomsList": incident_symptomsList})
+
+def hogsMortality(request):
+    return render(request, 'healthtemp/rep-hogs-mortality.html', {})
