@@ -1,1 +1,92 @@
-<p>YO</p>
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Incidents Report</title>
+{% endblock page_title %}
+
+{% block section %}
+
+{% include 'partials/messages.html' %}
+<div class="table-container main-div">
+    <div>
+        <h1>Incidents Reports</h1>
+    </div>
+    <br>
+    <!-- Date range, etc -->
+    <div style="max-width: 400px; height: 100%;" class="filters">
+        <div class="mb-3">
+            <label class="form-label bold-lbl">Date Range</label>
+            <div class="input-group">
+                <input type="date" class="form-control input-startDate" id="intbio-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="intbio-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
+            </div>
+        </div>
+
+        <div class="mb-3" style="padding-bottom: 8px;">
+            <label class="form-label bold-lbl">Area</label>
+            <select class="form-select" id="intbio-area" style="margin-bottom: 0;">
+                <option value="All"> All </option>
+                {% for area in areaList %}
+                <option value="{{area.area_name}}">{{area.area_name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- <div class="dropdown">
+            <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Filters
+            </button>
+            <ul class="dropdown-menu" style="padding: 8px;" data-column="2">
+                <label style="font-weight: 600;">Farms</label>
+                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_hog_area" id=""  />&nbsp;001</a></li>
+            </ul>
+        </div> -->
+
+        <button class="primary-btn"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
+    </div>
+
+    <hr>
+    <!-- Report description, print button -->
+    <div class="flex subheading intbioRep-subheading">
+        <p class="flex-item" id="intrep-header">All Incidents Report.</p>
+
+        <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
+    </div>
+    <!-- Report content -->
+    <div class="box-style">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Incident ID</th>
+                    <th>Farm Code</th>
+                    <th>Area</th>
+                    <th>No. of Pigs Affected</th>
+                    <th>Symptoms</th>
+                    <th>Status</th>
+                    <th>Date Reported</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="Incident ID"> - </td>
+                    <td data-label="Farm Code"> - </td>
+                    <td data-label="Area"> - </td>
+                    <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> - </td>
+                    <td data-label="Symptoms"> - </td>
+                    <td data-label="Status"> - </td>
+                    <td data-label="Date Reported"> - </td>
+                </tr>
+
+                <!-- Totals, Averages -->
+                <tr class="table-total bold-lbl">
+                    <td colspan="3">Total</td>
+                    <td style="text-align: right;"> xx </td>
+                    <td colspan="3"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock section %}
