@@ -133,6 +133,9 @@ def hogsHealth(request):
         total_incidents = 0
         total_active = 0
 
+        # get latest Pigpen version
+        latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+
         for f in qry:
             start_weight = 0.0
             end_weight   = 0.0
@@ -154,10 +157,10 @@ def hogsHealth(request):
             mortality_rate = compute_MortRate(farmID, None)
 
             # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
-            total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
+            total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).count()
 
             # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
+            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
 
             farmObject = {
                 "code":             f["id"],
@@ -217,9 +220,6 @@ def selectedHogsHealth(request, farmID):
     latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
     pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
 
-    start_weightObj = pigpenQry.start_weight
-    end_weightObj   = pigpenQry.final_weight
-
     debug("pigpenQry.start_weight -- " + str(pigpenQry.start_weight))
     debug("pigpenQry.final_weight -- " + str(pigpenQry.final_weight))
 
@@ -227,10 +227,10 @@ def selectedHogsHealth(request, farmID):
     mortality_rate = compute_MortRate(farmID, None)
 
     # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
-    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
+    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).count()
 
     # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
+    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
 
     farmObject = {
         "code":  int(farmID),
@@ -409,9 +409,11 @@ def selectedHealthSymptoms(request, farmID):
     debug("TEST LOG: in selectedHealthSymptoms()")
     debug("farmID -- " + str(farmID))
 
+    # get latest version of Pigpen
+    latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
-    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).only(
+    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).only(
         'date_filed',
         'date_updated', 
         'report_status',
@@ -434,7 +436,7 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (1.2) Incidents Reported (symptoms list)
-    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).values(
+    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).values(
             'high_fever'        ,
             'loss_appetite'     ,
             'depression'        ,
@@ -464,7 +466,9 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by("-mortality_date").all()
+    # debug(str(mortQry.query))
+
 
     mortality_rate = 0
     mRateList = [] 
@@ -1109,7 +1113,7 @@ def incidentsReported(request):
     areaQry = Area.objects.all()
 
     # get latest PigPen version
-
+    # latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     # (3.1) Incident details
     # TODO: ID, Farm Code, Area, No. of Pigs Affected, Symptoms, Status, Date Reported
