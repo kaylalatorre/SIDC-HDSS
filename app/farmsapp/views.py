@@ -1447,13 +1447,14 @@ def formsApproval(request):
     ## MORTALITY FORMS
     # get all mortality forms
     mortQuery = Mortality_Form.objects.values(
-        "id",
-        "date_added",
-        "mort_tech",
-        "is_posted",
-        "is_reported",
-        "is_noted"
-    ).order_by("-date_added").order_by("-id")
+                "id",
+                "date_added",
+                "mort_tech",
+                "is_posted",
+                "is_reported",
+                "is_noted",
+                "ref_farm"
+                ).order_by("-date_added").order_by("-id")
 
     mortalityList = []
 
@@ -1481,7 +1482,7 @@ def formsApproval(request):
                 }
 
                 mortalityList.append(mortalityObject)
-
+            
         else :
             if request.user.groups.all()[0].name == "Paiwi Management Staff":
                 if mort["is_posted"] == True:
@@ -1800,6 +1801,13 @@ def addActivity(request, farmID):
     farmID - selected farmID passed as parameter
     """
     
+    # generate code number
+    latestForm = Activities_Form.objects.last()
+    try:
+        code = int(latestForm.code) + 1
+    except:
+        code = 1
+    
     # get ID of current technician
     techID = request.user.id
 
@@ -1836,6 +1844,7 @@ def addActivity(request, farmID):
 
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
+                code = code,
                 date_added = dateToday,
                 act_tech_id = techID,
                 ref_farm = farmQuery,
@@ -1880,7 +1889,7 @@ def addActivity(request, farmID):
         activityForm = ActivityForm()
 
     # pass django form and farmID to template
-    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID) })
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID), 'code' : code })
 
 def saveActivity(request, farmID, activityID):
     """
