@@ -219,7 +219,8 @@ def selectedFarm(request, farmID):
     ).first()
    
     # collect pigpens
-    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
     pen_no = 1
     pigpenList = []
@@ -381,8 +382,8 @@ def techSelectedFarm(request, farmID):
     ).first()
 
     # collect the corresponding pigpens for selected farm
-    latestPigpens = Pigpen_Measures.objects.filter(ref_farm_id=farmID).values("date_added").last()
-    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).filter(date_added=latestPigpens["date_added"]).order_by("id")
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
     pen_no = 1
     pigpenList = []
@@ -398,6 +399,10 @@ def techSelectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    # collecting all past pigpens
+    # allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).all()
+
+    # adding new pigpens
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
         print(request.POST)
@@ -420,19 +425,27 @@ def techSelectedFarm(request, farmID):
             i += 1
         
         if pigpenRowForm.is_valid():
+
+            # create instance of Pigpen_Group model
+            pigpen_group = Pigpen_Group.objects.create(
+                date_added = datetime.now(timezone.utc),
+                ref_farm = currFarm
+            )
+
+            pigpen_group.save()
                         
             # temporary variable to store total of all num_heads
             numTotal = 0 
     
-            # pass all newPigpenList objects into Pigpen_Measures model
+            # pass all newPigpenList objects into Pigpen_Row model
             x = 0
             
             for pigpen in newPigpenList:
                 pigpen = newPigpenList[x]
 
-                # create new instance of Pigpen_Measures model
-                pigpen_measure = Pigpen_Measures.objects.create(
-                    ref_farm = currFarm,
+                # create new instance of Pigpen_Row model
+                pigpen_measure = Pigpen_Row.objects.create(
+                    pigpen_grp_id = pigpen_group.id,
                     length = pigpen['length'],
                     width = pigpen['width'],
                     num_heads = pigpen['num_heads'],
@@ -447,6 +460,10 @@ def techSelectedFarm(request, farmID):
             currFarm.num_pens = len(newPigpenList)
             currFarm.total_pigs = numTotal
             currFarm.save()
+
+            pigpen_group.num_pens = len(newPigpenList)
+            pigpen_group.total_pigs = numTotal
+            pigpen_group.save()
             
             return redirect('/tech-selected-farm/' + str(farmID))
             messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
@@ -642,18 +659,26 @@ def addFarm(request):
 
                     if pigpenRowForm.is_valid():
                         
+                        # create instance of Pigpen_Group model
+                        pigpen_group = Pigpen_Group.objects.create(
+                            date_added = datetime.now(timezone.utc),
+                            ref_farm = currFarm
+                        )
+
+                        pigpen_group.save()
+
                         # temporary variable to store total of all num_heads
                         numTotal = 0 
                 
-                        # pass all pigpenList objects into Pigpen_Measures model
+                        # pass all pigpenList objects into Pigpen_Row model
                         x = 0
                         
                         for pigpen in pigpenList:
                             pigpen = pigpenList[x]
 
-                            # create new instance of Pigpen_Measures model
-                            pigpen_measure = Pigpen_Measures.objects.create(
-                                ref_farm = farm,
+                            # create new instance of Pigpen_Row model
+                            pigpen_measure = Pigpen_Row.objects.create(
+                                pigpen_grp_id = pigpen_group.id,
                                 length = pigpen['length'],
                                 width = pigpen['width'],
                                 num_heads = pigpen['num_heads'],
@@ -668,7 +693,11 @@ def addFarm(request):
                         farm.num_pens = len(pigpenList)
                         farm.total_pigs = numTotal
                         farm.save()
-                        
+
+                        pigpen_group.num_pens = len(newPigpenList)
+                        pigpen_group.total_pigs = numTotal
+                        pigpen_group.save()
+
                         return redirect('/')
 
                     else:
