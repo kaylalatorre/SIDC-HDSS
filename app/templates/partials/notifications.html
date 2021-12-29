@@ -2,10 +2,14 @@
 <div class="notif-box" id="notification-box" style="height: 0; opacity: 0">
     <div class="notif-header sticky">
         <h2>Notifications</h2>
+        
     </div>
     <!-- All notifs -->
     <div class="notif-list">
         {% if notifList %}
+        <div class="notif-item">
+            <button type="button" class="secondary-btn" onclick="syncNotifs()">Clear</button>
+        </div>
             {% for item in notifList %}
             {% if item.href %}
             <a href="{{item.href}}">
@@ -23,5 +27,5 @@
             <p> You have no notifications. </p>
         </div>
         {% endif %}
-    </div>  
+    </div>
 </div>
