@@ -81,13 +81,7 @@
                 <!-- Data -->
                 {% for farm,tech in farmtechList %}
                 <tr>
-                    {% if farm.code < 10 %}
-                    <td data-label="Farm Code" style="text-align: center;">00{{farm.code}}</td>
-                    {% elif farm.code < 100 %}
-                        <td data-label="Farm Code" style="text-align: center;">0{{farm.code}}</td>
-                    {% else %}
-                        <td data-label="Farm Code" style="text-align: center;">{{farm.code}}</td>
-                    {% endif %}
+                    <td data-label="Farm Code" style="text-align: center;">{{farm.code|stringformat:'03d'}}</td>
                     <td data-label="Raiser"> {{farm.raiser}} </td>
                     <td data-label="Address"> {{farm.address}} </td>
                     <td data-label="Area"> {{farm.area}} </td>

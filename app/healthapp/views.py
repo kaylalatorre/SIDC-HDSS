@@ -663,6 +663,7 @@ def addMortality(request, farmID):
     - Save details to mortality and add FK of selected farm table
     - Django forms will first check the validity of input (based on the fields within models.py)
 
+    farmID - selected farmID passed as parameter
     """
     
     # generate series number
@@ -674,26 +675,12 @@ def addMortality(request, farmID):
     # get all farms under current technician
     techID = request.user.id
 
-    # collect all IDs of assigned areas under technician
-    areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
-
-    # array to store all farms under each area
-    techFarms = []
-
-    for area in areaQry :
-        # collect the corresponding hog raiser details for each farm 
-        techFarmQry  = Farm.objects.filter(area_id=area.id).values("id").order_by('id').all()
-
-        # pass all data into an array
-        for farm in techFarmQry:
-            farmObject = {
-                "id": farm["id"],
-            }
-            techFarms.append(farmObject)
+    # collected farmID of selected tech farm
+    farmQuery = Farm.objects.get(pk=farmID)
 
     if request.method == 'POST':
         print("TEST LOG: Add Mortality has POST method") 
-        # print(request.POST)
+        print(request.POST)
 
         mortalityForm = MortalityForm(request.POST)
 
@@ -709,19 +696,19 @@ def addMortality(request, farmID):
                 "num_toDate" : request.POST.getlist('num_toDate', default=None)[i],
                 "source" : request.POST.getlist('source', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
-
             }
             
             mortalityList.append(mortalityObject)
             i += 1
 
         if mortalityForm.is_valid():
-            # print("TEST LOG: mortalityForm is valid")
 
             # create instance of Mortality Form model
             mortality_form = Mortality_Form.objects.create(
                 date_added = dateToday,
                 mort_tech_id = techID,
+                ref_farm = farmQuery,
+                version = 1
             )
             mortality_form.save()
 
@@ -733,7 +720,8 @@ def addMortality(request, farmID):
                 # create new instance of Mortality model
                 mortality = Mortality.objects.create(
                     series = series,
-                    ref_farm_id = farmID,
+                    ref_farm = farmQuery,
+                    version = 1,
                     mortality_date = mort['mortality_date'],
                     num_begInv = mort['num_begInv'],
                     num_today = mort['num_today'],
@@ -745,7 +733,6 @@ def addMortality(request, farmID):
             
                 mortality.save()
                 x += 1
-
 
             # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
             messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-mortality')
@@ -763,7 +750,7 @@ def addMortality(request, farmID):
 
         mortalityForm = MortalityForm()
     
-    return render(request, 'healthtemp/add-mortality.html', {'series' : series, 'farms' : techFarms, 'mortalityForm' : mortalityForm})
+    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'farms' : techFarms, 'mortalityForm' : mortalityForm})
 
 def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     """
@@ -776,6 +763,7 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     # get details of mortality form
     mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).values(
                 "id",
+                "ref_farm_id",
                 "is_posted",
                 "is_reported",
                 "is_noted",
@@ -817,12 +805,10 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
 
     # get all mortalities under mortality form
     mortQuery = Mortality.objects.filter(mortality_form_id=mortalityFormID).all().order_by("id")
-
     mortList = []
 
     # store all data to an array
     for mortality in mortQuery:
-        farm = Farm.objects.filter(id=mortality.ref_farm_id).values("id").first()
         series = mortality.series
 
         mortList.append({
@@ -836,8 +822,7 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
             'remarks' : mortality.remarks,
         })
 
-
-    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityFormID' : mortalityFormID, 'mortDate' : mortalityDate, 'farm' : farm, 'mortalityForm' : MortalityForm(),
+    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityFormID' : mortalityFormID, 'mortDate' : mortalityDate, 'mortalityForm' : MortalityForm(),
                                                                         'mortalities' : mortList, 'formStatus' : status, 'mortFormDetails' : mortFormQuery, 'series' : series })
 
 def approveMortalityForm(request, mortalityFormID):

@@ -3,28 +3,14 @@
 {% load static %}
 
 {% block page_title %}
-    {% if farm.id < 10 %}
-    <title>SIDC-HDSS | Farm 00{{farm.id}} </title>
-    {% elif farm.id < 100 %}
-    <title>SIDC-HDSS | Farm 0{{farm.id}} </title>
-    {% else %}
-    <title>SIDC-HDSS | Farm {{farm.id}} </title>
-    {% endif %}
+<title>SIDC-HDSS | Farm {{farm.id|stringformat:"03d"}} </title>
 {% endblock page_title %}
 
 {% block section %}
 <div class="main-div">
-    <div class="flex"> 
-
-        {% if farm.id < 10 %}
-            <h1 class="heading flex-item"><a href="/farms">Farms </a> >  00{{farm.id}}</h1>
-        {% elif farm.id < 100 %}
-            <h1 class="heading flex-item"><a href="/farms">Farms </a> >  0{{farm.id}}</h1>
-        {% else %}
-            <h1 class="heading flex-item"><a href="/farms">Farms </a> >  {{farm.id}}</h1>
-        {% endif %}
-
-        <div><a class="button primary-btn" href="/selected-hogs-health/{{ farm.id }}">View Hogs Health</a></div> <!-- Redirect to assigned farm's hogs health details -->
+    <div class="flex subheading"> 
+        <h1 class="heading flex-item"><a href="/farms">Farms </a> >  {{farm.id|stringformat:"03d"}}</h1>
+        <div><a class="button primary-btn" href="/selected-hogs-health/{{ farm.id|stringformat:'03d' }}">View Hogs Health</a></div> <!-- Redirect to assigned farm's hogs health details -->
     </div>
     <div class="flex">
         <div class="input-group mb-3">

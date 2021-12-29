@@ -78,6 +78,6 @@ textarea {
     }
 }
 
-.activity-input, .mortality-input {
+.activity-input, .mortality-input, .pigpen-input {
     display: none;
 }
