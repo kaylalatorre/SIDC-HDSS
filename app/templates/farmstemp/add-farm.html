@@ -27,13 +27,7 @@
             <h2>Farm Details</h2>
             <div class="box-style">
                 <div class="mb-3">
-                    {% if farmCode < 10 %}
-                    <h3>Code: 00{{farmCode}}</h3>
-                    {% elif farmCode < 100 %}
-                    <h3>Code: 0{{farmCode}}</h3>
-                    {% else %}
-                    <h3>Code: {{farmCode}}</h3>
-                    {% endif %}
+                    <h3>Code: {{farmCode|stringformat:"03d"}}</h3>
                 </div> <br>
 
                 <h3>Raiser</h3>
@@ -137,17 +131,16 @@
 
     <div class="flex flex-form">
         <section class="flex-item" id="pig-pens">
-            
-            <div class="flex subheading">
-                <h2 class="flex-item">Pig Pens</h2>
-                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i> Add Pen</button></div>
-            </div>
-            <div class="flex mobile-subheading">
-                <h2 style="width: 90%">Pig Pens</h2>
-                <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
-            </div>
-            <div class="box-style">
-                <br>
+            <h2 class="flex-item">Pig Pens</h2>
+            <div class="box-style pigpen-input">
+                <div class="flex subheading">
+                    <p class="flex-item"></p>
+                    <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
+                </div>
+                <div class="flex mobile-subheading">
+                    <p class="flex-item"></p>
+                    <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
+                </div>
                 <div class="input-group">
                     <table class="table">
                         <thead>
@@ -161,9 +154,9 @@
                         <tbody  id="pigpen-table">
 
                             <tr id="pigpen-row">
-                                <td data-label="Length" id="pigpen-length"> {{pigpenMeasuresForm.length}} </td>
-                                <td data-label="Width" id="pigpen-width"> {{pigpenMeasuresForm.width}} </td>
-                                <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenMeasuresForm.num_heads}} </td>
+                                <td data-label="Length" id="pigpen-length"> {{pigpenRowForm.length}} </td>
+                                <td data-label="Width" id="pigpen-width"> {{pigpenRowForm.width}} </td>
+                                <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenRowForm.num_heads}} </td>
                                 <td></td>
                             </tr>
 

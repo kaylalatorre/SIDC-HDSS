@@ -3,13 +3,7 @@
 {% load static %}
 
 {% block page_title %}
-    {% if farm_code < 10 %}
-    <title>SIDC-HDSS | Hogs Health 00{{farm_code}} </title>
-    {% elif farm_code < 100 %}
-    <title>SIDC-HDSS | Hogs Health 0{{farm_code}} </title>
-    {% else %}
-    <title>SIDC-HDSS | Hogs Health {{farm_code}} </title>
-    {% endif %}
+<title>SIDC-HDSS | Hogs Health {{farm_code|stringformat:"03d"}} </title>
 {% endblock page_title %}
 
 {% block section %}
@@ -18,40 +12,28 @@
 
 <div class="main-div">
     <div class="flex subheading">
-        {% if farm_code < 10 %}
-        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 00{{farm_code}}</h1>
-        {% elif farm_code < 100 %}
-        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 0{{farm_code}}</h1>
-        {% else %}
-        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code}}</h1>
-        {% endif %}
+        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               + Add New
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
-              <li><a class="dropdown-item" href="/add-mortality/{{farm_code}}">Mortality Record</a></li>
+              <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
+              <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addMortalityPage(this)">Mortality Record</button></li>
               <li><a class="dropdown-item" href="/add-weight/{{farm_code}}">Weight Slip Record</a></li>
             </ul>
         </div>
     </div>
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 72%">
-            {% if farm_code < 10 %}
-            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 00{{farm_code}}</h1>
-            {% elif farm_code < 100 %}
-            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 0{{farm_code}}</h1>
-            {% else %}
-            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code}}</h1>
-            {% endif %}
+            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
             <div class="dropdown">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
-                    <li><a class="dropdown-item" href="/add-mortality/{{farm_code}}">Mortality Record</a></li>
+                    <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
+                    <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addMortalityPage(this)">Mortality Record</button></li>
                     <li><a class="dropdown-item" href="/add-weight/{{farm_code}}">Weight Slip Record</a></li>
                 </ul>
             </div>

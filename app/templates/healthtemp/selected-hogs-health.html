@@ -3,23 +3,15 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Hogs Health {{ farm.code }} </title>
+<title>SIDC-HDSS | Hogs Health {{ farm.code|stringformat:'03d' }} </title>
 {% endblock page_title %}
 
 {% block section %}
 
 <div class="main-div">
     <div class="flex">
-        
-        {% if farm.code < 10 %}
-            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  00{{ farm.code }}</h1>
-        {% elif farm.code < 100 %}
-            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  0{{ farm.code }}</h1>
-        {% else %}
-            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code }}</h1>
-        {% endif %}
-
-        <div><a class="button primary-btn" href="/selected-farm/{{ farm.code }}">View Farm Details</a></div> <!--Redirect to assigned farm's page-->
+        <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code|stringformat:"03d" }}</h1>
+        <div><a class="button primary-btn" href="/selected-farm/{{ farm.code|stringformat:'03d' }}">View Farm Details</a></div> <!--Redirect to assigned farm's page-->
     </div>
     <div class="flex">
         <div class="input-group mb-3">
