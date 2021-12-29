@@ -314,3 +314,47 @@ class MemAnnouncementForm(ModelForm):
             ),
             'mssg': widgets.Textarea()
         }
+
+class WeightForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ave_weight'].widget.attrs.update({
+            'aria-label' : 'Ave. Weight', 
+            'type' : 'number',
+            'class' : 'form-control',
+            'placeholder': 'ex. 120',
+            'min' : 0,
+            'step' : 0.01
+        })
+        self.fields['total_numHeads'].widget.attrs.update({ 
+            'aria-label' : 'Total No. of Heads', 
+            'type' : 'number',
+            'class' : 'form-control',
+            'placeholder': 'ex. 100',
+            'min' : 0
+        })
+        self.fields['total_kls'].widget.attrs.update({ 
+            'aria-label' : 'kls', 
+            'type' : 'number',
+            'class' : 'form-control',
+            'placeholder': 'ex. 120',
+            'min' : 0,
+            'step' : 0.01
+        })
+        self.fields['remarks'].widget.attrs.update({ 
+            'aria-label' : 'Remarks', 
+            'type' : 'text',
+            'class' : 'form-control',
+            'placeholder': ''
+        })
+
+    class Meta:
+        model = Farm_Weight
+        CHOICES = [('Starter', 'Starter'),
+                    ('Fattener', 'Fattener')]
+                    
+        fields = ('__all__')
+        widgets = {
+           
+            'is_starter': widgets.RadioSelect(choices=CHOICES)
+        }

@@ -30,5 +30,5 @@ urlpatterns = [
     path('resubmit-mortality-form/<str:mortalityFormID>/<str:farmID>/<str:mortalityDate>', views.resubmitMortalityForm, name="resubmitMortalityForm"),
 
 
-    path('add-weight', views.addWeight, name="addWeight"),
+    path('add-weight/<str:farmID>', views.addWeight, name="addWeight"),
 ]

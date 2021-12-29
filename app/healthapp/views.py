@@ -322,10 +322,10 @@ def healthSymptoms(request):
 
     for area in areaQry :
         # (1) filter by area, then collect details for each Farm 
-        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser', 'starter_weight', 'fattener_weight').annotate(
+        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser', 'farm_weight').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
-            ave_currWeight = F("starter_weight__ave_weight")
+            ave_currWeight = F("farm_weight__ave_weight")
             # is_starterWeight = F("farm_weight__is_starter")
             ).values(
                 "id",
@@ -1091,61 +1091,31 @@ def addWeight(request, farmID):
     except:
         debug("farm does not exist")
         return redirect("healthSymptoms")
-    if request.method == 'POST':
-    #       date_filed          = models.DateField(default=now)
-    # is_starter          = models.BooleanField(default=False)
-    # ave_weight          = models.FloatField()
-    # total_numHeads      = models.IntegerField()
-    # total_kls           = models.FloatField()
-        # date_filed = now()
-        # is_starter = request.POST.get()
-        debug(request.POST)
-        # do weight db stuff here
-        type = request.POST.get('weight-radio')
-        request.POST.get('ave-weight')
-        request.POST.get('total_numHeads')
-        request.POST.get('total_kls')
-        request.POST.get('input-amt')
-        request.POST.get('remarks')
 
-        farm = Farm.objects.filter(id=farmID).select_related().first()
+    if request.method == 'POST':
+
+        type = request.POST.get('weight-radio')
 
         if type == 'starter':
-            weightDetails = Farm_Weight(
-                ref_farm_id = farmID,
+            Farm_Weight(
                 date_filed = now(),
-
+                ref_farm_id = farmID,
                 is_starter = True,
                 ave_weight = request.POST.get('ave_weight'),
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks')
             ).save()
-            farm.starter_weight = weightDetails
         elif type == 'fattener':
-            weightDetails = Farm_Weight(
-                ref_farm_id = farmID,
+            Farm_Weight(
                 date_filed = now(),
-
+                ref_farm_id = farmID,
                 is_starter = False,
                 ave_weight = request.POST.get('ave_weight'),
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks')
             ).save()
-            farm.fattener_weight = weightDetails
         
-        farm.save()
-        
-        
-        
-        # debug(weightDetails.ref_farm_id)
-        # debug(weightDetails.date_filed)
-        # debug(weightDetails.is_starter)
-        # debug(weightDetails.ave_weight)
-        # debug(weightDetails.total_numHeads)
-        # debug(weightDetails.total_kls)
-        # debug(weightDetails.remarks)
-
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})

@@ -13,7 +13,7 @@ class User(User):
 
 class AccountData(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
-    data = models.JSONField(default=dict)
+    data = models.JSONField(default=dict, null=True)
 
     def __str__(self):
         return self.id
@@ -58,12 +58,15 @@ class InternalBiosec(models.Model):
 
 # FARM WEIGHT Table
 class Farm_Weight(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
+
     date_filed          = models.DateField(default=now)
     is_starter          = models.BooleanField(default=False)
     ave_weight          = models.FloatField()
     total_numHeads      = models.IntegerField()
     total_kls           = models.FloatField()
-
+    remarks             = models.CharField(max_length=200, null=True, blank=True)
     # def __str__(self):
     #     return self.id
 
@@ -157,8 +160,11 @@ class Farm(models.Model):
     intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
     farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, null=True, blank=True)
+    # starter_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, related_name='starter', null=True, blank=True)
+    # fattener_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, related_name='fattener', null=True, blank=True)
 
-    is_approved         = models.BooleanField(default=False)
+
+    # is_approved         = models.BooleanField(default=False)
 
     def __str__(self):
         return self.id

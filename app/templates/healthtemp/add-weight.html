@@ -11,10 +11,10 @@
 {% include 'partials/messages.html' %}
 
 <div class="main-div">
-    <form action="" method="POST">
-        <h1 class="heading"><a href="/">Hogs Health & Symptoms</a> >  Add Weight Slip Record</h1>
+    <form action="/add-weight/{{farmID}}" method="POST">{% csrf_token %}
+        <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID}}">{{ farmID|stringformat:"03d" }}</a> > Add Weight Slip Record</h1>
         <div class="flex subheading">
-            <p class="flex-item"> <strong>Farm: </strong> [id] </p>
+            <p class="flex-item"> <strong>Farm: </strong> {{farmID}} </p>
             <div><button class="primary-btn" type="submit">Send for Approval</button></div>
         </div>
         <hr>
@@ -22,31 +22,31 @@
             <div>
                 <label>Weight Slip Type</label><br>
                 <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                    <input type="radio" class="btn-check" name="weight-radio" id="weight-starter" autocomplete="off" checked>
+                    <input type="radio" class="btn-check" name="weight-radio" id="weight-starter" value="starter" autocomplete="off" checked>
                     <label class="btn btn-outline-primary" for="weight-starter">Starter</label>
                   
-                    <input type="radio" class="btn-check" name="weight-radio" id="weight-fattener" autocomplete="off">
+                    <input type="radio" class="btn-check" name="weight-radio" id="weight-fattener" value="fattener" autocomplete="off">
                     <label class="btn btn-outline-primary" for="weight-fattener">Fattener</label>
                 </div>
             </div>
             <hr>
             <div class="mb-3">
                 <label for="input-ave" class="form-label">Ave. Weight</label>
-                <input type="number" class="form-control" id="input-ave" placeholder="ex. 120">
+                <!-- <input type="number" class="form-control" name="input-ave" id="input-ave" placeholder="ex. 120" min=0 step=0.01> -->
+                {{weightForm.ave_weight}}
             </div>
             <div class="mb-3">
                 <label for="input-heads" class="form-label">Total No. of Heads</label>
-                <input type="number" class="form-control" id="input-heads" placeholder="ex. 100">
+                <!-- <input type="number" class="form-control" name="input-heads" id="input-heads" placeholder="ex. 100" min=0> -->
+                {{weightForm.total_numHeads}}
                 <label for="input-kls" class="form-label">kls</label>
-                <input type="number" class="form-control" id="input-kls" placeholder="ex. 100">
-            </div>
-            <div class="mb-3">
-                <label for="input-amt" class="form-label">Amount</label>
-                <input type="number" class="form-control" id="input-amt" placeholder="ex. 120">
+                <!-- <input type="number" class="form-control" name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01> -->
+                {{weightForm.total_kls}}
             </div>
             <div class="mb-3">
                 <label for="input-remarks" class="form-label">Remarks</label>
-                <input type="text" class="form-control" id="input-remarks" placeholder="">
+                <!-- <input type="text" class="form-control" name="input-remarks" id="input-remarks" placeholder=""> -->
+                {{weightForm.remarks}}
             </div>
         </div>
     </form>

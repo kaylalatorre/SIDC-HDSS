@@ -2158,14 +2158,6 @@ def createAnnouncement(request):
     """
 
     if request.method == 'POST':
-        # debug(request.POST.get("title"))
-        # debug(request.POST.get("category"))
-        # debug(request.POST.get("recip_area"))
-        # debug(request.POST.get("mssg"))
-        # debug(request.user.id)
-        # debug(datetime.now())
-        # debug(request.user.groups.all()[0].name)
-        
         autoApprove = ['Assistant Manager']
         if request.user.groups.all()[0].name in autoApprove:
             approvalState = True
@@ -2181,13 +2173,6 @@ def createAnnouncement(request):
             timestamp = now(),
             is_approved = approvalState
         )
-        # debug(announcement.title)
-        # debug(announcement.category)
-        # debug(announcement.recip_area)
-        # debug(announcement.mssg)
-        # debug(announcement.author)
-        # debug(announcement.timestamp)
-        # debug(announcement.is_approved)
         announcement.save()
         messages.success(request, "Announcement sent.", extra_tags='announcement')
         return redirect('/member-announcements')
