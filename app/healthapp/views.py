@@ -7,7 +7,10 @@ from django.contrib import messages
 
 # for Model imports
 from django.contrib.auth.models import User
-from farmsapp.models import Farm, Area, Hog_Raiser, Farm_Weight, Mortality, Hog_Symptoms, Mortality_Form, Pigpen_Measures
+from farmsapp.models import (
+    Farm, Area, Hog_Raiser, Farm_Weight, 
+    Mortality, Hog_Symptoms, Mortality_Form, 
+    Pigpen_Group)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -211,8 +214,8 @@ def selectedHogsHealth(request, farmID):
     total_active = 0
 
     # get current starter and fattener weights acc. to current Pigpen
-    # TODO: change to dynamic id (passed from where?) OR get latest pigpen record by default?
-    pigpenQry = Pigpen_Measures.objects.filter(id=1).select_related("start_weight").select_related("final_weight").first()
+    latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
 
     start_weightObj = pigpenQry.start_weight
     end_weightObj   = pigpenQry.final_weight
@@ -1119,6 +1122,9 @@ def incidentsReported(request):
 
     # (2) all Area records
     areaQry = Area.objects.all()
+
+    # get latest PigPen version
+
 
     # (3.1) Incident details
     # TODO: ID, Farm Code, Area, No. of Pigs Affected, Symptoms, Status, Date Reported
