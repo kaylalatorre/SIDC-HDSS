@@ -44,7 +44,9 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+                {% for farmVersion in version %}
+                <option value="{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
             </select>
         </div>
         <p class="flex-item"></p>
@@ -54,8 +56,9 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option value="">Current - Dec 21, 2021 to March 21, 2021</option>
-                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+                {% for farmVersion in version %}
+                <option value="{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
             </select>
         </div>
     </div>

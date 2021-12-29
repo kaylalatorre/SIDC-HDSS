@@ -236,6 +236,10 @@ def selectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
     # collect activities
     actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
@@ -269,7 +273,7 @@ def selectedFarm(request, farmID):
     ).order_by('-last_updated')
 
     return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery})
+                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
 
 def techFarms(request):
     """
@@ -400,7 +404,8 @@ def techSelectedFarm(request, farmID):
         pen_no += 1
 
     # collecting all past pigpens
-    # allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).all()
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
 
     # adding new pigpens
     if request.method == 'POST':
@@ -484,7 +489,7 @@ def techSelectedFarm(request, farmID):
     # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
 
 def addFarm(request):
     """
