@@ -530,7 +530,7 @@ def addFarm(request):
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        pigpenRowForm  = PigpenRowForm(request.POST)   
+        pigpenRowForm       = PigpenRowForm(request.POST)   
 
 
         # collect internal biosec checkbox inputs and convert to integer value
