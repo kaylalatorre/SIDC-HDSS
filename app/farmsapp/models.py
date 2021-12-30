@@ -72,7 +72,8 @@ class Hog_Symptoms(models.Model):
     date_filed          = models.DateTimeField(default=now)
     date_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     report_status       = models.CharField(max_length=50, default='Active')
     num_pigs_affected   = models.IntegerField(default=0)
 
@@ -160,9 +161,20 @@ class Farm(models.Model):
     def __str__(self):
         return self.id
 
+# PIGPEN_GROUP TABLE
+class Pigpen_Group(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    date_added          = models.DateField(auto_now=True, editable=False)
+
+    num_pens            = models.IntegerField(null=True, blank=True)
+    total_pigs          = models.IntegerField(null=True, blank=True)
+
+    start_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    final_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
 # PIGPEN MEASURES Table
-class Pigpen_Measures(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+class Pigpen_Row(models.Model):
+    pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     length              = models.FloatField()
     width               = models.FloatField()
@@ -203,7 +215,10 @@ class Activity(models.Model):
 
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)        
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
+    code                = models.IntegerField(null=True, blank=True)
+    version             = models.IntegerField(null=True, blank=True)      
     date_added          = models.DateField(null=True, blank=True)
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
@@ -217,7 +232,6 @@ class Activities_Form(models.Model):
 # MORTALITY Table
 class Mortality(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)        
-    series              = models.IntegerField(null=True, blank=True)
 
     mortality_date      = models.DateField()
     num_begInv          = models.IntegerField()
@@ -238,26 +252,30 @@ class Mortality(models.Model):
 
 # MORTALITY FORM Table
 class Mortality_Form(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    
+    series              = models.IntegerField(null=True, blank=True)
+    version             = models.IntegerField(null=True, blank=True)
     date_added          = models.DateField(null=True, blank=True)
 
-    mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mortTech',  null=True, blank=True)
-    mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_mgtStaff', null=True, blank=True)
+    mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mortTech',  null=True, blank=True)
+    mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_mgtStaff', null=True, blank=True)
     is_posted           = models.BooleanField(null=True, editable=True)
-    mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_extvet', null=True, blank=True)
+    mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_extvet', null=True, blank=True)
     is_reported         = models.BooleanField(null=True, editable=True)
-    mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='mort_asm', null=True, blank=True)
+    mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_asm', null=True, blank=True)
     is_noted            = models.BooleanField(null=True, editable=True)
 
 # PPE FORM (Pigpen Evaluation) Table
-class PPE_Form(models.Model):
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+# class PPE_Form(models.Model):
+#     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
-    ppe_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
-    ppe_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
-    is_checked          = models.BooleanField(default=False)
-    ppe_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
-    is_approved         = models.BooleanField(default=False)
+#     ppe_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
+#     ppe_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
+#     is_checked          = models.BooleanField(default=False)
+#     ppe_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
+#     is_approved         = models.BooleanField(default=False)
 
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):

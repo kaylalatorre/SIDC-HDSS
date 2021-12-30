@@ -11,8 +11,8 @@
 {% include 'partials/messages.html' %}
 
 <div class="table-container main-div">
-    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Mortality Form made on {{mortDate}} for Farm {{farm.id|stringformat:'03d'}} </h1>
-    <p class="flex-item"> <strong>Series: </strong> {{series}} </p>
+    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Mortality Form made on {{mortDate}} for Farm {{mortFormDetails.ref_farm_id|stringformat:'03d'}} </h1>
+    <p class="flex-item"> <strong>Series: </strong> {{mortFormDetails.series|stringformat:"03d"}} </p>
     
     {% if user.groups.all.0.name != 'Field Technician' %}
         {% if formStatus == 'Pending' %}

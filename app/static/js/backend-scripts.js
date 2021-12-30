@@ -1139,6 +1139,7 @@ function addCase(farmID) {
                     url = "/selected-health-symptoms/" + farmID;
                     console.log(url);
                     location.href = url;
+                    
                 } catch (error){
                     console.log(error);
                 }              
@@ -1149,7 +1150,7 @@ function addCase(farmID) {
 
         },
         error: function (res){
-            console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            console.log("ERROR [" + res.status_code + "]: " +  res.error);
         }
     });
 }
