@@ -1127,9 +1127,6 @@ def incidentsReported(request):
     # (2) all Area records
     areaQry = Area.objects.all()
 
-    # get latest PigPen version
-    # latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
-
     # (3.1) Incident details
     incidQry = Hog_Symptoms.objects.select_related('ref_farm').annotate(
         farm_code = F("ref_farm__id"),
@@ -1192,4 +1189,61 @@ def incidentsReported(request):
                                                                     "incident_symptomsList": incident_symptomsList})
 
 def hogsMortality(request):
-    return render(request, 'healthtemp/rep-hogs-mortality.html', {})
+    debug("TEST LOG: in incidentRep /n")
+
+    """
+    Gets all Incident (Hog_Symptoms) records within existing dates and all Areas due to no selected filters in dropdown
+
+    (1) date today
+    (2) all Area records
+    (3) Mortality details
+        - ID, Farm Code, Beg. Inventory, No. of Hogs Died, No. of Hogs To Date, Mortality Rate
+    """
+
+    # for checking if filters were used in the displayed Report
+    isFiltered = False
+
+    # (1) for setting Date input filters to today's date
+    dateToday = datetime.now(timezone.utc)
+
+    # (2) all Area records
+    areaQry = Area.objects.all()
+
+    # (3.1) Mortality details
+    # latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+    mortQry = Mortality.objects.filter(is_approved=True).order_by("id").all()
+    # debug(str(mortQry.query))
+
+    mortality_rate = 0
+    mRateList = [] 
+
+    total_begInv = 0
+    total_today = 0
+    total_toDate = 0
+    ave_mortRate = 0
+    # (3.2) Mortality % per record, totals
+    for m in mortQry:
+        mortality_rate = compute_MortRate(None, m.id)
+        mRateList.append(mortality_rate)
+
+        total_begInv += m.num_begInv
+        total_today  += m.num_today
+        total_toDate += m.num_toDate
+        ave_mortRate += mortality_rate
+
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
+
+    # compute ave of all mortality %
+    if len(mortQry) > 0:
+        ave_mortRate = round((ave_mortRate / len(mortQry)), 2)
+
+    mortStats = {
+        "total_begInv": total_begInv,
+        "total_today":  total_today,
+        "total_toDate": total_toDate,
+        "ave_mortRate": ave_mortRate
+    }
+
+    return render(request, 'healthtemp/rep-hogs-mortality.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
+                                                                "areaList": areaQry, "mortList": mortalityList})

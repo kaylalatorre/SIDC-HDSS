@@ -69,21 +69,23 @@
                 </tr>
             </thead>
             <tbody>
+                {% for mort, mRate in mortList %}
                 <tr>
-                    <td data-label="Mortality ID"> - </td>
-                    <td data-label="Farm Code"> - </td>
-                    <td data-label="Beg. Inventory" style="text-align: right; width: 15%"> - </td>
-                    <td data-label="No. of Hogs Died" style="text-align: right; width: 15%"> - </td>
-                    <td data-label="No. of Hogs To Date" style="text-align: right; width: 15%"> - </td>
-                    <td data-label="Mortality Rate"  style="text-align: right;"> - </td>
+                    <td data-label="Mortality ID">{{ mort.id }}</td>
+                    <td data-label="Farm Code">{{ mort.ref_farm_id }}</td>
+                    <td data-label="Beg. Inventory" style="text-align: right; width: 15%">{{ mort.num_begInv }}</td>
+                    <td data-label="No. of Hogs Died" style="text-align: right; width: 15%">{{ mort.num_today }}</td>
+                    <td data-label="No. of Hogs To Date" style="text-align: right; width: 15%">{{ mort.num_toDate }}</td>
+                    <td data-label="Mortality Rate"  style="text-align: right;">{{ mRate }}</td>
                 </tr>
+                {% endfor %}
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="2">Total</td>
-                    <td style="text-align: right;"> xx </td>
-                    <td style="text-align: right;"> xx </td>
-                    <td style="text-align: right;"> xx </td>
+                    <td style="text-align: right;">{{ mortStats.total_today }}</td>
+                    <td style="text-align: right;">{{ mortStats.total_toDate }}</td>
+                    <td style="text-align: right;">{{ mortStats.ave_mortRate }}</td>
                     <td></td>
                 </tr>
             </tbody>
