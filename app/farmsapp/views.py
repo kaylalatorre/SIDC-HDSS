@@ -444,7 +444,7 @@ def addFarm(request):
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
+        pigpenRowForm       = PigpenRowForm(request.POST)   
 
 
         # collect internal biosec checkbox inputs and convert to integer value
@@ -579,6 +579,14 @@ def addFarm(request):
 
                     if pigpenMeasuresForm.is_valid():
                         
+                        # create instance of Pigpen_Group model
+                        pigpen_group = Pigpen_Group.objects.create(
+                            date_added = datetime.now(timezone.utc),
+                            ref_farm = farm
+                        )
+
+                        pigpen_group.save()
+
                         # temporary variable to store total of all num_heads
                         numTotal = 0 
                 
@@ -608,7 +616,11 @@ def addFarm(request):
                         farm.num_pens = len(pigpenList)
                         farm.total_pigs = numTotal
                         farm.save()
-                        
+
+                        pigpen_group.num_pens = len(pigpenList)
+                        pigpen_group.total_pigs = numTotal
+                        pigpen_group.save()
+
                         return redirect('/')
 
                     else:
@@ -1330,6 +1342,7 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_reported"] == None and act["is_checked"] == True:
                     status = 'Pending'
+                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
@@ -1338,6 +1351,9 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
                     status = 'Pending'
+                else: status = None
+            
+            else: status = None
 
             # pass into object and append to list 
             activityObject = {
@@ -1404,6 +1420,7 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_reported"] == None and mort["is_posted"] == True:
                     status = 'Pending'
+                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
@@ -1412,6 +1429,9 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Pending'
+                else: status = None
+
+            else: status = None
 
             # pass into object and append to list 
             mortalityObject = {
