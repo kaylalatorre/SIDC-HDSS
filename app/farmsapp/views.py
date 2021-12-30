@@ -40,7 +40,8 @@ from django.contrib import messages
 from .models import (
     Area, 
     AccountData,
-    ExternalBiosec, 
+    ExternalBiosec,
+    Farm_Weight, 
     InternalBiosec, 
     Farm, 
     Hog_Raiser,
@@ -2161,6 +2162,25 @@ def getNotifIDs(request):
         for item in activeIncs:
             notifIDs.append(';'.join([hogSympTable, str(item['id']), "Active"]))
 
+        # Weight Updates
+        farmWtTable = Farm_Weight._meta.db_table
+        farmIDList = []
+        for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+            farmIDList.append(i[0])
+        farmWtQry = Farm_Weight.objects.order_by('ref_farm_id', '-date_filed').distinct('ref_farm_id').filter(ref_farm_id__in=farmIDList)
+        wt_farmIDList = []
+        for i in farmWtQry.values_list('ref_farm_id'):
+            wt_farmIDList.append(i[0])        
+        no_farmWtList = list(set(wt_farmIDList)-set(farmIDList)) + list(set(farmIDList)-set(wt_farmIDList))
+        if wt_farmIDList:
+            needWtUpdate = farmWtQry.exclude(date_filed__range=(now()-timedelta(days=120), now())).values()
+            for item in needWtUpdate:
+                notifIDs.append(';'.join([farmWtTable, str(item['id']), "120days"]))
+        if no_farmWtList:
+            noFarmWt = Farm.objects.filter(id__in=no_farmWtList).exclude(date_registered__range=(now()-timedelta(days=7), now())).values()
+            for item in noFarmWt:
+                notifIDs.append(';'.join([Farm._meta.db_table, str(item['id']), "NoWt"]))
+
     elif userGroup == "Livestock Operation Specialist":
         # Activity Forms
         lopsNotifs = activityForms.filter(is_checked = None)
@@ -2594,6 +2614,60 @@ def getActiveIncsNotifs(request, notifIDList):
         "notifList": notifList
     }
 
+def getWtUpdateNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    farmWtTable = Farm_Weight._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    farmIDList = []
+    for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+        farmIDList.append(i[0])
+
+    farmWtQry = Farm_Weight.objects.order_by('ref_farm_id', '-date_filed').distinct('ref_farm_id').filter(ref_farm_id__in=farmIDList)
+    wt_farmIDList = []
+    for i in farmWtQry.values_list('ref_farm_id'):
+        wt_farmIDList.append(i[0])
+    
+    no_farmWtList = list(set(wt_farmIDList)-set(farmIDList)) + list(set(farmIDList)-set(wt_farmIDList))
+
+    # 120 day update
+    if wt_farmIDList:
+        needWtUpdate = farmWtQry.exclude(date_filed__range=(now()-timedelta(days=120), now())).values()
+        count = 0
+        for item in needWtUpdate:
+            notifID = ';'.join([farmWtTable, str(item['id']), "120days"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Farm(s)' weight record have not been updated in 120 days".format(count),
+                "href": "/health-symptoms"
+            })
+    # 7 day no weight
+    if no_farmWtList:
+        noFarmWt = Farm.objects.filter(id__in=no_farmWtList).exclude(date_registered__range=(now()-timedelta(days=7), now())).values()
+        count = 0
+        for item in noFarmWt:
+            notifID = ';'.join([Farm._meta.db_table, str(item['id']), "NoWt"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Farm(s) still do not have weight records".format(count),
+                "href": "/health-symptoms"
+            })
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
 def getNotifications(request):
     """
     Collects all notifications from different tables
@@ -2613,8 +2687,9 @@ def getNotifications(request):
     if request.user.groups.all()[0].name == "Field Technician":
         frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
         actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
-        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList']
-        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList']
+        wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
+        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList']
+        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList']
 
     notifIDList += memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
     notifList += memAncmtNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
@@ -2691,7 +2766,8 @@ def countNotifications(request):
     if request.user.groups.all()[0].name == "Field Technician":
         frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
         actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
-        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList'])
+        wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
+        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList'])
 
     
     totalNotifs += len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
