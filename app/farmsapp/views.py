@@ -236,6 +236,10 @@ def selectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
     # collect activities
     actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
 
@@ -269,7 +273,7 @@ def selectedFarm(request, farmID):
     ).order_by('-last_updated')
 
     return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery})
+                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
 
 def techFarms(request):
     """
@@ -400,7 +404,8 @@ def techSelectedFarm(request, farmID):
         pen_no += 1
 
     # collecting all past pigpens
-    # allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).all()
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
 
     # adding new pigpens
     if request.method == 'POST':
@@ -484,7 +489,7 @@ def techSelectedFarm(request, farmID):
     # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
 
 def addFarm(request):
     """
@@ -1442,13 +1447,14 @@ def formsApproval(request):
     ## MORTALITY FORMS
     # get all mortality forms
     mortQuery = Mortality_Form.objects.values(
-        "id",
-        "date_added",
-        "mort_tech",
-        "is_posted",
-        "is_reported",
-        "is_noted"
-    ).order_by("-date_added").order_by("-id")
+                "id",
+                "date_added",
+                "mort_tech",
+                "is_posted",
+                "is_reported",
+                "is_noted",
+                "ref_farm"
+                ).order_by("-date_added").order_by("-id")
 
     mortalityList = []
 
@@ -1476,7 +1482,7 @@ def formsApproval(request):
                 }
 
                 mortalityList.append(mortalityObject)
-
+            
         else :
             if request.user.groups.all()[0].name == "Paiwi Management Staff":
                 if mort["is_posted"] == True:
@@ -1795,6 +1801,13 @@ def addActivity(request, farmID):
     farmID - selected farmID passed as parameter
     """
     
+    # generate code number
+    latestForm = Activities_Form.objects.last()
+    try:
+        code = int(latestForm.code) + 1
+    except:
+        code = 1
+    
     # get ID of current technician
     techID = request.user.id
 
@@ -1831,6 +1844,7 @@ def addActivity(request, farmID):
 
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
+                code = code,
                 date_added = dateToday,
                 act_tech_id = techID,
                 ref_farm = farmQuery,
@@ -1875,7 +1889,7 @@ def addActivity(request, farmID):
         activityForm = ActivityForm()
 
     # pass django form and farmID to template
-    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID) })
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID), 'code' : code })
 
 def saveActivity(request, farmID, activityID):
     """
