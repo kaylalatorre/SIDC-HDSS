@@ -133,7 +133,7 @@ for(var i = 0; i < rowStatus.length; i++) {
     if( val === "Resolved" | val === "Approved") {
         rowStatus[i].classList.add("green");
     }
-    else if ( val === "Active") {
+    else if ( val === "Active" | val === "Rejected") {
         rowStatus[i].classList.add("red");
     }
     else if ( val === "Pending") {
@@ -232,9 +232,7 @@ function viewFarm(farm) {
         console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        // location.reload(true);
     }
 }
 
@@ -250,8 +248,7 @@ function viewTechFarm(techFarm) {
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -270,8 +267,7 @@ function addBiosecPage(farmID) {
         url = "/add-checklist/" + techFarm;
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -291,8 +287,7 @@ function addActivityPage(farmID) {
         console.log(url);
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -440,9 +435,7 @@ function viewActivityForm(activity) {
         console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
     }
 }
 
@@ -463,9 +456,7 @@ function viewMortalityForm(mortality) {
         console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
     }
 }
 
@@ -615,3 +606,75 @@ function filterRepStatus(){
         }    
     }
 } 
+
+/**
+ *   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
+ *   - Appends selected farm ID to url that will display an empty symptoms checklist.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
+ function addSymptomsPage(farmID) {
+
+    var farmID = $(farmID).val();
+    console.log(farmID);
+
+    try {
+        url = "/add-case/" + farmID;
+        console.log(url);
+        location.href = url;
+    } catch (error) {
+        location.reload(true);
+    }
+}
+
+/**
+ *   - Redirects current technician from selected health symptoms page to add-mortality page for selected farm.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
+ function addMortalityPage(farmID) {
+
+    var farmID = $(farmID).val();
+    console.log(farmID);
+
+    try {
+        url = "/add-mortality/" + farmID;
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+ *   - Hides current pigpen data
+ *   - Display pigpen input (django form)
+ */
+ function showPigpenInput() {
+    var toShow = document.getElementsByClassName("pigpen-input");
+    var toHide = document.getElementsByClassName("pigpen-data");
+
+    for (var i = 0; i < toHide.length; i++) {
+        toHide[i].style.display = "none";
+    }
+    for (var i = 0; i < toShow.length; i++) {
+        toShow[i].style.display = "block";
+    }
+
+}
+
+/**
+ *   - Cancel adding of new pigpen
+ *   - Hide pigpen input and display current pigpens
+ */
+ function cancelAddPigpen() {
+    var toHide = document.getElementsByClassName("pigpen-input");
+    var toShow = document.getElementsByClassName("pigpen-data");
+
+    for (var i = 0; i < toHide.length; i++) {
+        toHide[i].style.display = "none";
+    }
+    for (var i = 0; i < toShow.length; i++) {
+        toShow[i].style.display = "block";
+    }
+
+}

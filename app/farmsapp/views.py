@@ -20,7 +20,7 @@ import json
 from .forms import (
     HogRaiserForm, 
     FarmForm, 
-    PigpenMeasuresForm,
+    PigpenRowForm,
     ActivityForm, 
     AreaForm, 
     MemAnnouncementForm
@@ -43,8 +43,9 @@ from .models import (
     ExternalBiosec, 
     InternalBiosec, 
     Farm, 
-    Hog_Raiser, 
-    Pigpen_Measures, 
+    Hog_Raiser,
+    Pigpen_Group, 
+    Pigpen_Row,
     Activity, 
     Mem_Announcement,
     Activities_Form,
@@ -218,7 +219,8 @@ def selectedFarm(request, farmID):
     ).first()
    
     # collect pigpens
-    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
     pen_no = 1
     pigpenList = []
@@ -233,6 +235,10 @@ def selectedFarm(request, farmID):
         
         pigpenList.append(pigpenObj)
         pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
 
     # collect activities
     actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
@@ -267,7 +273,7 @@ def selectedFarm(request, farmID):
     ).order_by('-last_updated')
 
     return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery})
+                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
 
 def techFarms(request):
     """
@@ -295,8 +301,6 @@ def techFarms(request):
         
         else : 
             areaString += str(area.area_name) + ', '
-
-        print("TEST LOG areaString: " + areaString)
 
         i += 1
 
@@ -345,7 +349,7 @@ def techSelectedFarm(request, farmID):
 
     ## get details of selected farm
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
-    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
                     contact     = F("hog_raiser__contact_no"),
                     farm_area   = F("area__area_name"),
@@ -381,10 +385,9 @@ def techSelectedFarm(request, farmID):
         "fiveh_m_dist",
     ).first()
 
-    # print(str(selTechFarm))
-
     # collect the corresponding pigpens for selected farm
-    pigpenQry = Pigpen_Measures.objects.filter(ref_farm_id=farmID).order_by('id')
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
     pen_no = 1
     pigpenList = []
@@ -400,12 +403,93 @@ def techSelectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
+    # adding new pigpens
+    if request.method == 'POST':
+        print("TEST LOG: Form has POST method") 
+        print(request.POST)
+
+        pigpenRowForm = PigpenRowForm(request.POST)   
+        currFarm = Farm.objects.filter(id=farmID).first()
+
+        # pass all pigpens values into array newPigpenList
+        newPigpenList = []
+
+        i = 0
+        for num_heads in request.POST.getlist('num_heads', default=None):
+            pigpenObj = {
+                "length" : request.POST.getlist('length', default=None)[i],
+                "width" : request.POST.getlist('width', default=None)[i],
+                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
+            }
+
+            newPigpenList.append(pigpenObj)
+            i += 1
+        
+        if pigpenRowForm.is_valid():
+
+            # create instance of Pigpen_Group model
+            pigpen_group = Pigpen_Group.objects.create(
+                date_added = datetime.now(timezone.utc),
+                ref_farm = currFarm
+            )
+
+            pigpen_group.save()
+                        
+            # temporary variable to store total of all num_heads
+            numTotal = 0 
+    
+            # pass all newPigpenList objects into Pigpen_Row model
+            x = 0
+            
+            for pigpen in newPigpenList:
+                pigpen = newPigpenList[x]
+
+                # create new instance of Pigpen_Row model
+                pigpen_measure = Pigpen_Row.objects.create(
+                    pigpen_grp_id = pigpen_group.id,
+                    length = pigpen['length'],
+                    width = pigpen['width'],
+                    num_heads = pigpen['num_heads'],
+                )
+                
+                # add all num_heads (pigpen measure) for total_pigs (farm)
+                numTotal += int(pigpen_measure.num_heads)
+                pigpen_measure.save()
+                x += 1
+
+            # update num_pens and total_pigs of newly added farm
+            currFarm.num_pens = len(newPigpenList)
+            currFarm.total_pigs = numTotal
+            currFarm.save()
+
+            pigpen_group.num_pens = len(newPigpenList)
+            pigpen_group.total_pigs = numTotal
+            pigpen_group.save()
+            
+            return redirect('/tech-selected-farm/' + str(farmID))
+            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+
+        else:
+            print("TEST LOG: Pigpen Measures Form not valid")
+            print(pigpenRowForm.errors)
+
+            messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors), extra_tags='add-farm')
+    else:
+        print("TEST LOG: Form is not a POST method")
+
+        # if the forms have no input yet, only display empty forms
+        pigpenRowForm  = PigpenRowForm()
+
     # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
     # print("TEST LOG pigpenList: " + str(pigpenList))
     # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
 
 def addFarm(request):
     """
@@ -422,35 +506,31 @@ def addFarm(request):
         farmID = int(latestFarm.id) + 1
     except:
         farmID = 1
-    print(farmID)
+    # print(farmID)
 
     # get all hog raisers to be passed as dropdown
     hogRaiserQry = Hog_Raiser.objects.all().order_by('lname')
-    # print("TEST LOG hogRaiserQry: " + str(hogRaiserQry))
 
     # get current user (technician) ID
     techID = request.user.id
 
     # collect all assigned areas under technician; to be passed to template
     areaQry = Area.objects.filter(tech_id=techID)
-    # print("TEST LOG areaQry: " + str(areaQry))
 
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
         print(request.POST)
 
         areaName = request.POST.get("input-area", None)
-        # print("TEST LOG areaName: " + areaName)
 
         # get ID of selected area
         areaIDQry = Area.objects.filter(area_name=areaName).first()
         areaID = areaIDQry.id
-        # print("TEST LOG areaID: " + str(areaID))
 
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        pigpenMeasuresForm  = PigpenMeasuresForm(request.POST)   
+        pigpenRowForm       = PigpenRowForm(request.POST)   
 
 
         # collect internal biosec checkbox inputs and convert to integer value
@@ -507,7 +587,6 @@ def addFarm(request):
             }
 
             pigpenList.append(pigpenObj)
-
             i += 1
 
         
@@ -526,113 +605,117 @@ def addFarm(request):
             farmAddress = ", ".join(filter(None, addressList))
             farm.farm_address = farmAddress
 
-            addressList[4] = ""
             try:
                 farmAddress = ", ".join(filter(None, addressList))
                 debug(farmAddress)
                 farmLoc = geocode([farmAddress]).geometry.iloc[0]
-                farm.loc_long = farmLoc.x
-                farm.loc_lat = farmLoc.y
-            except:
-                addressList[0] = ""
-                try:
-                    farmAddress = ", ".join(filter(None, addressList))
-                    debug(farmAddress)
-                    farmLoc = geocode([farmAddress]).geometry.iloc[0]
+                if farmLoc.x != 0 and farmLoc.y != 0:
                     farm.loc_long = farmLoc.x
                     farm.loc_lat = farmLoc.y
-                except:
-                    debug("farmLoc not obtained")
+
+                    # save hog raiser
+                    raiserID = request.POST.get("input-exist-raiser", None)
+
+                    if raiserID == None or raiserID == "" :
+
+                        # if empty, new raiser is inputted; validate django hog raiser form
+                        if hogRaiserForm.is_valid():
+                            hogRaiser = hogRaiserForm.save(commit=False)
+                            hogRaiser.save()
+
+                            print("TEST LOG: Added new raiser")
+
+                            # save raiser ID to farm
+                            farm.hog_raiser = hogRaiser
+                        
+                        else:
+                            print("TEST LOG: Hog Raiser Form not valid")
+                            print(hogRaiserForm.errors)
+
+                            messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
+
+                    else:
+                        # find selected raiser id
+                        hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
+
+                        # save raiser ID to farm
+                        farm.hog_raiser_id = raiserID
 
 
-            # save hog raiser
-            raiserID = request.POST.get("input-exist-raiser", None)
+                    # pass data as FKs for farm
+                    farm.extbio = externalBiosec
+                    farm.intbio = internalBiosec
+                    farm.area_id = areaID
+                    farm.id = farmID
 
-            if raiserID == None or raiserID == "" :
+                    farm.save()
+                    print("TEST LOG: Added new farm")
+                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
 
-                # if empty, new raiser is inputted; validate django hog raiser form
-                if hogRaiserForm.is_valid():
-                    hogRaiser = hogRaiserForm.save(commit=False)
-                    hogRaiser.save()
+                    # get recently created internal and external biosec IDs and update ref_farm_id
+                    externalBiosec.ref_farm_id = farm
+                    internalBiosec.ref_farm_id = farm
 
-                    print("TEST LOG: Added new raiser")
+                    internalBiosec.save()
+                    print("TEST LOG: Added new internal biosec")
 
-                    # save raiser ID to farm
-                    farm.hog_raiser = hogRaiser
+                    externalBiosec.save()
+                    print("TEST LOG: Added new external biosec")
+
+                    if pigpenRowForm.is_valid():
+                        
+                        # create instance of Pigpen_Group model
+                        pigpen_group = Pigpen_Group.objects.create(
+                            date_added = datetime.now(timezone.utc),
+                            ref_farm = farm
+                        )
+
+                        pigpen_group.save()
+
+                        # temporary variable to store total of all num_heads
+                        numTotal = 0 
                 
-                else:
-                    print("TEST LOG: Hog Raiser Form not valid")
-                    print(hogRaiserForm.errors)
+                        # pass all pigpenList objects into Pigpen_Row model
+                        x = 0
+                        
+                        for pigpen in pigpenList:
+                            pigpen = pigpenList[x]
 
-                    messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
+                            # create new instance of Pigpen_Row model
+                            pigpen_measure = Pigpen_Row.objects.create(
+                                pigpen_grp_id = pigpen_group.id,
+                                length = pigpen['length'],
+                                width = pigpen['width'],
+                                num_heads = pigpen['num_heads'],
+                            )
+                            
+                            # add all num_heads (pigpen measure) for total_pigs (farm)
+                            numTotal += int(pigpen_measure.num_heads)
+                            pigpen_measure.save()
+                            x += 1
+                        
+                        # update num_pens and total_pigs of newly added farm
+                        farm.num_pens = len(pigpenList)
+                        farm.total_pigs = numTotal
+                        farm.save()
 
-            else:
-                # find selected raiser id
-                hogRaiser = Hog_Raiser.objects.filter(id=raiserID)
+                        pigpen_group.num_pens = len(pigpenList)
+                        pigpen_group.total_pigs = numTotal
+                        pigpen_group.save()
 
-                # save raiser ID to farm
-                farm.hog_raiser_id = raiserID
+                        return render(request, 'home.html', {'farm.id': farm.id})
 
+                    else:
+                        print("TEST LOG: Pigpen Measures Form not valid")
+                        print(pigpenRowForm.errors)
 
-            # pass data as FKs for farm
-            farm.extbio = externalBiosec
-            farm.intbio = internalBiosec
-            farm.area_id = areaID
-            farm.id = farmID
-
-            farm.save()
-            print("TEST LOG: Added new farm")
-            messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
-
-            # get recently created internal and external biosec IDs and update ref_farm_id
-            externalBiosec.ref_farm_id = farm
-            internalBiosec.ref_farm_id = farm
-
-            internalBiosec.save()
-            print("TEST LOG: Added new internal biosec")
-
-            externalBiosec.save()
-            print("TEST LOG: Added new external biosec")
-
-            if pigpenMeasuresForm.is_valid():
-                
-                # temporary variable to store total of all num_heads
-                numTotal = 0 
-        
-                # pass all pigpenList objects into Pigpen_Measures model
-                x = 0
-                
-                for pigpen in pigpenList:
-                    pigpen = pigpenList[x]
-
-                    # create new instance of Pigpen_Measures model
-                    pigpen_measure = Pigpen_Measures.objects.create(
-                        ref_farm = farm,
-                        length = pigpen['length'],
-                        width = pigpen['width'],
-                        num_heads = pigpen['num_heads'],
-                    )
-                    
-                    # add all num_heads (pigpen measure) for total_pigs (farm)
-                    numTotal += int(pigpen_measure.num_heads)
-
-                    pigpen_measure.save()
-
-                    x += 1
-                
-
-                # update num_pens and total_pigs of newly added farm
-                farm.num_pens = len(pigpenList)
-                farm.total_pigs = numTotal
-                farm.save()
-                
-                return render(request, 'home.html', {'farm.id': farm.id})
-
-            else:
-                print("TEST LOG: Pigpen Measures Form not valid")
-                print(pigpenMeasuresForm.errors)
-
-                messages.error(request, "Error adding farm. " + str(pigpenMeasuresForm.errors), extra_tags='add-farm')
+                        messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors), extra_tags='add-farm')
+                else: 
+                    # debug("farmLoc not obtained")
+                    messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
+            except:
+                debug("farmLoc not obtained")
+                messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
         
         else:
             print("TEST LOG: Farm Form not valid")
@@ -646,7 +729,7 @@ def addFarm(request):
         # if the forms have no input yet, only display empty forms
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
-        pigpenMeasuresForm  = PigpenMeasuresForm()
+        pigpenRowForm  = PigpenRowForm()
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'farmCode' : farmID,
@@ -654,7 +737,7 @@ def addFarm(request):
                                                         'raisers' : hogRaiserQry,
                                                         'hogRaiserForm' : hogRaiserForm,
                                                         'farmForm' : farmForm,
-                                                        'pigpenMeasuresForm' : pigpenMeasuresForm})
+                                                        'pigpenRowForm' : pigpenRowForm })
 
 # (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
 def search_bioChecklist(request, biosecID):
@@ -1277,7 +1360,8 @@ def save_area(request):
 def formsApproval(request):
     """
     - Redirect to Forms Approval Page
-    - For Module 1, display all activity forms with corresponding status
+    - For Module 1, display all activity forms with corresponding status acc. to user
+    - For Module 2, display all mortality forms with correspinding status acc. to user
     """
 
     ## ACTIVITY FORMS
@@ -1288,12 +1372,11 @@ def formsApproval(request):
                 "act_tech",
                 "is_checked",
                 "is_reported",
-                "is_noted"
+                "is_noted",
+                "ref_farm"
                 ).order_by("-date_added").order_by("-id")
 
-    actApprovedList = []
-    actRejectedList = []
-    actPendingList = []
+    activityList = []
 
     loggedTech = User.objects.filter(username=request.user).annotate(
         name = Concat('first_name', Value(' '), 'last_name'),
@@ -1304,353 +1387,147 @@ def formsApproval(request):
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-            if act["is_checked"] == True:
-                status = 'Approved'
-
-                # pass into object and append to list 
-                approved = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actApprovedList.append(approved)
-
-            elif act["is_checked"] == False:
-                status = 'Rejected'
-
-                # pass into object and append to list 
-                rejected = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actRejectedList.append(rejected)
-
-            else:
-                status = 'Pending'
-
-                # pass into object and append to list 
-                pending = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actPendingList.append(pending)
-                
-        elif request.user.groups.all()[0].name == "Extension Veterinarian":
-            if act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Approved'
-
-                # pass into object and append to list 
-                approved = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actApprovedList.append(approved)
-
-            elif act["is_reported"] == False and act["is_checked"] == True:
-                status = 'Rejected'
-
-                # pass into object and append to list 
-                rejected = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actRejectedList.append(rejected)
-
-            elif act["is_reported"] == None and act["is_checked"] == True:
-                status = 'Pending'
-
-                # pass into object and append to list 
-                pending = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actPendingList.append(pending)
-
-        elif request.user.groups.all()[0].name == "Assistant Manager":
-            if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Approved'
-
-                # pass into object and append to list 
-                approved = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actApprovedList.append(approved)
-
-            elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Rejected'
-
-                # pass into object and append to list 
-                rejected = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actRejectedList.append(rejected)
-
-            elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
-                status = 'Pending'
-
-                # pass into object and append to list 
-                pending = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                actPendingList.append(pending)
-
-        elif request.user.groups.all()[0].name == "Field Technician":
-                
+        if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
 
                 if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
                     status = 'Approved'
-
-                    # pass into object and append to list 
-                    approved = {
-                        "id" : act["id"],
-                        "date_added" : act["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    actApprovedList.append(approved)
-
                 elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
                     status = 'Rejected'
-
-                    # pass into object and append to list 
-                    rejected = {
-                        "id" : act["id"],
-                        "date_added" : act["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    actRejectedList.append(rejected)
-
                 elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
                     status = 'Pending'
 
-                    # pass into object and append to list 
-                    pending = {
-                        "id" : act["id"],
-                        "date_added" : act["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
+                # pass into object and append to list 
+                activityObject = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(act["ref_farm"])
+                }
+            
+                activityList.append(activityObject)
 
-                    actPendingList.append(pending)
+        else :
+            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
+                if act["is_checked"] == True:
+                    status = 'Approved'
+                elif act["is_checked"] == False:
+                    status = 'Rejected'
+                else:
+                    status = 'Pending'
+                    
+            elif request.user.groups.all()[0].name == "Extension Veterinarian":
+                if act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Approved'
+                elif act["is_reported"] == False and act["is_checked"] == True:
+                    status = 'Rejected'
+                elif act["is_reported"] == None and act["is_checked"] == True:
+                    status = 'Pending'
+                else: status = None
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Approved'
+                elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Rejected'
+                elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
+                    status = 'Pending'
+                else: status = None
+            
+            else: status = None
+
+            # pass into object and append to list 
+            activityObject = {
+                "id" : act["id"],
+                "date_added" : act["date_added"],
+                "status" : status,
+                "prepared_by" : getTech["name"],
+                "farmID" : int(act["ref_farm"])
+            }
+            
+            activityList.append(activityObject)
 
     ## MORTALITY FORMS
     # get all mortality forms
     mortQuery = Mortality_Form.objects.values(
-        "id",
-        "date_added",
-        "mort_tech",
-        "is_posted",
-        "is_reported",
-        "is_noted"
-    ).order_by("-date_added").order_by("-id")
+                "id",
+                "date_added",
+                "mort_tech",
+                "is_posted",
+                "is_reported",
+                "is_noted",
+                "ref_farm"
+                ).order_by("-date_added").order_by("-id")
 
-    mortApprovedList = []
-    mortRejectedList= []
-    mortPendingList = []
+    mortalityList = []
 
     for mort in mortQuery:
         getTech = User.objects.filter(id=mort["mort_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        if request.user.groups.all()[0].name == "Paiwi Management Staff":
-            if mort["is_posted"] == True:
-                status = 'Approved'
-
-                # pass into object and append to list 
-                approved = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortApprovedList.append(approved)
-
-            elif mort["is_posted"] == False:
-                status = 'Rejected'
-
-                # pass into object and append to list 
-                rejected = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortRejectedList.append(rejected)
-
-            else:
-                status = 'Pending'
-
-                # pass into object and append to list 
-                pending = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortPendingList.append(pending)
-
-        elif request.user.groups.all()[0].name == "Extension Veterinarian":
-            if mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Approved'
-
-                # pass into object and append to list 
-                approved = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortApprovedList.append(approved)
-
-            elif mort["is_reported"] == False and mort["is_posted"] == True:
-                status = 'Rejected'
-
-                # pass into object and append to list 
-                rejected = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortRejectedList.append(rejected)
-
-            elif mort["is_reported"] == None and mort["is_posted"] == True:
-                status = 'Pending'
-
-                # pass into object and append to list 
-                pending = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortPendingList.append(pending)
-
-        elif request.user.groups.all()[0].name == "Assistant Manager":
-            if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Approved'
-
-                # pass into object and append to list 
-                approved = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortApprovedList.append(approved)
-
-            elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Rejected'
-
-                # pass into object and append to list 
-                rejected = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortRejectedList.append(rejected)
-
-            elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
-                status = 'Pending'
-
-                # pass into object and append to list 
-                pending = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"]
-                }
-
-                mortPendingList.append(pending)
-
-        elif request.user.groups.all()[0].name == "Field Technician":
-                
+        if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
                 if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Approved'
-
-                    # pass into object and append to list 
-                    approved = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortApprovedList.append(approved)
-
                 elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
                     status = 'Rejected'
-
-                    # pass into object and append to list 
-                    rejected = {
-                        "id" : mort["id"],
-                        "date_added" : mort["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
-
-                    mortRejectedList.append(rejected)
-
                 elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
                     status = 'Pending'
+            
+                # pass into object and append to list 
+                mortalityObject = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(mort["ref_farm"])
+                }
 
-                    # pass into object and append to list 
-                    pending = {
-                        "id" : act["id"],
-                        "date_added" : act["date_added"],
-                        "status" : status,
-                        "prepared_by" : getTech["name"]
-                    }
+                mortalityList.append(mortalityObject)
+            
+        else :
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                if mort["is_posted"] == True:
+                    status = 'Approved'
+                elif mort["is_posted"] == False:
+                    status = 'Rejected'
+                else:
+                    status = 'Pending'
 
-                    mortPendingList.append(pending)
+            elif request.user.groups.all()[0].name == "Extension Veterinarian":
+                if mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+                elif mort["is_reported"] == False and mort["is_posted"] == True:
+                    status = 'Rejected'
+                elif mort["is_reported"] == None and mort["is_posted"] == True:
+                    status = 'Pending'
+                else: status = None
 
-    return render(request, 'farmstemp/forms-approval.html', { 'actApproved' : actApprovedList, 'actRejected' : actRejectedList, 'actPending' : actPendingList,
-                                                                'mortApproved' : mortApprovedList, 'mortRejected' : mortRejectedList, 'mortPending' : mortPendingList, })
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Approved'
+                elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Rejected'
+                elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
+                    status = 'Pending'
+                else: status = None
+
+            else: status = None
+
+            # pass into object and append to list 
+            mortalityObject = {
+                "id" : mort["id"],
+                "date_added" : mort["date_added"],
+                "status" : status,
+                "prepared_by" : getTech["name"],
+                "farmID" : int(mort["ref_farm"])
+            }
+
+            mortalityList.append(mortalityObject)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1663,6 +1540,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # get details of activity form
     actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
                 "id",
+                "ref_farm_id",
                 "is_checked",
                 "is_reported",
                 "is_noted",
@@ -1705,13 +1583,10 @@ def selectedActivityForm(request, activityFormID, activityDate):
 
     # get all activities under activity form
     actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("id")
-
     actList = []
 
     # store all data to an array
     for activity in actQuery:
-        farm = Farm.objects.filter(id=activity.ref_farm_id).values("id").first()
-
         actList.append({
             'id' : activity.id,
             'date' : activity.date,
@@ -1725,8 +1600,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'remarks' : activity.remarks,
         })
 
-
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'farm' : farm, 'activityForm' : ActivityForm(),
+    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'activityForm' : ActivityForm(),
                                                                         'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
 
 def approveActivityForm(request, activityFormID):
@@ -1849,9 +1723,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
     - Save details to activity and add FK of current farm table
     """
     
-    # get farm id for FK
-    # print("FarmID: " + str(farmID))
-
     # get ID of current technician
     techID = request.user.id
 
@@ -1890,7 +1761,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
 
             i += 1
         
-        print("TEST LOG activityList: " + str(activityList))
+        # print("TEST LOG activityList: " + str(activityList))
 
         # reset approval status of activity form
         activity_form.is_checked = None
@@ -1938,6 +1809,13 @@ def addActivity(request, farmID):
     farmID - selected farmID passed as parameter
     """
     
+    # generate code number
+    latestForm = Activities_Form.objects.last()
+    try:
+        code = int(latestForm.code) + 1
+    except:
+        code = 1
+    
     # get ID of current technician
     techID = request.user.id
 
@@ -1968,17 +1846,17 @@ def addActivity(request, farmID):
             }
             
             activityList.append(activityObject)
-
             i += 1
         
-        # print("TEST LOG activityList: " + str(activityList))
-
         if activityForm.is_valid():
 
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
+                code = code,
                 date_added = dateToday,
                 act_tech_id = techID,
+                ref_farm = farmQuery,
+                version = 1,
             )
             activity_form.save()
 
@@ -1999,22 +1877,14 @@ def addActivity(request, farmID):
                     activity_form_id = activity_form.id
                 )
 
-                # print(str(activity))
-
                 activity.save()
-                # print("TEST LOG: Added new activity")
-
                 x += 1
             
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
         else:
-            print("TEST LOG: activityForm is not valid")
-            
-            print(activityForm.errors.as_text)
-            print(activityForm.non_field_errors().as_text)
-
+            # print("TEST LOG: activityForm is not valid")
             formError = str(activityForm.non_field_errors().as_text)
             print(re.split("\'.*?",formError)[1])
 
@@ -2027,7 +1897,7 @@ def addActivity(request, farmID):
         activityForm = ActivityForm()
 
     # pass django form and farmID to template
-    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID) })
+    return render(request, 'farmstemp/add-activity.html', { 'activityForm' : activityForm, 'farmID' : int(farmID), 'code' : code })
 
 def saveActivity(request, farmID, activityID):
     """

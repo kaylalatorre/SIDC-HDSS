@@ -17,26 +17,13 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Farm Code</label>
                 <select class="form-select" name="farm-code" id="farm-code" style="margin-bottom: 0;">
-
                     {% if farmID == 0 %}
                         <option hidden>- - Select a farm - -</option>
-                    {% elif farmID < 10 %}
-                        <option hidden value="{{ farmID }}">00{{farmID}}</option>
-                    {% elif farmID < 100 %}
-                        <option hidden value="{{ farmID }}">0{{farmID}}</option>
                     {% else %}
-                        <option hidden value="{{ farmID }}">{{farmID}}</option>
+                        <option hidden value="{{ farmID }}">{{farmID|stringformat:"03d"}}</option>
                     {% endif %}
-
-
                     {% for farm in farmList %}
-                        {% if farm.id < 10 %}
-                            <option value="{{ farm.id }}">00{{farm.id}}</option>
-                        {% elif farm.id < 100 %}
-                            <option value="{{ farm.id }}">0{{farm.id}}</option>
-                        {% else %}
-                            <option value="{{ farm.id }}">{{farm.id}}</option>
-                        {% endif %}
+                        <option value="{{ farm.id }}">{{farm.id|stringformat:"03d"}}</option>
                     {% endfor %}
                 </select>
         </div>
@@ -56,8 +43,8 @@
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li><button class="dropdown-item no-shadow" value="{{ farmID }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
-                  <li><button class="dropdown-item no-shadow" value="{{ farmID }}" onclick="addActivityPage(this)">Activity Record</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farmID|stringformat:'03d' }}" onclick="addBiosecPage(this)">Biosecurity Checklist</a></li>
+                  <li><button class="dropdown-item no-shadow" value="{{ farmID|stringformat:'03d' }}" onclick="addActivityPage(this)">Activity Record</a></li>
                 </ul>
             </div>
         </div>
