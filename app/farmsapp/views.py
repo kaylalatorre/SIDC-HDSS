@@ -626,7 +626,7 @@ def addFarm(request):
                 farm.total_pigs = numTotal
                 farm.save()
                 
-                return redirect('/')
+                return render(request, 'home.html', {'farm.id': farm.id})
 
             else:
                 print("TEST LOG: Pigpen Measures Form not valid")
