@@ -1,25 +1,23 @@
 {% for mssg in messages %}
+    {% if "add-farm" in mssg.tags %}
     <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    {% if "add-checklist" in mssg.tags %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div>
-            <p class="msg flex-item">{{ mssg }}</p>
-            <p>Click to <a href="/add-weight" class="alert-link">add weight slip to {{ farm.id }}</a>. </p>
+        <div class="flex-item">
+            <!-- Note: append farm id to url -->
+            <p class="msg">{{ mssg }} Click to <a href="/add-weight" class="alert-link">add weight slip</a>. </p>
         </div>
         
         <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    {% endif %}
-
-    {% if "add-incidCase" in mssg.tags %}
+    {% elif "add-incidCase" in mssg.tags %}
+    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
+        <div class="msg flex-item">{{ mssg }}</div>
+        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% else %}
     <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
         <div class="msg flex-item">{{ mssg }}</div>
         <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
