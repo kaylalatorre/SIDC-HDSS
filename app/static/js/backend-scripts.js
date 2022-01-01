@@ -1421,3 +1421,48 @@ function saveMortality(mortID, farmID) {
         });
     }
 }
+
+/**
+ * function filtering Mortality report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
+ */
+ function filterMortRep() {
+
+    var sDate = $("#mort-start-date").val();
+    var eDate = $("#mort-end-date").val();
+    var arName = $("#mort-area option:selected").val();
+
+    // alert("in filterMortRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+
+    try {
+
+        url = "/hogs-mortality/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+
+        // for loading report table data
+        $('#rep-mort').load(url + ' #rep-mort', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.mort-report');
+            // console.log(alertHTML);
+            $('#mortrep-container').prepend(alertHTML);
+
+        });
+
+        // for loading report subheader
+        $('.mortrep-subheading').load(url + ' .mortrep-subheading', function () {
+            $(this).children().unwrap();
+
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}

@@ -9,7 +9,7 @@
 {% block section %}
 
 {% include 'partials/messages.html' %}
-<div class="table-container main-div">
+<div class="table-container main-div" id="mortrep-container">
     <div>
         <h1>Hogs Mortality Reports</h1>
     </div>
@@ -19,14 +19,14 @@
         <div class="mb-3">
             <label class="form-label bold-lbl">Date Range</label>
             <div class="input-group">
-                <input type="date" class="form-control input-startDate" id="intbio-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
-                <input type="date" class="form-control input-endDate" id="intbio-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-startDate" id="mort-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="mort-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
             </div>
         </div>
 
         <div class="mb-3" style="padding-bottom: 8px;">
             <label class="form-label bold-lbl">Area</label>
-            <select class="form-select" id="intbio-area" style="margin-bottom: 0;">
+            <select class="form-select" id="mort-area" style="margin-bottom: 0;">
                 <option value="All"> All </option>
                 {% for area in areaList %}
                 <option value="{{area.area_name}}">{{area.area_name}}</option>
@@ -45,18 +45,25 @@
             </ul>
         </div> -->
 
-        <button class="primary-btn"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
+        <!-- <button class="primary-btn" onclick="filterFarmRep()"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button> -->
+
+
+        <button class="primary-btn" onclick="filterMortRep()"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
     </div>
 
     <hr>
     <!-- Report description, print button -->
-    <div class="flex subheading intbioRep-subheading">
-        <p class="flex-item" id="intrep-header">All Hogs Mortality Report.</p>
+    <div class="flex subheading mortrep-subheading">
+        {% if not isFiltered %}
+            <p class="flex-item" id="mortrep-header">All Hogs Mortality Report.</p>
+        {% else %}
+            <p class="flex-item" id="mortrep-header">{{areaName}} Hogs Mortality Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}
 
         <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
-    <div class="box-style">
+    <div class="box-style" id="rep-mort">
         <table class="table">
             <thead>
                 <tr>
