@@ -1192,7 +1192,7 @@ def hogsMortality(request):
     debug("TEST LOG: in hogsMortality Report /n")
 
     """
-    Gets all Incident (Hog_Symptoms) records within existing dates and all Areas due to no selected filters in dropdown
+    Gets all Mortality records within existing dates and all Areas due to no selected filters in dropdown
 
     (1) date today
     (2) all Area records
