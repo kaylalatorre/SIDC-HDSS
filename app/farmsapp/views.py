@@ -1443,6 +1443,7 @@ def formsApproval(request):
                 "is_noted",
                 "ref_farm"
                 ).order_by("-date_added").order_by("-id")
+    print(actQuery)
 
     activityList = []
 

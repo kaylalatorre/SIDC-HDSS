@@ -1429,5 +1429,5 @@ function compute_toDate(currRow){
     var today = row.getElementById('num_today').value;
     var newTotal = begInv - today;
 
-    row.getElementById('num_toDate').value = newTotal;
+    row.getElementById('toDate').value = newTotal;
 }

@@ -682,7 +682,6 @@ def addMortality(request, farmID):
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "num_toDate" : request.POST.getlist('num_toDate', default=None)[i],
                 "source" : request.POST.getlist('source', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
@@ -714,12 +713,13 @@ def addMortality(request, farmID):
                     mortality_date = mort['mortality_date'],
                     num_begInv = farmQuery.total_pigs,
                     num_today = mort['num_today'],
-                    num_toDate = mort['num_toDate'],
+                    num_toDate = farmQuery.total_pigs - int(mort['num_today']),
                     source = mort['source'],
                     remarks = mort['remarks'],
                     mortality_form_id = mortality_form.id
                 )
             
+                print(str(mortality))
                 mortality.save()
                 x += 1
 
