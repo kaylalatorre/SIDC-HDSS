@@ -484,12 +484,80 @@ def techSelectedFarm(request, farmID):
         # if the forms have no input yet, only display empty forms
         pigpenRowForm  = PigpenRowForm()
 
-    # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
-    # print("TEST LOG pigpenList: " + str(pigpenList))
-    # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
-
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
     return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
+
+def techSelectedFarmVersion(request, farmID, farmVersion):
+    """
+    - Display details of the selected farm under the currently logged in technician.
+    - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
+
+    farmID - selected farmID passed as parameter
+    farmVersion - date of the selected farm version
+    """
+    ## get details of selected farm
+    # collect the corresponding details for: hog raiser, area, internal and external biosecurity
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
+                    raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact     = F("hog_raiser__contact_no"),
+                    farm_area   = F("area__area_name"),
+                    waste_mgt   = F("intbio__waste_mgt"),
+                    isol_pen    = F("intbio__isol_pen"),
+                    bird_proof  = F("extbio__bird_proof"),
+                    perim_fence = F("extbio__perim_fence"),
+                    foot_dip    = F("intbio__foot_dip"),
+                    fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selTechFarm = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
+    ).first()
+
+    # collect the corresponding pigpens for selected farm
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
+    print(selectedPigpen)
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
+    # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : allPigpens})
 
 def addFarm(request):
     """

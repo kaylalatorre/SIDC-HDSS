@@ -27,6 +27,8 @@ urlpatterns = [
     path('add-farm', views.addFarm, name="addFarm"),
     path('home/tech-farms', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
+    path('tech-selected-farm/<str:farmID>/<str:farmVersion>', views.techSelectedFarmVersion, name="techSelectedFarmVersion"),
+
 
     # technician - biosecurity
     path('biosecurity', views.biosec_view, name="biosecurity"),
