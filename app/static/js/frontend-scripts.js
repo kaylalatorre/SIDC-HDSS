@@ -265,6 +265,27 @@ $('#farm-version').change(function () {
     // console.log("Farm Version: " + formatDate(farmVer));
 
     try {
+        url = "/selected-farm/" + farmID + '/' + formatDate(farmVer);
+        console.log(url);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+$('#tech-farm-version').change(function () {
+
+    var value = document.getElementById("farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
         url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
         console.log(url);
         location.href = url;

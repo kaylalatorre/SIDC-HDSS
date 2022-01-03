@@ -275,6 +275,111 @@ def selectedFarm(request, farmID):
     return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
                                                             'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
 
+def selectedFarmVersion(request, farmID, farmVersion):
+    """
+    Display information of selected farm for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
+
+    # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        contact=F("hog_raiser__contact_no"),
+        length=F("wh_length"),
+        width=F("wh_width"),
+        farm_area   = F("area__area_name"),
+        waste_mgt   = F("intbio__waste_mgt"),
+        isol_pen    = F("intbio__isol_pen"),
+        bird_proof  = F("extbio__bird_proof"),
+        perim_fence = F("extbio__perim_fence"),
+        foot_dip    = F("intbio__foot_dip"),
+        fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selectedFarm = qry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
+    ).first()
+   
+    # collect pigpens
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
+    # collect activities
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+
+    actList = []
+
+    # store all data to an array
+    for activity in actQuery:
+        actList.append({
+            'id' : activity.id,
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_arrival' : activity.time_arrival,
+            'time_departure' : activity.time_departure,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+        })
+
+    # collect biosecurity checklists
+    # Select Biochecklist with latest date
+    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    
+
+    # Get latest instance of Biochecklist
+    currbioObj = currbioQuery.first()
+    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
+
+
+    # Get all biosecID, last_updated in extbio under a Farm
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+        'last_updated',
+    ).order_by('-last_updated')
+
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
+                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
+
+
 def techFarms(request):
     """
     - Display all farms under areas assigned to currently logged in technician. 
@@ -535,7 +640,6 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
 
     # collect the corresponding pigpens for selected farm
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
-    print(selectedPigpen)
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
 
     pen_no = 1
