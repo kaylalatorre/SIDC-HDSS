@@ -694,6 +694,7 @@ def addMortality(request, farmID):
 
     # collected farmID of selected tech farm
     farmQuery = Farm.objects.get(pk=farmID)
+    # print(farmQuery.total_pigs)
 
     # get current Farm version
     farmVersion = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
@@ -711,9 +712,7 @@ def addMortality(request, farmID):
         for mortality_date in request.POST.getlist('mortality_date', default=None):
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
-                "num_begInv" : request.POST.getlist('num_begInv', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "num_toDate" : request.POST.getlist('num_toDate', default=None)[i],
                 "source" : request.POST.getlist('source', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
@@ -743,14 +742,15 @@ def addMortality(request, farmID):
                 mortality = Mortality.objects.create(
                     ref_farm = farmQuery,
                     mortality_date = mort['mortality_date'],
-                    num_begInv = mort['num_begInv'],
+                    num_begInv = farmQuery.total_pigs,
                     num_today = mort['num_today'],
-                    num_toDate = mort['num_toDate'],
+                    num_toDate = farmQuery.total_pigs - int(mort['num_today']),
                     source = mort['source'],
                     remarks = mort['remarks'],
                     mortality_form_id = mortality_form.id
                 )
             
+                print(str(mortality))
                 mortality.save()
                 x += 1
 
@@ -770,7 +770,7 @@ def addMortality(request, farmID):
 
         mortalityForm = MortalityForm()
     
-    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm})
+    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm, 'num_begInv' : farmQuery.total_pigs})
 
 def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     """

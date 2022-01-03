@@ -252,6 +252,27 @@ function viewTechFarm(techFarm) {
     }
 }
 
+$('#farm-version').change(function () {
+
+    var value = document.getElementById("farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
+        console.log(url);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 /**
 *   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
 *   - Appends selected farm ID to url that will display an empty biosecurity checklist.
@@ -397,9 +418,9 @@ function addMortalityRow() {
 
     $("#mortality-table").append("<tr> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
-        <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
-        <td data-label='Today'> " + num_today + " </td> \
-        <td data-label='To Date'> " + num_toDate + " </td> \
+        <td data-label='Beg. Inv.' id='num_begInv'> " + num_begInv + " </td> \
+        <td data-label='Today' id='num_today'> " + num_today + " </td> \
+        <td data-label='To Date' onblur='compute_toDate(this)' id='num_toDate'> " + num_toDate + " </td> \
         <td data-label='Source'> " + source + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \

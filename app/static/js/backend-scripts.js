@@ -1465,4 +1465,14 @@ function saveMortality(mortID, farmID) {
     } catch (error) {
         console.log(error);
     }
+ }
+ 
+function compute_toDate(currRow){
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    console.log(row);
+    var begInv = row.getElementById('num_begInv');
+    var today = row.getElementById('num_today').value;
+    var newTotal = begInv - today;
+
+    row.getElementById('toDate').value = newTotal;
 }
