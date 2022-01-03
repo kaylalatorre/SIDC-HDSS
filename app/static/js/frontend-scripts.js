@@ -418,9 +418,9 @@ function addMortalityRow() {
 
     $("#mortality-table").append("<tr> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
-        <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
-        <td data-label='Today'> " + num_today + " </td> \
-        <td data-label='To Date'> " + num_toDate + " </td> \
+        <td data-label='Beg. Inv.' id='num_begInv'> " + num_begInv + " </td> \
+        <td data-label='Today' id='num_today'> " + num_today + " </td> \
+        <td data-label='To Date' onblur='compute_toDate(this)' id='num_toDate'> " + num_toDate + " </td> \
         <td data-label='Source'> " + source + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \
