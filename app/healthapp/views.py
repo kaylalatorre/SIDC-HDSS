@@ -643,10 +643,17 @@ def post_addCase(request, farmID):
                     df = ts.strftime("%m/%d/%Y, %H:%M")
                     # debug(incidObj.date_filed)
                     
+                    debug("[death] 11 value -- " + str(symptomsArr[11]) + "// [death] 12 value -- " + str(symptomsArr[12]))
 
                     debug("(SUCCESS) Incident report added.")
                     # (SUCCESS) Incident has been added. Properly redirect to selected view page
-                    messages.success(request, "Incident report made on " + df + " has been successfully added!", extra_tags='add-incidCase')
+                    # IF death is in the symptoms
+                    if symptomsArr[11] == True or symptomsArr[12] == False:
+                        messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death')
+                    # else
+                    else:
+                        messages.success(request, "Incident report made on " + df + " has been successfully added!", extra_tags='add-incidCase')
+                    
                     return JsonResponse({"status_code":"200"}, status=200)
         
                 else: # (ERROR) User input of num_pigs is not w/in total_pigs range
