@@ -272,8 +272,8 @@ def selectedFarm(request, farmID):
         'last_updated',
     ).order_by('-last_updated')
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 
+                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : latestPigpen})
 
 def selectedFarmVersion(request, farmID, farmVersion):
     """
@@ -376,8 +376,8 @@ def selectedFarmVersion(request, farmID, farmVersion):
         'last_updated',
     ).order_by('-last_updated')
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj,
+                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen})
 
 
 def techFarms(request):
@@ -512,6 +512,8 @@ def techSelectedFarm(request, farmID):
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
     # print(allPigpens)
 
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()    
+
     # adding new pigpens
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
@@ -590,7 +592,8 @@ def techSelectedFarm(request, farmID):
         pigpenRowForm  = PigpenRowForm()
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm,
+                                                                'version' : allPigpens, 'selectedPigpen' : latestPigpen, 'lastPigpen' : lastPigpen})
 
 def techSelectedFarmVersion(request, farmID, farmVersion):
     """
@@ -600,6 +603,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     farmID - selected farmID passed as parameter
     farmVersion - date of the selected farm version
     """
+
     ## get details of selected farm
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
     techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
@@ -639,8 +643,8 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     ).first()
 
     # collect the corresponding pigpens for selected farm
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
-    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     pen_no = 1
     pigpenList = []
@@ -657,11 +661,13 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
         pen_no += 1
 
     # collecting all past pigpens
-    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     # print(allPigpens)
 
-    # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : allPigpens})
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()    
+
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : allPigpens,
+                                                                'selectedPigpen' : selectedPigpen, 'lastPigpen' : lastPigpen})
 
 def addFarm(request):
     """

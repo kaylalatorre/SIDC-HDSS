@@ -252,6 +252,11 @@ function viewTechFarm(techFarm) {
     }
 }
 
+/**
+*   - Redirects current user to the selected farm version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display pigpens of selected farm version
+*/
 $('#farm-version').change(function () {
 
     var value = document.getElementById("farm-version").value;
@@ -273,9 +278,14 @@ $('#farm-version').change(function () {
     }
 })
 
+/**
+*   - Redirects current user (technician) to the selected farm version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display pigpens of selected farm version
+*/
 $('#tech-farm-version').change(function () {
 
-    var value = document.getElementById("farm-version").value;
+    var value = document.getElementById("tech-farm-version").value;
     // console.log(value);
 
     var split = value.split("-");
