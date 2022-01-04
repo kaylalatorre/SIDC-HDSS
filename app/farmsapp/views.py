@@ -1984,6 +1984,13 @@ def memAnnouncements(request):
         }
     return render(request, 'farmstemp/mem-announce.html', context)
 
+def sendAnnouncement(address, title, category, message):
+    ancmt = {
+        'address': address,
+        'body': category+ ': '+title+'\n'+message
+    }
+    debug(ancmt)
+
 def memAnnouncements_Approval(request, decision):
     """
     Approves or reject an announcement, sets [is_approved] to either [true] or [false]
@@ -1999,6 +2006,15 @@ def memAnnouncements_Approval(request, decision):
             debug("Messages approved.")
             Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
             messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
+            for id in idList:
+                ancmt = Mem_Announcement.objects.filter(pk = id).values('title','category','recip_area','mssg')
+                debug(ancmt)
+                if ancmt[0]['recip_area'] == 'All Raisers':
+                    nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                else:
+                    nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = ancmt[0]['recip_area']).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                for address in nums:
+                    sendAnnouncement(address, ancmt[0]['title'], ancmt[0]['category'], ancmt[0]['mssg'])
 
             return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
@@ -2025,6 +2041,12 @@ def createAnnouncement(request):
         autoApprove = ['Assistant Manager']
         if request.user.groups.all()[0].name in autoApprove:
             approvalState = True
+            if request.POST.get("recip_area") == 'All Raisers':
+                nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+            else:
+                nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = request.POST.get("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+            for address in nums:
+                sendAnnouncement(address['hog_raiser__contact_no'], request.POST.get("title"), request.POST.get("category"), request.POST.get("mssg"))
         else:
             approvalState = None
 
