@@ -813,7 +813,7 @@ def search_bioChecklist(request, biosecID):
     (POST-AJAX) For searching a Biosecurity Checklist based on biosecID.
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in search_bioChecklist()")
 
@@ -900,7 +900,7 @@ def update_bioChecklist(request, biosecID):
     (POST-AJAX) For updating a Biosec Checklist based on biosecID
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in update_bioChecklist()/n")
 
@@ -1154,7 +1154,7 @@ def delete_bioChecklist(request, biosecID, farmID):
         - (2) Not current checklist in Farm, simply delete record
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in delete_bioChecklist()/n")
 

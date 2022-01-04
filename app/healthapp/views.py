@@ -298,9 +298,9 @@ def selectedHogsHealth(request, farmID):
     
     # for getting length of Incident records
     total_incidents = incidentQry.count()
-    # debug("total_incidents -- " + str(total_incidents))
+    total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, 
+    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, 
                                                                     "incident_symptomsList": incident_symptomsList,
                                                                     "mortalityList": mortalityList})
 
@@ -484,10 +484,11 @@ def selectedHealthSymptoms(request, farmID):
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
 
-    # for getting length of Incident records
+    # for getting length of Incident, Mortality records
     total_incidents = incidentQry.count()
+    total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "farm_code": int(farmID), 
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 
                                                                         "incident_symptomsList": incident_symptomsList,
                                                                         "mortalityList": mortalityList,
                                                                         "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight})
@@ -500,7 +501,7 @@ def edit_incidStat(request, incidID):
     :type incidID: string
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         debug("TEST LOG: in edit_incidStat()/n")
 
@@ -1290,7 +1291,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     if areaName == "All": # (CASE 1) search only by date range
         debug("TRACE: in areaName == 'All'")
 
-        mortQry = Mortality.objects.filter(last_updated__range=(sDate, eDate)).filter(is_approved=True).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(is_approved=True).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")
@@ -1300,7 +1301,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
-        mortQry = Mortality.objects.filter(last_updated__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).filter(is_approved=True).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).filter(is_approved=True).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")
