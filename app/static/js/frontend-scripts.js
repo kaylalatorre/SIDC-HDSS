@@ -730,3 +730,29 @@ function filterRepStatus(){
     }
 
 }
+
+/**
+*   - Redirects current user to the selected hogs health version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display weight slips, incidents, and mortality records of selected farm version
+*/
+$('#hogs-health-version').change(function () {
+
+    var value = document.getElementById("hogs-health-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    console.log("Farm ID: " + farmID);
+    console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-hogs-health/" + farmID + '/' + formatDate(farmVer);
+        console.log(url);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})

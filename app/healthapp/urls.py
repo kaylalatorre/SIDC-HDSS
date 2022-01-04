@@ -7,6 +7,7 @@ urlpatterns = [
     # for asst. manager view
     path('hogs-health', views.hogsHealth, name="hogsHealth"),
     path('selected-hogs-health/<str:farmID>', views.selectedHogsHealth, name="selectedHogsHealth"),
+    path('selected-hogs-health/<str:farmID>/<str:farmVersion>', views.selectedHogsHealthVersion, name="selectedHogsHealthVersion"),
 
     path('hogs-mortality', views.hogsMortality, name="hogsMortality"),
     path('incidents-reported', views.incidentsReported, name="incidentsReported"),

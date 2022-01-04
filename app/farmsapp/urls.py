@@ -30,7 +30,6 @@ urlpatterns = [
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
     path('tech-selected-farm/<str:farmID>/<str:farmVersion>', views.techSelectedFarmVersion, name="techSelectedFarmVersion"),
 
-
     # technician - biosecurity
     path('biosecurity', views.biosec_view, name="biosecurity"),
     path('biosecurity/<str:farmID>', views.select_biosec, name="select_biosecurity"),

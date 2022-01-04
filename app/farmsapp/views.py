@@ -512,8 +512,6 @@ def techSelectedFarm(request, farmID):
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
     # print(allPigpens)
 
-    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()    
-
     # adding new pigpens
     if request.method == 'POST':
         print("TEST LOG: Form has POST method") 
@@ -593,7 +591,7 @@ def techSelectedFarm(request, farmID):
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
     return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm,
-                                                                'version' : allPigpens, 'selectedPigpen' : latestPigpen, 'lastPigpen' : lastPigpen})
+                                                                'version' : allPigpens, 'selectedPigpen' : latestPigpen, 'lastPigpen' : latestPigpen})
 
 def techSelectedFarmVersion(request, farmID, farmVersion):
     """
@@ -1553,7 +1551,7 @@ def formsApproval(request):
                 "is_noted",
                 "ref_farm"
                 ).order_by("-date_added").order_by("-id")
-    print(actQuery)
+    # print(actQuery)
 
     activityList = []
 
@@ -1638,6 +1636,7 @@ def formsApproval(request):
                 "is_noted",
                 "ref_farm"
                 ).order_by("-date_added").order_by("-id")
+    # print(mortQuery)
 
     mortalityList = []
 
