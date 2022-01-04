@@ -15,6 +15,7 @@ urlpatterns = [
     # for technician view
     path('health-symptoms', views.healthSymptoms, name="healthSymptoms"),
     path('selected-health-symptoms/<str:farmID>', views.selectedHealthSymptoms, name="selectedHealthSymptoms"),
+    path('selected-health-symptoms/<str:farmID>/<str:farmVersion>', views.selectedHealthSymptomsVersion, name="selectedHealthSymptomsVersion"),
     path('update-incident-status/<str:incidID>', views.edit_incidStat, name="editIncidentStat"),
 
     # technician - case and mortality record

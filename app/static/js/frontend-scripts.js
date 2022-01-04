@@ -271,7 +271,6 @@ $('#farm-version').change(function () {
 
     try {
         url = "/selected-farm/" + farmID + '/' + formatDate(farmVer);
-        console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -297,7 +296,6 @@ $('#tech-farm-version').change(function () {
 
     try {
         url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
-        console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -745,12 +743,36 @@ $('#hogs-health-version').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-hogs-health/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects current user (tecnician) to the selected hogs health & symptoms version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display incidents, and mortality records of selected farm version
+*/
+$('#health-symptoms-version').change(function () {
+
+    var value = document.getElementById("health-symptoms-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
     console.log("Farm ID: " + farmID);
     console.log("Farm Version: " + formatDate(farmVer));
 
     try {
-        url = "/selected-hogs-health/" + farmID + '/' + formatDate(farmVer);
-        console.log(url);
+        url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
         location.href = url;
     } catch (error) {
         console.log(error);
