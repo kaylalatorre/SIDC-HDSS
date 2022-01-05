@@ -293,7 +293,7 @@ def selectedHogsHealth(request, farmID):
 
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -301,8 +301,9 @@ def selectedHogsHealth(request, farmID):
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
-    
-    # print(mortalityList)
+
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
@@ -415,7 +416,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     mortForms = Mortality_Form.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).all()
     # print(mortForms)
 
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -423,8 +424,9 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
-        
-    # print(mortalityList)
+
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
 
     # for getting length of Incident, Mortality records
     total_incidents = incidentQry.count()
@@ -546,7 +548,7 @@ def selectedHealthSymptoms(request, farmID):
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
  
     # get current starter and fattener weights acc. to current Pigpen
-    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
+    pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).only(
@@ -602,7 +604,7 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -610,8 +612,9 @@ def selectedHealthSymptoms(request, farmID):
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
-    
-    # print(mortalityList)
+
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
@@ -638,7 +641,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
 
     # get current starter and fattener weights acc. to current Pigpen
-    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
+    pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).only(
@@ -694,26 +697,17 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
 
 
     # (2) Mortality Records
-    mortForms = Mortality_Form.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).all()
-    # print(mortForms)
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
 
-    mortalityList = ''
-    if mortForms is not None:
-        for mort in mortForms:
-            mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(mortality_form_id=mort.id).order_by("-mortality_date").all()
-            # print(mortQry)
+    mortality_rate = 0
+    mRateList = [] 
+    # (3.2) Mortality % per record
+    for m in mortQry:
+        mortality_rate = compute_MortRate(None, m.id)
+        mRateList.append(mortality_rate)
 
-            mortality_rate = 0
-            mRateList = [] 
-            # (3.2) Mortality % per record
-            for m in mortQry:
-                mortality_rate = compute_MortRate(None, m.id)
-                mRateList.append(mortality_rate)
-
-            # temporarily combine mortality qry w/ computed mortality % in one list
-            mortalityList = zip(mortQry, mRateList)
-    
-    # print(mortalityList)
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
 
     # for getting length of Incident, Mortality records
     total_incidents = incidentQry.count()
