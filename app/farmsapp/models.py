@@ -67,6 +67,10 @@ class Farm_Weight(models.Model):
     total_numHeads      = models.IntegerField()
     total_kls           = models.FloatField()
     remarks             = models.CharField(max_length=200, null=True, blank=True)
+
+    code                = models.IntegerField(null=True, blank=True)
+    is_approved         = models.BooleanField(null=True, editable=True)
+
     # def __str__(self):
     #     return self.id
 
