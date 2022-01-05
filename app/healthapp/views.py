@@ -347,6 +347,9 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     # collecting all past and selected pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    
+    # get current starter and fattener weights acc. to current Pigpen
+    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
 
     total_incidents = 0
     total_active = 0
@@ -555,13 +558,13 @@ def selectedHealthSymptoms(request, farmID):
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
 
     # get latest version of Pigpen
-    latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
  
     # get current starter and fattener weights acc. to current Pigpen
-    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
+    pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
-    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).only(
+    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).only(
         'date_filed',
         'date_updated', 
         'report_status',
@@ -584,7 +587,7 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (1.2) Incidents Reported (symptoms list)
-    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).values(
+    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).values(
             'high_fever'        ,
             'loss_appetite'     ,
             'depression'        ,
@@ -614,7 +617,7 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
     # debug(str(mortQry.query))
 
 
