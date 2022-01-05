@@ -221,7 +221,6 @@ class Activities_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     code                = models.IntegerField(null=True, blank=True)
-    version             = models.IntegerField(null=True, blank=True)      
     date_added          = models.DateField(null=True, blank=True)
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
@@ -259,7 +258,6 @@ class Mortality_Form(models.Model):
     pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     
     series              = models.IntegerField(null=True, blank=True)
-    version             = models.IntegerField(null=True, blank=True)
     date_added          = models.DateField(null=True, blank=True)
 
     mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mortTech',  null=True, blank=True)

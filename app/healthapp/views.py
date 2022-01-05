@@ -1342,6 +1342,12 @@ def addWeight(request, farmID):
         return redirect("healthSymptoms")
 
     if request.method == 'POST':
+        # generate code number
+        latestWeight = Farm_Weight.objects.last()
+        try:
+            code = int(latestWeight.code) + 1
+        except:
+            code = 1
 
         type = request.POST.get('weight-radio')
 
@@ -1356,7 +1362,8 @@ def addWeight(request, farmID):
                 ave_weight = request.POST.get('ave_weight'),
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
-                remarks = request.POST.get('remarks')
+                remarks = request.POST.get('remarks'),
+                code = code
             )
             weight.save()
             latestPigpen.start_weight = weight
@@ -1368,7 +1375,8 @@ def addWeight(request, farmID):
                 ave_weight = request.POST.get('ave_weight'),
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
-                remarks = request.POST.get('remarks')
+                remarks = request.POST.get('remarks'),
+                code = code
             )
             weight.save()
             latestPigpen.final_weight =  weight
