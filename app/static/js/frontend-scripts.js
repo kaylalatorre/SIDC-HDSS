@@ -253,6 +253,56 @@ function viewTechFarm(techFarm) {
 }
 
 /**
+*   - Redirects current user to the selected farm version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display pigpens of selected farm version
+*/
+$('#farm-version').change(function () {
+
+    var value = document.getElementById("farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-farm/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects current user (technician) to the selected farm version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display pigpens of selected farm version
+*/
+$('#tech-farm-version').change(function () {
+
+    var value = document.getElementById("tech-farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
 *   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
 *   - Appends selected farm ID to url that will display an empty biosecurity checklist.
 *   
@@ -397,9 +447,9 @@ function addMortalityRow() {
 
     $("#mortality-table").append("<tr> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
-        <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
-        <td data-label='Today'> " + num_today + " </td> \
-        <td data-label='To Date'> " + num_toDate + " </td> \
+        <td data-label='Beg. Inv.' id='num_begInv'> " + num_begInv + " </td> \
+        <td data-label='Today' id='num_today'> " + num_today + " </td> \
+        <td data-label='To Date' onblur='compute_toDate(this)' id='num_toDate'> " + num_toDate + " </td> \
         <td data-label='Source'> " + source + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \
@@ -678,3 +728,53 @@ function filterRepStatus(){
     }
 
 }
+
+/**
+*   - Redirects current user to the selected hogs health version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display weight slips, incidents, and mortality records of selected farm version
+*/
+$('#hogs-health-version').change(function () {
+
+    var value = document.getElementById("hogs-health-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-hogs-health/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects current user (tecnician) to the selected hogs health & symptoms version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display incidents, and mortality records of selected farm version
+*/
+$('#health-symptoms-version').change(function () {
+
+    var value = document.getElementById("health-symptoms-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    console.log("Farm ID: " + farmID);
+    console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})

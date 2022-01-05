@@ -225,24 +225,12 @@ class MortalityForm(ModelForm):
             'class' : 'form-control',
             'id' : 'mortality-date', 
         })
-        self.fields['num_begInv'].widget.attrs.update({
-            'type' : 'number', 
-            'class' : 'form-control',
-            'id' : 'beg-inv', 
-            'placeholder' : 'ex. 20',
-        })
         self.fields['num_today'].widget.attrs.update({
             'type' : 'number', 
             'class' : 'form-control',
             'id' : 'beg-inv', 
             'placeholder' : 'ex. 20',
-        })        
-        self.fields['num_toDate'].widget.attrs.update({
-            'type' : 'number', 
-            'class' : 'form-control',
-            'id' : 'beg-inv', 
-            'placeholder' : 'ex. 20',
-        })        
+        })                
         self.fields['source'].widget.attrs.update({
             'type' : 'text', 
             'class' : 'form-control',

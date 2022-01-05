@@ -234,9 +234,9 @@ class Mortality(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)        
 
     mortality_date      = models.DateField()
-    num_begInv          = models.IntegerField()
+    num_begInv          = models.IntegerField(null=True, blank=True)
     num_today           = models.IntegerField()
-    num_toDate          = models.IntegerField()
+    num_toDate          = models.IntegerField(null=True, blank=True)
     source              = models.CharField(max_length=200, null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
