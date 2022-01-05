@@ -1357,7 +1357,8 @@ def addWeight(request, farmID):
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks')
-            ).save()
+            )
+            weight.save()
             latestPigpen.start_weight = weight
         elif type == 'fattener':
             weight = Farm_Weight(
@@ -1368,8 +1369,11 @@ def addWeight(request, farmID):
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks')
-            ).save()
+            )
+            weight.save()
             latestPigpen.final_weight =  weight
+
+        latestPigpen.save()
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
