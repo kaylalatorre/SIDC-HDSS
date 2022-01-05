@@ -10,6 +10,7 @@ urlpatterns = [
     # asst. manager - view farms
     path('farms', views.farms, name="farms"),
     path('selected-farm/<str:farmID>', views.selectedFarm, name="selectedFarm"),
+    path('selected-farm/<str:farmID>/<str:farmVersion>', views.selectedFarmVersion, name="selectedFarmVersion"),
 
     # asst. manager - assign technicians
     path('technician-assignment', views.techAssignment, name="techAssignment"),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('add-farm', views.addFarm, name="addFarm"),
     path('home/tech-farms', views.techFarms, name="techFarms"),
     path('tech-selected-farm/<str:farmID>', views.techSelectedFarm, name="techSelectedFarm"),
+    path('tech-selected-farm/<str:farmID>/<str:farmVersion>', views.techSelectedFarmVersion, name="techSelectedFarmVersion"),
 
     # technician - biosecurity
     path('biosecurity', views.biosec_view, name="biosecurity"),

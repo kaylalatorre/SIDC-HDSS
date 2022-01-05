@@ -1421,3 +1421,13 @@ function saveMortality(mortID, farmID) {
         });
     }
 }
+
+function compute_toDate(currRow){
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    console.log(row);
+    var begInv = row.getElementById('num_begInv');
+    var today = row.getElementById('num_today').value;
+    var newTotal = begInv - today;
+
+    row.getElementById('toDate').value = newTotal;
+}

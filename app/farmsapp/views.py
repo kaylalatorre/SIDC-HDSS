@@ -274,8 +274,113 @@ def selectedFarm(request, farmID):
         'last_updated',
     ).order_by('-last_updated')
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 
+                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : latestPigpen})
+
+def selectedFarmVersion(request, farmID, farmVersion):
+    """
+    Display information of selected farm for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
+
+    # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        contact=F("hog_raiser__contact_no"),
+        length=F("wh_length"),
+        width=F("wh_width"),
+        farm_area   = F("area__area_name"),
+        waste_mgt   = F("intbio__waste_mgt"),
+        isol_pen    = F("intbio__isol_pen"),
+        bird_proof  = F("extbio__bird_proof"),
+        perim_fence = F("extbio__perim_fence"),
+        foot_dip    = F("intbio__foot_dip"),
+        fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selectedFarm = qry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
+    ).first()
+   
+    # collect pigpens
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
+    # collect activities
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+
+    actList = []
+
+    # store all data to an array
+    for activity in actQuery:
+        actList.append({
+            'id' : activity.id,
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_arrival' : activity.time_arrival,
+            'time_departure' : activity.time_departure,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+        })
+
+    # collect biosecurity checklists
+    # Select Biochecklist with latest date
+    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    
+
+    # Get latest instance of Biochecklist
+    currbioObj = currbioQuery.first()
+    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
+
+
+    # Get all biosecID, last_updated in extbio under a Farm
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+        'last_updated',
+    ).order_by('-last_updated')
+
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj,
+                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen})
+
 
 def techFarms(request):
     """
@@ -486,12 +591,83 @@ def techSelectedFarm(request, farmID):
         # if the forms have no input yet, only display empty forms
         pigpenRowForm  = PigpenRowForm()
 
-    # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
-    # print("TEST LOG pigpenList: " + str(pigpenList))
-    # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
-
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm,
+                                                                'version' : allPigpens, 'selectedPigpen' : latestPigpen, 'lastPigpen' : latestPigpen})
+
+def techSelectedFarmVersion(request, farmID, farmVersion):
+    """
+    - Display details of the selected farm under the currently logged in technician.
+    - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
+
+    farmID - selected farmID passed as parameter
+    farmVersion - date of the selected farm version
+    """
+
+    ## get details of selected farm
+    # collect the corresponding details for: hog raiser, area, internal and external biosecurity
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
+                    raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact     = F("hog_raiser__contact_no"),
+                    farm_area   = F("area__area_name"),
+                    waste_mgt   = F("intbio__waste_mgt"),
+                    isol_pen    = F("intbio__isol_pen"),
+                    bird_proof  = F("extbio__bird_proof"),
+                    perim_fence = F("extbio__perim_fence"),
+                    foot_dip    = F("intbio__foot_dip"),
+                    fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selTechFarm = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
+    ).first()
+
+    # collect the corresponding pigpens for selected farm
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    # print(allPigpens)
+
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()    
+
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : allPigpens,
+                                                                'selectedPigpen' : selectedPigpen, 'lastPigpen' : lastPigpen})
 
 def addFarm(request):
     """
@@ -532,7 +708,7 @@ def addFarm(request):
         # render forms
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
-        pigpenRowForm  = PigpenRowForm(request.POST)   
+        pigpenRowForm       = PigpenRowForm(request.POST)   
 
 
         # collect internal biosec checkbox inputs and convert to integer value
@@ -705,7 +881,7 @@ def addFarm(request):
                         pigpen_group.total_pigs = numTotal
                         pigpen_group.save()
 
-                        return redirect('/')
+                        return redirect('/', {'farm.id': str(farm.id)})
 
                     else:
                         print("TEST LOG: Pigpen Measures Form not valid")
@@ -1377,6 +1553,7 @@ def formsApproval(request):
                 "is_noted",
                 "ref_farm"
                 ).order_by("-date_added").order_by("-id")
+    # print(actQuery)
 
     activityList = []
 
@@ -1405,8 +1582,7 @@ def formsApproval(request):
                     "date_added" : act["date_added"],
                     "status" : status,
                     "prepared_by" : getTech["name"],
-                    "farmID" : int(act["ref_farm"])
-                }
+                    "farmID" : int(act["ref_farm"]) }
             
                 activityList.append(activityObject)
 
@@ -1426,6 +1602,7 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_reported"] == None and act["is_checked"] == True:
                     status = 'Pending'
+                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
@@ -1434,6 +1611,9 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
                     status = 'Pending'
+                else: status = None
+            
+            else: status = None
 
             # pass into object and append to list 
             activityObject = {
@@ -1441,8 +1621,7 @@ def formsApproval(request):
                 "date_added" : act["date_added"],
                 "status" : status,
                 "prepared_by" : getTech["name"],
-                "farmID" : int(act["ref_farm"])
-            }
+                "farmID" : int(act["ref_farm"]) }
             
             activityList.append(activityObject)
 
@@ -1457,6 +1636,7 @@ def formsApproval(request):
                 "is_noted",
                 "ref_farm"
                 ).order_by("-date_added").order_by("-id")
+    # print(mortQuery)
 
     mortalityList = []
 
@@ -1467,7 +1647,7 @@ def formsApproval(request):
 
         if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
-                if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Approved'
                 elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
                     status = 'Rejected'
@@ -1480,8 +1660,7 @@ def formsApproval(request):
                     "date_added" : mort["date_added"],
                     "status" : status,
                     "prepared_by" : getTech["name"],
-                    "farmID" : int(mort["ref_farm"])
-                }
+                    "farmID" : int(mort["ref_farm"]) }
 
                 mortalityList.append(mortalityObject)
             
@@ -1501,6 +1680,7 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_reported"] == None and mort["is_posted"] == True:
                     status = 'Pending'
+                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
@@ -1509,6 +1689,9 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Pending'
+                else: status = None
+
+            else: status = None
 
             # pass into object and append to list 
             mortalityObject = {
@@ -1516,8 +1699,7 @@ def formsApproval(request):
                 "date_added" : mort["date_added"],
                 "status" : status,
                 "prepared_by" : getTech["name"],
-                "farmID" : int(mort["ref_farm"])
-            }
+                "farmID" : int(mort["ref_farm"]) }
 
             mortalityList.append(mortalityObject)
 

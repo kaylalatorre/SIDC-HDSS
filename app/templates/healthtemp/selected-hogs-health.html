@@ -16,9 +16,11 @@
     <div class="flex">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
-            <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option value="">Current - Dec 21, 2021 to March 21, 2021</option>
-                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+            <select class="form-select" name="hogs-health-version" id="hogs-health-version" style="margin-bottom: 0; width: 100px">
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
+                {% for farmVersion in version %}
+                <option value="{{farm.code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
             </select>
         </div>
         <p class="flex-item"></p>
