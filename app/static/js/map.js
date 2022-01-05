@@ -142,7 +142,7 @@ $(document).ready(async function () {
         var overlayMaps = {
             "Farms": allFarms,
             "No. of Pigs per farm": pigsPerFarm,
-            "Moratlity Rates": mortalityRates,
+            "Mortality Rates": mortalityRates,
             "Symptoms Reported": symptomsRep,
         }
         
