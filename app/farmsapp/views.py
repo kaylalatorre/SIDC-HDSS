@@ -448,7 +448,6 @@ def techSelectedFarm(request, farmID):
     """
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
-
     farmID - selected farmID passed as parameter
     """
 
@@ -597,7 +596,6 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     """
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
-
     farmID - selected farmID passed as parameter
     farmVersion - date of the selected farm version
     """

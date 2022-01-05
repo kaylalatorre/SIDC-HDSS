@@ -181,11 +181,6 @@ class Pigpen_Row(models.Model):
     length              = models.FloatField()
     width               = models.FloatField()
     num_heads           = models.IntegerField()
-    start_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    final_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-
-    # def __str__(self):
-    #     return self.id
 
 # ACTIVITY Table
 class Activity(models.Model):
@@ -213,9 +208,6 @@ class Activity(models.Model):
     is_approved         = models.BooleanField(null=True, editable=True)
 
     activity_form       = models.ForeignKey('Activities_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-
-    # def __str__(self):
-    #     return self.id
 
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
@@ -250,9 +242,6 @@ class Mortality(models.Model):
     is_approved         = models.BooleanField(null=True, editable=True)
 
     mortality_form       = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-    
-    # def __str__(self):
-    #     return self.
 
 # MORTALITY FORM Table
 class Mortality_Form(models.Model):
