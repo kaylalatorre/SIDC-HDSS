@@ -181,8 +181,6 @@ class Pigpen_Row(models.Model):
     length              = models.FloatField()
     width               = models.FloatField()
     num_heads           = models.IntegerField()
-    start_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    final_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     # def __str__(self):
     #     return self.id
