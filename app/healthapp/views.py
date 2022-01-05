@@ -1087,8 +1087,11 @@ def addWeight(request, farmID):
 
         type = request.POST.get('weight-radio')
 
+        # get latest Pigpen version
+        latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+
         if type == 'starter':
-            Farm_Weight(
+            weight = Farm_Weight(
                 date_filed = now(),
                 ref_farm_id = farmID,
                 is_starter = True,
@@ -1097,8 +1100,9 @@ def addWeight(request, farmID):
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks')
             ).save()
+            latestPigpen.start_weight = weight
         elif type == 'fattener':
-            Farm_Weight(
+            weight = Farm_Weight(
                 date_filed = now(),
                 ref_farm_id = farmID,
                 is_starter = False,
@@ -1107,6 +1111,7 @@ def addWeight(request, farmID):
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks')
             ).save()
+            latestPigpen.final_weight =  weight
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
