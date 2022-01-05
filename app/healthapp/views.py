@@ -77,7 +77,7 @@ def compute_MortRate(farmID, mortalityID):
         latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
         # Get latest Mortality record of the Farm (w Pigpen filter)
-        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
+        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by('-mortality_date')
 
         if mortQry.exists():
             m = mortQry.first()
