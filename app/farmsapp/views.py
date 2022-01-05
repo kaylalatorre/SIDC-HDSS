@@ -1580,8 +1580,7 @@ def formsApproval(request):
                     "date_added" : act["date_added"],
                     "status" : status,
                     "prepared_by" : getTech["name"],
-                    "farmID" : int(act["ref_farm"])
-                }
+                    "farmID" : int(act["ref_farm"]) }
             
                 activityList.append(activityObject)
 
@@ -1620,8 +1619,7 @@ def formsApproval(request):
                 "date_added" : act["date_added"],
                 "status" : status,
                 "prepared_by" : getTech["name"],
-                "farmID" : int(act["ref_farm"])
-            }
+                "farmID" : int(act["ref_farm"]) }
             
             activityList.append(activityObject)
 
@@ -1647,7 +1645,7 @@ def formsApproval(request):
 
         if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
-                if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Approved'
                 elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
                     status = 'Rejected'
@@ -1660,8 +1658,7 @@ def formsApproval(request):
                     "date_added" : mort["date_added"],
                     "status" : status,
                     "prepared_by" : getTech["name"],
-                    "farmID" : int(mort["ref_farm"])
-                }
+                    "farmID" : int(mort["ref_farm"]) }
 
                 mortalityList.append(mortalityObject)
             
@@ -1700,8 +1697,7 @@ def formsApproval(request):
                 "date_added" : mort["date_added"],
                 "status" : status,
                 "prepared_by" : getTech["name"],
-                "farmID" : int(mort["ref_farm"])
-            }
+                "farmID" : int(mort["ref_farm"]) }
 
             mortalityList.append(mortalityObject)
 
