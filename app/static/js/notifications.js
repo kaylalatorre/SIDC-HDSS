@@ -40,6 +40,11 @@ function syncNotifs(){
         }
     }).then(async function(){
         var notifCount = await getNotifsCount();
+        
+        $('.notif-list').load('/notifications .notif-list', function (response) {
+            $(this).children().unwrap();
+        });
+
         updateNotifBadge(notifCount);
     })
     
@@ -102,7 +107,7 @@ var down = false;
 
 async function toggleNotif() {
     if (down) {
-        syncNotifs();
+        // syncNotifs();
         box.style.height = '0px';
         box.style.opacity = 0;
         down = false;

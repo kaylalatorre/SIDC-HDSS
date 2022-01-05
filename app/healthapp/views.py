@@ -39,7 +39,8 @@ import random
 
 # for Forms
 from farmsapp.forms import (
-    MortalityForm
+    MortalityForm,
+    WeightForm
 )
 
 # for date and time fields in Models
@@ -77,7 +78,7 @@ def compute_MortRate(farmID, mortalityID):
         latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
         # Get latest Mortality record of the Farm (w Pigpen filter)
-        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
+        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by('-mortality_date')
 
         if mortQry.exists():
             m = mortQry.first()
@@ -232,10 +233,10 @@ def selectedHogsHealth(request, farmID):
     mortality_rate = compute_MortRate(farmID, None)
 
     # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
-    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).count()
+    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).count()
 
     # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
+    total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").filter(pigpen_grp_id=latestPigpen.id).count()
 
     farmObject = {
         "code":  int(farmID),
@@ -254,13 +255,13 @@ def selectedHogsHealth(request, farmID):
 
 
     # (2.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
-    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).only(
+    incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).only(
         'date_filed', 
         'report_status',
         'num_pigs_affected').order_by("id").all()
 
     # (2.2) Incidents Reported (symptoms list)
-    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).values(
+    symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).values(
             'high_fever'        ,
             'loss_appetite'     ,
             'depression'        ,
@@ -289,7 +290,7 @@ def selectedHogsHealth(request, farmID):
 
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -300,8 +301,6 @@ def selectedHogsHealth(request, farmID):
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
-    
-    # print(mortalityList)
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
@@ -415,7 +414,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
-    # debug(str(mortQry.query))
 
     mortality_rate = 0
     mRateList = [] 
@@ -427,19 +425,13 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList)
 
-    # for getting length of Incident records
+    # for getting length of Incident, Mortality records
     total_incidents = incidentQry.count()
+    total_mortalities = mortQry.count()
     # debug("total_incidents -- " + str(total_incidents))
 
-    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
+    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
                                                                     "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen })
-
-
-def hogsMortality(request):
-    return render(request, 'healthtemp/rep-hogs-mortality.html', {})
-
-def incidentsReported(request):
-    return render(request, 'healthtemp/rep-incidents-reported.html', {})
 
 
 # for Technician view Hogs Health
@@ -468,7 +460,7 @@ def healthSymptoms(request):
 
     for area in areaQry :
         # (1) filter by area, then collect details for each Farm 
-        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
+        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser', 'farm_weight').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
             ).values(
@@ -612,7 +604,6 @@ def selectedHealthSymptoms(request, farmID):
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
-    # debug(str(mortQry.query))
 
     mortality_rate = 0
     mRateList = [] 
@@ -626,10 +617,11 @@ def selectedHealthSymptoms(request, farmID):
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
+    total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "farm_code": int(farmID), "incident_symptomsList": incident_symptomsList,
-                                                                        "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPigpen,
-                                                                        "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID),
+                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : allPigpens,
+                                                                        'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -646,6 +638,9 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     # collecting all past and selected pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+
+    # get current starter and fattener weights acc. to current Pigpen
+    pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).only(
@@ -704,7 +699,6 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
-    # debug(str(mortQry.query))
 
     mortality_rate = 0
     mRateList = [] 
@@ -720,9 +714,9 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "farm_code": int(farmID), "incident_symptomsList": incident_symptomsList,
-                                                                        "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen,
-                                                                        "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID),
+                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : allPigpens,
+                                                                        'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
 
 
 def edit_incidStat(request, incidID):
@@ -1339,9 +1333,62 @@ def saveMortality(request, farmID, mortalityID):
 
     return JsonResponse({"error": "Not a POST method"}, status=400)
 
-def addWeight(request):
-    return render(request, 'healthtemp/add-weight.html')
+def addWeight(request, farmID):
+    """
+    redirect to weight slip form or if method is POST, saves weight slip to database
+    """
+    
+    try:
+        Farm.objects.get(pk=farmID)
+        # Farm.objects.get(pk=farmID)
+    except:
+        debug("farm does not exist")
+        return redirect("healthSymptoms")
 
+    if request.method == 'POST':
+        # generate code number
+        latestWeight = Farm_Weight.objects.last()
+        try:
+            code = int(latestWeight.code) + 1
+        except:
+            code = 1
+
+        type = request.POST.get('weight-radio')
+
+        # get latest Pigpen version
+        latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+
+        if type == 'starter':
+            weight = Farm_Weight(
+                date_filed = now(),
+                ref_farm_id = farmID,
+                is_starter = True,
+                ave_weight = request.POST.get('ave_weight'),
+                total_numHeads = request.POST.get('total_numHeads'),
+                total_kls =  request.POST.get('total_kls'),
+                remarks = request.POST.get('remarks'),
+                code = code
+            )
+            weight.save()
+            latestPigpen.start_weight = weight
+        elif type == 'fattener':
+            weight = Farm_Weight(
+                date_filed = now(),
+                ref_farm_id = farmID,
+                is_starter = False,
+                ave_weight = request.POST.get('ave_weight'),
+                total_numHeads = request.POST.get('total_numHeads'),
+                total_kls =  request.POST.get('total_kls'),
+                remarks = request.POST.get('remarks'),
+                code = code
+            )
+            weight.save()
+            latestPigpen.final_weight =  weight
+
+        latestPigpen.save()
+        
+    weightForm = WeightForm()
+    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
 
 # REPORTS for Module 2
 def incidentsReported(request):

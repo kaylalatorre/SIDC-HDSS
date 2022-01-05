@@ -42,12 +42,16 @@ $(document).ready(async function () {
 
         // initialize map
         var map = L.map('map-containter').setView([lat, long], zoom);
-
+        console.log(map.getZoom());
         // initialize osm tile layer
         var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
         console.log("map loaded");
+
+        map.on('zoomend', function(){
+            console.log(map.getZoom());
+        });
 
         /**
          * Populate map
@@ -81,6 +85,15 @@ $(document).ready(async function () {
         var mortalityRates = new L.layerGroup();
         var symptomsRep = new L.layerGroup();
 
+        var pigData = [];
+        var totalPigs = 0;
+
+        var mortData = [];
+        var totalMort = 0;
+
+        var sxData = [];
+        var totalSx = 0;
+
         // add markers and popups to layer groups
         var test = {'long':null}
         console.log(Boolean(test['long'] && test['long']));
@@ -92,47 +105,33 @@ $(document).ready(async function () {
             var farmLong = metadata[i]['longitude'];
             var numPigs = metadata[i]['numPigs'];
             var radiusSize = numPigs * 100;
-            var mortRts = metadata[i]['mortRts'] * 100;
-            var sxRept = metadata[i]['sxRept'] * 100;
-            var sxActv = metadata[i]['sxActv'] * 100;
-        
+            var mortRts = metadata[i]['mortRts'];
+            var sxRept = metadata[i]['sxRept'];
+            var sxActv = metadata[i]['sxActv'];
+
+            pigData.push([farmLat, farmLong, numPigs]);
+            totalPigs = totalPigs + numPigs;
+
+            mortData.push([farmLat, farmLong, mortRts]);
+            totalMort = totalMort + mortRts;
+
+            sxData.push([farmLat, farmLong, sxRept]);
+            totalSx = totalSx + sxRept;
+
             allFarms.addLayer(new L.marker([farmLat, farmLong])
             .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
-                '<label class="bold-lbl">Address:</label>' + metadata[i]['address'])).addTo(map);
-
-            pigsPerFarm.addLayer(new L.circle([farmLat, farmLong], {
-                radius: radiusSize,
-                color: '#FFFFFF',
-                fillColor: 'violet',
-                weight: 1,
-                fillOpacity: 0.6,
-            }).bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
+                '<label class="bold-lbl">Address:</label>' + metadata[i]['address'] + '<br>' + 
                 '<label class="bold-lbl">No. of pigs: </label>' + numPigs + '<br>' +
-                '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
-
-            mortalityRates.addLayer(new L.circle([farmLat, farmLong], {
-                radius: mortRts,
-                color: '#FFFFFF',
-                fillColor: 'red',
-                weight: 1,
-                fillOpacity: 0.6,
-            }).bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
                 '<label class="bold-lbl">Mortality Rate:</label> ' + mortRts + ' <br>' +
-                '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
-
-            symptomsRep.addLayer(new L.circle([farmLat, farmLong], {
-                radius: sxActv,
-                color: '#FFFFFF',
-                fillColor: 'orange',
-                weight: 1,
-                fillOpacity: 0.6,
-            }).bindTooltip('<label class="bold-lbl">Farm Code:</label> ' + metadata[i]['code'] + ' <br>' +
                 '<label class="bold-lbl">Symptoms Reported:</label> ' + sxRept + ' <br>' +
                 '<label class="bold-lbl">Symptoms Active:</label> ' + sxActv + ' <br>' +
                 '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
         }
 
-
+        console.log(pigData);
+        pigsPerFarm.addLayer(new L.heatLayer(pigData, {radius: 50, max: totalPigs, maxZoom:11})).addTo(map);
+        mortalityRates.addLayer(new L.heatLayer(mortData, {radius: 50, max: totalMort, maxZoom: 11})).addTo(map);
+        symptomsRep.addLayer(new L.heatLayer(sxData, {radius: 50, max: totalSx, maxZoom: 11})).addTo(map);
         /**
          * Layer Controls
          */
@@ -143,7 +142,7 @@ $(document).ready(async function () {
         var overlayMaps = {
             "Farms": allFarms,
             "No. of Pigs per farm": pigsPerFarm,
-            "Moratlity Rates": mortalityRates,
+            "Mortality Rates": mortalityRates,
             "Symptoms Reported": symptomsRep,
         }
         
@@ -161,8 +160,6 @@ $(document).ready(async function () {
         //     }
         // }
 
-        
-
         var legend = L.control({
             position: "bottomleft"
         });
@@ -177,7 +174,7 @@ $(document).ready(async function () {
             return div;
         };
 
-        legend.addTo(map);
+        // legend.addTo(map);
         L.control.layers(baseMaps, overlayMaps).addTo(map);
 
         

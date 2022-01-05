@@ -13,7 +13,7 @@ class User(User):
 
 class AccountData(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
-    data = models.JSONField(default=dict)
+    data = models.JSONField(default=dict, null=True)
 
     def __str__(self):
         return self.id
@@ -58,12 +58,14 @@ class InternalBiosec(models.Model):
 
 # FARM WEIGHT Table
 class Farm_Weight(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
+
     date_filed          = models.DateField(default=now)
     is_starter          = models.BooleanField(default=False)
     ave_weight          = models.FloatField()
     total_numHeads      = models.IntegerField()
     total_kls           = models.FloatField()
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     code                = models.IntegerField(null=True, blank=True)
@@ -184,6 +186,9 @@ class Pigpen_Row(models.Model):
     length              = models.FloatField()
     width               = models.FloatField()
     num_heads           = models.IntegerField()
+
+    # def __str__(self):
+    #     return self.id
 
 # ACTIVITY Table
 class Activity(models.Model):

@@ -40,7 +40,8 @@ from django.contrib import messages
 from .models import (
     Area, 
     AccountData,
-    ExternalBiosec, 
+    ExternalBiosec,
+    Farm_Weight, 
     InternalBiosec, 
     Farm, 
     Hog_Raiser,
@@ -65,7 +66,8 @@ from datetime import date, datetime, timezone, timedelta
 from django.utils.timezone import (
     make_aware, # for date and time fields in Models
     now, # for getting date today
-    localtime # for getting date today
+    localtime, # for getting date today
+    timedelta
 ) 
 
 # for list comapare
@@ -2161,6 +2163,13 @@ def memAnnouncements(request):
         }
     return render(request, 'farmstemp/mem-announce.html', context)
 
+def sendAnnouncement(address, title, category, message):
+    ancmt = {
+        'address': address,
+        'body': category+ ': '+title+'\n'+message
+    }
+    debug(ancmt)
+
 def memAnnouncements_Approval(request, decision):
     """
     Approves or reject an announcement, sets [is_approved] to either [true] or [false]
@@ -2176,6 +2185,15 @@ def memAnnouncements_Approval(request, decision):
             debug("Messages approved.")
             Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
             messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
+            for id in idList:
+                ancmt = Mem_Announcement.objects.filter(pk = id).values('title','category','recip_area','mssg')
+                debug(ancmt)
+                if ancmt[0]['recip_area'] == 'All Raisers':
+                    nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                else:
+                    nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = ancmt[0]['recip_area']).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                for address in nums:
+                    sendAnnouncement(address, ancmt[0]['title'], ancmt[0]['category'], ancmt[0]['mssg'])
 
             return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
@@ -2199,17 +2217,15 @@ def createAnnouncement(request):
     """
 
     if request.method == 'POST':
-        # debug(request.POST.get("title"))
-        # debug(request.POST.get("category"))
-        # debug(request.POST.get("recip_area"))
-        # debug(request.POST.get("mssg"))
-        # debug(request.user.id)
-        # debug(datetime.now())
-        # debug(request.user.groups.all()[0].name)
-        
         autoApprove = ['Assistant Manager']
         if request.user.groups.all()[0].name in autoApprove:
             approvalState = True
+            if request.POST.get("recip_area") == 'All Raisers':
+                nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+            else:
+                nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = request.POST.get("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+            for address in nums:
+                sendAnnouncement(address['hog_raiser__contact_no'], request.POST.get("title"), request.POST.get("category"), request.POST.get("mssg"))
         else:
             approvalState = None
 
@@ -2222,13 +2238,6 @@ def createAnnouncement(request):
             timestamp = now(),
             is_approved = approvalState
         )
-        # debug(announcement.title)
-        # debug(announcement.category)
-        # debug(announcement.recip_area)
-        # debug(announcement.mssg)
-        # debug(announcement.author)
-        # debug(announcement.timestamp)
-        # debug(announcement.is_approved)
         announcement.save()
         messages.success(request, "Announcement sent.", extra_tags='announcement')
         return redirect('/member-announcements')
@@ -2336,6 +2345,43 @@ def getNotifIDs(request):
         for item in qry.values():
             notifIDs.append(';'.join([mortFormTable, str(item['id']), "rj"]))
 
+        # Farm Inspections
+        farmTable = Farm._meta.db_table
+        areaIDList = []
+        for i in Area.objects.filter(tech_id = userID).order_by('id').values_list('id'):
+            areaIDList.append(i[0])
+        needInspectFarms = Farm.objects.exclude(last_updated__range=(now() - timedelta(days=7), now())).filter(area_id__in=areaIDList).values()
+        for item in needInspectFarms:
+            notifIDs.append(';'.join([farmTable, str(item['id']), "Inspect"]))
+
+        # Active Incidents
+        hogSympTable = Hog_Symptoms._meta.db_table
+        farmIDList = []
+        for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+            farmIDList.append(i[0])
+        activeIncs = Hog_Symptoms.objects.filter(ref_farm_id__in=farmIDList, report_status="Active").values()
+        for item in activeIncs:
+            notifIDs.append(';'.join([hogSympTable, str(item['id']), "Active"]))
+
+        # Weight Updates
+        farmWtTable = Farm_Weight._meta.db_table
+        farmIDList = []
+        for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+            farmIDList.append(i[0])
+        farmWtQry = Farm_Weight.objects.order_by('ref_farm_id', '-date_filed').distinct('ref_farm_id').filter(ref_farm_id__in=farmIDList)
+        wt_farmIDList = []
+        for i in farmWtQry.values_list('ref_farm_id'):
+            wt_farmIDList.append(i[0])        
+        no_farmWtList = list(set(wt_farmIDList)-set(farmIDList)) + list(set(farmIDList)-set(wt_farmIDList))
+        if wt_farmIDList:
+            needWtUpdate = farmWtQry.exclude(date_filed__range=(now()-timedelta(days=120), now())).values()
+            for item in needWtUpdate:
+                notifIDs.append(';'.join([farmWtTable, str(item['id']), "120days"]))
+        if no_farmWtList:
+            noFarmWt = Farm.objects.filter(id__in=no_farmWtList).exclude(date_registered__range=(now()-timedelta(days=7), now())).values()
+            for item in noFarmWt:
+                notifIDs.append(';'.join([Farm._meta.db_table, str(item['id']), "NoWt"]))
+
     elif userGroup == "Livestock Operation Specialist":
         # Activity Forms
         lopsNotifs = activityForms.filter(is_checked = None)
@@ -2366,38 +2412,37 @@ def getMemAncmtNotifs(request, notifIDList):
     announceTable = Mem_Announcement._meta.db_table
     # Generate notifications to be displayed
     ## Current tags:
-    # string notificationID: notification ID made to uniquely identify each notification
     # string label_class: Classes that will be appended to notif-label. e.g. "notif-urgent"
     # string label: Title of the notification
     # string p: Message of the notification
     # string href: link to the page the user will be sent to if they click on the notification  
     if request.user.groups.all()[0].name == "Assistant Manager":
         pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+        count = 0
         for item in pendingAnnouncements:
             notifID = ';'.join([announceTable, str(item['id']), "Pending"])
             new_notifIDList.append(notifID)
             if notifID not in notifIDList:
-                notifList.append({
-                    "label_class": "text-warning",
-                    "notificationID": notifID,
-                    "label": "Pending Announcement",
-                    "title": item["title"],
-                    "message": item["mssg"],
-                    "href": "/member-announcements"
-                })
+                count += 1
+        if count != 0: 
+            notifList.append({
+                "label_class": "text-warning",
+                "label": "{} pending announcement(s) for approval".format(count),
+                "href": "/member-announcements"
+            })
     else:
         rejectedAnnouncement = Mem_Announcement.objects.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']).values()
+        count = 0
         for item in rejectedAnnouncement:
             notifID = ';'.join([announceTable, str(item['id']), "Rejected"])
             new_notifIDList.append(notifID)
             if notifID not in notifIDList:
-                notifList.append({
-                    "label_class": "text-danger",
-                    "notificationID": notifID,
-                    "label": "Rejected Announcement",
-                    "p": item["title"],
-                    "message": item["mssg"]
-                })
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Announcement(s) were rejected".format(count),
+            })
 
     return {
         "notifIDList": new_notifIDList,
@@ -2710,18 +2755,146 @@ def getMortFormsNotifs(request, notifIDList):
         "notifList": notifList
     }
  
+def getFarmInspectNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    farmTable = Farm._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    needInspectFarms = Farm.objects.exclude(last_updated__range=(now() - timedelta(days=7), now())).filter(area_id__in=areaIDList).values()
+    count = 0
+    for item in needInspectFarms:
+        notifID = ';'.join([farmTable, str(item['id']), "Inspect"])
+        new_notifIDList.append(notifID)
+        if notifID not in notifIDList:
+            count += 1
+            
+    if count != 0:
+        notifList.append({
+            "label_class": "text-danger",
+            "label": "{} Farm(s) in need of inspection".format(count),
+            "href": "/farms"
+        })
+    
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
+def getActiveIncsNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    hogSympTable = Hog_Symptoms._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    farmIDList = []
+    for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+        farmIDList.append(i[0])
+
+    activeIncs = Hog_Symptoms.objects.filter(ref_farm_id__in=farmIDList, report_status="Active").values()
+    count = 0
+    for item in activeIncs:
+        notifID = ';'.join([hogSympTable, str(item['id']), "Active"])
+        new_notifIDList.append(notifID)
+        if notifID not in notifIDList:
+            count += 1
+            
+    if count != 0:
+        notifList.append({
+            "label_class": "text-danger",
+            "label": "{} Incidents(s) are currently active".format(count),
+            "href": "/health-symptoms"
+        })
+    
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
+def getWtUpdateNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    farmWtTable = Farm_Weight._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    farmIDList = []
+    for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+        farmIDList.append(i[0])
+
+    farmWtQry = Farm_Weight.objects.order_by('ref_farm_id', '-date_filed').distinct('ref_farm_id').filter(ref_farm_id__in=farmIDList)
+    wt_farmIDList = []
+    for i in farmWtQry.values_list('ref_farm_id'):
+        wt_farmIDList.append(i[0])
+    
+    no_farmWtList = list(set(wt_farmIDList)-set(farmIDList)) + list(set(farmIDList)-set(wt_farmIDList))
+
+    # 120 day update
+    if wt_farmIDList:
+        needWtUpdate = farmWtQry.exclude(date_filed__range=(now()-timedelta(days=120), now())).values()
+        count = 0
+        for item in needWtUpdate:
+            notifID = ';'.join([farmWtTable, str(item['id']), "120days"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Farm(s)' weight record have not been updated in 120 days".format(count),
+                "href": "/health-symptoms"
+            })
+    # 7 day no weight
+    if no_farmWtList:
+        noFarmWt = Farm.objects.filter(id__in=no_farmWtList).exclude(date_registered__range=(now()-timedelta(days=7), now())).values()
+        count = 0
+        for item in noFarmWt:
+            notifID = ';'.join([Farm._meta.db_table, str(item['id']), "NoWt"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Farm(s) still do not have weight records".format(count),
+                "href": "/health-symptoms"
+            })
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
 def getNotifications(request):
     """
     Collects all notifications from different tables
     """
+    
+    notifIDList = []
+    notifList = []
+
     request.session['notifIDList'] = initNotifIDList(request)
     notifIDList = request.session['notifIDList']
     memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
     actFormsNotifs = getActFormsNotifs(request, notifIDList)
     mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
+    
+    
+    # technician specific functions
+    if request.user.groups.all()[0].name == "Field Technician":
+        frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
+        actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
+        wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
+        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList']
+        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList']
 
-    notifIDList = memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
-    notifList = memAncmtNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
+    notifIDList += memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
+    notifList += memAncmtNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
+
 
     request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
 
@@ -2757,8 +2930,6 @@ def syncNotifications(request):
         notifQry.data['notifIDList'] = []
         notifQry.save()
 
-    debug(sessionNotifs)
-    debug(User.objects.get(id=userID).accountdata.data['notifIDList'])
     if (Counter(User.objects.get(id=userID).accountdata.data['notifIDList']) != Counter(sessionNotifs)):
         debug("create new db notif")
         new_dbNotifs = [] # inside if statement so that it does not overwrite accountData.notifIDList
@@ -2792,8 +2963,17 @@ def countNotifications(request):
     actFormsNotifs = getActFormsNotifs(request, notifIDList)
     mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
 
-    totalNotifs = len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
+    # technician specific functions
+    if request.user.groups.all()[0].name == "Field Technician":
+        frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
+        actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
+        wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
+        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList'])
+
     
+    totalNotifs += len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
+            
+
     return HttpResponse(str(totalNotifs), status=200)
 
 # helper functions for Biosec
