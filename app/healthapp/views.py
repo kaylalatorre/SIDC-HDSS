@@ -308,7 +308,7 @@ def selectedHogsHealth(request, farmID):
     total_mortalities = mortQry.count()
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPigpen })
+                                                                    "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPP })
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
     """
@@ -349,7 +349,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
     
     # get current starter and fattener weights acc. to current Pigpen
-    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
+    pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     total_incidents = 0
     total_active = 0
@@ -414,26 +414,18 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
 
     # (3.1) Mortality Records
-    mortForms = Mortality_Form.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).all()
-    # print(mortForms)
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
+    # debug(str(mortQry.query))
 
-    mortalityList = ''
-    if mortForms is not None:
-        for mort in mortForms:
-            mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(mortality_form_id=mort.id).order_by("-mortality_date").all()
-            # print(mortQry)
+    mortality_rate = 0
+    mRateList = [] 
+    # (3.2) Mortality % per record
+    for m in mortQry:
+        mortality_rate = compute_MortRate(None, m.id)
+        mRateList.append(mortality_rate)
 
-            mortality_rate = 0
-            mRateList = [] 
-            # (3.2) Mortality % per record
-            for m in mortQry:
-                mortality_rate = compute_MortRate(None, m.id)
-                mRateList.append(mortality_rate)
-
-            # temporarily combine mortality qry w/ computed mortality % in one list
-            mortalityList = zip(mortQry, mRateList)
-        
-        # print(mortalityList)
+    # temporarily combine mortality qry w/ computed mortality % in one list
+    mortalityList = zip(mortQry, mRateList)
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
@@ -615,6 +607,8 @@ def selectedHealthSymptoms(request, farmID):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
+    # get current starter and fattener weights acc. to current Pigpen
+    pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
@@ -705,10 +699,12 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
+    # get current starter and fattener weights acc. to selected Pigpen
+    pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (2) Mortality Records
-    mortForms = Mortality_Form.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).all()
-    # print(mortForms)
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
+    # debug(str(mortQry.query))
 
     mortality_rate = 0
     mRateList = [] 
@@ -971,7 +967,6 @@ def addMortality(request, farmID):
                 date_added = dateToday,
                 mort_tech_id = techID,
                 ref_farm = farmQuery,
-                version = 1,
                 pigpen_grp = farmVersion
             )
             mortality_form.save()

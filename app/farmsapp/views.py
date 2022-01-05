@@ -2028,7 +2028,6 @@ def addActivity(request, farmID):
                 date_added = dateToday,
                 act_tech_id = techID,
                 ref_farm = farmQuery,
-                version = 1,
             )
             activity_form.save()
 
