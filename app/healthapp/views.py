@@ -873,7 +873,7 @@ def post_addCase(request, farmID):
                     debug("(SUCCESS) Incident report added.")
                     # (SUCCESS) Incident has been added. Properly redirect to selected view page
                     # IF death is in the symptoms
-                    if symptomsArr[11] == True or symptomsArr[12] == False:
+                    if symptomsArr[11] == True or symptomsArr[12] == True:
                         messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death')
                     # else
                     else:
