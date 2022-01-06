@@ -1,3 +1,4 @@
+from os import getenv
 from django.contrib.auth.models import User
 from django.db.models import (
     F,Q,
@@ -15,6 +16,7 @@ from django.http import HttpResponse, response
 from django.http import JsonResponse
 from django.core import serializers
 import json
+from twilio.rest import Client
 
 # for Forms
 from .forms import (
@@ -2166,12 +2168,25 @@ def memAnnouncements(request):
         }
     return render(request, 'farmstemp/mem-announce.html', context)
 
-def sendAnnouncement(address, title, category, message):
-    ancmt = {
-        'address': address,
-        'body': category+ ': '+title+'\n'+message
-    }
-    debug(ancmt)
+def sendAnnouncement(bindings, body):
+    ACCOUNT_SID = getenv('TWILIO_ACCOUNT_SID')
+    AUTH_TOKEN = getenv('TWILIO_AUTH_TOKEN')
+    NOTIFY_SERVICE_SID = getenv('TWILIO_NOTIFY_SERVICE_SID')
+
+    client              = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+    print("=====> To Bindings :>", bindings, "<: =====")
+    notification = client.notify.services(NOTIFY_SERVICE_SID).notifications.create(
+        to_binding=bindings,
+        body=body
+    )
+    
+    debug(notification.body)
+    # ancmt = {
+    #     'address': address,
+    #     'body': category+ ': '+title+'\n'+message
+    # }
+    # debug(ancmt)
 
 def memAnnouncements_Approval(request, decision):
     """
@@ -2190,13 +2205,24 @@ def memAnnouncements_Approval(request, decision):
             messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
             for id in idList:
                 ancmt = Mem_Announcement.objects.filter(pk = id).values('title','category','recip_area','mssg')
-                debug(ancmt)
+                addressList = []
+                body = ancmt[0]['category'] + ': ' + ancmt[0]['title'] + '\n' + ancmt[0]['mssg']
+                # debug(ancmt)
+                
                 if ancmt[0]['recip_area'] == 'All Raisers':
                     nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
                 else:
                     nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = ancmt[0]['recip_area']).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
                 for address in nums:
-                    sendAnnouncement(address, ancmt[0]['title'], ancmt[0]['category'], ancmt[0]['mssg'])
+                    addressList.append(
+                        json.dumps({
+                            'binding_type':'sms',
+                            'address': address['hog_raiser__contact_no']
+                        })
+                    )
+                debug(addressList)
+                debug(body)
+                sendAnnouncement(addressList, body)
 
             return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
@@ -2223,12 +2249,20 @@ def createAnnouncement(request):
         autoApprove = ['Assistant Manager']
         if request.user.groups.all()[0].name in autoApprove:
             approvalState = True
+            addressList = []
+            body = request.POST.get("category") + ': ' + request.POST.get("title") + '\n' + request.POST.get("mssg") 
             if request.POST.get("recip_area") == 'All Raisers':
                 nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
             else:
                 nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = request.POST.get("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
             for address in nums:
-                sendAnnouncement(address['hog_raiser__contact_no'], request.POST.get("title"), request.POST.get("category"), request.POST.get("mssg"))
+                addressList.append(
+                        json.dumps({
+                            'binding_type':'sms',
+                            'address': address['hog_raiser__contact_no']
+                        })
+                    )
+            sendAnnouncement(addressList, body)
         else:
             approvalState = None
 
