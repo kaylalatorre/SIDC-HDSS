@@ -79,7 +79,7 @@
                 {% for mort, mRate in mortList %}
                 <tr>
                     <td data-label="Mortality ID">{{ mort.id }}</td>
-                    <td data-label="Farm Code">{{ mort.ref_farm_id }}</td>
+                    <td data-label="Farm Code">{{ mort.ref_farm_id|stringformat:"03d" }}</td>
                     <td data-label="Beg. Inventory" style="text-align: right; width: 15%">{{ mort.num_begInv }}</td>
                     <td data-label="No. of Hogs Died" style="text-align: right; width: 15%">{{ mort.num_today }}</td>
                     <td data-label="No. of Hogs To Date" style="text-align: right; width: 15%">{{ mort.num_toDate }}</td>

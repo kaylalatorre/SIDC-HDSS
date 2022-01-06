@@ -72,7 +72,7 @@
                 {% for incident,symptoms in incident_symptomsList %}
                 <tr>
                     <td data-label="Incident ID">{{ incident.id }}</td>
-                    <td data-label="Farm Code">{{ incident.farm_code }}</td>
+                    <td data-label="Farm Code">{{ incident.farm_code|stringformat:"03d" }}</td>
                     <td data-label="Area">{{ incident.farm_area }}</td>
                     <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> {{ incident.num_pigs_affected }}
                     </td>
