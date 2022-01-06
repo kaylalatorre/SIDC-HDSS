@@ -223,8 +223,8 @@ def selectedHogsHealth(request, farmID):
     total_active = 0
 
     # get current starter and fattener weights acc. to current Pigpen
-    latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
-    pigpenQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").select_related("final_weight").first()
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+    pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # debug("pigpenQry.start_weight -- " + str(pigpenQry.start_weight))
     # debug("pigpenQry.final_weight -- " + str(pigpenQry.final_weight))
@@ -307,7 +307,7 @@ def selectedHogsHealth(request, farmID):
     total_mortalities = mortQry.count()
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPP })
+                                                                    "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPigpen })
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
     """
@@ -1314,7 +1314,7 @@ def saveMortality(request, farmID, mortalityID):
 
         # get mortality to be updated
         mortality = Mortality.objects.filter(id=mortalityID).first()
-        print("OLD MORTALITY RECORD: " + str(mortality.mortality_date) + " - " + str(mortality.num_begInv) + " - " + str(mortality.num_today) + " to " + str(mortality.num_toDate) )
+        # print("OLD MORTALITY RECORD: " + str(mortality.mortality_date) + " - " + str(mortality.num_begInv) + " - " + str(mortality.num_today) + " to " + str(mortality.num_toDate) )
 
         # assign new values
         mortality.mortality_date = mortality_date
@@ -1326,7 +1326,7 @@ def saveMortality(request, farmID, mortalityID):
         mortality.last_updated = dateToday
         
         mortality.save()
-        print("UPDATED MORTALITY RECORD: " + str(mortality.mortality_date) + " - " + str(mortality.num_begInv) + " - " + str(mortality.num_today) + " to " + str(mortality.num_toDate) )
+        # print("UPDATED MORTALITY RECORD: " + str(mortality.mortality_date) + " - " + str(mortality.num_begInv) + " - " + str(mortality.num_today) + " to " + str(mortality.num_toDate) )
         messages.success(request, "Mortality Record has been updated.", extra_tags='update-mortality')
 
         return JsonResponse({"success": "Mortality has been updated."}, status=200)
