@@ -1627,3 +1627,5 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
 
     return render(request, 'healthtemp/rep-hogs-mortality.html', {"areaName": areaName, "isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
                                                                 "areaList": areaQry, "mortList": mortalityList, "mortStats": mortStats})
+
+
