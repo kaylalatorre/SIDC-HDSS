@@ -5,7 +5,7 @@ from django.db.models import (
     When,
     Value)
 from django.forms.formsets import formset_factory
-import re
+# import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -2058,10 +2058,11 @@ def addActivity(request, farmID):
             
         else:
             # print("TEST LOG: activityForm is not valid")
-            formError = str(activityForm.non_field_errors().as_text)
-            print(re.split("\'.*?",formError)[1])
+            # formError = str(activityForm.non_field_errors().as_text)
+            # print(re.split("\'.*?",formError)[1])
 
-            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            # messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")

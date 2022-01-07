@@ -69,7 +69,10 @@ class Farm_Weight(models.Model):
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     code                = models.IntegerField(null=True, blank=True)
-    is_approved         = models.BooleanField(null=True, editable=True)
+    weight_mgtStaff     = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_mgtStaff', null=True, blank=True)
+    is_posted           = models.BooleanField(null=True, editable=True)
+    weight_asm          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_asm', null=True, blank=True)
+    is_noted            = models.BooleanField(null=True, editable=True)
 
     # def __str__(self):
     #     return self.id

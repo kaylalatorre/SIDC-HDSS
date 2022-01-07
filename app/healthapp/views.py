@@ -31,11 +31,8 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-# for string regex
-import re
-
-# for random number (mortality series)
-import random
+# # for string regex
+# import re
 
 # for Forms
 from farmsapp.forms import (
@@ -996,10 +993,11 @@ def addMortality(request, farmID):
 
         else:
             # print("TEST LOG: mortalityForm is not valid")
-            formError = str(mortalityForm.non_field_errors().as_text)
-            print(re.split("\'.*?",formError)[1])
+            # formError = str(mortalityForm.non_field_errors().as_text)
+            # print(re.split("\'.*?",formError)[1])
 
-            messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-mortality')
+            # messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-mortality')
+            messages.error(request, "Error adding mortality record. " + str(mortalityForm.non_field_errors().as_text), extra_tags='add-mortality')
 
     else:
         print("TEST LOG: Add Mortality is not a POST method")
