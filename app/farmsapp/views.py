@@ -2222,7 +2222,8 @@ def memAnnouncements_Approval(request, decision):
                     )
                 debug(addressList)
                 debug(body)
-                sendAnnouncement(addressList, body)
+                if addressList:
+                    sendAnnouncement(addressList, body)
 
             return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
@@ -2262,7 +2263,8 @@ def createAnnouncement(request):
                             'address': address['hog_raiser__contact_no']
                         })
                     )
-            sendAnnouncement(addressList, body)
+            if addressList:
+                    sendAnnouncement(addressList, body)
         else:
             approvalState = None
 
