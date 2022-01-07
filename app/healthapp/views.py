@@ -290,7 +290,8 @@ def selectedHogsHealth(request, farmID):
 
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -306,7 +307,7 @@ def selectedHogsHealth(request, farmID):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
+    return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
                                                                     "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPigpen })
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
@@ -413,7 +414,8 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -603,7 +605,8 @@ def selectedHealthSymptoms(request, farmID):
     pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -698,7 +701,8 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).order_by("-mortality_date").all()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
     mRateList = [] 
