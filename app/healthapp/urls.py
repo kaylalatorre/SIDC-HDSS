@@ -9,8 +9,12 @@ urlpatterns = [
     path('selected-hogs-health/<str:farmID>', views.selectedHogsHealth, name="selectedHogsHealth"),
     path('selected-hogs-health/<str:farmID>/<str:farmVersion>', views.selectedHogsHealthVersion, name="selectedHogsHealthVersion"),
 
+    # reports (asm view)
     path('hogs-mortality', views.hogsMortality, name="hogsMortality"),
+    path('hogs-mortality/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_mortalityRep, name="filter_mortalityRep"),
     path('incidents-reported', views.incidentsReported, name="incidentsReported"),
+    # path('incidents-reported/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_incidentRep, name="filter_incidentRep"),
+
 
     # for technician view
     path('health-symptoms', views.healthSymptoms, name="healthSymptoms"),

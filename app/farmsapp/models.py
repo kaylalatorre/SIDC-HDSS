@@ -67,6 +67,13 @@ class Farm_Weight(models.Model):
     total_numHeads      = models.IntegerField()
     total_kls           = models.FloatField()
     remarks             = models.CharField(max_length=200, null=True, blank=True)
+
+    code                = models.IntegerField(null=True, blank=True)
+    weight_mgtStaff     = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_mgtStaff', null=True, blank=True)
+    is_posted           = models.BooleanField(null=True, editable=True)
+    weight_asm          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_asm', null=True, blank=True)
+    is_noted            = models.BooleanField(null=True, editable=True)
+
     # def __str__(self):
     #     return self.id
 
@@ -213,15 +220,11 @@ class Activity(models.Model):
 
     activity_form       = models.ForeignKey('Activities_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
-
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     code                = models.IntegerField(null=True, blank=True)
-    version             = models.IntegerField(null=True, blank=True)      
     date_added          = models.DateField(null=True, blank=True)
 
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
@@ -249,9 +252,6 @@ class Mortality(models.Model):
     is_approved         = models.BooleanField(null=True, editable=True)
 
     mortality_form       = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
-    
-    # def __str__(self):
-    #     return self.
 
 # MORTALITY FORM Table
 class Mortality_Form(models.Model):
@@ -259,7 +259,6 @@ class Mortality_Form(models.Model):
     pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     
     series              = models.IntegerField(null=True, blank=True)
-    version             = models.IntegerField(null=True, blank=True)
     date_added          = models.DateField(null=True, blank=True)
 
     mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mortTech',  null=True, blank=True)

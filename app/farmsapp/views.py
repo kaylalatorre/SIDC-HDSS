@@ -6,7 +6,7 @@ from django.db.models import (
     When,
     Value)
 from django.forms.formsets import formset_factory
-import re
+# import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -452,7 +452,6 @@ def techSelectedFarm(request, farmID):
     """
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
-
     farmID - selected farmID passed as parameter
     """
 
@@ -601,7 +600,6 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     """
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
-
     farmID - selected farmID passed as parameter
     farmVersion - date of the selected farm version
     """
@@ -925,7 +923,7 @@ def search_bioChecklist(request, biosecID):
     (POST-AJAX) For searching a Biosecurity Checklist based on biosecID.
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in search_bioChecklist()")
 
@@ -1012,7 +1010,7 @@ def update_bioChecklist(request, biosecID):
     (POST-AJAX) For updating a Biosec Checklist based on biosecID
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in update_bioChecklist()/n")
 
@@ -1266,7 +1264,7 @@ def delete_bioChecklist(request, biosecID, farmID):
         - (2) Not current checklist in Farm, simply delete record
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in delete_bioChecklist()/n")
 
@@ -2034,7 +2032,6 @@ def addActivity(request, farmID):
                 date_added = dateToday,
                 act_tech_id = techID,
                 ref_farm = farmQuery,
-                version = 1,
             )
             activity_form.save()
 
@@ -2063,10 +2060,11 @@ def addActivity(request, farmID):
             
         else:
             # print("TEST LOG: activityForm is not valid")
-            formError = str(activityForm.non_field_errors().as_text)
-            print(re.split("\'.*?",formError)[1])
+            # formError = str(activityForm.non_field_errors().as_text)
+            # print(re.split("\'.*?",formError)[1])
 
-            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            # messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")
@@ -3034,6 +3032,7 @@ def computeBioscore(farmID, intbioID, extbioID):
 
     total_measures = 0
     total_checks = 0
+    total_no_input = 0
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
@@ -3086,6 +3085,8 @@ def computeBioscore(farmID, intbioID, extbioID):
                 total_checks += 2
             elif check == 1:
                 total_checks += 0
+            # elif check == 3:
+            #     total_no_input += 
             else:
                 total_NA += 2
 

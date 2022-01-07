@@ -73,27 +73,23 @@
                         <tbody>
                             <tr>
                                 <th>Date Filed</td>
-                                <td> - </td>
+                                <td>{{ start_weight.date_filed }}</td>
                             </tr>
                             <tr>
                                 <th>Ave. Starter Weight</td>
-                                <td> - </td>
+                                <td>{{ start_weight.ave_weight }}</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td> - </td>
+                                <td>{{ start_weight.total_numHeads }}</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td> - </td>
-                            </tr>
-                            <tr>
-                                <th>Amount</td>
-                                <td> - </td>
+                                <td>{{ start_weight.total_kls }}</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
-                                <td> - </td>
+                                <td>{{ start_weight.remarks }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -107,27 +103,23 @@
                         <tbody>
                             <tr>
                                 <th>Date Filed</td>
-                                <td> - </td>
+                                <td>{{ end_weight.date_filed }}</td>
                             </tr>
                             <tr>
                                 <th>Ave. Fattener Weight</td>
-                                <td> - </td>
+                                <td>{{ end_weight.ave_weight }}</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td> - </td>
+                                <td>{{ end_weight.total_numHeads }}</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td> - </td>
-                            </tr>
-                            <tr>
-                                <th>Amount</td>
-                                <td> - </td>
+                                <td>{{ end_weight.total_kls }}</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
-                                <td> - </td>
+                                <td>{{ end_weight.remarks }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -243,7 +235,7 @@
     <section>
         <h2>Mortality Records</h2>
         <div class="box-style">
-            {% if mortalityList|length > 0 %}
+            {% if total_mortalities > 0 %}
             <table class="table" id="mortality-records">
                 <thead>
                     <tr>
@@ -260,7 +252,7 @@
                 <tbody>
                     {% for mort, mRate in mortalityList %}
                     <tr>
-                        <td data-label="Series">{{ mort.series }}</td>
+                        <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                         <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
                         <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
                         <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>
