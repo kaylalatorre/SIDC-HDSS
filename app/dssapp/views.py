@@ -52,6 +52,66 @@ def debug(m):
 
 # (Module 3) Disease Monitoring view functions
 
+def checkDiseaseList(s):
+    """
+    Helper function for checking symptoms that match possible hog diseases.
+    :param sList: symptoms list of the Incident record 
+    :type sList: list
+    """
+
+    diseaseList = []
+
+
+    #TODO: check if sList > 0
+
+
+    # high_fever          
+    # loss_appetite       
+    # depression          
+    # lethargic           
+    # constipation        
+    # vomit_diarrhea      
+    # colored_pigs        
+    # skin_lesions        
+    # hemorrhages         
+    # abn_breathing       
+    # discharge_eyesnose  
+    # death_isDays        
+    # death_isWeek        
+    # cough               
+    # sneeze              
+    # runny_nose          
+    # waste               
+    # boar_dec_libido     
+    # farrow_miscarriage  
+    # weight_loss         
+    # trembling           
+    # conjunctivitis      
+
+    # everything except (constipation, sneezing, runny nose, wasting, red libido boar, weight loss) 
+
+    symp_ASF = [s["high_fever"], s["loss_appetite"], s["depression"], s["lethargic"],
+                s["vomit_diarrhea"], s["colored_pigs"], s["skin_lesions"], s["hemorrhages"],
+                s["abn_breathing"], s["discharge_eyesnose"], s["death_isDays"], s["cough"],
+                s["farrow_miscarriage"], s["trembling"], s["conjunctivitis"]
+               ]
+
+    symp_IAVS = [s["high_fever"], s["loss_appetite"], s["lethargic"], s["abn_breathing"],
+                 s["cough"], s["sneeze"], s["runny_nose"], s["weight_loss"],
+                 s["conjunctivitis"]
+                ]
+
+    if all(symp_IAVS):
+        diseaseList.append("IAV-S")
+
+    if all(symp_ASF):
+        diseaseList.append("ASF")
+
+    debug(diseaseList)
+    return diseaseList
+
+
+
 def diseaseMonitoring(request):
     """
     Gets all Incident (Hog_Symptoms) records within existing dates and all Areas due to no selected filters in dropdown
@@ -124,6 +184,11 @@ def diseaseMonitoring(request):
             'weight_loss'       ,
             'trembling'         ,
             'conjunctivitis').order_by("id").all()
+     
+    dList = []
+    for sRow in symptomsList:
+        dList = checkDiseaseList(sRow)
+        # debug(dList)
     
 
     # combine the 2 previous queries into 1 temporary list
