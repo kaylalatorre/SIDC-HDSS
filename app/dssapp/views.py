@@ -55,8 +55,8 @@ def debug(m):
 def checkDiseaseList(s):
     """
     Helper function for checking symptoms that match possible hog diseases.
-    :param sList: symptoms list of the Incident record 
-    :type sList: list
+    :param s: symptoms list of the Incident record 
+    :type s: list
     """
 
     diseaseList = [] 
