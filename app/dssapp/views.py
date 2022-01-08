@@ -359,8 +359,14 @@ def filter_incidentRep(request, startDate, endDate, areaName):
                 'conjunctivitis').order_by("id").all()
         
 
+    sDiseaseList = []
+    for sRow in symptomsList:
+        dList = checkDiseaseList(sRow)
+        sDiseaseList.append(dList)
+        # debug(sDiseaseList)
+
     # combine the 2 previous queries into 1 temporary list
-    incident_symptomsList = zip(incidList, symptomsList)
+    incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
 
     return render(request, 'dsstemp/rep-disease-monitoring.html', {"isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
