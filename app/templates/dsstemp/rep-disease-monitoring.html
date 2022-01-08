@@ -72,7 +72,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for incident,symptoms in incident_symptomsList %}
+                {% for incident,symptoms,diseaseList in incident_symptomsList %}
                 <tr>
                     <td data-label="Incident ID">{{ incident.id }}</td>
                     <td data-label="Farm Code">{{ incident.farm_code|stringformat:"03d" }}</td>
@@ -94,7 +94,16 @@
                     </td>
 
                     <td data-label="Status">{{ incident.report_status }}</td>
-                    <td></td>
+
+                    <td data-label="Diseases"> 
+                        {% for disease in diseaseList %}
+                        <ul class="ul-diseases"></ul>
+                            <li class="li-diseases">{{ disease }}</li>
+                        </ul>
+                        {% endfor %}
+                    </td>
+
+                    
                 </tr>
                 {% endfor %}
 

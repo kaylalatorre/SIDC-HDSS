@@ -59,40 +59,16 @@ def checkDiseaseList(s):
     :type sList: list
     """
 
-    diseaseList = []
-
-
-    #TODO: check if sList > 0
-
-
-    # high_fever          
-    # loss_appetite       
-    # depression          
-    # lethargic           
-    # constipation        
-    # vomit_diarrhea      
-    # colored_pigs        
-    # skin_lesions        
-    # hemorrhages         
-    # abn_breathing       
-    # discharge_eyesnose  
-    # death_isDays        
-    # death_isWeek        
-    # cough               
-    # sneeze              
-    # runny_nose          
-    # waste               
-    # boar_dec_libido     
-    # farrow_miscarriage  
-    # weight_loss         
-    # trembling           
-    # conjunctivitis      
-
-    # everything except (constipation, sneezing, runny nose, wasting, red libido boar, weight loss) 
+    diseaseList = [] 
 
     symp_ASF = [s["high_fever"], s["loss_appetite"], s["depression"], s["lethargic"],
                 s["vomit_diarrhea"], s["colored_pigs"], s["skin_lesions"], s["hemorrhages"],
                 s["abn_breathing"], s["discharge_eyesnose"], s["death_isDays"], s["cough"],
+                s["farrow_miscarriage"], s["trembling"], s["conjunctivitis"]
+               ]
+
+    symp_CSF = [s["high_fever"], s["loss_appetite"], s["depression"], s["lethargic"],
+                s["constipation"], s["vomit_diarrhea"], s["colored_pigs"],
                 s["farrow_miscarriage"], s["trembling"], s["conjunctivitis"]
                ]
 
@@ -101,13 +77,38 @@ def checkDiseaseList(s):
                  s["conjunctivitis"]
                 ]
 
-    if all(symp_IAVS):
-        diseaseList.append("IAV-S")
+    symp_ADV = [s["high_fever"], s["loss_appetite"], s["vomit_diarrhea"], s["skin_lesions"],
+                s["death_isDays"], s["sneeze"], s["waste"], s["weight_loss"],
+                s["trembling"]
+               ]
+
+    symp_PRRS = [s["high_fever"], s["loss_appetite"], s["lethargic"], s["colored_pigs"],
+                 s["abn_breathing"], s["cough"], s["sneeze"], s["waste"],
+                 s["boar_dec_libido"], s["farrow_miscarriage"]
+                ]
+
+    symp_PED = [s["loss_appetite"], s["vomit_diarrhea"], s["death_isWeek"],
+                s["boar_dec_libido"], s["farrow_miscarriage"], s["weight_loss"]
+               ]
 
     if all(symp_ASF):
         diseaseList.append("ASF")
 
-    debug(diseaseList)
+    if all(symp_CSF):
+        diseaseList.append("ASF")
+
+    if all(symp_IAVS):
+        diseaseList.append("IAV-S")
+
+    if all(symp_ADV):
+        diseaseList.append("ADV")
+
+    if all(symp_PRRS):
+        diseaseList.append("PRRS")
+    
+    if all(symp_PED):
+        diseaseList.append("PED")
+
     return diseaseList
 
 
@@ -184,15 +185,16 @@ def diseaseMonitoring(request):
             'weight_loss'       ,
             'trembling'         ,
             'conjunctivitis').order_by("id").all()
-     
-    dList = []
+
+    sDiseaseList = []
     for sRow in symptomsList:
         dList = checkDiseaseList(sRow)
-        # debug(dList)
+        sDiseaseList.append(dList)
+        # debug(sDiseaseList)
     
 
     # combine the 2 previous queries into 1 temporary list
-    incident_symptomsList = zip(incidList, symptomsList)
+    incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
     return render(request, 'dsstemp/rep-disease-monitoring.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
                                                                     "areaList": areaQry,
