@@ -229,7 +229,6 @@ function viewFarm(farm) {
 
     try{
         url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-        console.log(url);
         location.href = url;
     }catch (error){
         console.log(error);
@@ -334,7 +333,6 @@ function addActivityPage(farmID) {
 
     try{
         url = "/add-activity/" + techFarm;
-        console.log(url);
         location.href = url;
     } catch (error){
         console.log(error);
@@ -476,13 +474,10 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    // console.log(formatDate(actDate));
     var actFormID = activity.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
 
     try{
         url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
-        console.log(url);
         location.href = url;
     }catch (error){
         console.log(error);
@@ -497,13 +492,10 @@ function viewActivityForm(activity) {
 function viewMortalityForm(mortality) {
 
     var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(formatDate(mortDate));
     var mortFormID = mortality.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
 
     try{
         url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
-        console.log(url);
         location.href = url;
     }catch (error){
         console.log(error);
@@ -670,7 +662,6 @@ function filterRepStatus(){
 
     try {
         url = "/add-case/" + farmID;
-        console.log(url);
         location.href = url;
     } catch (error) {
         location.reload(true);
@@ -685,7 +676,6 @@ function filterRepStatus(){
  function addMortalityPage(farmID) {
 
     var farmID = $(farmID).val();
-    console.log(farmID);
 
     try {
         url = "/add-mortality/" + farmID;
@@ -778,3 +768,21 @@ $('#health-symptoms-version').change(function () {
         console.log(error);
     }
 })
+
+/**
+*   - Redirects user from forms approval page to selected weight slip page
+*   
+*   weight = selected weight slip row
+*/
+function viewWeightSlip(weight) {
+
+    var weightDate = weight.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    var weightFormID = weight.parentNode.parentNode.parentNode.id;
+
+    try{
+        url = "/selected-weight-slip/" + weightFormID + "/" + formatDate(weightDate);
+        location.href = url;
+    }catch (error){
+        console.log(error);
+    }
+}

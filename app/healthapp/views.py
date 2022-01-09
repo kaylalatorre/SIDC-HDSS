@@ -1015,45 +1015,37 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     """
 
     # get details of mortality form
-    mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).values(
-                "id",
-                "series",
-                "ref_farm_id",
-                "is_posted",
-                "is_reported",
-                "is_noted",
-                "mort_tech"
-                ).first()
+    mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).first()
 
     # set status of mortality form
     if request.user.groups.all()[0].name == "Paiwi Management Staff":
-        if mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_posted"] == False :
+        elif mortFormQuery.is_posted == False :
             status = 'Rejected'
-        elif mortFormQuery["is_posted"] == None :
+        elif mortFormQuery.is_posted == None :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Extension Veterinarian":
-        if mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_reported"] == False and mortFormQuery["is_posted"] == True :
+        elif mortFormQuery.is_reported == False and mortFormQuery.is_posted == True :
             status = 'Rejected'
-        elif mortFormQuery["is_reported"] == None and mortFormQuery["is_posted"] == True :
+        elif mortFormQuery.is_reported == None and mortFormQuery.is_posted == True :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Assistant Manager":
-        if mortFormQuery["is_noted"] == True and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_noted == True and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_noted"] == False and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        elif mortFormQuery.is_noted == False and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Rejected'
-        elif mortFormQuery["is_noted"] == None and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True : 
+        elif mortFormQuery.is_noted == None and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True : 
             status = 'Pending'
     
     elif request.user.groups.all()[0].name == "Field Technician":
-        if mortFormQuery["is_noted"] == True and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_noted == True and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_noted"] == False or mortFormQuery["is_reported"] == False or mortFormQuery["is_posted"] == False :
+        elif mortFormQuery.is_noted == False or mortFormQuery.is_reported == False or mortFormQuery.is_posted == False :
             status = 'Rejected'
         else :
             status = 'Pending'
@@ -1075,8 +1067,8 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
             'remarks' : mortality.remarks,
         })
 
-    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityFormID' : mortalityFormID, 'mortDate' : mortalityDate, 'mortalityForm' : MortalityForm(),
-                                                                        'mortalities' : mortList, 'formStatus' : status, 'mortFormDetails' : mortFormQuery })
+    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityForm' : MortalityForm(), 'mortalities' : mortList,
+                                                                        'formStatus' : status, 'mortForm' : mortFormQuery })
 
 def approveMortalityForm(request, mortalityFormID):
     """
@@ -1391,6 +1383,44 @@ def addWeight(request, farmID):
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
+
+def selectedWeightSlip(request, weightSlipID, weightDate):
+    """
+    - Display details of selected weight slip
+
+    weightSlipID = id value of selected weight slip
+    weightDate = date_filed value of selected weight slip
+    """
+
+    weightSlip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    # set status of mortality form
+    if request.user.groups.all()[0].name == "Paiwi Management Staff":
+        if weightSlip.is_posted == True :
+            status = 'Approved'
+        elif weightSlip.is_posted == False :
+            status = 'Rejected'
+        elif weightSlip.is_posted == None :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Assistant Manager":
+        if weightSlip.is_noted  == True and weightSlip.is_posted == True :
+            status = 'Approved'
+        elif weightSlip.is_noted  == False and weightSlip.is_posted == True :
+            status = 'Rejected'
+        elif weightSlip.is_noted == None and weightSlip.is_posted == True : 
+            status = 'Pending'
+    
+    elif request.user.groups.all()[0].name == "Field Technician":
+        if weightSlip.is_noted == True and weightSlip.is_posted == True :
+            status = 'Approved'
+        elif weightSlip.is_noted == False or weightSlip.is_posted == False :
+            status = 'Rejected'
+        else :
+            status = 'Pending'
+
+    return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'formStatus' : status })
+
 
 # REPORTS for Module 2
 def incidentsReported(request):
