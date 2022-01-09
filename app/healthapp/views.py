@@ -1067,8 +1067,11 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
             'remarks' : mortality.remarks,
         })
 
-    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityForm' : MortalityForm(), 'mortalities' : mortList,
-                                                                        'formStatus' : status, 'mortForm' : mortFormQuery })
+    # get all other versions of selected activity form
+    versionList = Mortality_Form.objects.filter(series=mortFormQuery.series).all().order_by("-id")
+
+    return render(request, 'healthtemp/selected-mortality-form.html', {'mortalityForm' : MortalityForm(), 'mortalities' : mortList,
+                                                                        'formStatus' : status, 'mortForm' : mortFormQuery, 'mortFormList' : versionList})
 
 def approveMortalityForm(request, mortalityFormID):
     """
@@ -1181,16 +1184,24 @@ def rejectMortalityForm(request, mortalityFormID):
 
         mortality_form.save()
 
+        # duplicate instance (for a new version)
+        mortality_form.pk = None
+        mortality_form.save()
+
         # get all mortalities under mortality form
         mortQuery = Mortality.objects.filter(mortality_form_id=mortalityFormID).all()
         for mortality in mortQuery:
             mortality.last_updated = dateToday
             
-            if mortality_form.is_noted == False or mortality_form.is_checked == False or mortality_form.is_reported == False :
+            if mortality_form.is_noted == False or mortality_form.is_reported == False or mortality_form.is_posted == False :
                 mortality.is_approved = False
 
             mortality.save()
 
+            # duplicate instance (for a new version)
+            mortality.pk = None
+            mortality.mortality_form = mortality_form
+            mortality.save()
 
         # NOTIFY USER (FIELD TECHNICIAN) - A Mortality Form has been rejected by <user>
         messages.success(request, "Mortality Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-mortality')
@@ -1419,7 +1430,10 @@ def selectedWeightSlip(request, weightSlipID, weightDate):
         else :
             status = 'Pending'
 
-    return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'formStatus' : status })
+    # get all other versions of selected weight slip
+    versionList = Farm_Weight.objects.filter(code=weightSlip.code).all().order_by("-id")
+
+    return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'formStatus' : status, 'weightList' : versionList })
 
 def approveWeightSlip(request, weightSlipID):
     """
@@ -1491,7 +1505,11 @@ def rejectWeightSlip(request, weightSlipID):
                 # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been rejected by Assistant Manager
 
         
-        weight_slip.save()    
+        weight_slip.save()
+
+        # duplicate instance (for a new version)
+        weight_slip.pk = None
+        weight_slip.save()
 
         messages.success(request, "Weight Slip has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-weight')
         return JsonResponse({"success": "Weight Slip has been rejected by " + str(request.user.groups.all()[0].name) + "."}, status=200)

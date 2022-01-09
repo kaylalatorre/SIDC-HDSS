@@ -1550,7 +1550,7 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_added")
+                ).order_by("code","-date_added").distinct("code")
     # print(actQuery)
 
     activityList = []
@@ -1632,7 +1632,7 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_added")
+                ).order_by("series","-date_added").distinct("series")
     # print(mortQuery)
 
     mortalityList = []
@@ -1708,7 +1708,7 @@ def formsApproval(request):
                 "is_posted",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_filed")
+                ).order_by("code","-date_filed").distinct("code")
     # print(weightQry)
 
     weightList = []
@@ -1832,8 +1832,11 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'remarks' : activity.remarks,
         })
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityForm' : ActivityForm(), 'activities' : actList,
-                                                                        'formStatus' : status, 'actForm' : actFormQuery })
+    # get all other versions of selected activity form
+    versionList = Activities_Form.objects.filter(code=actFormQuery.code).all().order_by("-id")
+    
+    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList,
+                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList})
 
 def approveActivityForm(request, activityFormID):
     """
@@ -1932,6 +1935,10 @@ def rejectActivityForm(request, activityFormID):
         
         activity_form.save()
 
+        # duplicate instance (for a new version)
+        activity_form.pk = None
+        activity_form.save()
+
         # get all activities under activity form
         actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
@@ -1940,6 +1947,11 @@ def rejectActivityForm(request, activityFormID):
             if activity_form.is_noted == False or activity_form.is_reported == False or activity_form.is_checked == False :
                 activity.is_approved = False
 
+            activity.save()
+
+            # duplicate instance (for a new version)
+            activity.pk = None
+            activity.activity_form = activity_form
             activity.save()
 
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')

@@ -30,7 +30,7 @@
         <div class="flex">
             <p class="flex-item">Resubmit form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitMortality('{{ mortDate }}', '{{ mortalityFormID }}', '{{ farm.id }}')">Resubmit</button> 
+                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitMortality('{{ weight.date_filed }}', '{{ weight.id }}', '{{ weight.ref_farm_id }}')">Resubmit</button> 
             </div>
         </div>
         {% else %}
@@ -39,6 +39,20 @@
     {% else %}
     <br><br>
     {% endif %}
+
+    <div class="flex subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Version </label>
+            <select class="form-select" style="margin-bottom: 0; width: 100px">
+                <option hidden>{{weight.date_filed}}</option>
+                {% for version in weightList %}
+                <option><a href="/selected-weight-slip/{{version.id}}/{{version.date_filed}}">{{version.date_filed}}</a></option>
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
 
     {% if user.groups.all.0.name != 'Field Technician' %}
     <div class="box-style">

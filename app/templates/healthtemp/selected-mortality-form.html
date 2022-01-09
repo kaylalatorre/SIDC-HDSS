@@ -11,7 +11,7 @@
 {% include 'partials/messages.html' %}
 
 <div class="table-container main-div">
-    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Mortality Form for Farm {{mortForm.ref_farm_id|stringformat:'03d'}} ({{mortForm.date_added}})} </h1>
+    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Mortality Form for Farm {{mortForm.ref_farm_id|stringformat:'03d'}} ({{mortForm.date_added}}) </h1>
     <p class="flex-item"> <strong>Series: </strong> {{mortForm.series|stringformat:"03d"}} </p>
     
     {% if user.groups.all.0.name != 'Field Technician' %}
@@ -40,6 +40,20 @@
     {% else %}
     <br><br>
     {% endif %}
+
+    <div class="flex subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Version </label>
+            <select class="form-select" style="margin-bottom: 0; width: 100px">
+                <option hidden>{{mortForm.date_added}}</option>
+                {% for version in mortFormList %}
+                <option><a href="/selected-mortality-form/{{version.id}}/{{version.date_filed}}">{{version.date_added}}</a></option>
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
 
     {% if user.groups.all.0.name != 'Field Technician' %}
     <div class="box-style">

@@ -39,6 +39,20 @@
     <br><br>
     {% endif %}
 
+    <div class="flex subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Version </label>
+            <select class="form-select" style="margin-bottom: 0; width: 100px">
+                <option hidden>{{actForm.date_added}}</option>
+                {% for version in actFormList %}
+                <option><a href="/selected-activity-form/{{version.id}}/{{version.date_filed}}">{{version.date_added}}</a></option>
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
+
     {% if user.groups.all.0.name != 'Field Technician' %}
     <div class="box-style">
         <table class="table">
