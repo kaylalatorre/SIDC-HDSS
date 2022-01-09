@@ -60,7 +60,6 @@ class InternalBiosec(models.Model):
 class Farm_Weight(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
-
     date_filed          = models.DateField(default=now)
     is_starter          = models.BooleanField(default=False)
     ave_weight          = models.FloatField()

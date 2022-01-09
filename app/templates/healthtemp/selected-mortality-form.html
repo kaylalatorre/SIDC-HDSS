@@ -19,7 +19,7 @@
         <div class="flex">
             <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn" id="approve-mortality" style="margin-right: 4px;" onclick="approveMortality('{{ mortalityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+                <button class="primary-btn" id="approve-mortality" style="margin-right: 4px;" onclick="approveMortality('{{ mortForm.id }}', '{{ user.groups.all.0.name }}')">Approve</button> 
                 <button class="primary-btn-red" id="reject-mortality" onclick="rejectMortality('{{ mortForm.id }}', '{{ user.groups.all.0.name }}')">Reject</button>
             </div>
         </div>
@@ -160,7 +160,7 @@
                             <button name="editMortBtn" class="secondary-btn mortality-data" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="editMortality(this)">Edit</button>
                             <button value="{{ mort.id }}" onclick="deleteMortality(this)" type="button" name="deleteMortBtn" class="secondary-btn-red mortality-data">Delete</button>
 
-                            <button name="saveMortBtn" class="secondary-btn mortality-input" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="saveMortality(this, '{{ farm.id }}')">Save</button>
+                            <button name="saveMortBtn" class="secondary-btn mortality-input" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="saveMortality(this, '{{ mortForm.ref_farm_id }}')">Save</button>
                             <button name="cancelMortBtn" class="secondary-btn-red mortality-input" type="button" value="{{ mort.id }}" onclick="cancelMortality(this)">Cancel</button>
                         </div>
                     </td>

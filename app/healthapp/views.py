@@ -1421,6 +1421,83 @@ def selectedWeightSlip(request, weightSlipID, weightDate):
 
     return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'formStatus' : status })
 
+def approveWeightSlip(request, weightSlipID):
+    """
+    - Modify is_posted, and is_noted values of selected weight slip
+    """
+
+    weight_slip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        # update weight slip fields for user approvals
+        # is_posted for paiwi mgt
+        if request.POST.get("is_posted") == 'true' :
+            weight_slip.is_posted = True
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                weight_slip.weight_mgtStaff_id = request.user.id
+
+                # NOTIFY USER (ASSISTANT MANAGER) - A Weight Slip has been sent for approval or is pending for approval
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been approved by Paiwi Management Staff
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'true' :
+            weight_slip.is_noted = True
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                weight_slip.weight_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been approved by Assistant Manager
+
+        
+        weight_slip.save()    
+
+        messages.success(request, "Weight Slip has been approved by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-weight')
+        return JsonResponse({"success": "Weight Slip has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
+
+    messages.error(request, "Failed to approve Weight Slip.", extra_tags='update-weight')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def rejectWeightSlip(request, weightSlipID):
+    """
+    - Modify is_posted, and is_noted values of selected weight slip
+    """
+
+    weight_slip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        # update weight slip fields for user approvals
+        # is_posted for paiwi mgt
+        if request.POST.get("is_posted") == 'false' :
+            weight_slip.is_posted = False
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                weight_slip.weight_mgtStaff_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been rejected by Paiwi Management Staff
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'false' :
+            weight_slip.is_noted = False
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                weight_slip.weight_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been rejected by Assistant Manager
+
+        
+        weight_slip.save()    
+
+        messages.success(request, "Weight Slip has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-weight')
+        return JsonResponse({"success": "Weight Slip has been rejected by " + str(request.user.groups.all()[0].name) + "."}, status=200)
+
+    messages.error(request, "Failed to approve Weight Slip.", extra_tags='update-weight')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
 
 # REPORTS for Module 2
 def incidentsReported(request):

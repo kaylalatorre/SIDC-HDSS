@@ -17,7 +17,7 @@
         <div class="flex">
             <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ activityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+                <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ actForm.id }}', '{{ user.groups.all.0.name }}')">Approve</button> 
                 <button class="primary-btn-red act-forms-btn" id="reject-activity" onclick="rejectActivity('{{ actForm.id }}', '{{ user.groups.all.0.name }}')">Reject</button>
             </div>
         </div>
@@ -218,7 +218,7 @@
                             <button name="editActBtn" class="secondary-btn activity-data" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="editActivity(this)">Edit</button>
                             <button id="remove-activity-row" value="{{ act.id }}" onclick="deleteActivity(this)" type="button" name="deleteActBtn" class="secondary-btn-red activity-data">Delete</button>
 
-                            <button name="saveActBtn" class="secondary-btn activity-input" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveActivity(this, '{{ farm.id }}')">Save</button>
+                            <button name="saveActBtn" class="secondary-btn activity-input" type="button" style="margin-right: 4px;" value="{{ act.id }}" onclick="saveActivity(this, '{{ actForm.ref_farm_id }}')">Save</button>
                             <button name="cancelActBtn" class="secondary-btn-red activity-input" type="button" value="{{ act.id }}" onclick="cancelActivity(this)">Cancel</button>
                         </div>
                     </td>
