@@ -52,6 +52,28 @@ def debug(m):
 
 # (Module 3) Disease Monitoring view functions
 
+def diseaseDashboard(request):
+    # load data for highcharts in disease monitoring dashboard
+    if request.method == 'POST':
+
+        # get all areas
+        areaQry = Area.objects.all().order_by('id')
+
+        # collect all data from each farm under each area
+        for area in areaQry :
+            farmQry = Farm.objects.filter(area_id=area.id).values('id').all()
+
+            for farm in farmQry:
+                # ACTIVE INCIDENTS
+                active_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farm.id).filter(report_status='Active').order_by('-id')[:10].count()
+
+
+                # MORTALITY REPORTS
+        
+
+        # SYMPTOMS REPORTED
+    return render(request, 'home.html', {})
+
 def diseaseMonitoring(request):
     """
     Gets all Incident (Hog_Symptoms) records within existing dates and all Areas due to no selected filters in dropdown
