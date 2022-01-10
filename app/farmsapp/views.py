@@ -6,7 +6,6 @@ from django.db.models import (
     When,
     Value)
 from django.forms.formsets import formset_factory
-# import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -578,8 +577,8 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            return redirect('/tech-selected-farm/' + str(farmID))
             messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+            return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
             print("TEST LOG: Pigpen Measures Form not valid")

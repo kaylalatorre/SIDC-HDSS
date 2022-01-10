@@ -269,16 +269,6 @@ class Mortality_Form(models.Model):
     mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_asm', null=True, blank=True)
     is_noted            = models.BooleanField(null=True, editable=True)
 
-# PPE FORM (Pigpen Evaluation) Table
-# class PPE_Form(models.Model):
-#     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-
-#     ppe_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
-#     ppe_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
-#     is_checked          = models.BooleanField(default=False)
-#     ppe_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
-#     is_approved         = models.BooleanField(default=False)
-
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):
     title               = models.CharField(max_length=150)

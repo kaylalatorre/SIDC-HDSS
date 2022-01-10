@@ -31,9 +31,6 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-# # for string regex
-# import re
-
 # for Forms
 from farmsapp.forms import (
     MortalityForm,
@@ -1372,7 +1369,8 @@ def addWeight(request, farmID):
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks'),
-                code = code
+                code = code,
+                weight_tech_id = request.user.id
             )
             weight.save()
             latestPigpen.start_weight = weight
@@ -1385,7 +1383,8 @@ def addWeight(request, farmID):
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks'),
-                code = code
+                code = code,
+                weight_tech_id = request.user.id
             )
             weight.save()
             latestPigpen.final_weight =  weight
