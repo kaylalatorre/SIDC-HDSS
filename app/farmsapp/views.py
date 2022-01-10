@@ -2005,7 +2005,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             }
 
             activityList.append(activityObject)
-
             i += 1
         
         # print("TEST LOG activityList: " + str(activityList))
@@ -2037,7 +2036,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             )
 
             activity.save()
-
             x += 1
         
         messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')

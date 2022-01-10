@@ -1226,12 +1226,15 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
     # get mortality form from ID
     mortality_form = Mortality_Form.objects.filter(id=mortalityFormID).first()
 
+    # collected farmID of selected tech farm
+    farmQuery = Farm.objects.get(pk=farmID)
+
     # get today's date
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
         # print(request.POST)
-        numMortalities = int(len(request.POST)/6)
+        numMortalities = int(len(request.POST)/4)
 
         # pass all values into each of the array mortalityList
         mortalityList = []
@@ -1239,23 +1242,18 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
         i = 0
         while i < numMortalities:
             mort_date = str('mortalityList[') + str(i) + str('][mort_date]')
-            beg_inv = str('mortalityList[') + str(i) + str('][beg_inv]')
             today = str('mortalityList[') + str(i) + str('][today]')
-            to_date = str('mortalityList[') + str(i) + str('][to_date]')
             source = str('mortalityList[') + str(i) + str('][source]')
             remarks = str('mortalityList[') + str(i) + str('][remarks]')
 
             mortalityObject = {
                 "mortDate" : request.POST.get(mort_date, default=None),
-                "mortBegInv" : request.POST.get(beg_inv, default=None),
                 "mortToday" : request.POST.get(today, default=None),
-                "mortToDate" : request.POST.get(to_date, default=None),
                 "mortSource" : request.POST.get(source, default=None),
                 "mortRemarks" : request.POST.get(remarks, default=None),
             }
 
             mortalityList.append(mortalityObject)
-
             i += 1
         
         # print("TEST LOG mortalityList: " + str(mortalityList))
@@ -1278,16 +1276,15 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
             mortality = Mortality.objects.create(
                 ref_farm_id = farmID,
                 mortality_date = mort['mortDate'],
-                num_begInv = mort['mortBegInv'],
+                num_begInv = farmQuery.total_pigs,
                 num_today = mort['mortToday'],
-                num_toDate = mort['mortToDate'],
+                num_toDate = farmQuery.total_pigs - int(mort['num_today']),
                 source = mort['mortSource'],
                 remarks = mort['mortRemarks'],
                 mortality_form_id = mortality_form.id
             )
 
             mortality.save()
-
             x += 1
         
 

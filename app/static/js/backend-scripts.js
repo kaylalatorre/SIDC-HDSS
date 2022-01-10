@@ -1161,9 +1161,9 @@ function addCase(farmID) {
 function resubmitMortality(mortDate, mortFormID, farmID) {
     // get all data from each column
     var mort_date = document.getElementsByClassName("mort-date-input");
-    var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
+    // var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
     var today = document.getElementsByClassName("mort-today-input");
-    var to_date = document.getElementsByClassName("mort-to-date-input");
+    // var to_date = document.getElementsByClassName("mort-to-date-input");
     var source = document.getElementsByClassName("mort-source-input");
     var remarks = document.getElementsByClassName("mort-remarks-input");
 
@@ -1174,9 +1174,9 @@ function resubmitMortality(mortDate, mortFormID, farmID) {
         if (mort_date[i].value !== '') {
             var mortality = {
                 mort_date : mort_date[i].value,
-                beg_inv : beg_inv[i].value,
+                // beg_inv : beg_inv[i].value,
                 today : today[i].value,
-                to_date : to_date[i].value,
+                // to_date : to_date[i].value,
                 source : source[i].value,
                 remarks : remarks[i].value
             };

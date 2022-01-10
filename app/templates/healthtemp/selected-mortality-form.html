@@ -138,14 +138,14 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Mortality Date</th>
-                    <th>Beginning Inventory</th>
-                    <th>Today</th>
-                    <th>To Date</th>
-                    <!-- <th>Mortality Rate</th> -->
+                    <th width="10%">Mortality Date</th>
+                    <th width="15%">Beginning Inventory</th>
+                    <th width="15%">Today</th>
+                    <th width="15%">To Date</th>
                     <th>Source</th>
                     <th>Remarks</th>
-                    <th></th>
+                    <th style="text-align: right;">Mortality %</th>
+                    <th width="5%"></th>
                 </tr>
             </thead>
             <tbody>
@@ -157,16 +157,16 @@
                         <input type="date" class="form-control mortality-input" id="mortality-date" value="{{mort.format_date}}"> </td>             
                     </td>
                     <td data-label="Beginning Inventory">
-                        <p class="mortality-data">{{mort.num_begInv}}</p>
-                        <input type="number" class="form-control mortality-input" id="beg-inv" value="{{mort.num_begInv}}"> </td>
+                        <p>{{mort.num_begInv}}</p>
+                        <!-- <input type="number" class="form-control mortality-input" id="beg-inv" value="{{mort.num_begInv}}"> </td> -->
                     </td>
                     <td data-label="Today">
                         <p class="mortality-data">{{mort.num_today}}</p>
                         <input type="number" class="form-control mortality-input" id="mortality-today" value="{{mort.num_today}}"> </td>
                     </td>
                     <td data-label="To Date">
-                        <p class="mortality-data">{{mort.num_toDate}}</p>
-                        <input type="number" class="form-control mortality-input" id="mort-to-date" value="{{mort.num_toDate}}"> </td>
+                        <p>{{mort.num_toDate}}</p>
+                        <!-- <input type="number" class="form-control mortality-input" id="mort-to-date" value="{{mort.num_toDate}}"> </td> -->
                     </td>
                     <td data-label="Source">
                         <p class="mortality-data">{{mort.source}}</p>
@@ -176,6 +176,7 @@
                         <p class="mortality-data">{{mort.remarks}}</p>
                         <input type="text" class="form-control mortality-input" id="mortality-remarks" value="{{mort.remarks}}"> </td>
                     </td>
+                    <td></td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button name="editMortBtn" class="secondary-btn mortality-data" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="editMortality(this)">Edit</button>
@@ -223,26 +224,25 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Mortality Date</th>
-                    <th width="10%">Beg. Inv.</th>
-                    <th width="10%">Today</th>
-                    <th width="10%">To Date</th>
+                    <th width="10%">Mortality Date</th>
+                    <th width="15%">Beginning Inventory</th>
+                    <th width="15%">Today</th>
+                    <th width="15%">To Date</th>
                     <th>Source</th>
                     <th>Remarks</th>
                     <th style="text-align: right;">Mortality %</th>
-                    <th></th>
+                    <th width="10%"></th>
                 </tr>
             </thead>
             <tbody id="mortality-table">
                 <tr style="display: none">
                     <td data-label="Mortality Date" id="mortality_date"> 
                         <input type="date" class="form-control mort-date-input" id="mortality-date"> </td>                            
-                    <td data-label="Beg. Inv." id="num_begInv"> 
-                        <input type="number" class="form-control mort-beg-inv-input" id="beg-inv" placeholder="ex. 20"> </td>
+                    <td data-label="Beg. Inv." id="num_begInv"> {{mortalities.0.num_begInv}} </td>
                     <td data-label="Today" id="num_today"> 
                         <input type="number" class="form-control mort-today-input" id="mortality-today" placeholder="ex. 5"> </td>
                     <td data-label="To Date" id="num_toDate">
-                        <input type="number" class="form-control mort-to-date-input" id="mort-to-date" placeholder="ex. 15"> </td>
+                        <!-- <input type="number" class="form-control mort-to-date-input" id="mort-to-date" placeholder="ex. 15"> </td> -->
                     <td data-label="Source" id="source"> 
                         <input type="text" class="form-control mort-source-input" id="mortality-source" placeholder=""> </td>
                     <td data-label="Remarks" id="remarks"> 
