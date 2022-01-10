@@ -73,6 +73,7 @@ def diseaseDashboard(request):
 
         # SYMPTOMS REPORTED
     return render(request, 'home.html', {})
+
 def checkDiseaseList(s):
     """
     Helper function for checking symptoms that match possible hog diseases.
