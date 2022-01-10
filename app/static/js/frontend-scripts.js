@@ -229,7 +229,6 @@ function viewFarm(farm) {
 
     try{
         url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-        console.log(url);
         location.href = url;
     }catch (error){
         console.log(error);
@@ -334,7 +333,6 @@ function addActivityPage(farmID) {
 
     try{
         url = "/add-activity/" + techFarm;
-        console.log(url);
         location.href = url;
     } catch (error){
         console.log(error);
@@ -476,18 +474,35 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    // console.log(formatDate(actDate));
     var actFormID = activity.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
 
     try{
         url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
-        console.log(url);
         location.href = url;
     }catch (error){
         console.log(error);
     }
 }
+
+/**
+*   - Redirects current user to the selected activity form version
+*   - Appends selected activity form ID and form version to URL
+*/
+$('#actform-version').change(function () {
+
+    var value = document.getElementById("actform-version").value;
+
+    var split = value.split("-");
+    var actformID = split[0];
+    var actformDate = split[1];
+
+    try {
+        url = "/selected-activity-form/" + actformID + '/' + formatDate(actformDate);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 /**
 *   - Redirects user from forms approval page to selected mortality form page
@@ -497,18 +512,35 @@ function viewActivityForm(activity) {
 function viewMortalityForm(mortality) {
 
     var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(formatDate(mortDate));
     var mortFormID = mortality.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
 
     try{
         url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
-        console.log(url);
         location.href = url;
     }catch (error){
         console.log(error);
     }
 }
+
+/**
+*   - Redirects current user to the selected mortality form version
+*   - Appends selected mortality form ID and form version to URL
+*/
+$('#mortform-version').change(function () {
+
+    var value = document.getElementById("mortform-version").value;
+
+    var split = value.split("-");
+    var mortformID = split[0];
+    var mortformDate = split[1];
+
+    try {
+        url = "/selected-mortality-form/" + mortformID + '/' + formatDate(mortformDate);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 function viewAnnounce(elem) {
     id = $(elem).attr('id');
@@ -670,7 +702,6 @@ function filterRepStatus(){
 
     try {
         url = "/add-case/" + farmID;
-        console.log(url);
         location.href = url;
     } catch (error) {
         location.reload(true);
@@ -685,7 +716,6 @@ function filterRepStatus(){
  function addMortalityPage(farmID) {
 
     var farmID = $(farmID).val();
-    console.log(farmID);
 
     try {
         url = "/add-mortality/" + farmID;
@@ -773,6 +803,44 @@ $('#health-symptoms-version').change(function () {
 
     try {
         url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects user from forms approval page to selected weight slip page
+*   
+*   weight = selected weight slip row
+*/
+function viewWeightSlip(weight) {
+
+    var weightDate = weight.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    var weightFormID = weight.parentNode.parentNode.parentNode.id;
+
+    try{
+        url = "/selected-weight-slip/" + weightFormID + "/" + formatDate(weightDate);
+        location.href = url;
+    }catch (error){
+        console.log(error);
+    }
+}
+
+/**
+*   - Redirects current user to the selected weight slip version
+*   - Appends selected weight slip ID and slip version to URL
+*/
+$('#weight-version').change(function () {
+
+    var value = document.getElementById("weight-version").value;
+
+    var split = value.split("-");
+    var weightID = split[0];
+    var weightDate = split[1];
+
+    try {
+        url = "/selected-weight-slip/" + weightID + '/' + formatDate(weightDate);
         location.href = url;
     } catch (error) {
         console.log(error);

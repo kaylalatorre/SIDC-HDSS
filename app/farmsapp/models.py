@@ -60,7 +60,6 @@ class InternalBiosec(models.Model):
 class Farm_Weight(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
-
     date_filed          = models.DateField(default=now)
     is_starter          = models.BooleanField(default=False)
     ave_weight          = models.FloatField()
@@ -69,6 +68,7 @@ class Farm_Weight(models.Model):
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     code                = models.IntegerField(null=True, blank=True)
+    weight_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_Tech',  null=True, blank=True)
     weight_mgtStaff     = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_mgtStaff', null=True, blank=True)
     is_posted           = models.BooleanField(null=True, editable=True)
     weight_asm          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_asm', null=True, blank=True)
@@ -268,16 +268,6 @@ class Mortality_Form(models.Model):
     is_reported         = models.BooleanField(null=True, editable=True)
     mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_asm', null=True, blank=True)
     is_noted            = models.BooleanField(null=True, editable=True)
-
-# PPE FORM (Pigpen Evaluation) Table
-# class PPE_Form(models.Model):
-#     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-
-#     ppe_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_tech', null=True, blank=True)
-#     ppe_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_extvet', null=True, blank=True)
-#     is_checked          = models.BooleanField(default=False)
-#     ppe_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ppe_asm', null=True, blank=True)
-#     is_approved         = models.BooleanField(default=False)
 
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):

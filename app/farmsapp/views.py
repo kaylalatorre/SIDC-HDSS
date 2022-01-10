@@ -1,3 +1,4 @@
+from os import getenv
 from django.contrib.auth.models import User
 from django.db.models import (
     F,Q,
@@ -5,7 +6,6 @@ from django.db.models import (
     When,
     Value)
 from django.forms.formsets import formset_factory
-# import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -15,6 +15,7 @@ from django.http import HttpResponse, response
 from django.http import JsonResponse
 from django.core import serializers
 import json
+from twilio.rest import Client
 
 # for Forms
 from .forms import (
@@ -576,8 +577,8 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            return redirect('/tech-selected-farm/' + str(farmID))
             messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+            return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
             print("TEST LOG: Pigpen Measures Form not valid")
@@ -1550,7 +1551,7 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_added").order_by("-id")
+                ).order_by("code","-date_added").distinct("code")
     # print(actQuery)
 
     activityList = []
@@ -1563,6 +1564,8 @@ def formsApproval(request):
         getTech = User.objects.filter(id=act["act_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
+
+        status = None
 
         if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
@@ -1600,7 +1603,6 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_reported"] == None and act["is_checked"] == True:
                     status = 'Pending'
-                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
@@ -1609,19 +1611,17 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
                     status = 'Pending'
-                else: status = None
             
-            else: status = None
-
             # pass into object and append to list 
-            activityObject = {
-                "id" : act["id"],
-                "date_added" : act["date_added"],
-                "status" : status,
-                "prepared_by" : getTech["name"],
-                "farmID" : int(act["ref_farm"]) }
-            
-            activityList.append(activityObject)
+            if status is not None:
+                activityObject = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(act["ref_farm"]) }
+                
+                activityList.append(activityObject)
 
     ## MORTALITY FORMS
     # get all mortality forms
@@ -1633,7 +1633,7 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_added").order_by("-id")
+                ).order_by("series","-date_added").distinct("series")
     # print(mortQuery)
 
     mortalityList = []
@@ -1642,6 +1642,8 @@ def formsApproval(request):
         getTech = User.objects.filter(id=mort["mort_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
+        
+        status = None
 
         if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
@@ -1678,7 +1680,6 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_reported"] == None and mort["is_posted"] == True:
                     status = 'Pending'
-                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
@@ -1687,21 +1688,87 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Pending'
-                else: status = None
-
-            else: status = None
 
             # pass into object and append to list 
-            mortalityObject = {
-                "id" : mort["id"],
-                "date_added" : mort["date_added"],
-                "status" : status,
-                "prepared_by" : getTech["name"],
-                "farmID" : int(mort["ref_farm"]) }
+            if status is not None:
+                mortalityObject = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(mort["ref_farm"]) }
 
-            mortalityList.append(mortalityObject)
+                mortalityList.append(mortalityObject)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList })
+    # # WEIGHT SLIPS
+    # get all weight slips
+    weightQry = Farm_Weight.objects.values(
+                "id",
+                "date_filed",
+                "weight_tech",
+                "is_posted",
+                "is_noted",
+                "ref_farm"
+                ).order_by("code","-date_filed").distinct("code")
+    # print(weightQry)
+
+    weightList = []
+
+    for weight in weightQry:       
+        getTech = User.objects.filter(id=weight["weight_tech"]).annotate(
+            name = Concat('first_name', Value(' '), 'last_name'),
+        ).values("name").first()
+
+        if request.user.groups.all()[0].name == "Field Technician":
+            if getTech["name"] == loggedTech["name"]:
+
+                if weight["is_noted"] == True and weight["is_posted"] == True:
+                    status = 'Approved'
+                elif weight["is_noted"] == False or weight["is_posted"] == False:
+                    status = 'Rejected'
+                elif weight["is_noted"] == None or weight["is_posted"] == None:
+                    status = 'Pending'
+
+                # pass into object and append to list 
+                weightObject = {
+                    "id" : weight["id"],
+                    "date_added" : weight["date_filed"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(weight["ref_farm"]) }
+            
+                weightList.append(weightObject)
+        
+        else : 
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                if weight["is_posted"] == True :
+                    status = 'Approved'
+                elif weight["is_posted"] == False :
+                    status = 'Rejected'
+                elif weight["is_posted"] == None :
+                    status = 'Pending'
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if weight["is_noted"] == True and weight["is_posted"] == True:
+                    status = 'Approved'
+                elif weight["is_noted"] == False and weight["is_posted"] == True:
+                    status = 'Rejected'
+                elif weight["is_noted"] == None and weight["is_posted"] == True:
+                    status = 'Pending'
+                else: status = None
+
+            # pass into object and append to list 
+            if status is not None:
+                weightObject = {
+                    "id" : weight["id"],
+                    "date_added" : weight["date_filed"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(weight["ref_farm"]) }
+            
+                weightList.append(weightObject)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList, 'weightList' : weightList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1712,45 +1779,40 @@ def selectedActivityForm(request, activityFormID, activityDate):
     """
 
     # get details of activity form
-    actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
-                "id",
-                "ref_farm_id",
-                "is_checked",
-                "is_reported",
-                "is_noted",
-                "act_tech"
-                ).first()
-    # print(str(actFormQuery))
+    actFormQuery = Activities_Form.objects.filter(id=activityFormID).first()
+
+    # get latest
+    latestForm = Activities_Form.objects.filter(code=actFormQuery.code).last()
 
     # set status of activity form
     if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-        if actFormQuery["is_checked"] == True :
+        if actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_checked"] == False :
+        elif actFormQuery.is_checked == False :
             status = 'Rejected'
-        elif actFormQuery["is_checked"] == None :
+        elif actFormQuery.is_checked == None :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Extension Veterinarian":
-        if actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        if actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_reported"] == False and actFormQuery["is_checked"] == True :
+        elif actFormQuery.is_reported == False and actFormQuery.is_checked == True :
             status = 'Rejected'
-        elif actFormQuery["is_reported"] == None and actFormQuery["is_checked"] == True :
+        elif actFormQuery.is_reported == None and actFormQuery.is_checked == True :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Assistant Manager":
-        if actFormQuery["is_noted"] == True and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        if actFormQuery.is_noted == True and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_noted"] == False and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        elif actFormQuery.is_noted == False and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Rejected'
-        elif actFormQuery["is_noted"] == None and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True : 
+        elif actFormQuery.is_noted == None and actFormQuery.is_reported == True and actFormQuery.is_checked == True : 
             status = 'Pending'
     
     elif request.user.groups.all()[0].name == "Field Technician":
-        if actFormQuery["is_noted"] == True and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        if actFormQuery.is_noted == True and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_noted"] == False or actFormQuery["is_reported"] == False or actFormQuery["is_checked"] == False :
+        elif actFormQuery.is_noted == False or actFormQuery.is_reported == False or actFormQuery.is_checked == False :
             status = 'Rejected'
         else :
             status = 'Pending'
@@ -1774,8 +1836,11 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'remarks' : activity.remarks,
         })
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'activityForm' : ActivityForm(),
-                                                                        'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
+    # get all other versions of selected activity form
+    versionList = Activities_Form.objects.filter(code=actFormQuery.code).all().order_by("-id")
+    
+    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm,
+                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList})
 
 def approveActivityForm(request, activityFormID):
     """
@@ -1874,6 +1939,10 @@ def rejectActivityForm(request, activityFormID):
         
         activity_form.save()
 
+        # duplicate instance (for a new version)
+        activity_form.pk = None
+        activity_form.save()
+
         # get all activities under activity form
         actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
@@ -1882,6 +1951,11 @@ def rejectActivityForm(request, activityFormID):
             if activity_form.is_noted == False or activity_form.is_reported == False or activity_form.is_checked == False :
                 activity.is_approved = False
 
+            activity.save()
+
+            # duplicate instance (for a new version)
+            activity.pk = None
+            activity.activity_form = activity_form
             activity.save()
 
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
@@ -1932,7 +2006,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             }
 
             activityList.append(activityObject)
-
             i += 1
         
         # print("TEST LOG activityList: " + str(activityList))
@@ -1964,7 +2037,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             )
 
             activity.save()
-
             x += 1
         
         messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
@@ -2164,12 +2236,25 @@ def memAnnouncements(request):
         }
     return render(request, 'farmstemp/mem-announce.html', context)
 
-def sendAnnouncement(address, title, category, message):
-    ancmt = {
-        'address': address,
-        'body': category+ ': '+title+'\n'+message
-    }
-    debug(ancmt)
+def sendAnnouncement(bindings, body):
+    ACCOUNT_SID = getenv('TWILIO_ACCOUNT_SID')
+    AUTH_TOKEN = getenv('TWILIO_AUTH_TOKEN')
+    NOTIFY_SERVICE_SID = getenv('TWILIO_NOTIFY_SERVICE_SID')
+
+    client              = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+    print("=====> To Bindings :>", bindings, "<: =====")
+    notification = client.notify.services(NOTIFY_SERVICE_SID).notifications.create(
+        to_binding=bindings,
+        body=body
+    )
+    
+    debug(notification.body)
+    # ancmt = {
+    #     'address': address,
+    #     'body': category+ ': '+title+'\n'+message
+    # }
+    # debug(ancmt)
 
 def memAnnouncements_Approval(request, decision):
     """
@@ -2188,13 +2273,25 @@ def memAnnouncements_Approval(request, decision):
             messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
             for id in idList:
                 ancmt = Mem_Announcement.objects.filter(pk = id).values('title','category','recip_area','mssg')
-                debug(ancmt)
+                addressList = []
+                body = ancmt[0]['category'] + ': ' + ancmt[0]['title'] + '\n' + ancmt[0]['mssg']
+                # debug(ancmt)
+                
                 if ancmt[0]['recip_area'] == 'All Raisers':
                     nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
                 else:
                     nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = ancmt[0]['recip_area']).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
                 for address in nums:
-                    sendAnnouncement(address, ancmt[0]['title'], ancmt[0]['category'], ancmt[0]['mssg'])
+                    addressList.append(
+                        json.dumps({
+                            'binding_type':'sms',
+                            'address': address['hog_raiser__contact_no']
+                        })
+                    )
+                debug(addressList)
+                debug(body)
+                if addressList:
+                    sendAnnouncement(addressList, body)
 
             return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
@@ -2221,12 +2318,21 @@ def createAnnouncement(request):
         autoApprove = ['Assistant Manager']
         if request.user.groups.all()[0].name in autoApprove:
             approvalState = True
+            addressList = []
+            body = request.POST.get("category") + ': ' + request.POST.get("title") + '\n' + request.POST.get("mssg") 
             if request.POST.get("recip_area") == 'All Raisers':
                 nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
             else:
                 nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = request.POST.get("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
             for address in nums:
-                sendAnnouncement(address['hog_raiser__contact_no'], request.POST.get("title"), request.POST.get("category"), request.POST.get("mssg"))
+                addressList.append(
+                        json.dumps({
+                            'binding_type':'sms',
+                            'address': address['hog_raiser__contact_no']
+                        })
+                    )
+            if addressList:
+                    sendAnnouncement(addressList, body)
         else:
             approvalState = None
 
