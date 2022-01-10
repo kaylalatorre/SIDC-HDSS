@@ -26,7 +26,7 @@
         <br><br>
         {% endif %}
     {% elif user.groups.all.0.name == 'Field Technician' %}
-        {% if formStatus == 'Rejected' %}
+        {% if formStatus == 'Rejected' and latest.id == weight.id %}
         <div class="flex">
             <p class="flex-item">Resubmit form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
@@ -43,10 +43,18 @@
     <div class="flex subheading">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Version </label>
-            <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option hidden>{{weight.date_filed}}</option>
+            <select class="form-select" name="weight-version" id="weight-version" style="margin-bottom: 0; width: 100px">
+                {% if latest.id == weight.id %}
+                    <option hidden>{{weight.date_filed}} (Latest Version)</option>
+                {% else %}
+                    <option hidden>{{weight.date_filed}}</option>
+                {% endif %}
                 {% for version in weightList %}
-                <option><a href="/selected-weight-slip/{{version.id}}/{{version.date_filed}}">{{version.date_filed}}</a></option>
+                    {% if latest.id == version.id %}
+                    <option value="{{version.id}}-{{version.date_filed}}">{{version.date_filed}} (Latest Version)</option>
+                    {% else %}
+                    <option value="{{version.id}}-{{version.date_filed}}">{{version.date_filed}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -87,26 +95,25 @@
             </tbody>
         </table>
 
-        <br><br>
-            <div id="weight-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    {% if weight.is_posted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
-                </div>
-                <div class="mb-3">
-                    {% if weight.is_noted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
+        <div id="weight-approvals" style="margin-top: 50px;">
+            <h3> Checked by: </h3>
+            <div class="mb-3">
+                {% if weight.is_posted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
+                {% endif %}
+                <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
             </div>
+            <div class="mb-3">
+                {% if weight.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
+                {% endif %}
+                <label class="form-check-label" for="cb-am">Assistant Manager</label>
+            </div>
+        </div>
     </div>
 
 
@@ -123,7 +130,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% if formStatus == 'Rejected' %}
+                {% if formStatus == 'Rejected' and latest.id == weight.id %}
                 <tr id="{{ weight.id }}" value="{{ weight.id }}">
                     <td data-label="Date Filed">
                         <p class="weight-data">{{weight.date_filed}}</p>
@@ -175,8 +182,7 @@
             </tbody>
         </table>
 
-        <br><br>
-        <div id="weight-approvals">
+        <div id="weight-approvals" style="margin-top: 50px;">
             <h3> Checked by: </h3>
             <div class="mb-3">
                 {% if weight.is_posted == True %}

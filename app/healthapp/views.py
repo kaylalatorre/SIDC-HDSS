@@ -1017,6 +1017,9 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     # get details of mortality form
     mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).first()
 
+    # get latest
+    latestForm = Mortality_Form.objects.filter(series=mortFormQuery.series).last()
+
     # set status of mortality form
     if request.user.groups.all()[0].name == "Paiwi Management Staff":
         if mortFormQuery.is_posted == True :
@@ -1070,7 +1073,7 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     # get all other versions of selected activity form
     versionList = Mortality_Form.objects.filter(series=mortFormQuery.series).all().order_by("-id")
 
-    return render(request, 'healthtemp/selected-mortality-form.html', {'mortalityForm' : MortalityForm(), 'mortalities' : mortList,
+    return render(request, 'healthtemp/selected-mortality-form.html', {'mortalityForm' : MortalityForm(), 'mortalities' : mortList, 'latest' : latestForm,
                                                                         'formStatus' : status, 'mortForm' : mortFormQuery, 'mortFormList' : versionList})
 
 def approveMortalityForm(request, mortalityFormID):
@@ -1403,7 +1406,11 @@ def selectedWeightSlip(request, weightSlipID, weightDate):
     weightDate = date_filed value of selected weight slip
     """
 
+    # get selected
     weightSlip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    # get latest
+    latestSlip = Farm_Weight.objects.filter(code=weightSlip.code).last()
 
     # set status of mortality form
     if request.user.groups.all()[0].name == "Paiwi Management Staff":
@@ -1433,7 +1440,8 @@ def selectedWeightSlip(request, weightSlipID, weightDate):
     # get all other versions of selected weight slip
     versionList = Farm_Weight.objects.filter(code=weightSlip.code).all().order_by("-id")
 
-    return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'formStatus' : status, 'weightList' : versionList })
+    return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'latest' : latestSlip,
+                                                                    'formStatus' : status, 'weightList' : versionList })
 
 def approveWeightSlip(request, weightSlipID):
     """

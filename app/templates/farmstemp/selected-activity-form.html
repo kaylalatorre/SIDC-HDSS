@@ -25,7 +25,7 @@
         <br><br>
         {% endif %}
     {% elif user.groups.all.0.name == 'Field Technician' %}
-        {% if formStatus == 'Rejected' %}
+        {% if formStatus == 'Rejected' and latest.id == actForm.id %}
         <div class="flex">
             <p class="flex-item">Resubmit form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
@@ -42,10 +42,18 @@
     <div class="flex subheading">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Version </label>
-            <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option hidden>{{actForm.date_added}}</option>
+            <select class="form-select" name="actform-version" id="actform-version" style="margin-bottom: 0; width: 100px">
+                {% if latest.id == actForm.id %}
+                    <option hidden>{{actForm.date_added}} (Latest Version)</option>
+                {% else %}
+                    <option hidden>{{actForm.date_added}}</option>
+                {% endif %}
                 {% for version in actFormList %}
-                <option><a href="/selected-activity-form/{{version.id}}/{{version.date_filed}}">{{version.date_added}}</a></option>
+                    {% if latest.id == version.id %}
+                    <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}} (Latest Version)</option>
+                    {% else %}
+                    <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -88,34 +96,33 @@
             </tbody>
         </table>
 
-        <br><br>
-            <div id="activity-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    {% if actForm.is_checked == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
-                </div>
-                <div class="mb-3">
-                    {% if actForm.is_reported == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    {% if actForm.is_noted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
+        <div id="activity-approvals" style="margin-top: 50px;">
+            <h3> Checked by: </h3>
+            <div class="mb-3">
+                {% if actForm.is_checked == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
+                {% endif %}
+                <label class="form-check-label" for="cb-los">Livestock Operation Specialist</label>
             </div>
+            <div class="mb-3">
+                {% if actForm.is_reported == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                {% endif %}
+                <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+            </div>
+            <div class="mb-3">
+                {% if actForm.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                {% endif %}
+                <label class="form-check-label" for="cb-am">Assistant Manager</label>
+            </div>
+        </div>
     </div>
 
 
@@ -134,7 +141,7 @@
             </thead>
             <tbody id="activity-form-table">
             {% for act in activities %}
-                {% if formStatus == 'Rejected' %}
+                {% if formStatus == 'Rejected' and latest.id == actForm.id %}
                 <tr id="{{ act.id }}" value="{{ act.id }}">
                     <td data-label="Date">
                         <p class="activity-data act-date">{{act.date}}</p>
@@ -262,7 +269,7 @@
             </tbody>
         </table>
 
-        {% if formStatus == 'Rejected' %}
+        {% if formStatus == 'Rejected' and latest.id == actForm.id %}
         <br>
         <div class="flex subheading">
             <p class="flex-item"> Add new activities here. </p>
@@ -303,8 +310,7 @@
         </table>
         {% endif %}
         
-        <br><br>
-        <div id="activity-approvals">
+        <div id="activity-approvals" style="margin-top: 50px;">
             <h3> Checked by: </h3>
             <div class="mb-3">
                 {% if actForm.is_checked == True %}

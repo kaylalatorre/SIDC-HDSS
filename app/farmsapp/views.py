@@ -1780,6 +1780,9 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # get details of activity form
     actFormQuery = Activities_Form.objects.filter(id=activityFormID).first()
 
+    # get latest
+    latestForm = Activities_Form.objects.filter(code=actFormQuery.code).last()
+
     # set status of activity form
     if request.user.groups.all()[0].name == "Livestock Operation Specialist":
         if actFormQuery.is_checked == True :
@@ -1835,7 +1838,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # get all other versions of selected activity form
     versionList = Activities_Form.objects.filter(code=actFormQuery.code).all().order_by("-id")
     
-    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList,
+    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm,
                                                                     'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList})
 
 def approveActivityForm(request, activityFormID):
