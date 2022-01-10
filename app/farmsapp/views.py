@@ -2056,7 +2056,7 @@ def addActivity(request, farmID):
     """
     
     # generate code number
-    latestForm = Activities_Form.objects.last()
+    latestForm = Activities_Form.objects.order_by("-code").last()
     try:
         code = int(latestForm.code) + 1
     except:

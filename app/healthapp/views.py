@@ -907,7 +907,7 @@ def addMortality(request, farmID):
     """
     
     # generate series number
-    latestForm = Mortality_Form.objects.last()
+    latestForm = Mortality_Form.objects.order_by("-series").last()
     try:
         series = int(latestForm.series) + 1
     except:
@@ -1345,7 +1345,7 @@ def addWeight(request, farmID):
 
     if request.method == 'POST':
         # generate code number
-        latestWeight = Farm_Weight.objects.last()
+        latestWeight = Farm_Weight.objects.order_by("-code").last()
         try:
             code = int(latestWeight.code) + 1
         except:
