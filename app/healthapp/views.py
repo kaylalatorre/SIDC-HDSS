@@ -320,8 +320,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        ave_currWeight = F("farm_weight__ave_weight")
-        # is_starterWeight = F("farm_weight__is_starter")
         ).values(
             "id",
             "fname",
@@ -329,8 +327,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
             "farm_area",
             "total_pigs",
             "last_updated",
-            "ave_currWeight"
-            # "is_starterWeight"
             ).first()
     # debug(qry)
 
