@@ -3,70 +3,130 @@
 {% load static %}
 
 {% block page_title %}
-    {% if farm_code < 10 %}
-    <title>SIDC-HDSS | Hogs Health 00{{farm_code}} </title>
-    {% elif farm_code < 100 %}
-    <title>SIDC-HDSS | Hogs Health 0{{farm_code}} </title>
-    {% else %}
-    <title>SIDC-HDSS | Hogs Health {{farm_code}} </title>
-    {% endif %}
+<title>SIDC-HDSS | Hogs Health {{farm_code|stringformat:"03d"}} </title>
 {% endblock page_title %}
 
 {% block section %}
 
-<!-- TEMP PLACEHOLDER to test Django messages -->
-{% for mssg in messages %}
-    {% if mssg.tags == "add-incidCase" %}
-    <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }}</div>
-        <button type="button" class="no-shadow close" data-bs-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endif %}
-{% endfor %}
+{% include 'partials/messages.html' %}
 
 <div class="main-div">
     <div class="flex subheading">
-        {% if farm_code < 10 %}
-        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 00{{farm_code}}</h1>
-        {% elif farm_code < 100 %}
-        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 0{{farm_code}}</h1>
-        {% else %}
-        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code}}</h1>
-        {% endif %}
+        <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
         <div class="dropdown">
             <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               + Add New
             </a>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
-              <li><a class="dropdown-item" href="/add-mortality/{{farm_code}}">Mortality Record</a></li>
+              <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
+              <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addMortalityPage(this)">Mortality Record</button></li>
+              <li><a class="dropdown-item" href="/add-weight/{{farm_code}}">Weight Slip Record</a></li>
             </ul>
         </div>
     </div>
-
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 72%">
-            {% if farm_code < 10 %}
-            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 00{{farm_code}}</h1>
-            {% elif farm_code < 100 %}
-            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > 0{{farm_code}}</h1>
-            {% else %}
-            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code}}</h1>
-            {% endif %}
+            <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
             <div class="dropdown">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   + Add New
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><button class="dropdown-item no-shadow" value="{{ farm_code }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
-                    <li><a class="dropdown-item" href="/add-mortality/{{farm_code}}">Mortality Record</a></li>
+                    <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
+                    <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addMortalityPage(this)">Mortality Record</button></li>
+                    <li><a class="dropdown-item" href="/add-weight/{{farm_code}}">Weight Slip Record</a></li>
                 </ul>
             </div>
         </div>
     </div>
-
+    <div class="flex subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Batch </label>
+            <select class="form-select" name="health-symptoms-version" id="health-symptoms-version" style="margin-bottom: 0; width: 100px">
+                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
+                {% for farmVersion in version %}
+                <option value="{{farm_code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
+    <div class="flex mobile-subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Batch </label>
+            <select class="form-select" name="health-symptoms-version" id="health-symptoms-version" style="margin-bottom: 0; width: 100px">
+                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
+                {% for farmVersion in version %}
+                <option value="{{farm_code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <hr>
+    <section>
+        <div class="flex">
+            <div class="flex-item">
+                <h2>Weight Slip Details (Starter)</h2>
+                <div class="box-style">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Filed</td>
+                                <td>{{ start_weight.date_filed }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ave. Starter Weight</td>
+                                <td>{{ start_weight.ave_weight }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total No. of Heads</td>
+                                <td>{{ start_weight.total_numHeads }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Kls</td>
+                                <td>{{ start_weight.total_kls }}</td>
+                            </tr>
+                            <tr>
+                                <th>Remarks</td>
+                                <td>{{ start_weight.remarks }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex-item">
+                <h2>Weight Slip Details (Fattener)</h2>
+                <div class="box-style">
+                    <!-- If no fattener record yet, display empty table -->
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Filed</td>
+                                <td>{{ end_weight.date_filed }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ave. Fattener Weight</td>
+                                <td>{{ end_weight.ave_weight }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total No. of Heads</td>
+                                <td>{{ end_weight.total_numHeads }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Kls</td>
+                                <td>{{ end_weight.total_kls }}</td>
+                            </tr>
+                            <tr>
+                                <th>Remarks</td>
+                                <td>{{ end_weight.remarks }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
     <section>
         <div class="flex subheading">
             <h2 class="flex-item">Incidents Reported</h2>
@@ -82,7 +142,6 @@
                 </ul>
             </div>
         </div>
-        <br>
         <div class="flex mobile-subheading " style="width: 72%">
             <h2 class="flex-item">Incidents Reported</h2>
             <div class="dropdown">
@@ -176,7 +235,7 @@
     <section>
         <h2>Mortality Records</h2>
         <div class="box-style">
-            {% if mortalityList|length > 0 %}
+            {% if total_mortalities > 0 %}
             <table class="table" id="mortality-records">
                 <thead>
                     <tr>
@@ -193,7 +252,7 @@
                 <tbody>
                     {% for mort, mRate in mortalityList %}
                     <tr>
-                        <td data-label="Series">{{ mort.series }}</td>
+                        <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                         <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
                         <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
                         <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>

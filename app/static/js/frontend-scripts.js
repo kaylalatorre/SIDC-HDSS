@@ -229,12 +229,9 @@ function viewFarm(farm) {
 
     try{
         url = "/selected-farm/" + farm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-        console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        // location.reload(true);
     }
 }
 
@@ -250,10 +247,59 @@ function viewTechFarm(techFarm) {
         url = "/tech-selected-farm/" + techFarm.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
+
+/**
+*   - Redirects current user to the selected farm version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display pigpens of selected farm version
+*/
+$('#farm-version').change(function () {
+
+    var value = document.getElementById("farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-farm/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects current user (technician) to the selected farm version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display pigpens of selected farm version
+*/
+$('#tech-farm-version').change(function () {
+
+    var value = document.getElementById("tech-farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 /**
 *   - Redirects current technician from biosecurity page to add-checklist page for selected farm.
@@ -270,8 +316,7 @@ function addBiosecPage(farmID) {
         url = "/add-checklist/" + techFarm;
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -288,11 +333,9 @@ function addActivityPage(farmID) {
 
     try{
         url = "/add-activity/" + techFarm;
-        console.log(url);
         location.href = url;
     } catch (error){
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -402,9 +445,9 @@ function addMortalityRow() {
 
     $("#mortality-table").append("<tr> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
-        <td data-label='Beg. Inv.'> " + num_begInv + " </td> \
-        <td data-label='Today'> " + num_today + " </td> \
-        <td data-label='To Date'> " + num_toDate + " </td> \
+        <td data-label='Beg. Inv.' id='num_begInv'> " + num_begInv + " </td> \
+        <td data-label='Today' id='num_today'> " + num_today + " </td> \
+        <td data-label='To Date' onblur='compute_toDate(this)' id='num_toDate'> " + num_toDate + " </td> \
         <td data-label='Source'> " + source + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \
@@ -431,20 +474,35 @@ function wasteMgtOther(option){
 function viewActivityForm(activity) {
 
     var actDate = activity.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    // console.log(formatDate(actDate));
     var actFormID = activity.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
 
     try{
         url = "/selected-activity-form/" + actFormID + "/" + formatDate(actDate);
-        console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
     }
 }
+
+/**
+*   - Redirects current user to the selected activity form version
+*   - Appends selected activity form ID and form version to URL
+*/
+$('#actform-version').change(function () {
+
+    var value = document.getElementById("actform-version").value;
+
+    var split = value.split("-");
+    var actformID = split[0];
+    var actformDate = split[1];
+
+    try {
+        url = "/selected-activity-form/" + actformID + '/' + formatDate(actformDate);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 /**
 *   - Redirects user from forms approval page to selected mortality form page
@@ -454,20 +512,35 @@ function viewActivityForm(activity) {
 function viewMortalityForm(mortality) {
 
     var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    console.log(formatDate(mortDate));
     var mortFormID = mortality.parentNode.parentNode.parentNode.id;
-    // console.log(actFormID);
 
     try{
         url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
-        console.log(url);
         location.href = url;
     }catch (error){
-        console.log("Something went wrong. Restarting...");
         console.log(error);
-        location.reload(true);
     }
 }
+
+/**
+*   - Redirects current user to the selected mortality form version
+*   - Appends selected mortality form ID and form version to URL
+*/
+$('#mortform-version').change(function () {
+
+    var value = document.getElementById("mortform-version").value;
+
+    var split = value.split("-");
+    var mortformID = split[0];
+    var mortformDate = split[1];
+
+    try {
+        url = "/selected-mortality-form/" + mortformID + '/' + formatDate(mortformDate);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 function viewAnnounce(elem) {
     id = $(elem).attr('id');
@@ -615,3 +688,161 @@ function filterRepStatus(){
         }    
     }
 } 
+
+/**
+ *   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
+ *   - Appends selected farm ID to url that will display an empty symptoms checklist.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
+ function addSymptomsPage(farmID) {
+
+    var farmID = $(farmID).val();
+    console.log(farmID);
+
+    try {
+        url = "/add-case/" + farmID;
+        location.href = url;
+    } catch (error) {
+        location.reload(true);
+    }
+}
+
+/**
+ *   - Redirects current technician from selected health symptoms page to add-mortality page for selected farm.
+ *   
+ *   farmID = button value (carries ID of selected farm)
+ */
+ function addMortalityPage(farmID) {
+
+    var farmID = $(farmID).val();
+
+    try {
+        url = "/add-mortality/" + farmID;
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+/**
+ *   - Hides current pigpen data
+ *   - Display pigpen input (django form)
+ */
+ function showPigpenInput() {
+    var toShow = document.getElementsByClassName("pigpen-input");
+    var toHide = document.getElementsByClassName("pigpen-data");
+
+    for (var i = 0; i < toHide.length; i++) {
+        toHide[i].style.display = "none";
+    }
+    for (var i = 0; i < toShow.length; i++) {
+        toShow[i].style.display = "block";
+    }
+
+}
+
+/**
+ *   - Cancel adding of new pigpen
+ *   - Hide pigpen input and display current pigpens
+ */
+ function cancelAddPigpen() {
+    var toHide = document.getElementsByClassName("pigpen-input");
+    var toShow = document.getElementsByClassName("pigpen-data");
+
+    for (var i = 0; i < toHide.length; i++) {
+        toHide[i].style.display = "none";
+    }
+    for (var i = 0; i < toShow.length; i++) {
+        toShow[i].style.display = "block";
+    }
+
+}
+
+/**
+*   - Redirects current user to the selected hogs health version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display weight slips, incidents, and mortality records of selected farm version
+*/
+$('#hogs-health-version').change(function () {
+
+    var value = document.getElementById("hogs-health-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-hogs-health/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects current user (tecnician) to the selected hogs health & symptoms version 
+*   - Appends selected farm ID and farm version to URL
+*   - Will display incidents, and mortality records of selected farm version
+*/
+$('#health-symptoms-version').change(function () {
+
+    var value = document.getElementById("health-symptoms-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    console.log("Farm ID: " + farmID);
+    console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+/**
+*   - Redirects user from forms approval page to selected weight slip page
+*   
+*   weight = selected weight slip row
+*/
+function viewWeightSlip(weight) {
+
+    var weightDate = weight.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
+    var weightFormID = weight.parentNode.parentNode.parentNode.id;
+
+    try{
+        url = "/selected-weight-slip/" + weightFormID + "/" + formatDate(weightDate);
+        location.href = url;
+    }catch (error){
+        console.log(error);
+    }
+}
+
+/**
+*   - Redirects current user to the selected weight slip version
+*   - Appends selected weight slip ID and slip version to URL
+*/
+$('#weight-version').change(function () {
+
+    var value = document.getElementById("weight-version").value;
+
+    var split = value.split("-");
+    var weightID = split[0];
+    var weightDate = split[1];
+
+    try {
+        url = "/selected-weight-slip/" + weightID + '/' + formatDate(weightDate);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})

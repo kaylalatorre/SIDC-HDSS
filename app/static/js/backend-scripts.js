@@ -174,8 +174,7 @@ $('#farm-code').change(function () {
             console.log(url);
             location.href = url;
         } catch (error) {
-            console.log("Fetching biosec details failed.");
-            // location.reload(true);
+            console.log(error);
         }
     }
 });
@@ -222,8 +221,7 @@ function filterFarmRep() {
 
 
     } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -266,8 +264,7 @@ function filterIntBioRep() {
         });
 
     } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -309,8 +306,7 @@ function filterExtBioRep() {
 
         });
     } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -499,8 +495,7 @@ function saveBiocheck(elem) {
                 console.log(url);
                 location.href = url;
             } catch (error) {
-                console.log("Fetching biosec details failed.");
-                location.reload(true);
+                console.log(error);
             }
 
 
@@ -980,8 +975,7 @@ function rejectActivity(actFormID, userType) {
     } else if (userType == "Extension Veterinarian") {
         is_reported = false;
     } else {
-        is_noted = false;
-    }
+        is_noted = false; }
 
     ajaxCSRF();
 
@@ -992,8 +986,7 @@ function rejectActivity(actFormID, userType) {
             "id": actFormID,
             "is_checked": is_checked,
             "is_reported": is_reported,
-            "is_noted": is_noted
-        },
+            "is_noted": is_noted },
 
         success: function (response) {
             if (response.status == 200) {
@@ -1024,8 +1017,7 @@ function viewHogsHealth(farmHTML) {
         console.log(url);
         location.href = url;
     } catch (error) {
-        console.log("Something went wrong. Restarting...");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -1043,8 +1035,7 @@ function viewHealthSymptoms(farmHTML) {
         console.log(url);
         location.href = url;
     } catch (error) {
-        console.log("Something went wrong. Restarting...");
-        location.reload(true);
+        console.log(error);
     }
 }
 
@@ -1116,27 +1107,6 @@ $('.symptomsSave').on('click', function () {
     }
 });
 
-/**
- *   - Redirects current technician from selected health symptoms page to add-case page for selected farm.
- *   - Appends selected farm ID to url that will display an empty symptoms checklist.
- *   
- *   farmID = button value (carries ID of selected farm)
- */
-function addSymptomsPage(farmID) {
-
-    var farmID = $(farmID).val();
-    console.log(farmID);
-
-    try {
-        url = "/add-case/" + farmID;
-        console.log(url);
-        location.href = url;
-    } catch (error) {
-        console.log("Fetching farm details failed.");
-        location.reload(true);
-    }
-}
-
 /** 
  * on-click POST AJAX function for adding an Incident Case.
  * @param farmID string ID of selected Farm record
@@ -1167,9 +1137,9 @@ function addCase(farmID) {
                     url = "/selected-health-symptoms/" + farmID;
                     console.log(url);
                     location.href = url;
+                    
                 } catch (error){
-                    console.log("Something went wrong. Restarting...");
-                    location.reload(true);
+                    console.log(error);
                 }              
             } 
             else {
@@ -1178,7 +1148,7 @@ function addCase(farmID) {
 
         },
         error: function (res){
-            console.log("ERROR [" + res.status + "]: " +  res.responseJSON.error);
+            console.log("ERROR [" + res.status_code + "]: " +  res.error);
         }
     });
 }
@@ -1191,9 +1161,9 @@ function addCase(farmID) {
 function resubmitMortality(mortDate, mortFormID, farmID) {
     // get all data from each column
     var mort_date = document.getElementsByClassName("mort-date-input");
-    var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
+    // var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
     var today = document.getElementsByClassName("mort-today-input");
-    var to_date = document.getElementsByClassName("mort-to-date-input");
+    // var to_date = document.getElementsByClassName("mort-to-date-input");
     var source = document.getElementsByClassName("mort-source-input");
     var remarks = document.getElementsByClassName("mort-remarks-input");
 
@@ -1204,9 +1174,9 @@ function resubmitMortality(mortDate, mortFormID, farmID) {
         if (mort_date[i].value !== '') {
             var mortality = {
                 mort_date : mort_date[i].value,
-                beg_inv : beg_inv[i].value,
+                // beg_inv : beg_inv[i].value,
                 today : today[i].value,
-                to_date : to_date[i].value,
+                // to_date : to_date[i].value,
                 source : source[i].value,
                 remarks : remarks[i].value
             };
@@ -1299,8 +1269,7 @@ function rejectMortality(mortFormID, userType) {
     } else if (userType == "Extension Veterinarian") {
         is_reported = false;
     } else {
-        is_noted = false;
-    }
+        is_noted = false; }
 
     ajaxCSRF();
 
@@ -1312,12 +1281,14 @@ function rejectMortality(mortFormID, userType) {
                 "is_reported" : is_reported,
                 "is_noted" : is_noted },
 
-        url: '/post-addCase/' + farmID,
-        data: {
-            "num_pigsAffected": num_pigs,
-            "symptomsArr": symptomsArr
+        success: function (response) {
+            if (response.status == 200) {
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error)
         }
     })
@@ -1448,4 +1419,133 @@ function saveMortality(mortID, farmID) {
             }
         });
     }
+}
+
+/**
+ * function filtering Mortality report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
+ */
+ function filterMortRep() {
+
+    var sDate = $("#mort-start-date").val();
+    var eDate = $("#mort-end-date").val();
+    var arName = $("#mort-area option:selected").val();
+
+    // alert("in filterMortRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+
+    try {
+
+        url = "/hogs-mortality/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+
+        // for loading report table data
+        $('#rep-mort').load(url + ' #rep-mort', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.mort-report');
+            // console.log(alertHTML);
+            $('#mortrep-container').prepend(alertHTML);
+
+        });
+
+        // for loading report subheader
+        $('.mortrep-subheading').load(url + ' .mortrep-subheading', function () {
+            $(this).children().unwrap();
+
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+ }
+ 
+function compute_toDate(currRow){
+    var row = currRow.parentNode.parentNode; //get row of clicked button
+    console.log(row);
+    var begInv = row.getElementById('num_begInv');
+    var today = row.getElementById('num_today').value;
+    var newTotal = begInv - today;
+
+    row.getElementById('toDate').value = newTotal;
+}
+
+/**
+ *   - Approves selected weight slip
+ *   
+ *   weightSlipID = id value of selected weight slip
+ *   userType = user group of currently logged in user
+ */
+ function approveWeight(weightSlipID, userType) {
+    var is_posted = null;
+    var is_noted = null;
+
+    if (userType == "Paiwi Management Staff") {
+        is_posted = true;
+    } else {
+        is_noted = true; }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-weight-slip/' + weightSlipID,
+        data: {"id" : weightSlipID,
+                "is_posted" : is_posted,
+                "is_noted" : is_noted },
+
+        success: function (response) {
+            if (response.status == 200) {
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res) {
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+ *   - Rejects selected weight slip
+ *   
+ *   weightSlipID = id value of selected weight slip
+ *   userType = user group of currently logged in user
+ */
+ function rejectWeight(weightSlipID, userType) {
+    var is_posted = null;
+    var is_noted = null;
+
+    if (userType == "Paiwi Management Staff") {
+        is_posted = false;
+    } else {
+        is_noted = false; }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-weight-slip/' + weightSlipID,
+        data: {"id" : weightSlipID,
+                "is_posted" : is_posted,
+                "is_noted" : is_noted },
+
+        success: function (response) {
+            if (response.status == 200) {
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res) {
+            console.log(res.responseJSON.error)
+        }
+    })
 }

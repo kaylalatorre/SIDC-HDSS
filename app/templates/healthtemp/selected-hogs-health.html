@@ -3,23 +3,28 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Hogs Health {{ farm.code }} </title>
+<title>SIDC-HDSS | Hogs Health {{ farm.code|stringformat:'03d' }} </title>
 {% endblock page_title %}
 
 {% block section %}
 
 <div class="main-div">
     <div class="flex">
-        
-        {% if farm.code < 10 %}
-            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  00{{ farm.code }}</h1>
-        {% elif farm.code < 100 %}
-            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  0{{ farm.code }}</h1>
-        {% else %}
-            <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code }}</h1>
-        {% endif %}
-
-        <div><a class="button primary-btn" href="/selected-farm/{{ farm.code }}">View Farm Details</a></div> <!--Redirect to assigned farm's page-->
+        <h1 class="heading flex-item"><a href="/hogs-health">Hogs Health </a> >  {{ farm.code|stringformat:"03d" }}</h1>
+        <div><a class="button primary-btn" href="/selected-farm/{{ farm.code|stringformat:'03d' }}">View Farm Details</a></div> <!--Redirect to assigned farm's page-->
+    </div>
+    <div class="flex">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Batch </label>
+            <select class="form-select" name="hogs-health-version" id="hogs-health-version" style="margin-bottom: 0; width: 100px">
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
+                {% for farmVersion in version %}
+                <option value="{{farm.code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
     </div>
     <hr>
     <div class="flex">
@@ -41,14 +46,6 @@
                             <td>{{ farm.pigs }}</td>
                         </tr>
                         <tr>
-                            <th>Ave. Starter Weight</td>
-                            <td> - </td>
-                        </tr>
-                        <tr>
-                            <th>Ave. Current Weight</td>
-                            <td>{{ farm.ave_currWeight }}</td>
-                        </tr>
-                        <tr>
                             <th>Mortality Rate</td>
                             <td>{{ farm.mortality_rate }}</td>
                         </tr>
@@ -59,6 +56,61 @@
                         <tr>
                             <th>Active Incidents</td>
                             <td>{{ farm.total_active }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2>Weight Slip Details (Starter)</h2>
+            <div class="box-style">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Date Filed</td>
+                            <td>{{ farm.start_weight.date_filed }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Starter Weight</td>
+                            <td>{{ farm.start_weight.ave_weight }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total No. of Heads</td>
+                            <td>{{ farm.start_weight.total_numHeads }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total Kls</td>
+                            <td>{{ farm.start_weight.total_kls }}</td>
+                        </tr>
+                        <tr>
+                            <th>Remarks</td>
+                            <td>{{ farm.start_weight.remarks }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2>Weight Slip Details (Fattener)</h2>
+            <div class="box-style">
+                <!-- If no fattener record yet, display empty table -->
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Date Filed</td>
+                            <td>{{ farm.end_weight.date_filed }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Fattener Weight</td>
+                            <td>{{ farm.end_weight.ave_weight }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total No. of Heads</td>
+                            <td>{{ farm.end_weight.total_numHeads }}</td>
+                        </tr>
+                        <tr>
+                            <th>Total Kls</td>
+                            <td>{{ farm.end_weight.total_kls }}</td>
+                        </tr>
+                        <tr>
+                            <th>Remarks</td>
+                            <td>{{ farm.end_weight.remarks }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -112,7 +164,7 @@
             <section>
                 <h2>Mortality Records</h2>
                 <div class="box-style">
-                    {% if mortalityList|length > 0 %}
+                    {% if total_mortalities > 0 %}
                     <table class="table" id="mortality-records">
                         <thead>
                             <tr>
@@ -129,7 +181,7 @@
                         <tbody>
                             {% for mort, mRate in mortalityList %}
                             <tr>
-                                <td data-label="Series">{{ mort.series }}</td>
+                                <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                                 <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
                                 <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
                                 <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Add Case</title>
+    <title>SIDC-HDSS | Add Mortality Record</title>
 {% endblock page_title %}
 
 {% block section %}
@@ -14,13 +14,13 @@
     <form action="" method="POST">
 
         {% csrf_token %}
-        <h1 class="heading"><a href="/selected-health-symptoms">Hogs Health & Symptoms</a> >  Add Mortality Record</h1>
+        <h1 class="heading"><a href="/selected-health-symptoms/{{farmID}}">Hogs Health & Symptoms</a> >  Add Mortality Record</h1>
         <div class="flex subheading">
-            <p class="flex-item"> <strong>Series: </strong> {{series}} </p>
+            <p class="flex-item"> <strong>Series: </strong> {{series|stringformat:"03d"}} </p>
             <div><button class="primary-btn" type="submit">Send for Approval</button></div>
         </div>
         <div class="mobile-subheading">
-            <p> <strong>Series: </strong> {{series}} </p>
+            <p> <strong>Series: </strong> {{series|stringformat:"03d"}} </p>
         </div>
         <hr>
 
@@ -52,9 +52,9 @@
                     <tbody id="mortality-table">
                         <tr>
                             <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
-                            <td data-label="Beg. Inv." id="num_begInv"> {{mortalityForm.num_begInv}} </td>
-                            <td data-label="Today" id="num_today"> {{mortalityForm.num_today}} </td>
-                            <td data-label="To Date" id="num_toDate"> {{mortalityForm.num_toDate}} </td>
+                            <td data-label="Beg. Inv." id="num_begInv"> {{num_begInv}} </td>
+                            <td data-label="Today" id="num_today" onblur="compute_toDate(this)"> {{mortalityForm.num_today}} </td>
+                            <td data-label="To Date" id="num_toDate"><p id="toDate">  </p> </td>
                             <td data-label="Source" id="source"> {{mortalityForm.source}} </td>
                             <td data-label="Remarks" id="remarks"> {{mortalityForm.remarks}} </td>
                             <td data-label="Mortality Rate" style="text-align: right;" id="mortality_rate">

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | For Approval </title>
+{% endblock page_title %}
+
+{% block section %}
+
+{% include 'partials/messages.html' %}
+
+<div class="table-container main-div">
+    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Weight Slip for Farm {{weight.ref_farm_id|stringformat:'03d'}} ({{weight.date_filed}}) </h1>
+    
+    {% if user.groups.all.0.name != 'Field Technician' %}
+        {% if formStatus == 'Pending' %}
+        <div class="flex">
+            <p class="flex-item">Approve form?</p>
+            <div class="subheading btn-group" id="actForm-btn-group">
+                <button class="primary-btn" id="approve-weight" style="margin-right: 4px;" onclick="approveWeight('{{ weight.id }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+                <button class="primary-btn-red" id="reject-weight" onclick="rejectWeight('{{ weight.id }}', '{{ user.groups.all.0.name }}')">Reject</button>
+            </div>
+        </div>
+        {% else %}
+        <br><br>
+        {% endif %}
+    {% elif user.groups.all.0.name == 'Field Technician' %}
+        {% if formStatus == 'Rejected' and latest.id == weight.id %}
+        <div class="flex">
+            <p class="flex-item">Resubmit form?</p>
+            <div class="subheading btn-group" id="actForm-btn-group">
+                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitMortality('{{ weight.date_filed }}', '{{ weight.id }}', '{{ weight.ref_farm_id }}')">Resubmit</button> 
+            </div>
+        </div>
+        {% else %}
+        <br><br>
+        {% endif %}
+    {% else %}
+    <br><br>
+    {% endif %}
+
+    <div class="flex subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Version </label>
+            <select class="form-select" name="weight-version" id="weight-version" style="margin-bottom: 0; width: 100px">
+                {% if latest.id == weight.id %}
+                    <option hidden>{{weight.date_filed}} (Latest Version)</option>
+                {% else %}
+                    <option hidden>{{weight.date_filed}}</option>
+                {% endif %}
+                {% for version in weightList %}
+                    {% if latest.id == version.id %}
+                    <option value="{{version.id}}-{{version.date_filed}}">{{version.date_filed}} (Latest Version)</option>
+                    {% else %}
+                    <option value="{{version.id}}-{{version.date_filed}}">{{version.date_filed}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
+
+    {% if user.groups.all.0.name != 'Field Technician' %}
+    <div class="box-style">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date Filed</th>
+                    <th>Average Weight</th>
+                    <th>Total No. of Heads</th>
+                    <th>Total Kilos</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="{{ weight.id }}" value="{{ weight.id }}">
+                    <td data-label="Date Filed">
+                        <p class="weight-data">{{weight.date_filed}}</p>
+                    </td>
+                    <td data-label="Average Weigh">
+                        <p class="weight-data">{{weight.ave_weight}}</p>
+                    </td>
+                    <td data-label="Total No. of Heads">
+                        <p class="weight-data">{{weight.total_numHeads}}</p>
+                    </td>
+                    <td data-label="Total Kilos">
+                        <p class="weight-data">{{weight.total_kls}}</p>
+                    </td>
+                    <td data-label="Remarks">
+                        <p class="weight-data">{{weight.remarks}}</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="weight-approvals" style="margin-top: 50px;">
+            <h3> Checked by: </h3>
+            <div class="mb-3">
+                {% if weight.is_posted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
+                {% endif %}
+                <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
+            </div>
+            <div class="mb-3">
+                {% if weight.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
+                {% endif %}
+                <label class="form-check-label" for="cb-am">Assistant Manager</label>
+            </div>
+        </div>
+    </div>
+
+
+    {% else %}
+    <div class="box-style">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date Filed</th>
+                    <th>Average Weight</th>
+                    <th>Total No. of Heads</th>
+                    <th>Total Kilos</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if formStatus == 'Rejected' and latest.id == weight.id %}
+                <tr id="{{ weight.id }}" value="{{ weight.id }}">
+                    <td data-label="Date Filed">
+                        <p class="weight-data">{{weight.date_filed}}</p>
+                    </td>
+                    <td data-label="Average Weigh">
+                        <p class="weight-data">{{weight.ave_weight}}</p>
+                        <input aria-label="Ave. Weight" type="number" class="form-control weight-input" id="weight-ave" value="{{weight.ave_weight}}"> </td>
+                    </td>
+                    <td data-label="Total No. of Heads">
+                        <p class="weight-data">{{weight.total_numHeads}}</p>
+                        <input aria-label="Total No. of Heads" type="number" class="form-control weight-input" id="weight-ttl-heads" value="{{weight.total_numHeads}}"> </td>
+                    </td>
+                    <td data-label="Total Kilos">
+                        <p class="weight-data">{{weight.total_kls}}</p>
+                        <input aria-label="Total Kilos" type="number" class="form-control weight-input" id="weight-ttl-kilos" value="{{weight.total_kls}}"> </td>
+                    </td>
+                    <td data-label="Remarks">
+                        <p class="weight-data">{{weight.remarks}}</p>
+                        <input aria-label="Remarks" type="text" class="form-control mortality-input" id="weight-remarks" value="{{weight.remarks}}"> </td>
+                    </td>
+                    <td>
+                        <div class="btn-group" style="justify-content: end; padding: 0;">
+                            <button name="editWeightBtn" class="secondary-btn weight-data" type="button" style="margin-right: 4px;" value="{{ weight.id }}" onclick="editWeight(this)">Edit</button>
+
+                            <button name="saveWeightBtn" class="secondary-btn weight-input" type="button" style="margin-right: 4px;" value="{{ weight.id }}" onclick="saveWeight(this, '{{ weight.ref_farm_id }}')">Save</button>
+                            <button name="cancelWeightBtn" class="secondary-btn-red weight-input" type="button" value="{{ weight.id }}" onclick="cancelWeight(this)">Cancel</button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr id="{{ weight.id }}" value="{{ weight.id }}">
+                    <td data-label="Date Filed">
+                        <p class="weight-data">{{weight.date_filed}}</p>
+                    </td>
+                    <td data-label="Average Weigh">
+                        <p class="weight-data">{{weight.ave_weight}}</p>
+                    </td>
+                    <td data-label="Total No. of Heads">
+                        <p class="weight-data">{{weight.total_numHeads}}</p>
+                    </td>
+                    <td data-label="Total Kilos">
+                        <p class="weight-data">{{weight.total_kls}}</p>
+                    </td>
+                    <td data-label="Remarks">
+                        <p class="weight-data">{{weight.remarks}}</p>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <div id="weight-approvals" style="margin-top: 50px;">
+            <h3> Checked by: </h3>
+            <div class="mb-3">
+                {% if weight.is_posted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-los">
+                {% endif %}
+                <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
+            </div>
+            <div class="mb-3">
+                {% if weight.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-weight-form" id="cb-am">
+                {% endif %}
+                <label class="form-check-label" for="cb-am">Assistant Manager</label>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock section %}

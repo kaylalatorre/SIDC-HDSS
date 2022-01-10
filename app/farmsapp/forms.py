@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm, DateField, widgets, Select, Textarea
-from .models import Farm, Hog_Raiser, Pigpen_Measures, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
+from .models import Farm, Hog_Raiser, Pigpen_Row, Farm_Weight, Hog_Symptoms, Activity, Mortality, Area, Mem_Announcement
 import datetime
 
 class DateInput(ModelForm):
@@ -125,7 +125,7 @@ class HogRaiserForm(ModelForm):
         model = Hog_Raiser
         fields = ('__all__')
 
-class PigpenMeasuresForm(ModelForm):
+class PigpenRowForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['length'].widget.attrs.update({
@@ -148,7 +148,7 @@ class PigpenMeasuresForm(ModelForm):
         })
     
     class Meta:
-        model = Pigpen_Measures
+        model = Pigpen_Row
         fields = ('__all__')
 
 class ActivityForm(forms.ModelForm):
@@ -225,24 +225,12 @@ class MortalityForm(ModelForm):
             'class' : 'form-control',
             'id' : 'mortality-date', 
         })
-        self.fields['num_begInv'].widget.attrs.update({
-            'type' : 'number', 
-            'class' : 'form-control',
-            'id' : 'beg-inv', 
-            'placeholder' : 'ex. 20',
-        })
         self.fields['num_today'].widget.attrs.update({
             'type' : 'number', 
             'class' : 'form-control',
             'id' : 'beg-inv', 
             'placeholder' : 'ex. 20',
-        })        
-        self.fields['num_toDate'].widget.attrs.update({
-            'type' : 'number', 
-            'class' : 'form-control',
-            'id' : 'beg-inv', 
-            'placeholder' : 'ex. 20',
-        })        
+        })                
         self.fields['source'].widget.attrs.update({
             'type' : 'text', 
             'class' : 'form-control',
@@ -313,4 +301,48 @@ class MemAnnouncementForm(ModelForm):
                 choices=AREA_CHOICES
             ),
             'mssg': widgets.Textarea()
+        }
+
+class WeightForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ave_weight'].widget.attrs.update({
+            'aria-label' : 'Ave. Weight', 
+            'type' : 'number',
+            'class' : 'form-control',
+            'placeholder': 'ex. 120',
+            'min' : 0,
+            'step' : 0.01
+        })
+        self.fields['total_numHeads'].widget.attrs.update({ 
+            'aria-label' : 'Total No. of Heads', 
+            'type' : 'number',
+            'class' : 'form-control',
+            'placeholder': 'ex. 100',
+            'min' : 0
+        })
+        self.fields['total_kls'].widget.attrs.update({ 
+            'aria-label' : 'kls', 
+            'type' : 'number',
+            'class' : 'form-control',
+            'placeholder': 'ex. 120',
+            'min' : 0,
+            'step' : 0.01
+        })
+        self.fields['remarks'].widget.attrs.update({ 
+            'aria-label' : 'Remarks', 
+            'type' : 'text',
+            'class' : 'form-control',
+            'placeholder': ''
+        })
+
+    class Meta:
+        model = Farm_Weight
+        CHOICES = [('Starter', 'Starter'),
+                    ('Fattener', 'Fattener')]
+                    
+        fields = ('__all__')
+        widgets = {
+           
+            'is_starter': widgets.RadioSelect(choices=CHOICES)
         }

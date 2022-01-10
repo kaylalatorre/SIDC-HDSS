@@ -1,1 +1,103 @@
-<p>YO??</p>
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Hogs Mortality Report</title>
+{% endblock page_title %}
+
+{% block section %}
+
+{% include 'partials/messages.html' %}
+<div class="table-container main-div" id="mortrep-container">
+    <div>
+        <h1>Hogs Mortality Reports</h1>
+    </div>
+    <br>
+    <!-- Date range, etc -->
+    <div style="max-width: 400px; height: 100%;" class="filters">
+        <div class="mb-3">
+            <label class="form-label bold-lbl">Date Range</label>
+            <div class="input-group">
+                <input type="date" class="form-control input-startDate" id="mort-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="mort-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
+            </div>
+        </div>
+
+        <div class="mb-3" style="padding-bottom: 8px;">
+            <label class="form-label bold-lbl">Area</label>
+            <select class="form-select" id="mort-area" style="margin-bottom: 0;">
+                <option value="All"> All </option>
+                {% for area in areaList %}
+                <option value="{{area.area_name}}">{{area.area_name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        
+        <!-- <div class="dropdown">
+            <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Filters
+            </button>
+            <ul class="dropdown-menu" style="padding: 8px;" data-column="2">
+                <label style="font-weight: 600;">Farms</label>
+                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_hog_area" id=""  />&nbsp;001</a></li>
+            </ul>
+        </div> -->
+
+        <!-- <button class="primary-btn" onclick="filterFarmRep()"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button> -->
+
+
+        <button class="primary-btn" onclick="filterMortRep()"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
+    </div>
+
+    <hr>
+    <!-- Report description, print button -->
+    <div class="flex subheading mortrep-subheading">
+        {% if not isFiltered %}
+            <p class="flex-item" id="mortrep-header">All Hogs Mortality Report.</p>
+        {% else %}
+            <p class="flex-item" id="mortrep-header">{{areaName}} Hogs Mortality Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}
+
+        <div><button class="primary-btn" onclick="printReport('rep-mort')"><i class='bx bx-printer' ></i>Print</button></div>
+    </div>
+    <!-- Report content -->
+    <div class="box-style" id="rep-mort">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Mortality ID</th>
+                    <th>Farm Code</th>
+                    <th>Beg. Inventory</th>
+                    <th>No. of Hogs Died</th>
+                    <th>No. of Hogs To Date</th>
+                    <th>Mortality Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mort, mRate in mortList %}
+                <tr>
+                    <td data-label="Mortality ID">{{ mort.id }}</td>
+                    <td data-label="Farm Code">{{ mort.ref_farm_id|stringformat:"03d" }}</td>
+                    <td data-label="Beg. Inventory" style="text-align: right; width: 15%">{{ mort.num_begInv }}</td>
+                    <td data-label="No. of Hogs Died" style="text-align: right; width: 15%">{{ mort.num_today }}</td>
+                    <td data-label="No. of Hogs To Date" style="text-align: right; width: 15%">{{ mort.num_toDate }}</td>
+                    <td data-label="Mortality Rate"  style="text-align: right;">{{ mRate }}</td>
+                </tr>
+                {% endfor %}
+
+                <!-- Totals, Averages -->
+                <tr class="table-total bold-lbl">
+                    <td colspan="2">Total</td>
+                    <td style="text-align: right;">{{ mortStats.total_begInv }}</td>
+                    <td style="text-align: right;">{{ mortStats.total_today }}</td>
+                    <td style="text-align: right;">{{ mortStats.total_toDate }}</td>
+                    <td style="text-align: right;">{{ mortStats.ave_mortRate }}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock section %}
