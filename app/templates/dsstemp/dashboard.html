@@ -158,93 +158,259 @@
                             <button class="nav-link active" id="v-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-asf" type="button" role="tab" aria-controls="v-pills-asf" aria-selected="true">
                                 <div class="disease-info">
                                     <p class="di-disease">African swine fever (ASF)</p>
-                                    <h3 class="di-no-affected txt-negative">1</h3>
+                                    <h3 class="di-no-affected {% if susCases.ASF.farms %} txt-negative {% endif %}">{{ susCases.ASF.farms | length }}</h3>
                                 </div>
                             </button>
                             <button class="nav-link" id="v-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-csf" type="button" role="tab" aria-controls="v-pills-csf" aria-selected="false">
                                 <div class="disease-info">
                                     <p class="di-disease">Clinical swine fever (CSF)</p>
-                                    <h3 class="di-no-affected">0</h3>
+                                    <h3 class="di-no-affected {% if susCases.CSF.farms %} txt-negative {% endif %}">{{ susCases.CSF.farms | length }}</h3>
                                 </div>
                             </button>
                             <button class="nav-link" id="v-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#v-pills-iav" type="button" role="tab" aria-controls="v-pills-iav" aria-selected="false">
                                 <div class="disease-info">
                                     <p class="di-disease">Swine influenza (IAV-S)</p>
-                                    <h3 class="di-no-affected">0</h3>
+                                    <h3 class="di-no-affected {% if susCases.IAVS.farms %} txt-negative {% endif %} ">{{ susCases.IAVS.farms | length }}</h3>
                                 </div>
                             </button>
                             <button class="nav-link" id="v-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#v-pills-adv" type="button" role="tab" aria-controls="v-pills-adv" aria-selected="false">
                                 <div class="disease-info">
                                     <p class="di-disease">Pseudorabies (ADV)</p>
-                                    <h3 class="di-no-affected">0</h3>
+                                    <h3 class="di-no-affected {% if susCases.ADV.farms %} txt-negative {% endif %} ">{{ susCases.ADV.farms | length }}</h3>
                                 </div>
                             </button>
                             <button class="nav-link" id="v-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prrs" type="button" role="tab" aria-controls="v-pills-prrs" aria-selected="false">
                                 <div class="disease-info">
                                     <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
-                                    <h3 class="di-no-affected">0</h3>
+                                    <h3 class="di-no-affected {% if susCases.PRRS.farms %} txt-negative {% endif %} ">{{ susCases.PRRS.farms | length }}</h3>
                                 </div>
                             </button>
                             <button class="nav-link" id="v-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ped" type="button" role="tab" aria-controls="v-pills-ped" aria-selected="false">
                                 <div class="disease-info">
                                     <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
-                                    <h3 class="di-no-affected">0</h3>
+                                    <h3 class="di-no-affected {% if susCases.PED.farms %} txt-negative {% endif %} ">{{ susCases.PED.farms | length }}</h3>
                                 </div>
                             </button>
                         </div>
                         <!-- Tab Content -->
+                        {% load healthapp_extras %}
                         <div class="tab-content" id="v-pills-tabContent">
                             <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
+                                {% if  susCases.ASF.hogs == 0 %}
+                                <div>
+                                    No suspected cases.
+                                </div>
+                                {% else %}
                                 <table class="table">
                                     <tbody>
                                         <tr>
                                             <th>Farms Affected</td>
                                             <td>
                                                 <ul class="farms-affected-list" data-column="4">
-                                                    <li><a href="#">001</a></li>
-                                                    <li><a href="#">002</a></li>
+                                                    {% for id in susCases.ASF.farms %}
+                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
+                                                    {% endfor %}
                                                 </ul>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th> No. of Hogs Affected </td>
-                                            <td> 5 hogs </td>
+                                            <td> {{susCases.ASF.hogs}} hogs </td>
                                         </tr>
                                         <tr>
                                             <th>Symptoms Observed</td>
                                             <td>
                                                 <ul class="symtptoms-master-list" data-column="4">
-                                                    <li>Symptom 1</li>
-                                                    <li>Symptom 2</li>
-                                                    <li>Symptom 3</li>
-                                                    <li>Symptom 4</li>
-                                                    <li>Symptom 5</li>
-                                                    <li>Symptom 6</li>
+                                                    {% for symptom in susCases.ASF.symptoms %}
+                                                    <li>{{ symptom | formatField }}</li>
+                                                    {% endfor %}
                                                 </ul>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                
-                                <!-- <div>
-                                    No suspected cases.
-                                </div> -->
+                                {% endif %}
                             </div>
-                            <!-- <div class="tab-pane fade" id="v-pills-csf" role="tabpanel" aria-labelledby="v-pills-csf-tab">
+                            <div class="tab-pane fade" id="v-pills-csf" role="tabpanel" aria-labelledby="v-pills-csf-tab">
+                                {% if  susCases.CSF.hogs == 0 %}
                                 <div>
                                     No suspected cases.
                                 </div>
+                                {% else %}
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Farms Affected</td>
+                                            <td>
+                                                <ul class="farms-affected-list" data-column="4">
+                                                    {% for id in susCases.CSF.farms %}
+                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th> No. of Hogs Affected </td>
+                                            <td> {{susCases.CSF.hogs}} hogs </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Symptoms Observed</td>
+                                            <td>
+                                                <ul class="symtptoms-master-list" data-column="4">
+                                                    {% for symptom in susCases.CSF.symptoms %}
+                                                    <li>{{ symptom | formatField }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
                             </div>
                             <div class="tab-pane fade" id="v-pills-iav" role="tabpanel" aria-labelledby="v-pills-iav-tab">
+                                {% if  susCases.IAVS.hogs == 0 %}
                                 <div>
                                     No suspected cases.
                                 </div>
+                                {% else %}
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Farms Affected</td>
+                                            <td>
+                                                <ul class="farms-affected-list" data-column="4">
+                                                    {% for id in susCases.IAVS.farms %}
+                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th> No. of Hogs Affected </td>
+                                            <td> {{susCases.IAVS.hogs}} hogs </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Symptoms Observed</td>
+                                            <td>
+                                                <ul class="symtptoms-master-list" data-column="4">
+                                                    {% for symptom in susCases.IAVS.symptoms %}
+                                                    <li>{{ symptom | formatField }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
                             </div>
                             <div class="tab-pane fade" id="v-pills-adv" role="tabpanel" aria-labelledby="v-pills-adv-tab">
+                                {% if  susCases.ADV.hogs == 0 %}
                                 <div>
                                     No suspected cases.
                                 </div>
-                            </div> -->
+                                {% else %}
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Farms Affected</td>
+                                            <td>
+                                                <ul class="farms-affected-list" data-column="4">
+                                                    {% for id in susCases.ADV.farms %}
+                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th> No. of Hogs Affected </td>
+                                            <td> {{susCases.ADV.hogs}} hogs </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Symptoms Observed</td>
+                                            <td>
+                                                <ul class="symtptoms-master-list" data-column="4">
+                                                    {% for symptom in susCases.ADV.symptoms %}
+                                                    <li>{{ symptom | formatField }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-prrs" role="tabpanel" aria-labelledby="v-pills-prrs-tab">
+                                {% if  susCases.PRRS.hogs == 0 %}
+                                <div>
+                                    No suspected cases.
+                                </div>
+                                {% else %}
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Farms Affected</td>
+                                            <td>
+                                                <ul class="farms-affected-list" data-column="4">
+                                                    {% for id in susCases.PRRS.farms %}
+                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th> No. of Hogs Affected </td>
+                                            <td> {{susCases.PRRS.hogs}} hogs </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Symptoms Observed</td>
+                                            <td>
+                                                <ul class="symtptoms-master-list" data-column="4">
+                                                    {% for symptom in susCases.PRRS.symptoms %}
+                                                    <li>{{ symptom | formatField }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-ped" role="tabpanel" aria-labelledby="v-pills-ped-tab">
+                                {% if  susCases.PED.hogs == 0 %}
+                                <div>
+                                    No suspected cases.
+                                </div>
+                                {% else %}
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Farms Affected</td>
+                                            <td>
+                                                <ul class="farms-affected-list" data-column="4">
+                                                    {% for id in susCases.PED.farms %}
+                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th> No. of Hogs Affected </td>
+                                            <td> {{susCases.PED.hogs}} hogs </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Symptoms Observed</td>
+                                            <td>
+                                                <ul class="symtptoms-master-list" data-column="4">
+                                                    {% for symptom in susCases.PED.symptoms %}
+                                                    <li>{{ symptom | formatField }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
