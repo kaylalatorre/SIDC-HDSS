@@ -35,6 +35,9 @@ urlpatterns = [
     path('reject-mortality-form/<str:mortalityFormID>', views.rejectMortalityForm, name="rejectMortalityForm"),
     path('resubmit-mortality-form/<str:mortalityFormID>/<str:farmID>/<str:mortalityDate>', views.resubmitMortalityForm, name="resubmitMortalityForm"),
 
+    path('selected-weight-slip/<str:weightSlipID>/<str:weightDate>', views.selectedWeightSlip, name="selectedWeightSlip"),
+    path('approve-weight-slip/<str:weightSlipID>', views.approveWeightSlip, name="approveWeightSlip"),
+    path('reject-weight-slip/<str:weightSlipID>', views.rejectWeightSlip, name="rejectWeightSlip"),
 
     path('add-weight/<str:farmID>', views.addWeight, name="addWeight"),
 ]

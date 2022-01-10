@@ -11,27 +11,27 @@
 {% include 'partials/messages.html' %}
 
 <div class="table-container main-div">
-    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Mortality Form made on {{mortDate}} for Farm {{mortFormDetails.ref_farm_id|stringformat:'03d'}} </h1>
-    <p class="flex-item"> <strong>Series: </strong> {{mortFormDetails.series|stringformat:"03d"}} </p>
+    <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Mortality Form for Farm {{mortForm.ref_farm_id|stringformat:'03d'}} ({{mortForm.date_added}}) </h1>
+    <!-- <p class="flex-item"> <strong>Series: </strong> {{mortForm.series|stringformat:"03d"}} </p> -->
     
     {% if user.groups.all.0.name != 'Field Technician' %}
         {% if formStatus == 'Pending' %}
         <div class="flex">
             <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn" id="approve-mortality" style="margin-right: 4px;" onclick="approveMortality('{{ mortalityFormID }}', '{{ user.groups.all.0.name }}')">Approve</button> 
-                <button class="primary-btn-red" id="reject-mortality" onclick="rejectMortality('{{ mortalityFormID }}', '{{ user.groups.all.0.name }}')">Reject</button>
+                <button class="primary-btn" id="approve-mortality" style="margin-right: 4px;" onclick="approveMortality('{{ mortForm.id }}', '{{ user.groups.all.0.name }}')">Approve</button> 
+                <button class="primary-btn-red" id="reject-mortality" onclick="rejectMortality('{{ mortForm.id }}', '{{ user.groups.all.0.name }}')">Reject</button>
             </div>
         </div>
         {% else %}
         <br><br>
         {% endif %}
     {% elif user.groups.all.0.name == 'Field Technician' %}
-        {% if formStatus == 'Rejected' %}
+        {% if formStatus == 'Rejected' and latest.id == mortForm.id %}
         <div class="flex">
             <p class="flex-item">Resubmit form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitMortality('{{ mortDate }}', '{{ mortalityFormID }}', '{{ farm.id }}')">Resubmit</button> 
+                <button class="primary-btn" id="resubmit-mortality" style="margin-right: 4px;" type="submit" onclick="resubmitMortality('{{ mortForm.date_added }}', '{{ mortForm.id }}', '{{ mortForm.ref_farm_id }}')">Resubmit</button> 
             </div>
         </div>
         {% else %}
@@ -40,6 +40,28 @@
     {% else %}
     <br><br>
     {% endif %}
+
+    <div class="flex subheading">
+        <div class="input-group mb-3">
+            <label class="form-label" style="font-weight: 600;">Version </label>
+            <select class="form-select" name="mortform-version" id="mortform-version" style="margin-bottom: 0; width: 100px">
+                {% if latest.id == mortForm.id %}
+                    <option hidden>{{mortForm.date_added}} (Latest Version)</option>
+                {% else %}
+                    <option hidden>{{mortForm.date_added}}</option>
+                {% endif %}
+                {% for version in mortFormList %}
+                    {% if latest.id == version.id %}
+                    <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}} (Latest Version)</option>
+                    {% else %}
+                    <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <p class="flex-item"></p>
+        <p class="flex-item"></p>
+    </div>
 
     {% if user.groups.all.0.name != 'Field Technician' %}
     <div class="box-style">
@@ -81,34 +103,33 @@
             </tbody>
         </table>
 
-        <br><br>
-            <div id="mortality-approvals">
-                <h3> Checked by: </h3>
-                <div class="mb-3">
-                    {% if mortFormDetails.is_posted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-los">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
-                </div>
-                <div class="mb-3">
-                    {% if mortFormDetails.is_reported == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
-                </div>
-                <div class="mb-3">
-                    {% if mortFormDetails.is_noted == True %}
-                        <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% else %}
-                        <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
-                    {% endif %}
-                    <label class="form-check-label" for="cb-am">Assistant Manager</label>
-                </div>
+        <div id="mortality-approvals" style="margin-top: 50px;">
+            <h3> Checked by: </h3>
+            <div class="mb-3">
+                {% if mortForm.is_posted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-los">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-los">
+                {% endif %}
+                <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
             </div>
+            <div class="mb-3">
+                {% if mortForm.is_reported == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-ext-vet">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-ext-vet">
+                {% endif %}
+                <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
+            </div>
+            <div class="mb-3">
+                {% if mortForm.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-am">
+                {% else %}
+                    <input disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-am">
+                {% endif %}
+                <label class="form-check-label" for="cb-am">Assistant Manager</label>
+            </div>
+        </div>
     </div>
 
 
@@ -117,35 +138,35 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Mortality Date</th>
-                    <th>Beginning Inventory</th>
-                    <th>Today</th>
-                    <th>To Date</th>
-                    <!-- <th>Mortality Rate</th> -->
+                    <th width="10%">Mortality Date</th>
+                    <th width="15%">Beginning Inventory</th>
+                    <th width="15%">Today</th>
+                    <th width="15%">To Date</th>
                     <th>Source</th>
                     <th>Remarks</th>
-                    <th></th>
+                    <th style="text-align: right;">Mortality %</th>
+                    <th width="5%"></th>
                 </tr>
             </thead>
             <tbody>
             {% for mort in mortalities %}
-                {% if formStatus == 'Rejected' %}
+                {% if formStatus == 'Rejected' and latest.id == mortForm.id %}
                 <tr id="{{ mort.id }}" value="{{ mort.id }}">
                     <td data-label="Mortality Date">
                         <p class="mortality-data">{{mort.mortality_date}}</p>
                         <input type="date" class="form-control mortality-input" id="mortality-date" value="{{mort.format_date}}"> </td>             
                     </td>
                     <td data-label="Beginning Inventory">
-                        <p class="mortality-data">{{mort.num_begInv}}</p>
-                        <input type="number" class="form-control mortality-input" id="beg-inv" value="{{mort.num_begInv}}"> </td>
+                        <p>{{mort.num_begInv}}</p>
+                        <!-- <input type="number" class="form-control mortality-input" id="beg-inv" value="{{mort.num_begInv}}"> </td> -->
                     </td>
                     <td data-label="Today">
                         <p class="mortality-data">{{mort.num_today}}</p>
                         <input type="number" class="form-control mortality-input" id="mortality-today" value="{{mort.num_today}}"> </td>
                     </td>
                     <td data-label="To Date">
-                        <p class="mortality-data">{{mort.num_toDate}}</p>
-                        <input type="number" class="form-control mortality-input" id="mort-to-date" value="{{mort.num_toDate}}"> </td>
+                        <p>{{mort.num_toDate}}</p>
+                        <!-- <input type="number" class="form-control mortality-input" id="mort-to-date" value="{{mort.num_toDate}}"> </td> -->
                     </td>
                     <td data-label="Source">
                         <p class="mortality-data">{{mort.source}}</p>
@@ -155,12 +176,13 @@
                         <p class="mortality-data">{{mort.remarks}}</p>
                         <input type="text" class="form-control mortality-input" id="mortality-remarks" value="{{mort.remarks}}"> </td>
                     </td>
+                    <td></td>
                     <td>
                         <div class="btn-group" style="justify-content: end; padding: 0;">
                             <button name="editMortBtn" class="secondary-btn mortality-data" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="editMortality(this)">Edit</button>
                             <button value="{{ mort.id }}" onclick="deleteMortality(this)" type="button" name="deleteMortBtn" class="secondary-btn-red mortality-data">Delete</button>
 
-                            <button name="saveMortBtn" class="secondary-btn mortality-input" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="saveMortality(this, '{{ farm.id }}')">Save</button>
+                            <button name="saveMortBtn" class="secondary-btn mortality-input" type="button" style="margin-right: 4px;" value="{{ mort.id }}" onclick="saveMortality(this, '{{ mortForm.ref_farm_id }}')">Save</button>
                             <button name="cancelMortBtn" class="secondary-btn-red mortality-input" type="button" value="{{ mort.id }}" onclick="cancelMortality(this)">Cancel</button>
                         </div>
                     </td>
@@ -191,7 +213,7 @@
             </tbody>
         </table>
 
-        {% if formStatus == 'Rejected' %}
+        {% if formStatus == 'Rejected' and latest.id == mortForm.id %}
         <br>
         <div class="flex subheading">
             <p class="flex-item">Add all mortality records here. </p>
@@ -199,71 +221,64 @@
                 <button class="secondary-btn" type="button" onclick="addMortalityRow()" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
             </div>
         </div>
-        <div class="mobile-subheading">
-            <button class="secondary-btn" type="button" onclick="addMortalityRow()" style="justify-content: flex-end;">+ Add Mortality Record</button> <!-- Adds another row -->
-        </div>
-
-        <div class="input-group">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Mortality Date</th>
-                        <th width="10%">Beg. Inv.</th>
-                        <th width="10%">Today</th>
-                        <th width="10%">To Date</th>
-                        <th>Source</th>
-                        <th>Remarks</th>
-                        <th style="text-align: right;">Mortality %</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="mortality-table">
-                    <tr style="display: none">
-                        <td data-label="Mortality Date" id="mortality_date"> 
-                            <input type="date" class="form-control mort-date-input" id="mortality-date"> </td>                            
-                        <td data-label="Beg. Inv." id="num_begInv"> 
-                            <input type="number" class="form-control mort-beg-inv-input" id="beg-inv" placeholder="ex. 20"> </td>
-                        <td data-label="Today" id="num_today"> 
-                            <input type="number" class="form-control mort-today-input" id="mortality-today" placeholder="ex. 5"> </td>
-                        <td data-label="To Date" id="num_toDate">
-                            <input type="number" class="form-control mort-to-date-input" id="mort-to-date" placeholder="ex. 15"> </td>
-                        <td data-label="Source" id="source"> 
-                            <input type="text" class="form-control mort-source-input" id="mortality-source" placeholder=""> </td>
-                        <td data-label="Remarks" id="remarks"> 
-                            <input type="text" class="form-control mort-remarks-input" id="mortality-remarks" placeholder=""> </td>
-                        <td data-label="Mortality Rate" style="text-align: right;" id="mortality_rate">
-                            99%
-                        </td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="10%">Mortality Date</th>
+                    <th width="15%">Beginning Inventory</th>
+                    <th width="15%">Today</th>
+                    <th width="15%">To Date</th>
+                    <th>Source</th>
+                    <th>Remarks</th>
+                    <th style="text-align: right;">Mortality %</th>
+                    <th width="10%"></th>
+                </tr>
+            </thead>
+            <tbody id="mortality-table">
+                <tr style="display: none">
+                    <td data-label="Mortality Date" id="mortality_date"> 
+                        <input type="date" class="form-control mort-date-input" id="mortality-date"> </td>                            
+                    <td data-label="Beg. Inv." id="num_begInv"> {{mortalities.0.num_begInv}} </td>
+                    <td data-label="Today" id="num_today"> 
+                        <input type="number" class="form-control mort-today-input" id="mortality-today" placeholder="ex. 5"> </td>
+                    <td data-label="To Date" id="num_toDate">
+                        <!-- <input type="number" class="form-control mort-to-date-input" id="mort-to-date" placeholder="ex. 15"> </td> -->
+                    <td data-label="Source" id="source"> 
+                        <input type="text" class="form-control mort-source-input" id="mortality-source" placeholder=""> </td>
+                    <td data-label="Remarks" id="remarks"> 
+                        <input type="text" class="form-control mort-remarks-input" id="mortality-remarks" placeholder=""> </td>
+                    <td data-label="Mortality Rate" style="text-align: right;" id="mortality_rate">
+                        99%
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
         {% endif %}
 
-        <br><br>
-        <div id="mortality-approvals">
+        <div id="mortality-approvals" style="margin-top: 50px;">
             <h3> Checked by: </h3>
             <div class="mb-3">
-                {% if mortFormDetails.is_posted == True %}
-                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-pms">
+                {% if mortForm.is_posted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-pms">
                 {% else %}
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-pms">
+                    <input disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-pms">
                 {% endif %}
                 <label class="form-check-label" for="cb-pms">Paiwi Management Staff</label>
             </div>
             <div class="mb-3">
-                {% if mortFormDetails.is_reported == True %}
-                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                {% if mortForm.is_reported == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-ext-vet">
                 {% else %}
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-ext-vet">
+                    <input disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-ext-vet">
                 {% endif %}
                 <label class="form-check-label" for="cb-ext-vet">Extension Veterinarian</label>
             </div>
             <div class="mb-3">
-                {% if mortFormDetails.is_noted == True %}
-                    <input checked disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                {% if mortForm.is_noted == True %}
+                    <input checked disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-am">
                 {% else %}
-                    <input disabled type="checkbox" class="form-check-input cb-activity-form" id="cb-am">
+                    <input disabled type="checkbox" class="form-check-input cb-mortality-form" id="cb-am">
                 {% endif %}
                 <label class="form-check-label" for="cb-am">Assistant Manager</label>
             </div>

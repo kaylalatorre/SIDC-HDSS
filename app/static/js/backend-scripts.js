@@ -975,8 +975,7 @@ function rejectActivity(actFormID, userType) {
     } else if (userType == "Extension Veterinarian") {
         is_reported = false;
     } else {
-        is_noted = false;
-    }
+        is_noted = false; }
 
     ajaxCSRF();
 
@@ -987,8 +986,7 @@ function rejectActivity(actFormID, userType) {
             "id": actFormID,
             "is_checked": is_checked,
             "is_reported": is_reported,
-            "is_noted": is_noted
-        },
+            "is_noted": is_noted },
 
         success: function (response) {
             if (response.status == 200) {
@@ -1163,9 +1161,9 @@ function addCase(farmID) {
 function resubmitMortality(mortDate, mortFormID, farmID) {
     // get all data from each column
     var mort_date = document.getElementsByClassName("mort-date-input");
-    var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
+    // var beg_inv = document.getElementsByClassName("mort-beg-inv-input");
     var today = document.getElementsByClassName("mort-today-input");
-    var to_date = document.getElementsByClassName("mort-to-date-input");
+    // var to_date = document.getElementsByClassName("mort-to-date-input");
     var source = document.getElementsByClassName("mort-source-input");
     var remarks = document.getElementsByClassName("mort-remarks-input");
 
@@ -1176,9 +1174,9 @@ function resubmitMortality(mortDate, mortFormID, farmID) {
         if (mort_date[i].value !== '') {
             var mortality = {
                 mort_date : mort_date[i].value,
-                beg_inv : beg_inv[i].value,
+                // beg_inv : beg_inv[i].value,
                 today : today[i].value,
-                to_date : to_date[i].value,
+                // to_date : to_date[i].value,
                 source : source[i].value,
                 remarks : remarks[i].value
             };
@@ -1271,8 +1269,7 @@ function rejectMortality(mortFormID, userType) {
     } else if (userType == "Extension Veterinarian") {
         is_reported = false;
     } else {
-        is_noted = false;
-    }
+        is_noted = false; }
 
     ajaxCSRF();
 
@@ -1284,12 +1281,14 @@ function rejectMortality(mortFormID, userType) {
                 "is_reported" : is_reported,
                 "is_noted" : is_noted },
 
-        url: '/post-addCase/' + farmID,
-        data: {
-            "num_pigsAffected": num_pigs,
-            "symptomsArr": symptomsArr
+        success: function (response) {
+            if (response.status == 200) {
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
         },
-        error: function (res){
+        error: function (res) {
             console.log(res.responseJSON.error)
         }
     })
@@ -1475,4 +1474,78 @@ function compute_toDate(currRow){
     var newTotal = begInv - today;
 
     row.getElementById('toDate').value = newTotal;
+}
+
+/**
+ *   - Approves selected weight slip
+ *   
+ *   weightSlipID = id value of selected weight slip
+ *   userType = user group of currently logged in user
+ */
+ function approveWeight(weightSlipID, userType) {
+    var is_posted = null;
+    var is_noted = null;
+
+    if (userType == "Paiwi Management Staff") {
+        is_posted = true;
+    } else {
+        is_noted = true; }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/approve-weight-slip/' + weightSlipID,
+        data: {"id" : weightSlipID,
+                "is_posted" : is_posted,
+                "is_noted" : is_noted },
+
+        success: function (response) {
+            if (response.status == 200) {
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res) {
+            console.log(res.responseJSON.error)
+        }
+    })
+}
+
+/**
+ *   - Rejects selected weight slip
+ *   
+ *   weightSlipID = id value of selected weight slip
+ *   userType = user group of currently logged in user
+ */
+ function rejectWeight(weightSlipID, userType) {
+    var is_posted = null;
+    var is_noted = null;
+
+    if (userType == "Paiwi Management Staff") {
+        is_posted = false;
+    } else {
+        is_noted = false; }
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/reject-weight-slip/' + weightSlipID,
+        data: {"id" : weightSlipID,
+                "is_posted" : is_posted,
+                "is_noted" : is_noted },
+
+        success: function (response) {
+            if (response.status == 200) {
+                console.log(response.responseJSON.success)
+            }
+
+            window.location.replace("/forms-approval");
+        },
+        error: function (res) {
+            console.log(res.responseJSON.error)
+        }
+    })
 }
