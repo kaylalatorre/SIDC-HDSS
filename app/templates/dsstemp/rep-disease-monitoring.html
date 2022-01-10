@@ -22,8 +22,8 @@
         <div class="mb-3">
             <label class="form-label bold-lbl">Date Range</label>
             <div class="input-group">
-                <input type="date" class="form-control input-startDate" id="disease-start-date" value="">
-                <input type="date" class="form-control input-endDate" id="disease-end-date" value="">
+                <input type="date" class="form-control input-startDate" id="disease-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="disease-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
             </div>
         </div>
 
@@ -43,25 +43,20 @@
     <hr>
     <!-- Report description, print button -->
     <div class="flex subheading diseaserep-subheading">
-        <!-- {% if not isFiltered %} -->
-            <p class="flex-item" id="diseaserep-header">All Disease Monitoring Report.</p>
-        <!-- {% else %}
-            <p class="flex-item" id="diseaserep-header">{{areaName}} Disease Monitoring Report for {{dateStart}} to {{dateEnd}}</p>
-        {% endif %} -->
+        {% if not isFiltered %}
+            <p class="flex-item">All Disease Monitoring Report.</p>
+        {% else %}
+            <p class="flex-item">{{areaName}} Disease Monitoring Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}      
         <div><button class="primary-btn" onclick="printReport('rep-diseaseMonitor')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
-
+ 
     <!-- Report content -->
     <div class="box-style" id="rep-diseaseMonitor">
         <div class="print-header">
             <h1>SIDC | Hogs Disease Surveillance System</h1>
-            <!-- <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p> -->
 
-            <!-- {% if not isFiltered %} -->
-                <p class="flex-item">All Farms Assessment Report.</p>
-            <!-- {% else %}
-                <p class="flex-item">{{areaName}} Farms Assessment Report for {{dateStart}} to {{dateEnd}}</p>
-            {% endif %}             -->
+    
         </div>
         <table class="table">
             <thead>
@@ -77,7 +72,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for incident,symptoms in incident_symptomsList %}
+                {% for incident,symptoms,diseaseList in incident_symptomsList %}
                 <tr>
                     <td data-label="Incident ID">{{ incident.id }}</td>
                     <td data-label="Farm Code">{{ incident.farm_code|stringformat:"03d" }}</td>
@@ -99,14 +94,23 @@
                     </td>
 
                     <td data-label="Status">{{ incident.report_status }}</td>
-                    <td></td>
+
+                    <td data-label="Diseases"> 
+                        {% for disease in diseaseList %}
+                        <ul class="ul-diseases"></ul>
+                            <li class="li-diseases">{{ disease }}</li>
+                        </ul>
+                        {% endfor %}
+                    </td>
+
+                    
                 </tr>
                 {% endfor %}
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="5">Total</td>
-                    <td style="text-align: right;"> xx </td>
+                    <td style="text-align: right;">{{ total_pigs_affect }}</td>
                     <td colspan="2"></td>
                 </tr>
             </tbody>           

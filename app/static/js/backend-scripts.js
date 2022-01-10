@@ -1549,3 +1549,48 @@ function compute_toDate(currRow){
         }
     })
 }
+
+/* function filtering Mortality report based on (1) date range and (2) areaName
+ * 
+ * Note: also contains an AJAX .load() for updating table contents upon filter.
+ */
+ function filterDiseaseRep() {
+
+    var sDate = $("#disease-start-date").val();
+    var eDate = $("#disease-end-date").val();
+    var arName = $("#disease-area option:selected").val();
+
+    // alert("in filterDiseaseRep()");
+    console.log("sDate -- " + sDate);
+    console.log("eDate -- " + eDate);
+    console.log("arName -- " + arName);
+
+
+    try {
+
+        url = "/disease-monitoring/" + sDate + "/" + eDate + "/" + arName;
+        console.log(url);
+
+        // for loading report table data
+        $('#rep-diseaseMonitor').load(url + ' #rep-diseaseMonitor', function (response) {
+            $(this).children().unwrap();
+
+            // includes the alert div tag            
+            var alertHTML = $(response).find('.alert.disease-report');
+            // console.log(alertHTML);
+            $('#disMonitor-container').prepend(alertHTML);
+
+        });
+
+        // for loading report subheader
+        $('.diseaserep-subheading').load(url + ' .diseaserep-subheading', function () {
+            $(this).children().unwrap();
+
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+ }
+ 
