@@ -17,9 +17,18 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="hogs-health-version" id="hogs-health-version" style="margin-bottom: 0; width: 100px">
-                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
-                {% for farmVersion in version %}
-                <option value="{{farm.code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% if latest.date_added == selectedPigpen.date_added %}
+                <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} (Current)</option>
+                {% else %}
+                <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                {% endif %}
+
+                {% for ver in version %}
+                    {% if latest.date_added == ver.date_added %}
+                    <option value="{{farm.code|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} (Current)</option>
+                    {% else %}
+                    <option value="{{farm.code|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>

@@ -16,9 +16,18 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="farm-version" id="farm-version" style="margin-bottom: 0; width: 100px">
-                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
-                {% for farmVersion in version %}
-                <option value="{{farm.id|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% if latest.date_added == selectedPigpen.date_added %}
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} (Current)</option>
+                {% else %}
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                {% endif %}
+
+                {% for ver in version %}
+                    {% if latest.date_added == ver.date_added %}
+                    <option value="{{farm.id|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} (Current)</option>
+                    {% else %}
+                    <option value="{{farm.id|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -121,12 +130,10 @@
                 </table>
                 <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
-                    {% if farm.total_pigs == 0 %}
-                    <p> No pigs </p>
-                    {% elif farm.total_pigs == Null %}
+                    {% if total_pigs == 0 or total_pigs == Null %}
                         <p> No pigs </p>
                     {% else %}
-                        <p> {{farm.total_pigs}} pigs </p>
+                        <p> {{total_pigs}} pigs </p>
                     {% endif %}
                 </div>
             </div>

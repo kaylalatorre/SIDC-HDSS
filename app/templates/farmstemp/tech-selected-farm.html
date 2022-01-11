@@ -44,9 +44,18 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="tech-farm-version" id="tech-farm-version" style="margin-bottom: 0; width: 100px">
-                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
-                {% for farmVersion in version %}
-                <option value="{{farm.id|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% if latest.date_added == selectedPigpen.date_added %}
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} (Current)</option>
+                {% else %}
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                {% endif %}
+
+                {% for ver in version %}
+                    {% if latest.date_added == ver.date_added %}
+                    <option value="{{farm.id|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} (Current)</option>
+                    {% else %}
+                    <option value="{{farm.id|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -57,9 +66,18 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="tech-farm-version" id="tech-farm-version" style="margin-bottom: 0; width: 100px">
-                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
-                {% for farmVersion in version %}
-                <option value="{{farm.id|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% if latest.date_added == selectedPigpen.date_added %}
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} (Current)</option>
+                {% else %}
+                <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                {% endif %}
+
+                {% for ver in version %}
+                    {% if latest.date_added == ver.date_added %}
+                    <option value="{{farm.id|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} (Current)</option>
+                    {% else %}
+                    <option value="{{farm.id|stringformat:'03d'}}-{{ver.date_added}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -136,12 +154,15 @@
         <section class="flex-item" id="pig-pens">
             <div class="flex subheading">
                 <h2 class="flex-item">Pig Pens</h2>
-                {% if selectedPigpen.date_added == lastPigpen.date_added %}
-
-                <div><button class="primary-btn pigpen-data" type="button" onclick="showPigpenInput()" style="justify-content: flex-end;">New Pens</button></div>
-                
-                <div><button class="secondary-btn pigpen-input" type="submit" style="justify-content: flex-end;">Save</button></div>
-                <div><button class="secondary-btn-red pigpen-input" type="button" onclick="cancelAddPigpen()" style="justify-content: flex-end;">Cancel</button></div>
+                {% if latest.date_added == selectedPigpen.date_added %}
+                    {% if fatter is not null  %}
+                    <div><button class="primary-btn pigpen-data" type="button" onclick="showPigpenInput()" style="justify-content: flex-end;">New Pens</button></div>
+                    
+                    <div><button class="secondary-btn pigpen-input" type="submit" style="justify-content: flex-end;">Save</button></div>
+                    <div><button class="secondary-btn-red pigpen-input" type="button" onclick="cancelAddPigpen()" style="justify-content: flex-end;">Cancel</button></div>
+                    {% else %}
+                    <div><button class="primary-btn pigpen-data" type="button" disabled style="justify-content: flex-end;">New Pens</button></div>
+                    {% endif %}
                 {% else %}
                     <div></div>
                 {% endif %}
@@ -158,28 +179,22 @@
                     </thead>                   
                     <tbody>
                     {% for pen in pigpens %}
-                    
                         <tr>
                             <td> {{pen.pen_no}} </td>
                             <td data-label="Length"> {{pen.length|floatformat:"-2"}} </td>
                             <td data-label="Width"> {{pen.width|floatformat:"-2"}} </td>
                             <td data-label="No. of Pigs"> {{pen.num_heads}} </td>
                         </tr>
-        
                     {% endfor %}
                     </tbody>
                 </table>
                 <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
-                    
-                    {% if farm.total_pigs == 0 %}
-                        <p> No pigs </p>
-                    {% elif farm.total_pigs == Null %}
+                    {% if total_pigs == 0 or total_pigs == Null %}
                         <p> No pigs </p>
                     {% else %}
-                        <p> {{farm.total_pigs}} pigs </p>
+                        <p> {{total_pigs}} pigs </p>
                     {% endif %}
-
                 </div>
             </div>
             <!-- hidden until technician needs to add new pigpens -->
