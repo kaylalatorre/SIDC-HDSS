@@ -7,5 +7,5 @@ urlpatterns = [
     # path('sendmail/', include('sendmail.urls')),
     path('', include('farmsapp.urls')),
     path('', include('healthapp.urls')),
-    # path('', include('dssapp.urls')),
+    path('', include('dssapp.urls')),
 ]

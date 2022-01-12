@@ -20,7 +20,7 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
               <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addMortalityPage(this)">Mortality Record</button></li>
-              <li><a class="dropdown-item" href="/add-weight">Weight Slip Record</a></li>
+              <li><a class="dropdown-item" href="/add-weight/{{farm_code}}">Weight Slip Record</a></li>
             </ul>
         </div>
     </div>
@@ -34,7 +34,7 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addSymptomsPage(this)">Incident Case</button></li>
                     <li><button class="dropdown-item no-shadow" value="{{ farm_code|stringformat:'03d' }}" onclick="addMortalityPage(this)">Mortality Record</button></li>
-                    <li><a class="dropdown-item" href="/add-weight">Weight Slip Record</a></li>
+                    <li><a class="dropdown-item" href="/add-weight/{{farm_code}}">Weight Slip Record</a></li>
                 </ul>
             </div>
         </div>
@@ -42,9 +42,11 @@
     <div class="flex subheading">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
-            <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option value="">Current - Dec 21, 2021 to March 21, 2021</option>
-                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+            <select class="form-select" name="health-symptoms-version" id="health-symptoms-version" style="margin-bottom: 0; width: 100px">
+                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
+                {% for farmVersion in version %}
+                <option value="{{farm_code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
             </select>
         </div>
         <p class="flex-item"></p>
@@ -53,9 +55,11 @@
     <div class="flex mobile-subheading">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
-            <select class="form-select" style="margin-bottom: 0; width: 100px">
-                <option value="">Current - Dec 21, 2021 to March 21, 2021</option>
-                <option value="">Sept 1, 2021 to Dec 1, 2021</option>
+            <select class="form-select" name="health-symptoms-version" id="health-symptoms-version" style="margin-bottom: 0; width: 100px">
+                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}}</option>
+                {% for farmVersion in version %}
+                <option value="{{farm_code|stringformat:'03d'}}-{{farmVersion.date_added}}">{{farmVersion.date_added}}</option>
+                {% endfor %}
             </select>
         </div>
     </div>
@@ -69,23 +73,23 @@
                         <tbody>
                             <tr>
                                 <th>Date Filed</td>
-                                <td data-label="Date Filed"> - </td>
+                                <td data-label="Date Filed">{{ start_weight.date_filed }}</td>
                             </tr>
                             <tr>
                                 <th>Ave. Starter Weight</td>
-                                <td data-label="Date Filed"> - </td>
+                                <td data-label="Ave. Starter Weight">{{ start_weight.ave_weight }}</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td data-label="Total No. of Heads"> - </td>
+                                <td data-label="Total No. of Heads">{{ start_weight.total_numHeads }}</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td data-label="Total Kls"> - </td>
+                                <td data-label="Total Kls">{{ start_weight.total_kls }}</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
-                                <td data-label="Remarks"> - </td>
+                                <td data-label="Remarks">{{ start_weight.remarks }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -99,24 +103,23 @@
                         <tbody>
                             <tr>
                                 <th>Date Filed</td>
-                                <td data-label="Date Filed"> - </td>
+                                <td data-label="Date Filed">{{ end_weight.date_filed }}</td>
                             </tr>
                             <tr>
                                 <th>Ave. Fattener Weight</td>
-                                <td data-label="Ave. Fattener Weight"> - </td>
+                                <td data-label="Ave. Fattener Weight">{{ end_weight.ave_weight }}</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td data-label="Total No. of Heads"> - </td>
+                                <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }}</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td data-label="Total Kls"> - </td>
+                                <td data-label="Total Kls">{{ end_weight.total_kls }}</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
-                                <td data-label="Remarks"> - </td>
-                            </tr>- </td>
+                                <td data-label="Remarks">{{ end_weight.remarks }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -232,7 +235,7 @@
     <section>
         <h2>Mortality Records</h2>
         <div class="box-style">
-            {% if mortalityList|length > 0 %}
+            {% if total_mortalities > 0 %}
             <table class="table" id="mortality-records">
                 <thead>
                     <tr>
@@ -249,7 +252,7 @@
                 <tbody>
                     {% for mort, mRate in mortalityList %}
                     <tr>
-                        <td data-label="Series">{{ mort.series }}</td>
+                        <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                         <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
                         <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
                         <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>

@@ -155,3 +155,7 @@ Highcharts.chart('dm-symptoms-rep', {
         }
     ]
 });
+
+$(document).ready(async function () {
+    
+})

@@ -1,3 +1,4 @@
+from os import getenv
 from django.contrib.auth.models import User
 from django.db.models import (
     F,Q,
@@ -5,7 +6,6 @@ from django.db.models import (
     When,
     Value)
 from django.forms.formsets import formset_factory
-import re
 
 # for page redirection, server response
 from django.shortcuts import render, redirect
@@ -15,6 +15,7 @@ from django.http import HttpResponse, response
 from django.http import JsonResponse
 from django.core import serializers
 import json
+from twilio.rest import Client
 
 # for Forms
 from .forms import (
@@ -40,7 +41,8 @@ from django.contrib import messages
 from .models import (
     Area, 
     AccountData,
-    ExternalBiosec, 
+    ExternalBiosec,
+    Farm_Weight, 
     InternalBiosec, 
     Farm, 
     Hog_Raiser,
@@ -65,7 +67,8 @@ from datetime import date, datetime, timezone, timedelta
 from django.utils.timezone import (
     make_aware, # for date and time fields in Models
     now, # for getting date today
-    localtime # for getting date today
+    localtime, # for getting date today
+    timedelta
 ) 
 
 # for list comapare
@@ -272,8 +275,113 @@ def selectedFarm(request, farmID):
         'last_updated',
     ).order_by('-last_updated')
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList,
-                                                            'currBio': currbioObj, 'bioList': extQuery, 'version' : allPigpens})
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 
+                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : latestPigpen})
+
+def selectedFarmVersion(request, farmID, farmVersion):
+    """
+    Display information of selected farm for assistant manager
+
+    :param farmID: PK of selected farm
+    :type farmID: integer
+    """
+
+    # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        contact=F("hog_raiser__contact_no"),
+        length=F("wh_length"),
+        width=F("wh_width"),
+        farm_area   = F("area__area_name"),
+        waste_mgt   = F("intbio__waste_mgt"),
+        isol_pen    = F("intbio__isol_pen"),
+        bird_proof  = F("extbio__bird_proof"),
+        perim_fence = F("extbio__perim_fence"),
+        foot_dip    = F("intbio__foot_dip"),
+        fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selectedFarm = qry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
+    ).first()
+   
+    # collect pigpens
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
+    # print(allPigpens)
+
+    # collect activities
+    actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
+
+    actList = []
+
+    # store all data to an array
+    for activity in actQuery:
+        actList.append({
+            'id' : activity.id,
+            'date' : activity.date,
+            'trip_type' : activity.trip_type,
+            'time_arrival' : activity.time_arrival,
+            'time_departure' : activity.time_departure,
+            'description' : activity.description,
+            'remarks' : activity.remarks,
+        })
+
+    # collect biosecurity checklists
+    # Select Biochecklist with latest date
+    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    
+
+    # Get latest instance of Biochecklist
+    currbioObj = currbioQuery.first()
+    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
+
+
+    # Get all biosecID, last_updated in extbio under a Farm
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+        'last_updated',
+    ).order_by('-last_updated')
+
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj,
+                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen})
+
 
 def techFarms(request):
     """
@@ -343,7 +451,6 @@ def techSelectedFarm(request, farmID):
     """
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
-
     farmID - selected farmID passed as parameter
     """
 
@@ -470,8 +577,8 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            return redirect('/tech-selected-farm/' + str(farmID))
             messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+            return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
             print("TEST LOG: Pigpen Measures Form not valid")
@@ -484,12 +591,82 @@ def techSelectedFarm(request, farmID):
         # if the forms have no input yet, only display empty forms
         pigpenRowForm  = PigpenRowForm()
 
-    # print("TEST LOG pigpenQry: " + str(pigpenQry.query))
-    # print("TEST LOG pigpenList: " + str(pigpenList))
-    # print("TEST LOG waste_mgt: " + str(techFarmQry.values("isol_pen")))
-
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'version' : allPigpens})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm,
+                                                                'version' : allPigpens, 'selectedPigpen' : latestPigpen, 'lastPigpen' : latestPigpen})
+
+def techSelectedFarmVersion(request, farmID, farmVersion):
+    """
+    - Display details of the selected farm under the currently logged in technician.
+    - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
+    farmID - selected farmID passed as parameter
+    farmVersion - date of the selected farm version
+    """
+
+    ## get details of selected farm
+    # collect the corresponding details for: hog raiser, area, internal and external biosecurity
+    techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
+                    raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact     = F("hog_raiser__contact_no"),
+                    farm_area   = F("area__area_name"),
+                    waste_mgt   = F("intbio__waste_mgt"),
+                    isol_pen    = F("intbio__isol_pen"),
+                    bird_proof  = F("extbio__bird_proof"),
+                    perim_fence = F("extbio__perim_fence"),
+                    foot_dip    = F("intbio__foot_dip"),
+                    fiveh_m_dist = F("extbio__fiveh_m_dist"))
+
+    # pass all data into an object
+    selTechFarm = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+        "waste_mgt",
+        "isol_pen",
+        "bird_proof",
+        "perim_fence",
+        "foot_dip",
+        "fiveh_m_dist",
+    ).first()
+
+    # collect the corresponding pigpens for selected farm
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    # print(allPigpens)
+
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()    
+
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : allPigpens,
+                                                                'selectedPigpen' : selectedPigpen, 'lastPigpen' : lastPigpen})
 
 def addFarm(request):
     """
@@ -745,7 +922,7 @@ def search_bioChecklist(request, biosecID):
     (POST-AJAX) For searching a Biosecurity Checklist based on biosecID.
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in search_bioChecklist()")
 
@@ -832,7 +1009,7 @@ def update_bioChecklist(request, biosecID):
     (POST-AJAX) For updating a Biosec Checklist based on biosecID
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in update_bioChecklist()/n")
 
@@ -1086,7 +1263,7 @@ def delete_bioChecklist(request, biosecID, farmID):
         - (2) Not current checklist in Farm, simply delete record
     """
 
-    if request.is_ajax and request.method == 'POST':
+    if request.method == 'POST':
 
         print("TEST LOG: in delete_bioChecklist()/n")
 
@@ -1374,7 +1551,8 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_added").order_by("-id")
+                ).order_by("code","-date_added").distinct("code")
+    # print(actQuery)
 
     activityList = []
 
@@ -1386,6 +1564,8 @@ def formsApproval(request):
         getTech = User.objects.filter(id=act["act_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
+
+        status = None
 
         if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
@@ -1403,8 +1583,7 @@ def formsApproval(request):
                     "date_added" : act["date_added"],
                     "status" : status,
                     "prepared_by" : getTech["name"],
-                    "farmID" : int(act["ref_farm"])
-                }
+                    "farmID" : int(act["ref_farm"]) }
             
                 activityList.append(activityObject)
 
@@ -1424,7 +1603,6 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_reported"] == None and act["is_checked"] == True:
                     status = 'Pending'
-                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
@@ -1433,20 +1611,17 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
                     status = 'Pending'
-                else: status = None
             
-            else: status = None
-
             # pass into object and append to list 
-            activityObject = {
-                "id" : act["id"],
-                "date_added" : act["date_added"],
-                "status" : status,
-                "prepared_by" : getTech["name"],
-                "farmID" : int(act["ref_farm"])
-            }
-            
-            activityList.append(activityObject)
+            if status is not None:
+                activityObject = {
+                    "id" : act["id"],
+                    "date_added" : act["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(act["ref_farm"]) }
+                
+                activityList.append(activityObject)
 
     ## MORTALITY FORMS
     # get all mortality forms
@@ -1458,7 +1633,8 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("-date_added").order_by("-id")
+                ).order_by("series","-date_added").distinct("series")
+    # print(mortQuery)
 
     mortalityList = []
 
@@ -1466,10 +1642,12 @@ def formsApproval(request):
         getTech = User.objects.filter(id=mort["mort_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
+        
+        status = None
 
         if request.user.groups.all()[0].name == "Field Technician":
             if getTech["name"] == loggedTech["name"]:
-                if mort["is_noted"] == True and act["is_reported"] == True and mort["is_posted"] == True:
+                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Approved'
                 elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
                     status = 'Rejected'
@@ -1482,8 +1660,7 @@ def formsApproval(request):
                     "date_added" : mort["date_added"],
                     "status" : status,
                     "prepared_by" : getTech["name"],
-                    "farmID" : int(mort["ref_farm"])
-                }
+                    "farmID" : int(mort["ref_farm"]) }
 
                 mortalityList.append(mortalityObject)
             
@@ -1503,7 +1680,6 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_reported"] == None and mort["is_posted"] == True:
                     status = 'Pending'
-                else: status = None
 
             elif request.user.groups.all()[0].name == "Assistant Manager":
                 if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
@@ -1512,22 +1688,87 @@ def formsApproval(request):
                     status = 'Rejected'
                 elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
                     status = 'Pending'
-                else: status = None
-
-            else: status = None
 
             # pass into object and append to list 
-            mortalityObject = {
-                "id" : mort["id"],
-                "date_added" : mort["date_added"],
-                "status" : status,
-                "prepared_by" : getTech["name"],
-                "farmID" : int(mort["ref_farm"])
-            }
+            if status is not None:
+                mortalityObject = {
+                    "id" : mort["id"],
+                    "date_added" : mort["date_added"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(mort["ref_farm"]) }
 
-            mortalityList.append(mortalityObject)
+                mortalityList.append(mortalityObject)
 
-    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList })
+    # # WEIGHT SLIPS
+    # get all weight slips
+    weightQry = Farm_Weight.objects.values(
+                "id",
+                "date_filed",
+                "weight_tech",
+                "is_posted",
+                "is_noted",
+                "ref_farm"
+                ).order_by("code","-date_filed").distinct("code")
+    # print(weightQry)
+
+    weightList = []
+
+    for weight in weightQry:       
+        getTech = User.objects.filter(id=weight["weight_tech"]).annotate(
+            name = Concat('first_name', Value(' '), 'last_name'),
+        ).values("name").first()
+
+        if request.user.groups.all()[0].name == "Field Technician":
+            if getTech["name"] == loggedTech["name"]:
+
+                if weight["is_noted"] == True and weight["is_posted"] == True:
+                    status = 'Approved'
+                elif weight["is_noted"] == False or weight["is_posted"] == False:
+                    status = 'Rejected'
+                elif weight["is_noted"] == None or weight["is_posted"] == None:
+                    status = 'Pending'
+
+                # pass into object and append to list 
+                weightObject = {
+                    "id" : weight["id"],
+                    "date_added" : weight["date_filed"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(weight["ref_farm"]) }
+            
+                weightList.append(weightObject)
+        
+        else : 
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                if weight["is_posted"] == True :
+                    status = 'Approved'
+                elif weight["is_posted"] == False :
+                    status = 'Rejected'
+                elif weight["is_posted"] == None :
+                    status = 'Pending'
+
+            elif request.user.groups.all()[0].name == "Assistant Manager":
+                if weight["is_noted"] == True and weight["is_posted"] == True:
+                    status = 'Approved'
+                elif weight["is_noted"] == False and weight["is_posted"] == True:
+                    status = 'Rejected'
+                elif weight["is_noted"] == None and weight["is_posted"] == True:
+                    status = 'Pending'
+                else: status = None
+
+            # pass into object and append to list 
+            if status is not None:
+                weightObject = {
+                    "id" : weight["id"],
+                    "date_added" : weight["date_filed"],
+                    "status" : status,
+                    "prepared_by" : getTech["name"],
+                    "farmID" : int(weight["ref_farm"]) }
+            
+                weightList.append(weightObject)
+
+    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList, 'weightList' : weightList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1538,45 +1779,40 @@ def selectedActivityForm(request, activityFormID, activityDate):
     """
 
     # get details of activity form
-    actFormQuery = Activities_Form.objects.filter(id=activityFormID).values(
-                "id",
-                "ref_farm_id",
-                "is_checked",
-                "is_reported",
-                "is_noted",
-                "act_tech"
-                ).first()
-    # print(str(actFormQuery))
+    actFormQuery = Activities_Form.objects.filter(id=activityFormID).first()
+
+    # get latest
+    latestForm = Activities_Form.objects.filter(code=actFormQuery.code).last()
 
     # set status of activity form
     if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-        if actFormQuery["is_checked"] == True :
+        if actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_checked"] == False :
+        elif actFormQuery.is_checked == False :
             status = 'Rejected'
-        elif actFormQuery["is_checked"] == None :
+        elif actFormQuery.is_checked == None :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Extension Veterinarian":
-        if actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        if actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_reported"] == False and actFormQuery["is_checked"] == True :
+        elif actFormQuery.is_reported == False and actFormQuery.is_checked == True :
             status = 'Rejected'
-        elif actFormQuery["is_reported"] == None and actFormQuery["is_checked"] == True :
+        elif actFormQuery.is_reported == None and actFormQuery.is_checked == True :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Assistant Manager":
-        if actFormQuery["is_noted"] == True and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        if actFormQuery.is_noted == True and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_noted"] == False and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        elif actFormQuery.is_noted == False and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Rejected'
-        elif actFormQuery["is_noted"] == None and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True : 
+        elif actFormQuery.is_noted == None and actFormQuery.is_reported == True and actFormQuery.is_checked == True : 
             status = 'Pending'
     
     elif request.user.groups.all()[0].name == "Field Technician":
-        if actFormQuery["is_noted"] == True and actFormQuery["is_reported"] == True and actFormQuery["is_checked"] == True :
+        if actFormQuery.is_noted == True and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
             status = 'Approved'
-        elif actFormQuery["is_noted"] == False or actFormQuery["is_reported"] == False or actFormQuery["is_checked"] == False :
+        elif actFormQuery.is_noted == False or actFormQuery.is_reported == False or actFormQuery.is_checked == False :
             status = 'Rejected'
         else :
             status = 'Pending'
@@ -1600,8 +1836,11 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'remarks' : activity.remarks,
         })
 
-    return render(request, 'farmstemp/selected-activity-form.html', { 'activityFormID' : activityFormID, 'actDate' : activityDate, 'activityForm' : ActivityForm(),
-                                                                        'activities' : actList, 'formStatus' : status, 'actFormDetails' : actFormQuery })
+    # get all other versions of selected activity form
+    versionList = Activities_Form.objects.filter(code=actFormQuery.code).all().order_by("-id")
+    
+    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm,
+                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList})
 
 def approveActivityForm(request, activityFormID):
     """
@@ -1700,6 +1939,10 @@ def rejectActivityForm(request, activityFormID):
         
         activity_form.save()
 
+        # duplicate instance (for a new version)
+        activity_form.pk = None
+        activity_form.save()
+
         # get all activities under activity form
         actQuery = Activity.objects.filter(activity_form_id=activityFormID).all()
         for activity in actQuery:
@@ -1708,6 +1951,11 @@ def rejectActivityForm(request, activityFormID):
             if activity_form.is_noted == False or activity_form.is_reported == False or activity_form.is_checked == False :
                 activity.is_approved = False
 
+            activity.save()
+
+            # duplicate instance (for a new version)
+            activity.pk = None
+            activity.activity_form = activity_form
             activity.save()
 
         messages.success(request, "Activity Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-activity')
@@ -1758,7 +2006,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             }
 
             activityList.append(activityObject)
-
             i += 1
         
         # print("TEST LOG activityList: " + str(activityList))
@@ -1790,7 +2037,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             )
 
             activity.save()
-
             x += 1
         
         messages.success(request, "Activity Form has been resubmitted.", extra_tags='update-activity')
@@ -1856,7 +2102,6 @@ def addActivity(request, farmID):
                 date_added = dateToday,
                 act_tech_id = techID,
                 ref_farm = farmQuery,
-                version = 1,
             )
             activity_form.save()
 
@@ -1885,10 +2130,11 @@ def addActivity(request, farmID):
             
         else:
             # print("TEST LOG: activityForm is not valid")
-            formError = str(activityForm.non_field_errors().as_text)
-            print(re.split("\'.*?",formError)[1])
+            # formError = str(activityForm.non_field_errors().as_text)
+            # print(re.split("\'.*?",formError)[1])
 
-            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            # messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")
@@ -1990,6 +2236,26 @@ def memAnnouncements(request):
         }
     return render(request, 'farmstemp/mem-announce.html', context)
 
+def sendAnnouncement(bindings, body):
+    ACCOUNT_SID = getenv('TWILIO_ACCOUNT_SID')
+    AUTH_TOKEN = getenv('TWILIO_AUTH_TOKEN')
+    NOTIFY_SERVICE_SID = getenv('TWILIO_NOTIFY_SERVICE_SID')
+
+    client              = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+    print("=====> To Bindings :>", bindings, "<: =====")
+    notification = client.notify.services(NOTIFY_SERVICE_SID).notifications.create(
+        to_binding=bindings,
+        body=body
+    )
+    
+    debug(notification.body)
+    # ancmt = {
+    #     'address': address,
+    #     'body': category+ ': '+title+'\n'+message
+    # }
+    # debug(ancmt)
+
 def memAnnouncements_Approval(request, decision):
     """
     Approves or reject an announcement, sets [is_approved] to either [true] or [false]
@@ -2005,6 +2271,27 @@ def memAnnouncements_Approval(request, decision):
             debug("Messages approved.")
             Mem_Announcement.objects.filter(pk__in=idList).update(is_approved = True)
             messages.success(request, "Messages successfully approved and sent to raisers.", extra_tags='announcement')
+            for id in idList:
+                ancmt = Mem_Announcement.objects.filter(pk = id).values('title','category','recip_area','mssg')
+                addressList = []
+                body = ancmt[0]['category'] + ': ' + ancmt[0]['title'] + '\n' + ancmt[0]['mssg']
+                # debug(ancmt)
+                
+                if ancmt[0]['recip_area'] == 'All Raisers':
+                    nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                else:
+                    nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = ancmt[0]['recip_area']).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                for address in nums:
+                    addressList.append(
+                        json.dumps({
+                            'binding_type':'sms',
+                            'address': address['hog_raiser__contact_no']
+                        })
+                    )
+                debug(addressList)
+                debug(body)
+                if addressList:
+                    sendAnnouncement(addressList, body)
 
             return JsonResponse({"success": "Messages successfully approved and sent to raisers."}, status=200)
     
@@ -2028,17 +2315,24 @@ def createAnnouncement(request):
     """
 
     if request.method == 'POST':
-        # debug(request.POST.get("title"))
-        # debug(request.POST.get("category"))
-        # debug(request.POST.get("recip_area"))
-        # debug(request.POST.get("mssg"))
-        # debug(request.user.id)
-        # debug(datetime.now())
-        # debug(request.user.groups.all()[0].name)
-        
         autoApprove = ['Assistant Manager']
         if request.user.groups.all()[0].name in autoApprove:
             approvalState = True
+            addressList = []
+            body = request.POST.get("category") + ': ' + request.POST.get("title") + '\n' + request.POST.get("mssg") 
+            if request.POST.get("recip_area") == 'All Raisers':
+                nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+            else:
+                nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = request.POST.get("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+            for address in nums:
+                addressList.append(
+                        json.dumps({
+                            'binding_type':'sms',
+                            'address': address['hog_raiser__contact_no']
+                        })
+                    )
+            if addressList:
+                    sendAnnouncement(addressList, body)
         else:
             approvalState = None
 
@@ -2051,13 +2345,6 @@ def createAnnouncement(request):
             timestamp = now(),
             is_approved = approvalState
         )
-        # debug(announcement.title)
-        # debug(announcement.category)
-        # debug(announcement.recip_area)
-        # debug(announcement.mssg)
-        # debug(announcement.author)
-        # debug(announcement.timestamp)
-        # debug(announcement.is_approved)
         announcement.save()
         messages.success(request, "Announcement sent.", extra_tags='announcement')
         return redirect('/member-announcements')
@@ -2165,6 +2452,43 @@ def getNotifIDs(request):
         for item in qry.values():
             notifIDs.append(';'.join([mortFormTable, str(item['id']), "rj"]))
 
+        # Farm Inspections
+        farmTable = Farm._meta.db_table
+        areaIDList = []
+        for i in Area.objects.filter(tech_id = userID).order_by('id').values_list('id'):
+            areaIDList.append(i[0])
+        needInspectFarms = Farm.objects.exclude(last_updated__range=(now() - timedelta(days=7), now())).filter(area_id__in=areaIDList).values()
+        for item in needInspectFarms:
+            notifIDs.append(';'.join([farmTable, str(item['id']), "Inspect"]))
+
+        # Active Incidents
+        hogSympTable = Hog_Symptoms._meta.db_table
+        farmIDList = []
+        for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+            farmIDList.append(i[0])
+        activeIncs = Hog_Symptoms.objects.filter(ref_farm_id__in=farmIDList, report_status="Active").values()
+        for item in activeIncs:
+            notifIDs.append(';'.join([hogSympTable, str(item['id']), "Active"]))
+
+        # Weight Updates
+        farmWtTable = Farm_Weight._meta.db_table
+        farmIDList = []
+        for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+            farmIDList.append(i[0])
+        farmWtQry = Farm_Weight.objects.order_by('ref_farm_id', '-date_filed').distinct('ref_farm_id').filter(ref_farm_id__in=farmIDList)
+        wt_farmIDList = []
+        for i in farmWtQry.values_list('ref_farm_id'):
+            wt_farmIDList.append(i[0])        
+        no_farmWtList = list(set(wt_farmIDList)-set(farmIDList)) + list(set(farmIDList)-set(wt_farmIDList))
+        if wt_farmIDList:
+            needWtUpdate = farmWtQry.exclude(date_filed__range=(now()-timedelta(days=120), now())).values()
+            for item in needWtUpdate:
+                notifIDs.append(';'.join([farmWtTable, str(item['id']), "120days"]))
+        if no_farmWtList:
+            noFarmWt = Farm.objects.filter(id__in=no_farmWtList).exclude(date_registered__range=(now()-timedelta(days=7), now())).values()
+            for item in noFarmWt:
+                notifIDs.append(';'.join([Farm._meta.db_table, str(item['id']), "NoWt"]))
+
     elif userGroup == "Livestock Operation Specialist":
         # Activity Forms
         lopsNotifs = activityForms.filter(is_checked = None)
@@ -2195,38 +2519,37 @@ def getMemAncmtNotifs(request, notifIDList):
     announceTable = Mem_Announcement._meta.db_table
     # Generate notifications to be displayed
     ## Current tags:
-    # string notificationID: notification ID made to uniquely identify each notification
     # string label_class: Classes that will be appended to notif-label. e.g. "notif-urgent"
     # string label: Title of the notification
     # string p: Message of the notification
     # string href: link to the page the user will be sent to if they click on the notification  
     if request.user.groups.all()[0].name == "Assistant Manager":
         pendingAnnouncements = Mem_Announcement.objects.filter(is_approved = None).values()
+        count = 0
         for item in pendingAnnouncements:
             notifID = ';'.join([announceTable, str(item['id']), "Pending"])
             new_notifIDList.append(notifID)
             if notifID not in notifIDList:
-                notifList.append({
-                    "label_class": "text-warning",
-                    "notificationID": notifID,
-                    "label": "Pending Announcement",
-                    "title": item["title"],
-                    "message": item["mssg"],
-                    "href": "/member-announcements"
-                })
+                count += 1
+        if count != 0: 
+            notifList.append({
+                "label_class": "text-warning",
+                "label": "{} pending announcement(s) for approval".format(count),
+                "href": "/member-announcements"
+            })
     else:
         rejectedAnnouncement = Mem_Announcement.objects.filter(is_approved = False).filter(author_id = request.session['_auth_user_id']).values()
+        count = 0
         for item in rejectedAnnouncement:
             notifID = ';'.join([announceTable, str(item['id']), "Rejected"])
             new_notifIDList.append(notifID)
             if notifID not in notifIDList:
-                notifList.append({
-                    "label_class": "text-danger",
-                    "notificationID": notifID,
-                    "label": "Rejected Announcement",
-                    "p": item["title"],
-                    "message": item["mssg"]
-                })
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Announcement(s) were rejected".format(count),
+            })
 
     return {
         "notifIDList": new_notifIDList,
@@ -2539,18 +2862,146 @@ def getMortFormsNotifs(request, notifIDList):
         "notifList": notifList
     }
  
+def getFarmInspectNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    farmTable = Farm._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    needInspectFarms = Farm.objects.exclude(last_updated__range=(now() - timedelta(days=7), now())).filter(area_id__in=areaIDList).values()
+    count = 0
+    for item in needInspectFarms:
+        notifID = ';'.join([farmTable, str(item['id']), "Inspect"])
+        new_notifIDList.append(notifID)
+        if notifID not in notifIDList:
+            count += 1
+            
+    if count != 0:
+        notifList.append({
+            "label_class": "text-danger",
+            "label": "{} Farm(s) in need of inspection".format(count),
+            "href": "/farms"
+        })
+    
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
+def getActiveIncsNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    hogSympTable = Hog_Symptoms._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    farmIDList = []
+    for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+        farmIDList.append(i[0])
+
+    activeIncs = Hog_Symptoms.objects.filter(ref_farm_id__in=farmIDList, report_status="Active").values()
+    count = 0
+    for item in activeIncs:
+        notifID = ';'.join([hogSympTable, str(item['id']), "Active"])
+        new_notifIDList.append(notifID)
+        if notifID not in notifIDList:
+            count += 1
+            
+    if count != 0:
+        notifList.append({
+            "label_class": "text-danger",
+            "label": "{} Incidents(s) are currently active".format(count),
+            "href": "/health-symptoms"
+        })
+    
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
+def getWtUpdateNotifs(request, notifIDList):
+    notifList = []
+    new_notifIDList = []
+    farmWtTable = Farm_Weight._meta.db_table
+    areaIDList = []
+    for i in Area.objects.filter(tech_id = request.session['_auth_user_id']).order_by('id').values_list('id'):
+        areaIDList.append(i[0])
+
+    farmIDList = []
+    for i in Farm.objects.filter(area_id__in=areaIDList).order_by('id').values_list('id'):
+        farmIDList.append(i[0])
+
+    farmWtQry = Farm_Weight.objects.order_by('ref_farm_id', '-date_filed').distinct('ref_farm_id').filter(ref_farm_id__in=farmIDList)
+    wt_farmIDList = []
+    for i in farmWtQry.values_list('ref_farm_id'):
+        wt_farmIDList.append(i[0])
+    
+    no_farmWtList = list(set(wt_farmIDList)-set(farmIDList)) + list(set(farmIDList)-set(wt_farmIDList))
+
+    # 120 day update
+    if wt_farmIDList:
+        needWtUpdate = farmWtQry.exclude(date_filed__range=(now()-timedelta(days=120), now())).values()
+        count = 0
+        for item in needWtUpdate:
+            notifID = ';'.join([farmWtTable, str(item['id']), "120days"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Farm(s)' weight record have not been updated in 120 days".format(count),
+                "href": "/health-symptoms"
+            })
+    # 7 day no weight
+    if no_farmWtList:
+        noFarmWt = Farm.objects.filter(id__in=no_farmWtList).exclude(date_registered__range=(now()-timedelta(days=7), now())).values()
+        count = 0
+        for item in noFarmWt:
+            notifID = ';'.join([Farm._meta.db_table, str(item['id']), "NoWt"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count += 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-danger",
+                "label": "{} Farm(s) still do not have weight records".format(count),
+                "href": "/health-symptoms"
+            })
+    return {
+        "notifIDList": new_notifIDList,
+        "notifList": notifList
+    }
+
 def getNotifications(request):
     """
     Collects all notifications from different tables
     """
+    
+    notifIDList = []
+    notifList = []
+
     request.session['notifIDList'] = initNotifIDList(request)
     notifIDList = request.session['notifIDList']
     memAncmtNotifs = getMemAncmtNotifs(request, notifIDList)
     actFormsNotifs = getActFormsNotifs(request, notifIDList)
     mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
+    
+    
+    # technician specific functions
+    if request.user.groups.all()[0].name == "Field Technician":
+        frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
+        actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
+        wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
+        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList']
+        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList']
 
-    notifIDList = memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
-    notifList = memAncmtNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
+    notifIDList += memAncmtNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
+    notifList += memAncmtNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
+
 
     request.session['notifIDList'] = notifIDList # overwrite old notifIDList with new one 
 
@@ -2586,8 +3037,6 @@ def syncNotifications(request):
         notifQry.data['notifIDList'] = []
         notifQry.save()
 
-    debug(sessionNotifs)
-    debug(User.objects.get(id=userID).accountdata.data['notifIDList'])
     if (Counter(User.objects.get(id=userID).accountdata.data['notifIDList']) != Counter(sessionNotifs)):
         debug("create new db notif")
         new_dbNotifs = [] # inside if statement so that it does not overwrite accountData.notifIDList
@@ -2621,8 +3070,17 @@ def countNotifications(request):
     actFormsNotifs = getActFormsNotifs(request, notifIDList)
     mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
 
-    totalNotifs = len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
+    # technician specific functions
+    if request.user.groups.all()[0].name == "Field Technician":
+        frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
+        actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
+        wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
+        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList'])
+
     
+    totalNotifs += len(memAncmtNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
+            
+
     return HttpResponse(str(totalNotifs), status=200)
 
 # helper functions for Biosec
@@ -2644,6 +3102,7 @@ def computeBioscore(farmID, intbioID, extbioID):
 
     total_measures = 0
     total_checks = 0
+    total_no_input = 0
     total_NA = 0
 
     # (1) INTERNAL BIOSEC SCORE
@@ -2696,6 +3155,8 @@ def computeBioscore(farmID, intbioID, extbioID):
                 total_checks += 2
             elif check == 1:
                 total_checks += 0
+            # elif check == 3:
+            #     total_no_input += 
             else:
                 total_NA += 2
 

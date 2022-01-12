@@ -43,9 +43,11 @@
                     <td style="padding-bottom: 0; vertical-align: middle;" id="assign-technician">
                         <div class="mb-3">
                             <select aria-label="Technician Assigned" class="form-select" disabled>
-                                <option value="{{area.tech_id}}">{{area.curr_tech}}</option>
+                                <option value={{area.curr_tech_id}}>{{area.curr_tech}}</option>
                                 {% for tech in technicians %}
+                                    {% if tech.id != area.curr_tech_id %}
                                 <option value={{tech.id}}>{{tech.name}}</option>
+                                    {% endif %}
                                 {% endfor %}
                             </select>
                         </div>

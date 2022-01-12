@@ -52,10 +52,10 @@
     <div class="flex subheading intbioRep-subheading">
         <p class="flex-item" id="intrep-header">All Incidents Report.</p>
 
-        <div><button class="primary-btn"><i class='bx bx-printer' ></i>Print</button></div>
+        <div><button class="primary-btn" onclick="printReport('rep-incidents')"><i class='bx bx-printer' ></i>Print</button></div>
     </div>
     <!-- Report content -->
-    <div class="box-style">
+    <div class="box-style" id="rep-incidents">
         <table class="table">
             <thead>
                 <tr>
@@ -69,15 +69,29 @@
                 </tr>
             </thead>
             <tbody>
+                {% for incident,symptoms in incident_symptomsList %}
                 <tr>
-                    <td data-label="Incident ID"> - </td>
-                    <td data-label="Farm Code"> - </td>
-                    <td data-label="Area"> - </td>
-                    <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> - </td>
-                    <td data-label="Symptoms"> - </td>
-                    <td data-label="Status"> - </td>
-                    <td data-label="Date Reported"> - </td>
+                    <td data-label="Incident ID">{{ incident.id }}</td>
+                    <td data-label="Farm Code">{{ incident.farm_code|stringformat:"03d" }}</td>
+                    <td data-label="Area">{{ incident.farm_area }}</td>
+                    <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> {{ incident.num_pigs_affected }}
+                    </td>
+
+                    <td data-label="Symptoms"> 
+                        {% load healthapp_extras %}
+                        {% for sKey, sVal in symptoms.items %}
+                        <ul class="ul-symptoms"></ul>
+                            {% if sVal %}
+                            <li class="li-symptoms">{{ sKey|formatField }}</li>
+                            {% endif %}
+                        </ul>
+                        {% endfor %}
+                    </td>
+
+                    <td data-label="Status">{{ incident.report_status }}</td>
+                    <td data-label="Date Reported">{{ incident.date_filed }}</td>
                 </tr>
+                {% endfor %}
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
