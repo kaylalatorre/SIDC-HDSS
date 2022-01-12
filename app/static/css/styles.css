@@ -96,7 +96,15 @@ ul .li-symptoms { list-style: circle!important;}
     padding-bottom: 8px;
 }
 
-.mobile-subheading { opacity: 0; height: 8px; margin-top: 8px;}
+.mobile-subheading { 
+    opacity: 0; 
+    height: 8px; 
+    margin-top: 16px;
+    display: flex;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
 .heading .box-style .input-group { width: 40%!important; }
 
 .content-section {

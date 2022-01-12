@@ -43,27 +43,28 @@
                 <p> </p>
             {% elif tFarms.areaCount == 1 %}
                 <label style="font-weight: 600;">Area Assigned:</label>
-                <p class="flex-item">{{tFarms.areaString}}</p>
+                <p>{{tFarms.areaString}}</p>
             {% else %}
                 <label style="font-weight: 600;">Areas Assigned:</label>
-                <p class="flex-item">{{tFarms.areaString}}</p>
+                <p>{{tFarms.areaString}}</p>
             {% endif %}
         
         </div>
         <div>
 
             {% if tFarms.areaCount == 0 %}
-            <a href="" class="button primary-btn"><i class='bx bx-plus'></i><span class="text">Add Farm</span></a>
+            <a href="" class="button primary-btn"><i class='bx bx-plus'></i></a>
             {% else %}
-            <a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i><span class="text">Add Farm</span></a>
+            <a href="/add-farm" class="button primary-btn"><i class='bx bx-plus'></i></a>
             {% endif %}
         
         </div>
     </div>
-    <div class="legend legend-no-bg">
-        <i style="background: #ED1E40"></i><span>Need Inspection</span><br>
-    </div>
+    
     <div class="box-style">
+        <div class="legend legend-no-bg">
+            <i style="background: #ED1E40"></i><span>Need Inspection</span><br>
+        </div>
         {% if tFarms.techFarms|length > 0 %}
         <table class="table">
             <thead>
