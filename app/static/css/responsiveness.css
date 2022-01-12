@@ -16,6 +16,10 @@
     ul .li-symptoms { list-style: none!important;}
     .ul-symptoms { padding-left: 0;}
 
+    .flex {
+        display: block;
+        max-width: 100%;
+    }
     .flex-item { padding: 0; }
     .main-div { margin: 16px!important; }
 
@@ -119,5 +123,9 @@
     .bx-printer {
         font-size: 0.75rem!important;
         padding-right: 4px;
+    }
+
+    .section-health-left, .section-health-right {
+        width: 100%!important; margin: 0!important;
     }
 }

@@ -274,3 +274,12 @@ button[disabled]:hover, .button[disabled]:hover {
 .btn-outline-secondary {
     box-shadow: none;
 }
+
+/* Others */
+.section-health-left {
+    width: 30%; margin-right: 16px;
+}
+
+.section-health-right {
+    width: 70%;
+}

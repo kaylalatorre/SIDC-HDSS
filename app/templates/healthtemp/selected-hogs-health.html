@@ -26,34 +26,34 @@
     </div>
     <hr>
     <div class="flex">
-        <section style="width: 30%; margin-right: 16px;">
+        <section class="section-health-left">
             <h2>Farm Details</h2>
             <div class="box-style">
                 <table class="table">
                     <tbody>
                         <tr>
                             <th>Raiser</td>
-                            <td>{{ farm.raiser }}</td>
+                            <td data-label="Raiser">{{ farm.raiser }}</td>
                         </tr>
                         <tr>
                             <th>Area</td>
-                            <td>{{ farm.area }}</td>
+                            <td data-label="Area">{{ farm.area }}</td>
                         </tr>
                         <tr>
                             <th>No. of Pigs</td>
-                            <td>{{ farm.pigs }}</td>
+                            <td data-label="No. of Pigs">{{ farm.pigs }}</td>
                         </tr>
                         <tr>
                             <th>Mortality Rate</td>
-                            <td>{{ farm.mortality_rate }}</td>
+                            <td data-label="Mortality Rate">{{ farm.mortality_rate }}</td>
                         </tr>
                         <tr>
                             <th>Incidents Reported</td>
-                            <td>{{ farm.total_incidents }}</td>
+                            <td data-label="Incidents Reported">{{ farm.total_incidents }}</td>
                         </tr>
                         <tr>
                             <th>Active Incidents</td>
-                            <td>{{ farm.total_active }}</td>
+                            <td data-label="Active Incidents">{{ farm.total_active }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -64,27 +64,23 @@
                     <tbody>
                         <tr>
                             <th>Date Filed</td>
-                            <td> - </td>
+                            <td data-label="Date Filed"> - </td>
                         </tr>
                         <tr>
                             <th>Ave. Starter Weight</td>
-                            <td> - </td>
+                            <td data-label="Date Filed"> - </td>
                         </tr>
                         <tr>
                             <th>Total No. of Heads</td>
-                            <td> - </td>
+                            <td data-label="Total No. of Heads"> - </td>
                         </tr>
                         <tr>
                             <th>Total Kls</td>
-                            <td> - </td>
-                        </tr>
-                        <tr>
-                            <th>Amount</td>
-                            <td> - </td>
+                            <td data-label="Total Kls"> - </td>
                         </tr>
                         <tr>
                             <th>Remarks</td>
-                            <td> - </td>
+                            <td data-label="Remarks"> - </td>
                         </tr>
                     </tbody>
                 </table>
@@ -96,35 +92,32 @@
                     <tbody>
                         <tr>
                             <th>Date Filed</td>
-                            <td> - </td>
+                            <td data-label="Date Filed"> - </td>
                         </tr>
                         <tr>
                             <th>Ave. Fattener Weight</td>
-                            <td> - </td>
+                            <td data-label="Ave. Fattener Weight"> - </td>
                         </tr>
                         <tr>
                             <th>Total No. of Heads</td>
-                            <td> - </td>
+                            <td data-label="Total No. of Heads"> - </td>
                         </tr>
                         <tr>
                             <th>Total Kls</td>
-                            <td> - </td>
-                        </tr>
-                        <tr>
-                            <th>Amount</td>
-                            <td> - </td>
+                            <td data-label="Total Kls"> - </td>
                         </tr>
                         <tr>
                             <th>Remarks</td>
-                            <td> - </td>
+                            <td data-label="Remarks"> - </td>
+                        </tr>- </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
         
-        <div style="width: 70%">
-            <section>
+        <div>
+            <section class="section-health-right">
                 <h2>Incidents Reported</h2>
                 <div class="box-style">
                     {% if total_incidents > 0 %}
