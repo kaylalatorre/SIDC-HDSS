@@ -210,7 +210,7 @@ def selectedHogsHealth(request, farmID):
         messages.error(request, "Hogs health record not found.", extra_tags="selected-hogsHealth")
         return render(request, 'healthtemp/selected-hogs-health.html', {})
 
-  # get current starter and fattener weights acc. to current Pigpen
+    # get current starter and fattener weights acc. to current Pigpen
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
@@ -927,7 +927,7 @@ def post_addCase(request, farmID):
                     # (SUCCESS) Incident has been added. Properly redirect to selected view page
                     # IF death is in the symptoms
                     if symptomsArr[11] == True or symptomsArr[12] == True:
-                        messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death')
+                        messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death' + str(farmID))
                     # else
                     else:
                         messages.success(request, "Incident report made on " + df + " has been successfully added!", extra_tags='add-incidCase')
@@ -966,7 +966,7 @@ def addMortality(request, farmID):
     """
     
     # generate series number
-    latestForm = Mortality_Form.objects.order_by("-series").last()
+    latestForm = Mortality_Form.objects.order_by("-series").first()
     try:
         series = int(latestForm.series) + 1
     except:
@@ -1404,7 +1404,7 @@ def addWeight(request, farmID):
 
     if request.method == 'POST':
         # generate code number
-        latestWeight = Farm_Weight.objects.order_by("-code").last()
+        latestWeight = Farm_Weight.objects.order_by("-code").first()
         try:
             code = int(latestWeight.code) + 1
         except:

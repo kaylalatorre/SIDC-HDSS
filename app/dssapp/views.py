@@ -85,7 +85,7 @@ def diseaseDashboard(request):
             symData = []
 
             # ACTIVE INCIDENTS
-            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(report_status='Active').order_by('-id')[:10]
+            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(report_status='Active').order_by('-id')
 
             if active_incidents is not None: 
                 for i in active_incidents:
@@ -96,7 +96,7 @@ def diseaseDashboard(request):
             
             
             # MORTALITY RECORDS
-            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).order_by('-id')[:10]
+            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).order_by('-id')
             
             if mortality is not None: 
                 for m in mortality:

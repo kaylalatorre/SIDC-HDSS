@@ -627,7 +627,7 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm' + str(farmID))
             return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
@@ -2126,7 +2126,7 @@ def addActivity(request, farmID):
     """
     
     # generate code number
-    latestForm = Activities_Form.objects.order_by("-code").last()
+    latestForm = Activities_Form.objects.order_by("-code").first()
     try:
         code = int(latestForm.code) + 1
     except:
