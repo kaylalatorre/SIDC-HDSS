@@ -178,7 +178,7 @@ def dashboard_SusCases():
         'PED':  {'farms': [],'hogs': 0,'symptoms': []},
     }
 
-    cases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).values(
+    cases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
         'ref_farm_id'       ,
         'num_pigs_affected' ,
         'high_fever'        ,
