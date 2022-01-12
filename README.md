@@ -167,6 +167,7 @@ sudo cp /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-available/
 cat /etc/nginx/sites-available/src_nginx.conf
 ```
 
+
 Step 2: BASH > restart nginx
 
 ```bash
@@ -187,7 +188,7 @@ uwsgi --ini src_uwsgi.ini
 
 Step 12: Go to <http://localhost:8000> to test if working
 
-### Setup Database
+## Setup Database
 See DB setup documentation [DBSETUP](/DBSETUP.md)
 
 ## Running the Project Locally

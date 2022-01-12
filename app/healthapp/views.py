@@ -31,9 +31,6 @@ from django.http import JsonResponse
 from django.core import serializers
 import json
 
-# # for string regex
-# import re
-
 # for Forms
 from farmsapp.forms import (
     MortalityForm,
@@ -1015,45 +1012,40 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
     """
 
     # get details of mortality form
-    mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).values(
-                "id",
-                "series",
-                "ref_farm_id",
-                "is_posted",
-                "is_reported",
-                "is_noted",
-                "mort_tech"
-                ).first()
+    mortFormQuery = Mortality_Form.objects.filter(id=mortalityFormID).first()
+
+    # get latest
+    latestForm = Mortality_Form.objects.filter(series=mortFormQuery.series).last()
 
     # set status of mortality form
     if request.user.groups.all()[0].name == "Paiwi Management Staff":
-        if mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_posted"] == False :
+        elif mortFormQuery.is_posted == False :
             status = 'Rejected'
-        elif mortFormQuery["is_posted"] == None :
+        elif mortFormQuery.is_posted == None :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Extension Veterinarian":
-        if mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_reported"] == False and mortFormQuery["is_posted"] == True :
+        elif mortFormQuery.is_reported == False and mortFormQuery.is_posted == True :
             status = 'Rejected'
-        elif mortFormQuery["is_reported"] == None and mortFormQuery["is_posted"] == True :
+        elif mortFormQuery.is_reported == None and mortFormQuery.is_posted == True :
             status = 'Pending'
 
     elif request.user.groups.all()[0].name == "Assistant Manager":
-        if mortFormQuery["is_noted"] == True and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_noted == True and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_noted"] == False and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        elif mortFormQuery.is_noted == False and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Rejected'
-        elif mortFormQuery["is_noted"] == None and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True : 
+        elif mortFormQuery.is_noted == None and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True : 
             status = 'Pending'
     
     elif request.user.groups.all()[0].name == "Field Technician":
-        if mortFormQuery["is_noted"] == True and mortFormQuery["is_reported"] == True and mortFormQuery["is_posted"] == True :
+        if mortFormQuery.is_noted == True and mortFormQuery.is_reported == True and mortFormQuery.is_posted == True :
             status = 'Approved'
-        elif mortFormQuery["is_noted"] == False or mortFormQuery["is_reported"] == False or mortFormQuery["is_posted"] == False :
+        elif mortFormQuery.is_noted == False or mortFormQuery.is_reported == False or mortFormQuery.is_posted == False :
             status = 'Rejected'
         else :
             status = 'Pending'
@@ -1075,8 +1067,11 @@ def selectedMortalityForm(request, mortalityFormID, mortalityDate):
             'remarks' : mortality.remarks,
         })
 
-    return render(request, 'healthtemp/selected-mortality-form.html', { 'mortalityFormID' : mortalityFormID, 'mortDate' : mortalityDate, 'mortalityForm' : MortalityForm(),
-                                                                        'mortalities' : mortList, 'formStatus' : status, 'mortFormDetails' : mortFormQuery })
+    # get all other versions of selected activity form
+    versionList = Mortality_Form.objects.filter(series=mortFormQuery.series).all().order_by("-id")
+
+    return render(request, 'healthtemp/selected-mortality-form.html', {'mortalityForm' : MortalityForm(), 'mortalities' : mortList, 'latest' : latestForm,
+                                                                        'formStatus' : status, 'mortForm' : mortFormQuery, 'mortFormList' : versionList})
 
 def approveMortalityForm(request, mortalityFormID):
     """
@@ -1189,16 +1184,24 @@ def rejectMortalityForm(request, mortalityFormID):
 
         mortality_form.save()
 
+        # duplicate instance (for a new version)
+        mortality_form.pk = None
+        mortality_form.save()
+
         # get all mortalities under mortality form
         mortQuery = Mortality.objects.filter(mortality_form_id=mortalityFormID).all()
         for mortality in mortQuery:
             mortality.last_updated = dateToday
             
-            if mortality_form.is_noted == False or mortality_form.is_checked == False or mortality_form.is_reported == False :
+            if mortality_form.is_noted == False or mortality_form.is_reported == False or mortality_form.is_posted == False :
                 mortality.is_approved = False
 
             mortality.save()
 
+            # duplicate instance (for a new version)
+            mortality.pk = None
+            mortality.mortality_form = mortality_form
+            mortality.save()
 
         # NOTIFY USER (FIELD TECHNICIAN) - A Mortality Form has been rejected by <user>
         messages.success(request, "Mortality Form has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-mortality')
@@ -1220,12 +1223,15 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
     # get mortality form from ID
     mortality_form = Mortality_Form.objects.filter(id=mortalityFormID).first()
 
+    # collected farmID of selected tech farm
+    farmQuery = Farm.objects.get(pk=farmID)
+
     # get today's date
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
         # print(request.POST)
-        numMortalities = int(len(request.POST)/6)
+        numMortalities = int(len(request.POST)/4)
 
         # pass all values into each of the array mortalityList
         mortalityList = []
@@ -1233,23 +1239,18 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
         i = 0
         while i < numMortalities:
             mort_date = str('mortalityList[') + str(i) + str('][mort_date]')
-            beg_inv = str('mortalityList[') + str(i) + str('][beg_inv]')
             today = str('mortalityList[') + str(i) + str('][today]')
-            to_date = str('mortalityList[') + str(i) + str('][to_date]')
             source = str('mortalityList[') + str(i) + str('][source]')
             remarks = str('mortalityList[') + str(i) + str('][remarks]')
 
             mortalityObject = {
                 "mortDate" : request.POST.get(mort_date, default=None),
-                "mortBegInv" : request.POST.get(beg_inv, default=None),
                 "mortToday" : request.POST.get(today, default=None),
-                "mortToDate" : request.POST.get(to_date, default=None),
                 "mortSource" : request.POST.get(source, default=None),
                 "mortRemarks" : request.POST.get(remarks, default=None),
             }
 
             mortalityList.append(mortalityObject)
-
             i += 1
         
         # print("TEST LOG mortalityList: " + str(mortalityList))
@@ -1272,16 +1273,15 @@ def resubmitMortalityForm(request, mortalityFormID, farmID, mortalityDate):
             mortality = Mortality.objects.create(
                 ref_farm_id = farmID,
                 mortality_date = mort['mortDate'],
-                num_begInv = mort['mortBegInv'],
+                num_begInv = farmQuery.total_pigs,
                 num_today = mort['mortToday'],
-                num_toDate = mort['mortToDate'],
+                num_toDate = farmQuery.total_pigs - int(mort['num_today']),
                 source = mort['mortSource'],
                 remarks = mort['mortRemarks'],
                 mortality_form_id = mortality_form.id
             )
 
             mortality.save()
-
             x += 1
         
 
@@ -1369,7 +1369,8 @@ def addWeight(request, farmID):
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks'),
-                code = code
+                code = code,
+                weight_tech_id = request.user.id
             )
             weight.save()
             latestPigpen.start_weight = weight
@@ -1382,7 +1383,8 @@ def addWeight(request, farmID):
                 total_numHeads = request.POST.get('total_numHeads'),
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks'),
-                code = code
+                code = code,
+                weight_tech_id = request.user.id
             )
             weight.save()
             latestPigpen.final_weight =  weight
@@ -1391,6 +1393,133 @@ def addWeight(request, farmID):
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
+
+def selectedWeightSlip(request, weightSlipID, weightDate):
+    """
+    - Display details of selected weight slip
+
+    weightSlipID = id value of selected weight slip
+    weightDate = date_filed value of selected weight slip
+    """
+
+    # get selected
+    weightSlip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    # get latest
+    latestSlip = Farm_Weight.objects.filter(code=weightSlip.code).last()
+
+    # set status of mortality form
+    if request.user.groups.all()[0].name == "Paiwi Management Staff":
+        if weightSlip.is_posted == True :
+            status = 'Approved'
+        elif weightSlip.is_posted == False :
+            status = 'Rejected'
+        elif weightSlip.is_posted == None :
+            status = 'Pending'
+
+    elif request.user.groups.all()[0].name == "Assistant Manager":
+        if weightSlip.is_noted  == True and weightSlip.is_posted == True :
+            status = 'Approved'
+        elif weightSlip.is_noted  == False and weightSlip.is_posted == True :
+            status = 'Rejected'
+        elif weightSlip.is_noted == None and weightSlip.is_posted == True : 
+            status = 'Pending'
+    
+    elif request.user.groups.all()[0].name == "Field Technician":
+        if weightSlip.is_noted == True and weightSlip.is_posted == True :
+            status = 'Approved'
+        elif weightSlip.is_noted == False or weightSlip.is_posted == False :
+            status = 'Rejected'
+        else :
+            status = 'Pending'
+
+    # get all other versions of selected weight slip
+    versionList = Farm_Weight.objects.filter(code=weightSlip.code).all().order_by("-id")
+
+    return render(request, 'healthtemp/selected-weight-slip.html', { 'weightForm' : Farm_Weight(), 'weight' : weightSlip, 'latest' : latestSlip,
+                                                                    'formStatus' : status, 'weightList' : versionList })
+
+def approveWeightSlip(request, weightSlipID):
+    """
+    - Modify is_posted, and is_noted values of selected weight slip
+    """
+
+    weight_slip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        # update weight slip fields for user approvals
+        # is_posted for paiwi mgt
+        if request.POST.get("is_posted") == 'true' :
+            weight_slip.is_posted = True
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                weight_slip.weight_mgtStaff_id = request.user.id
+
+                # NOTIFY USER (ASSISTANT MANAGER) - A Weight Slip has been sent for approval or is pending for approval
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been approved by Paiwi Management Staff
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'true' :
+            weight_slip.is_noted = True
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                weight_slip.weight_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been approved by Assistant Manager
+
+        
+        weight_slip.save()    
+
+        messages.success(request, "Weight Slip has been approved by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-weight')
+        return JsonResponse({"success": "Weight Slip has been approved by " + str(request.user.groups.all()[0].name) + "."}, status=200)
+
+    messages.error(request, "Failed to approve Weight Slip.", extra_tags='update-weight')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
+
+def rejectWeightSlip(request, weightSlipID):
+    """
+    - Modify is_posted, and is_noted values of selected weight slip
+    """
+
+    weight_slip = Farm_Weight.objects.filter(id=weightSlipID).first()
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        # update weight slip fields for user approvals
+        # is_posted for paiwi mgt
+        if request.POST.get("is_posted") == 'false' :
+            weight_slip.is_posted = False
+
+            if request.user.groups.all()[0].name == "Paiwi Management Staff":
+                weight_slip.weight_mgtStaff_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been rejected by Paiwi Management Staff
+
+        # is_noted for asst. manager
+        elif request.POST.get("is_noted") == 'false' :
+            weight_slip.is_noted = False
+
+            if request.user.groups.all()[0].name == "Assistant Manager":
+                weight_slip.weight_asm_id = request.user.id
+
+                # NOTIFY USER (FIELD TECHNICIAN) - A Weight Slip has been rejected by Assistant Manager
+
+        
+        weight_slip.save()
+
+        # duplicate instance (for a new version)
+        weight_slip.pk = None
+        weight_slip.save()
+
+        messages.success(request, "Weight Slip has been rejected by " + str(request.user.groups.all()[0].name) + ".", extra_tags='update-weight')
+        return JsonResponse({"success": "Weight Slip has been rejected by " + str(request.user.groups.all()[0].name) + "."}, status=200)
+
+    messages.error(request, "Failed to approve Weight Slip.", extra_tags='update-weight')
+    return JsonResponse({"error": "Not a POST method"}, status=400)
 
 # REPORTS for Module 2
 def incidentsReported(request):
@@ -1627,3 +1756,5 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
 
     return render(request, 'healthtemp/rep-hogs-mortality.html', {"areaName": areaName, "isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
                                                                 "areaList": areaQry, "mortList": mortalityList, "mortStats": mortStats})
+
+
