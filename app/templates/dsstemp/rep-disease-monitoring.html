@@ -55,19 +55,24 @@
     <div class="box-style" id="rep-diseaseMonitor">
         <div class="print-header">
             <h1>SIDC | Hogs Disease Surveillance System</h1>
+            <!-- <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p> -->
 
-    
+            {% if not isFiltered %}
+                <p class="flex-item">All Disease Monitoring Report.</p>
+            {% else %}
+                <p class="flex-item">{{areaName}} Disease Monitoring Report for {{dateStart}} to {{dateEnd}}</p>
+            {% endif %}          
         </div>
         <table class="table">
             <thead>
                 <tr>
                     <th>Incident ID</th>
-                    <th>Farm Code</th>
+                    <th style="text-align: center; width: 10%">Farm Code</th>
                     <th>Area</th>
                     <th>Date Reported</th>
                     <th>Symptoms</th>
-                    <th>No. of Pigs Affected</th>
-                    <th>Status</th>
+                    <th style="text-align: right; width: 15%">No. of Pigs Affected</th>
+                    <th style="width: 15%">Status</th>
                     <th>Suspected Disease Cases</th>
                 </tr>
             </thead>
@@ -75,7 +80,7 @@
                 {% for incident,symptoms,diseaseList in incident_symptomsList %}
                 <tr>
                     <td data-label="Incident ID">{{ incident.id }}</td>
-                    <td data-label="Farm Code">{{ incident.farm_code|stringformat:"03d" }}</td>
+                    <td data-label="Farm Code" style="text-align: center; width: 15%">{{ incident.farm_code|stringformat:"03d" }}</td>
                     <td data-label="Area">{{ incident.farm_area }}</td>
                     <td data-label="Date Reported">{{ incident.date_filed }}</td>
 
@@ -93,7 +98,7 @@
                     <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> {{ incident.num_pigs_affected }}
                     </td>
 
-                    <td data-label="Status">{{ incident.report_status }}</td>
+                    <td data-label="Status" style="width: 15%">{{ incident.report_status }}</td>
 
                     <td data-label="Diseases"> 
                         {% for disease in diseaseList %}
