@@ -28,7 +28,7 @@ def formatField(strField):
         return "sneezing"
     if strField == "waste": 
         return "wasting"
-    if strField == "boar_dec_libido ": 
+    if strField == "boar_dec_libido": 
         return "reduced libido (boars)"
     if strField == "farrow_miscarriage": 
         return "miscarriage (farrows)"

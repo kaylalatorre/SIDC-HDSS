@@ -2150,7 +2150,7 @@ def memAnnouncements(request):
         "category",
         "recip_area",
         "name"
-    ).order_by("timestamp")
+    ).order_by("-timestamp")
 
     if request.user.groups.all()[0].name == "Assistant Manager":
         context = {
