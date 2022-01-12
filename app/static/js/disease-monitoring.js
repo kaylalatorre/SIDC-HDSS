@@ -1,6 +1,5 @@
 $(document).ready(async function () {
 
-
     ajaxCSRF();
         metadata = await $.ajax({
             type: 'POST',

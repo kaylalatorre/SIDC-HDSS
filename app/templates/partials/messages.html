@@ -2,7 +2,6 @@
     {% if "add-farm" in mssg.tags %}
     <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
         <div class="flex-item">
-            <!-- Note: append farm id to url -->
             <p class="msg">{{ mssg }} Click to <a href="/add-weight/{{mssg.tags|cut:'add-farm'|slice:':3'}}" class="alert-link">add weight slip</a>. </p>
         </div>
         
@@ -13,7 +12,6 @@
     {% elif "add-incidCase-death" in mssg.tags %}
     <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
         <div class="msg flex-item">{{ mssg }} {{ mssg.tags }}</div>
-        <!-- Note: get farm id, connect to add-mortality page -->
         <button type="button" class="primary-btn" value="{{mssg.tags|cut:'add-incidCase-death'|slice:':3'}}" onclick="addMortalityPage(this)">
             Add Mortality Record
         </button>

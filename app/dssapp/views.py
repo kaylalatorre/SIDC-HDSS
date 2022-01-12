@@ -68,10 +68,14 @@ def diseaseDashboard(request):
 
         # get today's date
         dateToday = datetime.now(timezone.utc)
+        # fourMonths = dateToday - timedelta(days=120)
+
+        # print(dateToday)
+        # print(fourMonths)
 
         # get all areas
         areaQry = Area.objects.all()
-
+    
         # collect all data from each farm under each area
         for area in areaQry :
             # print("- - " + str(area.area_name) + " - -")
@@ -85,16 +89,46 @@ def diseaseDashboard(request):
             symData = []
 
             # ACTIVE INCIDENTS
-            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(report_status='Active').order_by('-id')
+            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
+            # debug(active_incidents)
 
-            if active_incidents is not None: 
-                for i in active_incidents:
-                    # print(i.num_pigs_affected)
-                    incData.append(i.num_pigs_affected)
+            num_pigs = 0
+            try:
+                currDate = active_incidents.first().date_filed.date()
+            except:
+                incSeries.append([0,0])
+                continue
 
-            else: incData.append(int(0))
-            
-            
+            for i in active_incidents:
+                # print("currDate " + str(currDate))
+                try:
+                    nextDate = i.date_filed.date()
+                    # print("nextDate " + str(nextDate))
+                except:
+                    continue
+                
+                # print("num pigs aff " + str(i.num_pigs_affected))
+                # print(i.ref_farm_id)
+
+                if currDate == nextDate :
+                    num_pigs += i.num_pigs_affected
+                    # print("added num pigs " + str(num_pigs))
+
+                else : 
+                    incObj = [ currDate, num_pigs ]
+                    incData.append(incObj)
+
+                    num_pigs = i.num_pigs_affected
+                    currDate = nextDate
+
+                    # print("num pigs " + str(num_pigs))
+        
+
+            incObj = [ currDate, num_pigs ]
+            incData.append(incObj)   
+            # print(incObj)
+            # print(incData)
+
             # MORTALITY RECORDS
             mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).order_by('-id')
             
@@ -136,8 +170,8 @@ def diseaseDashboard(request):
             symSeries.append(symData)
 
         print(incSeries)
-        print(mortSeries)
-        print(symSeries)
+        # print(mortSeries)
+        # print(symSeries)
 
         data.append(incSeries)
         data.append(mortSeries)
