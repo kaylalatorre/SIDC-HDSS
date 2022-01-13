@@ -130,23 +130,31 @@ def diseaseDashboard(request):
                 mort_currDate = mortality.first().mortality_date
             except:
                 mortSeries.append([0,0])
+                print("hello")
                 continue
 
             for m in mortality:
+                # print("currDate " + str(mort_currDate))
                 try:
                     mort_nextDate = m.mortality_date
+                    # print("nextDate " + str(mort_nextDate))
                 except:
                     continue
                 
+                # print("num pigs aff " + str(m.num_today))
+
                 if mort_currDate == mort_nextDate :
                     mort_num_pigs += m.num_today
+                    # print("added num pigs " + str(mort_num_pigs))
                 
                 else :
                     mortObj = [ mort_currDate, mort_num_pigs ]
                     mortData.append(mortObj)
 
                     mort_num_pigs = m.num_today
-                    mort_currDate = mort_nextDate 
+                    mort_currDate = mort_nextDate
+
+                    # print("num pigs " + str(mort_num_pigs))
 
 
             mortObj = [ mort_currDate, mort_num_pigs ]
@@ -182,7 +190,7 @@ def diseaseDashboard(request):
             mortSeries.append(mortData)
             symSeries.append(symData)
 
-        # print(incSeries)
+        print(incSeries)
         print(mortSeries)
         # print(symSeries)
 

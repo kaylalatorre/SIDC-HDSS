@@ -11,7 +11,7 @@
     </div>
     {% elif "add-incidCase-death" in mssg.tags %}
     <div class="alert {{ mssg.tags }} alert-dismissible fade show overlay" role="alert">
-        <div class="msg flex-item">{{ mssg }} {{ mssg.tags }}</div>
+        <div class="msg flex-item">{{ mssg }} </div>
         <button type="button" class="primary-btn" value="{{mssg.tags|cut:'add-incidCase-death'|slice:':3'}}" onclick="addMortalityPage(this)">
             Add Mortality Record
         </button>
