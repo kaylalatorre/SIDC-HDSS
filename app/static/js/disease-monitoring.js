@@ -12,14 +12,16 @@ $(document).ready(async function () {
 
         console.log(metadata);
 
+        
         var today = new Date();
         // console.log(today);
         
-        var dateMonthsAgo = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
-        // console.log(dateMonthsAgo);
+        var dateBefore = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
+        // console.log(dateBefore);
     
-        var dateSplit = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-        // console.log(dateSplit);
+        var dateToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+        // console.log(dateToday);
+
 
         // ACTIVE INCIDENTS line chart
         if ($('#dm-active-incid').length) {
@@ -53,8 +55,8 @@ $(document).ready(async function () {
                     type: 'datetime',
                     startOnTick: true,
                     endOnTick: true,
-                    min: dateMonthsAgo,
-                    max: dateSplit,
+                    min: dateBefore,
+                    max: dateToday,
                     dateTimeLabelFormats: {
                         week: '%e of %b' },
                     units: [
@@ -112,8 +114,8 @@ $(document).ready(async function () {
                     type: 'datetime',
                     startOnTick: true,
                     endOnTick: true,
-                    min: dateMonthsAgo,
-                    max: dateSplit,
+                    min: dateBefore,
+                    max: dateToday,
                     dateTimeLabelFormats: {
                         week: '%e %b' },
                     units: [
@@ -244,8 +246,8 @@ $(document).ready(async function () {
                     type: 'datetime',
                     startOnTick: true,
                     endOnTick: true,
-                    min: dateMonthsAgo,
-                    max: dateSplit,
+                    min: dateBefore,
+                    max: dateToday,
                     dateTimeLabelFormats: {
                     week: '%e %b'
                     },

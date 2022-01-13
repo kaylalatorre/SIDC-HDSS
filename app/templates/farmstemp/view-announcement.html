@@ -8,7 +8,7 @@
 
 {% block section %}
 <div class="main-div">
-    <h1 class="heading flex"><a href="/member-announcements"><i class='bx bx-chevron-left'></i>Announcements</a></h1>
+    <h1 class="heading flex-item"><a href="/member-announcements">Member Announcements</a> >  Announcement sent on {{announcement.timestamp|date:'N j, Y'}}</h1>
     <hr>
     <div class="box-style small-table">
         {% if announcement.reject_reason and announcement.author_id == request.user.id %}

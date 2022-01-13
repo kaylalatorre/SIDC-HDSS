@@ -101,11 +101,15 @@
                     <td data-label="Status" style="width: 15%">{{ incident.report_status }}</td>
 
                     <td data-label="Diseases"> 
+                        {% if diseaseList %}
                         {% for disease in diseaseList %}
                         <ul class="ul-diseases"></ul>
                             <li class="li-diseases">{{ disease }}</li>
                         </ul>
                         {% endfor %}
+                        {% else %}
+                        <p>None</p> 
+                        {% endif %}
                     </td>
 
                     
