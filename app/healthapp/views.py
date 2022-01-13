@@ -141,8 +141,8 @@ def hogsHealth(request):
             latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
             # get current starter and fattener weights
-            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
-            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
+            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=True).order_by("-date_filed").first()
+            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=False).order_by("-date_filed").first()
 
             # error checking for None weight values per Farm
             if s_weightQry is not None:
@@ -320,8 +320,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
         farm_area = F("area__area_name"),
-        ave_currWeight = F("farm_weight__ave_weight")
-        # is_starterWeight = F("farm_weight__is_starter")
         ).values(
             "id",
             "fname",
@@ -329,8 +327,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
             "farm_area",
             "total_pigs",
             "last_updated",
-            "ave_currWeight"
-            # "is_starterWeight"
             ).first()
     # debug(qry)
 
@@ -478,8 +474,8 @@ def healthSymptoms(request):
             farmID = f["id"]
 
             # get current starter and fattener weights
-            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
-            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
+            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=True).order_by("-date_filed").first()
+            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=False).order_by("-date_filed").first()
 
             # error checking for None weight values per Farm
             if s_weightQry is not None:
@@ -491,11 +487,14 @@ def healthSymptoms(request):
             # for computing Mortality %
             mortality_rate = compute_MortRate(farmID, None)
 
+            # get latest version of Pigpen
+            latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+        
             # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
-            total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).count()
+            total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).count()
 
             # for "Active Incidents" column --> counts how many Symptoms record with "Active" status
-            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(report_status="Active").count()
+            total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
 
             farmObject = {
                 "code":             f["id"],

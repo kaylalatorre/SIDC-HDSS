@@ -69,6 +69,7 @@
             <div class="flex-item">
                 <h2>Weight Slip Details (Starter)</h2>
                 <div class="box-style">
+                    {% if start_weight.is_noted == True %}
                     <table class="table">
                         <tbody>
                             <tr>
@@ -93,12 +94,15 @@
                             </tr>
                         </tbody>
                     </table>
+                    {% else %}
+                    <p>No Starter Weight Slip yet.</p>
+                    {% endif %}
                 </div>
             </div>
             <div class="flex-item">
                 <h2>Weight Slip Details (Fattener)</h2>
                 <div class="box-style">
-                    <!-- If no fattener record yet, display empty table -->
+                    {% if end_weight.is_noted == True %}
                     <table class="table">
                         <tbody>
                             <tr>
@@ -123,6 +127,9 @@
                             </tr>
                         </tbody>
                     </table>
+                    {% else %}
+                    <p>No Fattener Weight Slip yet.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

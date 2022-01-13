@@ -4166,8 +4166,11 @@ def dashboard_view(request):
         if bioDateDiff.days > 7:
             total_needInspect += 1
 
-        # counts no of. Symptoms record with "Active" status
-        total_active += Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(report_status="Active").count()
+        # for filtering Incidents for latest Farm version
+        latestPP = Pigpen_Group.objects.filter(ref_farm_id=f["id"]).order_by("-date_added").first()
+
+        # counts no of. Incident records with "Active" status
+        total_active += Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
 
     # debug(farmsData)
 
