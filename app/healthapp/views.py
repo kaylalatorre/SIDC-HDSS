@@ -1388,8 +1388,8 @@ def addWeight(request, farmID):
             )
             weight.save()
             latestPigpen.final_weight =  weight
-
         latestPigpen.save()
+        messages.success(request, "Weight recorded.", extra_tags='weight')
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
