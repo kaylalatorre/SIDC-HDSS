@@ -12,9 +12,9 @@
 
 <div class="main-div">
     <form action="/add-weight/{{farmID}}" method="POST">{% csrf_token %}
-        <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID}}">{{ farmID|stringformat:"03d" }}</a> > Add Weight Slip Record</h1>
+        <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID|stringformat:'03d'}}">{{ farmID|stringformat:"03d" }}</a> > Add Weight Slip Record</h1>
         <div class="flex subheading">
-            <p class="flex-item"> <strong>Farm: </strong> {{farmID}} </p>
+            <p class="flex-item"> <strong>Farm: </strong> {{farmID|stringformat:"03d"}} </p>
             <div><button class="primary-btn" type="submit">Send for Approval</button></div>
         </div>
         <hr>

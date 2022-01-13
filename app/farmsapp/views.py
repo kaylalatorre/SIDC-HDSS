@@ -227,7 +227,7 @@ def selectedFarm(request, farmID):
 
     pen_no = 1
     pigpenList = []
-
+    total_pigs = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
@@ -236,12 +236,26 @@ def selectedFarm(request, farmID):
             'num_heads' : pen.num_heads
         }
         
+        total_pigs += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
     # collecting all past pigpens
-    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
-    # print(allPigpens)
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if latestPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)  
 
     # collect activities
     actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
@@ -275,8 +289,8 @@ def selectedFarm(request, farmID):
         'last_updated',
     ).order_by('-last_updated')
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 
-                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : latestPigpen})
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 'total_pigs' : total_pigs,
+                                                            'bioList': extQuery, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen})
 
 def selectedFarmVersion(request, farmID, farmVersion):
     """
@@ -326,26 +340,45 @@ def selectedFarmVersion(request, farmID, farmVersion):
     ).first()
    
     # collect pigpens
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).values("id").first()
-    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen["id"]).order_by("id")
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     pen_no = 1
     pigpenList = []
-
+    total_pigs = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
             'length' : pen.length,
             'width' : pen.width,
-            'num_heads' : pen.num_heads
-        }
+            'num_heads' : pen.num_heads }
         
+        total_pigs += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+
     # collecting all past pigpens
-    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
-    # print(allPigpens)
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    previous = None
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if lastPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)  
+
+        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+            previous = oldPigpens[i-1].date_added
 
     # collect activities
     actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).all().order_by('-date')
@@ -379,8 +412,8 @@ def selectedFarmVersion(request, farmID, farmVersion):
         'last_updated',
     ).order_by('-last_updated')
 
-    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj,
-                                                            'bioList': extQuery, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen})
+    return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 'latest' : lastPigpen,
+                                                            'bioList': extQuery, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'prev' : previous, 'total_pigs' : total_pigs})
 
 
 def techFarms(request):
@@ -496,9 +529,12 @@ def techSelectedFarm(request, farmID):
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
+    # get current starter and fattener weights acc. to current Pigpen
+    weightSlip = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
+
     pen_no = 1
     pigpenList = []
-
+    total_pigs = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
@@ -507,12 +543,26 @@ def techSelectedFarm(request, farmID):
             'num_heads' : pen.num_heads
         }
         
+        total_pigs += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
     # collecting all past pigpens
-    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).values("date_added").order_by("-id").all()
-    # print(allPigpens)
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if latestPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)
 
     # adding new pigpens
     if request.method == 'POST':
@@ -577,7 +627,7 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm')
+            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm' + str(farmID))
             return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
@@ -592,8 +642,8 @@ def techSelectedFarm(request, farmID):
         pigpenRowForm  = PigpenRowForm()
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm,
-                                                                'version' : allPigpens, 'selectedPigpen' : latestPigpen, 'lastPigpen' : latestPigpen})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'starter' : weightSlip.start_weight, 'total_pigs' : total_pigs,
+                                                                'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen, 'fattener' : weightSlip.final_weight})
 
 def techSelectedFarmVersion(request, farmID, farmVersion):
     """
@@ -645,28 +695,48 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
+    # get current starter and fattener weights acc. to selected Pigpen
+    weightSlip = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
+
     pen_no = 1
     pigpenList = []
-
+    total_pigs = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
             'length' : pen.length,
             'width' : pen.width,
-            'num_heads' : pen.num_heads
-        }
-        
+            'num_heads' : pen.num_heads }
+
+        total_pigs += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    # print(allPigpens)
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
 
-    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()    
+    previous = None
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if lastPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)  
 
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : allPigpens,
-                                                                'selectedPigpen' : selectedPigpen, 'lastPigpen' : lastPigpen})
+        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+            previous = oldPigpens[i-1].date_added
+
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : versionList, 'starter' : weightSlip.start_weight, 'total_pigs' : total_pigs,
+                                                                'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'fattener' : weightSlip.final_weight, 'prev' : previous})
 
 def addFarm(request):
     """
@@ -1551,7 +1621,7 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("code","-date_added").distinct("code")
+                ).distinct("code").order_by("-code")
     # print(actQuery)
 
     activityList = []
@@ -1633,7 +1703,7 @@ def formsApproval(request):
                 "is_reported",
                 "is_noted",
                 "ref_farm"
-                ).order_by("series","-date_added").distinct("series")
+                ).distinct("series").order_by("-series")
     # print(mortQuery)
 
     mortalityList = []
@@ -1709,7 +1779,7 @@ def formsApproval(request):
                 "is_posted",
                 "is_noted",
                 "ref_farm"
-                ).order_by("code","-date_filed").distinct("code")
+                ).distinct("code").order_by("-code")
     # print(weightQry)
 
     weightList = []
@@ -2056,7 +2126,7 @@ def addActivity(request, farmID):
     """
     
     # generate code number
-    latestForm = Activities_Form.objects.last()
+    latestForm = Activities_Form.objects.order_by("-code").first()
     try:
         code = int(latestForm.code) + 1
     except:

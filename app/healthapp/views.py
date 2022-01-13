@@ -210,18 +210,33 @@ def selectedHogsHealth(request, farmID):
         messages.error(request, "Hogs health record not found.", extra_tags="selected-hogsHealth")
         return render(request, 'healthtemp/selected-hogs-health.html', {})
 
-    # collecting all past pigpens
-    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-
-    total_incidents = 0
-    total_active = 0
-
     # get current starter and fattener weights acc. to current Pigpen
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
     # debug("pigpenQry.start_weight -- " + str(pigpenQry.start_weight))
     # debug("pigpenQry.final_weight -- " + str(pigpenQry.final_weight))
+
+    # collecting all past pigpens
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if latestPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)
+
+
+    total_incidents = 0
+    total_active = 0
 
     # for computing Mortality %
     mortality_rate = compute_MortRate(farmID, None)
@@ -302,7 +317,7 @@ def selectedHogsHealth(request, farmID):
     total_mortalities = mortQry.count()
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : latestPigpen })
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen })
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
     """
@@ -337,7 +352,27 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     # collecting all past and selected pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
-    
+
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+
+    previous = None
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if lastPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)
+
+        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+            previous = oldPigpens[i-1].date_added
+
     # get current starter and fattener weights acc. to current Pigpen
     pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
@@ -359,8 +394,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
         "updated": selectFarm["last_updated"],
-        "ave_currWeight": selectFarm["ave_currWeight"],
-        # "is_starterWeight": str(f["is_starterWeight"]),
 
         "mortality_rate": mortality_rate,
         "total_incidents": total_incidents,
@@ -423,7 +456,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     # debug("total_incidents -- " + str(total_incidents))
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : allPigpens, 'selectedPigpen' : selectedPigpen })
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'prev' : previous })
 
 
 # for Technician view Hogs Health
@@ -532,15 +565,27 @@ def selectedHealthSymptoms(request, farmID):
 
     # debug("TEST LOG: in selectedHealthSymptoms()")
     # debug("farmID -- " + str(farmID))
-
-    # collecting all past pigpens
-    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-
-    # get latest version of Pigpen
-    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
  
     # get current starter and fattener weights acc. to current Pigpen
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
+
+    # collecting all past pigpens (versions)
+    allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if latestPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)
 
     # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).only(
@@ -594,9 +639,6 @@ def selectedHealthSymptoms(request, farmID):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
-    # get current starter and fattener weights acc. to current Pigpen
-    pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
-
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -615,8 +657,8 @@ def selectedHealthSymptoms(request, farmID):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID),
-                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : allPigpens,
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
+                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
 
 
@@ -634,6 +676,26 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     # collecting all past and selected pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+
+    previous = None
+    versionList = []
+    i = 0
+    for pen in allPigpens:
+        if lastPigpen.date_added == pen.date_added:
+            verObj = { 'date_added' : pen.date_added }
+        else:
+            verObj = {
+                'date_added' : pen.date_added,
+                'endDate' : oldPigpens[i].date_added }
+            i += 1
+        
+        versionList.append(verObj)
+
+        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+            previous = oldPigpens[i-1].date_added
 
     # get current starter and fattener weights acc. to current Pigpen
     pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
@@ -690,9 +752,6 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
-    # get current starter and fattener weights acc. to selected Pigpen
-    pigpenQry = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
-
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -711,8 +770,8 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
-    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID),
-                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : allPigpens,
+    return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
+                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
                                                                         'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
 
 
@@ -871,7 +930,7 @@ def post_addCase(request, farmID):
                     # (SUCCESS) Incident has been added. Properly redirect to selected view page
                     # IF death is in the symptoms
                     if symptomsArr[11] == True or symptomsArr[12] == True:
-                        messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death')
+                        messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death' + str(farmID))
                     # else
                     else:
                         messages.success(request, "Incident report made on " + df + " has been successfully added!", extra_tags='add-incidCase')
@@ -910,7 +969,7 @@ def addMortality(request, farmID):
     """
     
     # generate series number
-    latestForm = Mortality_Form.objects.last()
+    latestForm = Mortality_Form.objects.order_by("-series").first()
     try:
         series = int(latestForm.series) + 1
     except:
@@ -1348,7 +1407,7 @@ def addWeight(request, farmID):
 
     if request.method == 'POST':
         # generate code number
-        latestWeight = Farm_Weight.objects.last()
+        latestWeight = Farm_Weight.objects.order_by("-code").first()
         try:
             code = int(latestWeight.code) + 1
         except:

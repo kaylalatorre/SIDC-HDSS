@@ -53,26 +53,98 @@ def debug(m):
 # (Module 3) Disease Monitoring view functions
 
 def diseaseDashboard(request):
-    # load data for highcharts in disease monitoring dashboard
+    """
+    Load data for highcharts
+    """
+
     if request.method == 'POST':
 
+        data = []
+
+        # arraylist to store name points for each charts
+        incSeries = [] 
+        mortSeries = []
+        symSeries = []
+
+        # get today's date
+        dateToday = datetime.now(timezone.utc)
+
         # get all areas
-        areaQry = Area.objects.all().order_by('id')
+        areaQry = Area.objects.all()
 
         # collect all data from each farm under each area
         for area in areaQry :
-            farmQry = Farm.objects.filter(area_id=area.id).values('id').all()
+            # print("- - " + str(area.area_name) + " - -")
+            incSeries.append(area.area_name)
+            mortSeries.append(area.area_name)
+            symSeries.append(area.area_name)
 
-            for farm in farmQry:
-                # ACTIVE INCIDENTS
-                active_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farm.id).filter(report_status='Active').order_by('-id')[:10].count()
+            # arraylist to store name points for each charts
+            incData = []
+            mortData = []
+            symData = []
+
+            # ACTIVE INCIDENTS
+            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(report_status='Active').order_by('-id')
+
+            if active_incidents is not None: 
+                for i in active_incidents:
+                    # print(i.num_pigs_affected)
+                    incData.append(i.num_pigs_affected)
+
+            else: incData.append(int(0))
+            
+            
+            # MORTALITY RECORDS
+            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).order_by('-id')
+            
+            if mortality is not None: 
+                for m in mortality:
+                    # print(i.num_pigs_affected)
+                    mortData.append(m.num_today)
+
+            else: mortData.append(int(0))
 
 
-                # MORTALITY REPORTS
-        
+            # SYMPTOMS RECORDED
+            symptomsList = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).values(
+                        'high_fever'        ,
+                        'loss_appetite'     ,
+                        'depression'        ,
+                        'lethargic'         ,
+                        'constipation'      ,
+                        'vomit_diarrhea'    ,
+                        'colored_pigs'      ,
+                        'skin_lesions'      ,
+                        'hemorrhages'       ,
+                        'abn_breathing'     ,
+                        'discharge_eyesnose',
+                        'death_isDays'      ,
+                        'death_isWeek'      ,
+                        'cough'             ,
+                        'sneeze'            ,
+                        'runny_nose'        ,
+                        'waste'             ,
+                        'boar_dec_libido'   ,
+                        'farrow_miscarriage',
+                        'weight_loss'       ,
+                        'trembling'         ,
+                        'conjunctivitis').order_by("id").all()
 
-        # SYMPTOMS REPORTED
-    return render(request, 'home.html', {})
+            incSeries.append(incData)
+            mortSeries.append(mortData)
+            symSeries.append(symData)
+
+        print(incSeries)
+        print(mortSeries)
+        print(symSeries)
+
+        data.append(incSeries)
+        data.append(mortSeries)
+        data.append(symSeries)
+
+    return JsonResponse(data, safe=False)
+
 
 def checkDiseaseList(s):
     """
