@@ -72,6 +72,7 @@ def compute_MortRate(farmID, mortalityID):
         latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
         # Get latest Mortality record of the Farm (w Pigpen filter)
+        # TODO: remove filter on approved form
         mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by('-mortality_date')
 
         if mortQry.exists():
@@ -140,6 +141,7 @@ def hogsHealth(request):
             # get latest Pigpen version
             latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
+            # TODO: remove filter on approved form
             # get current starter and fattener weights
             s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=True).order_by("-date_filed").first()
             e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=False).order_by("-date_filed").first()
@@ -297,7 +299,7 @@ def selectedHogsHealth(request, farmID):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
 
-
+    # TODO: remove filter on approved form
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -330,6 +332,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     :type farmVersion: string
     """
 
+    # TODO: remove select_related on farm_weight here
     # (1) get farm based on farmID; get related data from hog_raiser, area, farm_weight
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
@@ -435,7 +438,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
 
-
+    # TODO: remove filter on approved form
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -505,7 +508,8 @@ def healthSymptoms(request):
             end_weight = 0.0
 
             farmID = f["id"]
-
+            
+            # TODO: remove filter on approved form
             # get current starter and fattener weights
             s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=True).order_by("-date_filed").first()
             e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=False).order_by("-date_filed").first()
@@ -639,6 +643,7 @@ def selectedHealthSymptoms(request, farmID):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
+    # TODO: remove filter on approved form
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -752,6 +757,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
+    # TODO: remove filter on approved form
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -795,7 +801,7 @@ def edit_incidStat(request, incidID):
 
         # get date diff of date_filed from date_updated
         repDateDiff = datetime.now(timezone.utc) - incidentObj.date_updated
-        debug("repDateDiff.days -- " + str(repDateDiff.days))
+        # debug("repDateDiff.days -- " + str(repDateDiff.days))
 
         if incidentObj is not None:
             # (ERROR 1) if select_status is ACTIVE & db_status is PENDING 
@@ -1683,8 +1689,8 @@ def hogsMortality(request):
     # (2) all Area records
     areaQry = Area.objects.all()
 
+    # TODO: remove filter on approved form
     # (3.1) Mortality details
-    # latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     mortQry = Mortality.objects.filter(is_approved=True).order_by("id").all()
     # debug(str(mortQry.query))
 
@@ -1764,6 +1770,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     if areaName == "All": # (CASE 1) search only by date range
         debug("TRACE: in areaName == 'All'")
 
+        # TODO: remove filter on approved form
         mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(is_approved=True).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
@@ -1774,6 +1781,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
+        # TODO: remove filter on approved form
         mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).filter(is_approved=True).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
