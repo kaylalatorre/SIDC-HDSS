@@ -431,20 +431,27 @@ def techFarms(request):
     areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
     
     # collect number of areas assigned (for frontend purposes)
+    i = 1
     areaNum = len(areaQry)
-    areaNames = []
+    areaString = ''
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
-        areaNames.append(area.area_name)
+        if i == areaNum:
+            areaString += str(area.area_name)
+        
+        else : 
+            areaString += str(area.area_name) + ', '
+
+        i += 1
 
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser','extbio').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no"),
-                    last_update = F("extbio__last_updated")).values(
+last_update = F("extbio__last_updated")).values(
                             "id",
                             "fname",
                             "lname", 
@@ -464,18 +471,17 @@ def techFarms(request):
                 "updated": farm["last_update"],
             }
 
-        techFarmsList.append(farmObject)
+            techFarmsList.append(farmObject)
     
     techData = {
         "techFarms" : techFarmsList,
         "areaCount" : areaNum,
-        "areaString" : ','.join(areaNames)
+        "areaString" : areaString
     }
 
     # debug(techData)
 
     return techData
-
 
 def techSelectedFarm(request, farmID):
     """
