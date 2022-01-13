@@ -4200,14 +4200,14 @@ def dashboard_view(request):
     farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
         intbioID = F("intbio__id"),
         extbioID = F("extbio__id"),
-        last_update = F("extbio__last_updated")
+        last_update = F("last_updated")
         ).values(
             "id",
             "total_pigs",
             "intbioID",
             "extbioID",
             "last_update"
-            )
+            ).order_by("id").all()
     # debug(farmQry)
 
     if not farmQry.exists(): 
@@ -4233,6 +4233,7 @@ def dashboard_view(request):
 
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
+        # print(str(f["id"]) + " " + str(bioDateDiff))
         
         if bioDateDiff.days > 7:
             total_needInspect += 1

@@ -190,8 +190,8 @@ def diseaseDashboard(request):
             mortSeries.append(mortData)
             symSeries.append(symData)
 
-        print(incSeries)
-        print(mortSeries)
+        # print(incSeries)
+        # print(mortSeries)
         # print(symSeries)
 
         data.append(incSeries)
