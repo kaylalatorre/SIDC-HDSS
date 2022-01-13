@@ -66,13 +66,6 @@ def diseaseDashboard(request):
         mortSeries = []
         symSeries = []
 
-        # get today's date
-        dateToday = datetime.now(timezone.utc)
-        # fourMonths = dateToday - timedelta(days=120)
-
-        # print(dateToday)
-        # print(fourMonths)
-
         # get all areas
         areaQry = Area.objects.all()
     
@@ -92,9 +85,9 @@ def diseaseDashboard(request):
             active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
             # debug(active_incidents)
 
-            num_pigs = 0
+            inc_num_pigs = 0
             try:
-                currDate = active_incidents.first().date_filed.date()
+                inc_currDate = active_incidents.first().date_filed.date()
             except:
                 incSeries.append([0,0])
                 continue
@@ -102,7 +95,7 @@ def diseaseDashboard(request):
             for i in active_incidents:
                 # print("currDate " + str(currDate))
                 try:
-                    nextDate = i.date_filed.date()
+                    inc_nextDate = i.date_filed.date()
                     # print("nextDate " + str(nextDate))
                 except:
                     continue
@@ -110,34 +103,54 @@ def diseaseDashboard(request):
                 # print("num pigs aff " + str(i.num_pigs_affected))
                 # print(i.ref_farm_id)
 
-                if currDate == nextDate :
-                    num_pigs += i.num_pigs_affected
+                if inc_currDate == inc_nextDate :
+                    inc_num_pigs += i.num_pigs_affected
                     # print("added num pigs " + str(num_pigs))
 
                 else : 
-                    incObj = [ currDate, num_pigs ]
+                    incObj = [ inc_currDate, inc_num_pigs ]
                     incData.append(incObj)
 
-                    num_pigs = i.num_pigs_affected
-                    currDate = nextDate
+                    inc_num_pigs = i.num_pigs_affected
+                    inc_currDate = inc_nextDate
 
                     # print("num pigs " + str(num_pigs))
         
 
-            incObj = [ currDate, num_pigs ]
+            incObj = [ inc_currDate, inc_num_pigs ]
             incData.append(incObj)   
             # print(incObj)
             # print(incData)
 
             # MORTALITY RECORDS
-            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).order_by('-id')
+            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).filter(mortality_date__range=(now()-timedelta(days=120), now())).order_by('mortality_date')
             
-            if mortality is not None: 
-                for m in mortality:
-                    # print(i.num_pigs_affected)
-                    mortData.append(m.num_today)
+            mort_num_pigs = 0
+            try:
+                mort_currDate = mortality.first().mortality_date
+            except:
+                mortSeries.append([0,0])
+                continue
 
-            else: mortData.append(int(0))
+            for m in mortality:
+                try:
+                    mort_nextDate = m.mortality_date
+                except:
+                    continue
+                
+                if mort_currDate == mort_nextDate :
+                    mort_num_pigs += m.num_today
+                
+                else :
+                    mortObj = [ mort_currDate, mort_num_pigs ]
+                    mortData.append(mortObj)
+
+                    mort_num_pigs = m.num_today
+                    mort_currDate = mort_nextDate 
+
+
+            mortObj = [ mort_currDate, mort_num_pigs ]
+            mortData.append(mortObj)
 
 
             # SYMPTOMS RECORDED
@@ -169,8 +182,8 @@ def diseaseDashboard(request):
             mortSeries.append(mortData)
             symSeries.append(symData)
 
-        print(incSeries)
-        # print(mortSeries)
+        # print(incSeries)
+        print(mortSeries)
         # print(symSeries)
 
         data.append(incSeries)
