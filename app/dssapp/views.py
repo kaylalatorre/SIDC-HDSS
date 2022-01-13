@@ -281,7 +281,7 @@ def diseaseMonitoring(request):
     areaQry = Area.objects.all()
 
     # (3.1) Incident details
-    incidQry = Hog_Symptoms.objects.select_related('ref_farm').annotate(
+    incidQry = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).select_related('ref_farm').annotate(
         farm_code = F("ref_farm__id"),
         farm_area = F("ref_farm__area__area_name"),
         ).values(
@@ -310,7 +310,7 @@ def diseaseMonitoring(request):
         total_pigs_affect += f["num_pigs_affected"]
 
     # (3.2) Incidents Reported (symptoms list)
-    symptomsList = Hog_Symptoms.objects.values(
+    symptomsList = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).values(
             'high_fever'        ,
             'loss_appetite'     ,
             'depression'        ,
@@ -350,7 +350,7 @@ def diseaseMonitoring(request):
 
 
 def filter_incidentRep(request, startDate, endDate, areaName):
-    debug("TEST LOG: in filter_mortalityRep/n")
+    # debug("TEST LOG: in filter_mortalityRep/n")
 
     """
     Gets all Incident (Hog_Symptoms) records based on (1) date range and (2) area name.
@@ -383,10 +383,10 @@ def filter_incidentRep(request, startDate, endDate, areaName):
     areaQry = Area.objects.all()
 
     if areaName == "All": # (CASE 1) search only by date range
-        debug("TRACE: in areaName == 'All'")
+        # debug("TRACE: in areaName == 'All'")
 
         # (3.1) Incident details
-        incidQry = Hog_Symptoms.objects.filter(date_filed__range=(sDate, eDate)).select_related('ref_farm').annotate(
+        incidQry = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(sDate, eDate)).select_related('ref_farm').annotate(
             farm_code = F("ref_farm__id"),
             farm_area = F("ref_farm__area__area_name"),
             ).values(
@@ -421,7 +421,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
             total_pigs_affect += f["num_pigs_affected"]
 
         # (3.2) Incidents Reported (symptoms list)
-        symptomsList = Hog_Symptoms.objects.filter(date_filed__range=(sDate, eDate)).values(
+        symptomsList = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(sDate, eDate)).values(
                 'high_fever'        ,
                 'loss_appetite'     ,
                 'depression'        ,
@@ -447,9 +447,9 @@ def filter_incidentRep(request, startDate, endDate, areaName):
         
 
     else: # (CASE 2) search by BOTH date range and areaName
-        debug("TRACE: in else/")
+        # debug("TRACE: in else/")
 
-        incidQry = Hog_Symptoms.objects.filter(date_filed__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).select_related('ref_farm').annotate(
+        incidQry = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).select_related('ref_farm').annotate(
             farm_code = F("ref_farm__id"),
             farm_area = F("ref_farm__area__area_name"),
             ).values(
@@ -482,7 +482,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
             total_pigs_affect += f["num_pigs_affected"]
 
         # (3.2) Incidents Reported (symptoms list)
-        symptomsList = Hog_Symptoms.objects.filter(date_filed__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).values(
+        symptomsList = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).values(
                 'high_fever'        ,
                 'loss_appetite'     ,
                 'depression'        ,
@@ -518,7 +518,8 @@ def filter_incidentRep(request, startDate, endDate, areaName):
 
 
     return render(request, 'dsstemp/rep-disease-monitoring.html', {"isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
-                                                                    "areaList": areaQry, "incident_symptomsList": incident_symptomsList,
+                                                                    "areaList": areaQry, "areaName": areaName,
+                                                                    "incident_symptomsList": incident_symptomsList,
                                                                     "total_pigs_affect": total_pigs_affect})
 
 def dashboard_SusCases():
@@ -567,7 +568,7 @@ def dashboard_SusCases():
         'PED':  {'farms': [],'hogs': 0,'symptoms': []},
     }
 
-    cases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).values(
+    cases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
         'ref_farm_id'       ,
         'num_pigs_affected' ,
         'high_fever'        ,

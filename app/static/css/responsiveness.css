@@ -16,10 +16,15 @@
     ul .li-symptoms { list-style: none!important;}
     .ul-symptoms { padding-left: 0;}
 
+    .health-symptoms .flex {
+        display: block;
+        max-width: 100%;
+    }
+
     .flex-item { padding: 0; }
     .main-div { margin: 16px!important; }
 
-    .subheading { display: none; }
+    .subheading, .health-symptoms .subheading { display: none; }
     .mobile-subheading { opacity: 1; margin-bottom: 8px; min-height: 40px;}
     .button i, button i { text-align: center; align-items: center;}
 
@@ -119,5 +124,9 @@
     .bx-printer {
         font-size: 0.75rem!important;
         padding-right: 4px;
+    }
+
+    .section-health-left, .section-health-right {
+        width: 100%!important; margin: 0!important;
     }
 }

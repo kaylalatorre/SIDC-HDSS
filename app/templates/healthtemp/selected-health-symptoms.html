@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="flex mobile-subheading">
-        <div class="flex" style="width: 72%">
+        <div class="flex" style="width: 72%; margin-bottom: 8px;">
             <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
             <div class="dropdown">
                 <a class="button primary-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -82,7 +82,7 @@
         </div>
     </div>
     <hr>
-    <section>
+    <section class="health-symptoms">
         <div class="flex">
             <div class="flex-item">
                 <h2>Weight Slip Details (Starter)</h2>
@@ -92,23 +92,23 @@
                         <tbody>
                             <tr>
                                 <th>Date Filed</td>
-                                <td>{{ start_weight.date_filed }}</td>
+                                <td data-label="Date Filed">{{ start_weight.date_filed }}</td>
                             </tr>
                             <tr>
                                 <th>Ave. Starter Weight</td>
-                                <td>{{ start_weight.ave_weight }}</td>
+                                <td data-label="Ave. Starter Weight">{{ start_weight.ave_weight }}</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td>{{ start_weight.total_numHeads }}</td>
+                                <td data-label="Total No. of Heads">{{ start_weight.total_numHeads }}</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td>{{ start_weight.total_kls }}</td>
+                                <td data-label="Total Kls">{{ start_weight.total_kls }}</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
-                                <td>{{ start_weight.remarks }}</td>
+                                <td data-label="Remarks">{{ start_weight.remarks }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -125,23 +125,23 @@
                         <tbody>
                             <tr>
                                 <th>Date Filed</td>
-                                <td>{{ end_weight.date_filed }}</td>
+                                <td data-label="Date Filed">{{ end_weight.date_filed }}</td>
                             </tr>
                             <tr>
                                 <th>Ave. Fattener Weight</td>
-                                <td>{{ end_weight.ave_weight }}</td>
+                                <td data-label="Ave. Fattener Weight">{{ end_weight.ave_weight }}</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td>{{ end_weight.total_numHeads }}</td>
+                                <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }}</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td>{{ end_weight.total_kls }}</td>
+                                <td data-label="Total Kls">{{ end_weight.total_kls }}</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
-                                <td>{{ end_weight.remarks }}</td>
+                                <td data-label="Remarks">{{ end_weight.remarks }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -152,7 +152,7 @@
             </div>
         </div>
     </section>
-    <section>
+    <section class="health-symptoms">
         <div class="flex subheading">
             <h2 class="flex-item">Incidents Reported</h2>
             <div class="dropdown">
@@ -167,7 +167,7 @@
                 </ul>
             </div>
         </div>
-        <div class="flex mobile-subheading " style="width: 72%">
+        <div class="mobile-subheading" style="width: 72%">
             <h2 class="flex-item">Incidents Reported</h2>
             <div class="dropdown">
                 <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
