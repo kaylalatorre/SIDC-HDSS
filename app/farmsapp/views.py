@@ -752,6 +752,7 @@ def addFarm(request):
     except:
         farmID = 1
     # print(farmID)
+    # messages.success(request, "Farm " + str(latestFarm.id) + " has been saved successfully!", extra_tags='add-farm' + str(latestFarm.id))
 
     # get all hog raisers to be passed as dropdown
     hogRaiserQry = Hog_Raiser.objects.all().order_by('lname')
@@ -877,7 +878,7 @@ def addFarm(request):
                             print("TEST LOG: Hog Raiser Form not valid")
                             print(hogRaiserForm.errors)
 
-                            messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors), extra_tags='add-farm')
+                            messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors))
 
                     else:
                         # find selected raiser id
@@ -895,7 +896,7 @@ def addFarm(request):
 
                     farm.save()
                     print("TEST LOG: Added new farm")
-                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm')
+                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm' + str(farm.id))
 
                     # get recently created internal and external biosec IDs and update ref_farm_id
                     externalBiosec.ref_farm_id = farm
@@ -954,19 +955,19 @@ def addFarm(request):
                         print("TEST LOG: Pigpen Measures Form not valid")
                         print(pigpenRowForm.errors)
 
-                        messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors), extra_tags='add-farm')
+                        messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors))
                 else: 
                     # debug("farmLoc not obtained")
-                    messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
+                    messages.error(request, "Farm location not obtained.")
             except:
                 debug("farmLoc not obtained")
-                messages.error(request, "Farm location not obtained.", extra_tags='add-farm')
+                messages.error(request, "Farm location not obtained.")
         
         else:
             print("TEST LOG: Farm Form not valid")
             print(farmForm.errors)
 
-            messages.error(request, "Error adding farm. " + str(farmForm.errors), extra_tags='add-farm')
+            messages.error(request, "Error adding farm. " + str(farmForm.errors))
      
     else:
         print("TEST LOG: Form is not a POST method")
@@ -4199,7 +4200,7 @@ def dashboard_view(request):
             "intbioID",
             "extbioID",
             "last_update"
-            )
+            ).order_by("id").all()
     # debug(farmQry)
 
     if not farmQry.exists(): 
@@ -4225,6 +4226,7 @@ def dashboard_view(request):
 
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
+        # print(str(f["id"]) + " " + str(bioDateDiff))
         
         if bioDateDiff.days > 7:
             total_needInspect += 1

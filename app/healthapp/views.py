@@ -835,6 +835,7 @@ def addCase(request, farmID):
     """
     # get current total_pigs in Farm for User input range in no. of pigs affected
     farmQry = Farm.objects.filter(pk=farmID).only("total_pigs").first()
+    messages.success(request, "Incident Report has death.", extra_tags='add-incidCase-death' + str(farmID))
 
     return render(request, 'healthtemp/add-case.html', {"farmID": farmID, "total_pigs": farmQry.total_pigs})
 

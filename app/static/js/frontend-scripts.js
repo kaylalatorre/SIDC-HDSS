@@ -159,8 +159,9 @@ for(var i = 0; i < rowStatus.length; i++) {
      var newDate = new Date(formatDate(date));
          
      var diffDays = getDiffDays(newDate);
-     if (diffDays > 7) {
-         console.log(lastUpdated.parentElement);
+    //  console.log(String(i+1) + " "+ String(diffDays));
+
+     if (diffDays > 8) {
          lastUpdated.parentElement.classList.add("highlight-red");
      }
  }

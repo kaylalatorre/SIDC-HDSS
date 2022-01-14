@@ -1466,14 +1466,19 @@ function saveMortality(mortID, farmID) {
     }
  }
  
-function compute_toDate(currRow){
-    var row = currRow.parentNode.parentNode; //get row of clicked button
+function computeMortality(currRow){
+    var row = currRow.parentNode; //get row of clicked button
     console.log(row);
-    var begInv = row.getElementById('num_begInv');
-    var today = row.getElementById('num_today').value;
-    var newTotal = begInv - today;
+    var begInv = document.getElementById('num_begInv').innerHTML;
+    var today = document.getElementById('num_today');
+    console.log(begInv);
+    console.log(today);
 
-    row.getElementById('toDate').value = newTotal;
+    var newTotal = parseInt(begInv) - parseInt(today);
+    var toDate = document.getElementById('num_toDate');
+
+    toDate.innerText = newTotal;
+    // console.log(toDate);
 }
 
 /**

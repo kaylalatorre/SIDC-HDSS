@@ -1,6 +1,5 @@
 $(document).ready(async function () {
 
-
     ajaxCSRF();
         metadata = await $.ajax({
             type: 'POST',
@@ -109,18 +108,18 @@ $(document).ready(async function () {
             },
             {
                 name: metadata[1][2],
-                data: metadata[1][3],
+                data: metadata[1][1],
                 pointStart: Date.UTC(2019, 0, 7),
                 pointInterval: 24 * 3600 * 1000 * 7 // one week
             },        {
-                name: metadata[1][4],
-                data: metadata[1][5],
+                name: metadata[1][3],
+                data: metadata[1][4],
                 pointStart: Date.UTC(2019, 0, 7),
                 pointInterval: 24 * 3600 * 1000 * 7 // one week
             },
             {
-                name: metadata[1][6],
-                data: metadata[1][7],
+                name: metadata[1][5],
+                data: metadata[1][6],
                 pointStart: Date.UTC(2019, 0, 7),
                 pointInterval: 24 * 3600 * 1000 * 7 // one week
             },
