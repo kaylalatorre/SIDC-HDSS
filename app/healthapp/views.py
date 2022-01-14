@@ -119,7 +119,7 @@ def hogsHealth(request):
             "farm_area",
             "total_pigs",
             "last_updated",
-            ).order_by("id")
+            ).order_by("last_updated")
     # debug(qry)
 
     if not qry.exists(): 
@@ -497,7 +497,7 @@ def healthSymptoms(request):
                 "lname", 
                 "total_pigs",
                 "last_updated",
-                ).order_by("id")
+                ).order_by("last_updated")
         # debug(qry)
         
         total_pigs = 0
