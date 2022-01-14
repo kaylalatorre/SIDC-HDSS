@@ -7,9 +7,6 @@
     <!-- All notifs -->
     <div class="notif-list">
         {% if notifList %}
-        <div class="notif-item">
-            <button type="button" class="secondary-btn" onclick="syncNotifs()">Clear</button>
-        </div>
             {% for item in notifList %}
             {% if item.href %}
             <a href="{{item.href}}">
@@ -21,6 +18,9 @@
                 </div>
             </a>
             {% endfor %}
+            <div class="notif-item">
+                <button type="button" class="secondary-btn" style="width: 100%;" onclick="syncNotifs()">Clear Notifications</button>
+            </div>
         {% else %}
         <!-- When there are 0 notifications-->
         <div class="notif-item">
