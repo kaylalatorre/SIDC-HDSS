@@ -1694,22 +1694,7 @@ def formsApproval(request):
                 
                 activityList.append(activityObject)
 
-    ## MORTALITY FORMS
-    # get all mortality forms
-    mortQuery = Mortality_Form.objects.values(
-                "id",
-                "date_added",
-                "mort_tech",
-                "is_posted",
-                "is_reported",
-                "is_noted",
-                "ref_farm"
-                ).distinct("series").order_by("-series")
-    # print(mortQuery)
-
-    mortalityList = []
-
-    for mort in mortQuery:
+   
         getTech = User.objects.filter(id=mort["mort_tech"]).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
@@ -1771,75 +1756,7 @@ def formsApproval(request):
 
                 mortalityList.append(mortalityObject)
 
-    # # WEIGHT SLIPS
-    # get all weight slips
-    weightQry = Farm_Weight.objects.values(
-                "id",
-                "date_filed",
-                "weight_tech",
-                "is_posted",
-                "is_noted",
-                "ref_farm"
-                ).distinct("code").order_by("-code")
-    # print(weightQry)
-
-    weightList = []
-
-    for weight in weightQry:       
-        getTech = User.objects.filter(id=weight["weight_tech"]).annotate(
-            name = Concat('first_name', Value(' '), 'last_name'),
-        ).values("name").first()
-
-        if request.user.groups.all()[0].name == "Field Technician":
-            if getTech["name"] == loggedTech["name"]:
-
-                if weight["is_noted"] == True and weight["is_posted"] == True:
-                    status = 'Approved'
-                elif weight["is_noted"] == False or weight["is_posted"] == False:
-                    status = 'Rejected'
-                elif weight["is_noted"] == None or weight["is_posted"] == None:
-                    status = 'Pending'
-
-                # pass into object and append to list 
-                weightObject = {
-                    "id" : weight["id"],
-                    "date_added" : weight["date_filed"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(weight["ref_farm"]) }
-            
-                weightList.append(weightObject)
-        
-        else : 
-            if request.user.groups.all()[0].name == "Paiwi Management Staff":
-                if weight["is_posted"] == True :
-                    status = 'Approved'
-                elif weight["is_posted"] == False :
-                    status = 'Rejected'
-                elif weight["is_posted"] == None :
-                    status = 'Pending'
-
-            elif request.user.groups.all()[0].name == "Assistant Manager":
-                if weight["is_noted"] == True and weight["is_posted"] == True:
-                    status = 'Approved'
-                elif weight["is_noted"] == False and weight["is_posted"] == True:
-                    status = 'Rejected'
-                elif weight["is_noted"] == None and weight["is_posted"] == True:
-                    status = 'Pending'
-                else: status = None
-
-            # pass into object and append to list 
-            if status is not None:
-                weightObject = {
-                    "id" : weight["id"],
-                    "date_added" : weight["date_filed"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(weight["ref_farm"]) }
-            
-                weightList.append(weightObject)
-
-    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList, 'weightList' : weightList })
+    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
