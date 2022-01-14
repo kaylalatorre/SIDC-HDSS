@@ -15,7 +15,7 @@ $(document).ready(async function () {
     if ($('#dm-active-incid').length) {
         Highcharts.chart('dm-active-incid', {
             title: {
-                text: 'Active Incidents for the past 4 mos'
+                text: 'Active Incidents for the past 4 months'
             },
         
             xAxis: {
@@ -23,9 +23,11 @@ $(document).ready(async function () {
                 startOnTick: true,
                 endOnTick: true,
                 min: 1546819200000,
-                dateTimeLabelFormats: {
-                  week: '%e of %b'
-                },
+                labels: {
+                    formatter: function() {
+                    //   return Highcharts.dateFormat('%Y-%b%e', this.value);
+                      return Highcharts.dateFormat('%Y-%b%e', this.value);
+                    }},
                 units: [
                   [
                     'week', [1]
@@ -75,7 +77,7 @@ $(document).ready(async function () {
     if ($('#dm-mortality').length) {
         Highcharts.chart('dm-mortality', {
             title: {
-                text: 'Mortality Reports for the past 4 mos'
+                text: 'Mortality Reports for the past 4 months'
             },
     
             xAxis: {
@@ -137,7 +139,7 @@ $(document).ready(async function () {
                 type: 'bar'
             },
             title: {
-                text: 'Symptoms Reported'
+                text: 'Symptoms Reported for the past 4 months'
             },
             xAxis: {
                 categories: [
@@ -187,13 +189,21 @@ $(document).ready(async function () {
             },
             series: [
                 {
-                    name: 'TSISI',
-                    data: [10, 11, 0, 2, 2, 0, 0, 12, 2, 1, 0, 0, 0, 0, 0, 1, 10, 10, 10, 5, 2]
+                    name: metadata[2][0][0],
+                    data: metadata[2][0][1]
                 }, 
                 {
-                    name: 'West',
-                    data: [0, 21, 1, 2, 2, 0, 0, 1, 12, 14, 1, 3, 5, 0, 0, 1, 11, 0, 0, 0, 2]
-                }
+                    name: metadata[2][1][0],
+                    data: metadata[2][1][1]
+                },
+                {
+                    name: metadata[2][2][0],
+                    data: metadata[2][2][1]
+                },
+                {
+                    name: metadata[2][3][0],
+                    data: metadata[2][3][1]
+                },
             ]
         });
     }

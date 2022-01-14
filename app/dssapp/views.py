@@ -71,16 +71,11 @@ def diseaseDashboard(request):
     
         # collect all data from each farm under each area
         for area in areaQry :
-            # print("- - " + str(area.area_name) + " - -")
+            print("- - " + str(area.area_name) + " - -")
             incSeries.append(area.area_name)
             mortSeries.append(area.area_name)
-            symSeries.append(area.area_name)
 
-            # arraylist to store name points for each charts
             incData = []
-            mortData = []
-            symData = []
-
             # ACTIVE INCIDENTS
             active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
             # debug(active_incidents)
@@ -119,9 +114,14 @@ def diseaseDashboard(request):
 
             incObj = [ inc_currDate, inc_num_pigs ]
             incData.append(incObj)   
-            # print(incObj)
-            # print(incData)
+            incSeries.append(incData)
 
+
+        # collect all data from each farm under each area
+        for area in areaQry :
+            print("- - " + str(area.area_name) + " - -")
+
+            mortData = []
             # MORTALITY RECORDS
             mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).filter(mortality_date__range=(now()-timedelta(days=120), now())).order_by('mortality_date')
             
@@ -130,7 +130,6 @@ def diseaseDashboard(request):
                 mort_currDate = mortality.first().mortality_date
             except:
                 mortSeries.append([0,0])
-                print("hello")
                 continue
 
             for m in mortality:
@@ -159,35 +158,75 @@ def diseaseDashboard(request):
 
             mortObj = [ mort_currDate, mort_num_pigs ]
             mortData.append(mortObj)
-
-
-            # SYMPTOMS RECORDED
-            symptomsList = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).values(
-                        'high_fever'        ,
-                        'loss_appetite'     ,
-                        'depression'        ,
-                        'lethargic'         ,
-                        'constipation'      ,
-                        'vomit_diarrhea'    ,
-                        'colored_pigs'      ,
-                        'skin_lesions'      ,
-                        'hemorrhages'       ,
-                        'abn_breathing'     ,
-                        'discharge_eyesnose',
-                        'death_isDays'      ,
-                        'death_isWeek'      ,
-                        'cough'             ,
-                        'sneeze'            ,
-                        'runny_nose'        ,
-                        'waste'             ,
-                        'boar_dec_libido'   ,
-                        'farrow_miscarriage',
-                        'weight_loss'       ,
-                        'trembling'         ,
-                        'conjunctivitis').order_by("id").all()
-
-            incSeries.append(incData)
             mortSeries.append(mortData)
+
+
+        # collect all data from each farm under each area
+        for area in areaQry :
+            print("- - " + str(area.area_name) + " - -")
+
+            symDate = []
+            # SYMPTOMS RECORDED
+            symptomsQry = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
+                        'high_fever'        , #0
+                        'loss_appetite'     , #1
+                        'depression'        , #2
+                        'lethargic'         , #3
+                        'constipation'      , #4
+                        'vomit_diarrhea'    , #5
+                        'colored_pigs'      , #6
+                        'skin_lesions'      , #7
+                        'hemorrhages'       , #8
+                        'abn_breathing'     , #9
+                        'discharge_eyesnose', #10
+                        'death_isDays'      , #11
+                        'death_isWeek'      , #12
+                        'cough'             , #13
+                        'sneeze'            , #14
+                        'runny_nose'        , #15
+                        'waste'             , #16
+                        'boar_dec_libido'   , #17
+                        'farrow_miscarriage', #18
+                        'weight_loss'       , #19
+                        'trembling'         , #20
+                        'conjunctivitis').order_by("date_filed").all()  #21
+
+            symCountList = [0] * 22
+            try:
+                for sym in symptomsQry:
+                    symCountList[0] += sym["high_fever"]
+                    symCountList[1] += sym["loss_appetite"]
+                    symCountList[2] += sym["depression"]
+                    symCountList[3] += sym["lethargic"]
+
+                    symCountList[4] += sym["constipation"]
+                    symCountList[5] += sym["vomit_diarrhea"]
+                    symCountList[6] += sym["colored_pigs"]
+                    symCountList[7] += sym["skin_lesions"]
+
+                    symCountList[8] += sym["hemorrhages"]
+                    symCountList[9] += sym["abn_breathing"]
+                    symCountList[10] += sym["discharge_eyesnose"]
+                    symCountList[11] += sym["death_isDays"]
+
+                    symCountList[12] += sym["death_isWeek"]
+                    symCountList[13] += sym["cough"]
+                    symCountList[14] += sym["sneeze"]
+                    symCountList[15] += sym["runny_nose"]
+
+                    symCountList[16] += sym["waste"]
+                    symCountList[17] += sym["boar_dec_libido"]
+                    symCountList[18] += sym["farrow_miscarriage"]
+                    symCountList[19] += sym["weight_loss"]
+
+                    symCountList[20] += sym["trembling"]
+                    symCountList[21] += sym["conjunctivitis"]
+            
+            except:
+                symCountList = [0] * 22
+                
+            # print(symCountList)
+            symData = [ area.area_name, symCountList ]
             symSeries.append(symData)
 
         # print(incSeries)
