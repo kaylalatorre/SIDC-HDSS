@@ -1465,21 +1465,6 @@ function saveMortality(mortID, farmID) {
         console.log(error);
     }
  }
- 
-function computeMortality(currRow){
-    var row = currRow.parentNode; //get row of clicked button
-    console.log(row);
-    var begInv = document.getElementById('num_begInv').innerHTML;
-    var today = document.getElementById('num_today');
-    console.log(begInv);
-    console.log(today);
-
-    var newTotal = parseInt(begInv) - parseInt(today);
-    var toDate = document.getElementById('num_toDate');
-
-    toDate.innerText = newTotal;
-    // console.log(toDate);
-}
 
 /**
  *   - Approves selected weight slip

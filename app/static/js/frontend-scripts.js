@@ -847,3 +847,22 @@ $('#weight-version').change(function () {
         console.log(error);
     }
 })
+
+/**
+ * Compute for the toDate and mortality rate
+ * @param {*} currRow 
+ */
+function computeMortality(currRow){
+    var row = currRow.parentNode; //get row of clicked button
+    console.log(row);
+    var begInv = document.getElementById('num_begInv').innerHTML;
+    var today = document.getElementById('num_today');
+    console.log("begInv: " + String(begInv));
+    console.log("today: " + String(today));
+
+    var newTotal = parseInt(begInv) - parseInt(today);
+    var toDate = document.getElementById('num_toDate');
+
+    toDate.innerText = newTotal;
+    // console.log(toDate);
+}

@@ -218,7 +218,7 @@ class Activities_Form(models.Model):
     act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_liveop', null=True, blank=True)
     is_checked          = models.BooleanField(null=True, editable=True)
 
-    reject_reason       = models.CharField(max_length=500, null=True, blank=True)
+    # reject_reason       = models.CharField(max_length=500, null=True, blank=True)
 
 
 # MORTALITY Table
