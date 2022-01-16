@@ -71,7 +71,7 @@ def diseaseDashboard(request):
     
         # collect all data from each farm under each area
         for area in areaQry :
-            print("- - " + str(area.area_name) + " - -")
+            # print("- - " + str(area.area_name) + " - -")
             incSeries.append(area.area_name)
             mortSeries.append(area.area_name)
 
@@ -119,7 +119,7 @@ def diseaseDashboard(request):
 
         # collect all data from each farm under each area
         for area in areaQry :
-            print("- - " + str(area.area_name) + " - -")
+            # print("- - " + str(area.area_name) + " - -")
 
             mortData = []
             # MORTALITY RECORDS
@@ -163,7 +163,7 @@ def diseaseDashboard(request):
 
         # collect all data from each farm under each area
         for area in areaQry :
-            print("- - " + str(area.area_name) + " - -")
+            # print("- - " + str(area.area_name) + " - -")
 
             symDate = []
             # SYMPTOMS RECORDED

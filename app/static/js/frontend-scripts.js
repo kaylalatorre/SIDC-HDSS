@@ -437,21 +437,21 @@ function removeMortalityRow(currRow){
 */
 function addMortalityRow() {
     const mortality_date = document.getElementById('mortality_date').innerHTML;
-    const num_begInv = document.getElementById('num_begInv').innerHTML;
-    const num_today = document.getElementById('num_today').innerHTML;
-    const num_toDate = document.getElementById('num_toDate').innerHTML;
+    const num_begInv = document.getElementById('begInv').innerHTML;
+    const num_today = document.getElementById('today').innerHTML;
+    // const num_toDate = document.getElementById('num_toDate').innerHTML;
     const source = document.getElementById('source').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
-    const mortality_rate = document.getElementById('mortality_rate').innerHTML;
+    // const mortality_rate = document.getElementById('mortality_rate').innerHTML;
 
     $("#mortality-table").append("<tr> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
-        <td data-label='Beg. Inv.' id='num_begInv'> " + num_begInv + " </td> \
-        <td data-label='Today' id='num_today'> " + num_today + " </td> \
-        <td data-label='To Date' onblur='compute_toDate(this)' id='num_toDate'> " + num_toDate + " </td> \
+        <td data-label='Beg. Inv.' id='begInv' class='num_begInv'> " + num_begInv + " </td> \
+        <td data-label='Today' id='today' onchange='computeMortality(this)'> " + num_today + " </td> \
+        <td data-label='To Date'> <p class='num_toDate'></p> </td> \
         <td data-label='Source'> " + source + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
-        <td data-label='Mortality Rate' style='text-align: right;'> " + mortality_rate + " </td> \
+        <td data-label='Mortality Rate' style='text-align: right;'> <p class='mortality_rate'></p> </td> \
         <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
 }
@@ -499,44 +499,6 @@ $('#actform-version').change(function () {
 
     try {
         url = "/selected-activity-form/" + actformID + '/' + formatDate(actformDate);
-        location.href = url;
-    } catch (error) {
-        console.log(error);
-    }
-})
-
-/**
-*   - Redirects user from forms approval page to selected mortality form page
-*   
-*   mortality = selected mortality row
-*/
-function viewMortalityForm(mortality) {
-
-    var mortDate = mortality.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    var mortFormID = mortality.parentNode.parentNode.parentNode.id;
-
-    try{
-        url = "/selected-mortality-form/" + mortFormID + "/" + formatDate(mortDate);
-        location.href = url;
-    }catch (error){
-        console.log(error);
-    }
-}
-
-/**
-*   - Redirects current user to the selected mortality form version
-*   - Appends selected mortality form ID and form version to URL
-*/
-$('#mortform-version').change(function () {
-
-    var value = document.getElementById("mortform-version").value;
-
-    var split = value.split("-");
-    var mortformID = split[0];
-    var mortformDate = split[1];
-
-    try {
-        url = "/selected-mortality-form/" + mortformID + '/' + formatDate(mortformDate);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -810,43 +772,6 @@ $('#health-symptoms-version').change(function () {
     }
 })
 
-/**
-*   - Redirects user from forms approval page to selected weight slip page
-*   
-*   weight = selected weight slip row
-*/
-function viewWeightSlip(weight) {
-
-    var weightDate = weight.parentNode.parentNode.parentNode.getElementsByTagName("td")[0].innerHTML;
-    var weightFormID = weight.parentNode.parentNode.parentNode.id;
-
-    try{
-        url = "/selected-weight-slip/" + weightFormID + "/" + formatDate(weightDate);
-        location.href = url;
-    }catch (error){
-        console.log(error);
-    }
-}
-
-/**
-*   - Redirects current user to the selected weight slip version
-*   - Appends selected weight slip ID and slip version to URL
-*/
-$('#weight-version').change(function () {
-
-    var value = document.getElementById("weight-version").value;
-
-    var split = value.split("-");
-    var weightID = split[0];
-    var weightDate = split[1];
-
-    try {
-        url = "/selected-weight-slip/" + weightID + '/' + formatDate(weightDate);
-        location.href = url;
-    } catch (error) {
-        console.log(error);
-    }
-})
 
 /**
  * Compute for the toDate and mortality rate
@@ -854,15 +779,30 @@ $('#weight-version').change(function () {
  */
 function computeMortality(currRow){
     var row = currRow.parentNode; //get row of clicked button
-    console.log(row);
-    var begInv = document.getElementById('num_begInv').innerHTML;
-    var today = document.getElementById('num_today');
-    console.log("begInv: " + String(begInv));
-    console.log("today: " + String(today));
+    console.log(row)
+
+    var begInv = row.getElementsByClassName('num_begInv')[0].innerHTML;
+    var today = row.getElementsByClassName('num_today')[0].value;
+    // console.log("today: " + String(begInv));
+    // console.log("today: " + String(today));
 
     var newTotal = parseInt(begInv) - parseInt(today);
-    var toDate = document.getElementById('num_toDate');
+    var toDate = row.getElementsByClassName('num_toDate')[0];
+    // console.log(toDate);
 
     toDate.innerText = newTotal;
+    console.log("toDate: " + String(toDate));
     // console.log(toDate);
+
+
+    var mortRate = newTotal / parseInt(begInv) * 100
+    var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
+    // console.log(mortality_rate);
+
+    if (mortRate == 0) {
+        mortRate = 100 }
+
+    mortality_rate.innerText = mortRate.toFixed(2);
+    console.log("mortality_rate: " + String(mortalzity_rate));
+    // console.log(mortality_rate);
 }
