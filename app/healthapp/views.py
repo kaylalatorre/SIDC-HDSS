@@ -121,6 +121,7 @@ def hogsHealth(request):
             ).order_by("id")
     # debug(qry)
 
+
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
         return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry})
@@ -177,7 +178,10 @@ def hogsHealth(request):
             total_pigs += f["total_pigs"]
         # debug(farmsData)
 
-        return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
+        sorted_farmList = sorted(farmsData, key = lambda i: i['total_active'], reverse=True)
+
+
+        return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": sorted_farmList})
 
 
 def selectedHogsHealth(request, farmID):
@@ -545,6 +549,8 @@ def healthSymptoms(request):
         # debug("-- farmsData ---")
         # debug(farmsData)
 
+        sorted_farmList = sorted(farmsData, key = lambda i: i['total_active'], reverse=True)
+
 
     # (ERROR) for checking technician Areas that have no assigned Farms
     if not farmsData: 
@@ -552,7 +558,7 @@ def healthSymptoms(request):
         return render(request, 'healthtemp/health-symptoms.html', {})
 
 
-    return render(request, 'healthtemp/health-symptoms.html', {"farmList": farmsData})
+    return render(request, 'healthtemp/health-symptoms.html', {"farmList": sorted_farmList})
 
 def selectedHealthSymptoms(request, farmID):
     """
