@@ -69,6 +69,10 @@ def diseaseDashboard(request):
         # get all areas
         areaQry = Area.objects.all()
     
+        dateToday = datetime.now(timezone.utc)
+        dateFourMonths = dateToday - timedelta(30)
+        
+
         # collect all data from each farm under each area
         for area in areaQry :
             # print("- - " + str(area.area_name) + " - -")
@@ -76,6 +80,9 @@ def diseaseDashboard(request):
             mortSeries.append(area.area_name)
 
             incData = []
+            # start point of series data
+            incData.append([dateFourMonths.date(), 0])
+
             # ACTIVE INCIDENTS
             active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
             # debug(active_incidents)
@@ -84,7 +91,9 @@ def diseaseDashboard(request):
             try:
                 inc_currDate = active_incidents.first().date_filed.date()
             except:
-                incSeries.append([0,0])
+                incData.append([dateFourMonths.date(), 0])
+                incData.append([dateToday.date(), 0])
+                incSeries.append(incData)
                 continue
 
             for i in active_incidents:
@@ -113,7 +122,11 @@ def diseaseDashboard(request):
         
 
             incObj = [ inc_currDate, inc_num_pigs ]
-            incData.append(incObj)   
+            incData.append(incObj) 
+
+            # end point of series data
+            incData.append([dateToday.date(), 0])
+
             incSeries.append(incData)
 
 

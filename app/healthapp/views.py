@@ -121,6 +121,7 @@ def hogsHealth(request):
             ).order_by("id")
     # debug(qry)
 
+
     if not qry.exists(): 
         messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
         return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry})
@@ -141,8 +142,8 @@ def hogsHealth(request):
             latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
             # get current starter and fattener weights
-            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=True).order_by("-date_filed").first()
-            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=False).order_by("-date_filed").first()
+            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
+            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
 
             # error checking for None weight values per Farm
             if s_weightQry is not None:
@@ -177,7 +178,10 @@ def hogsHealth(request):
             total_pigs += f["total_pigs"]
         # debug(farmsData)
 
-        return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": farmsData})
+        sorted_farmList = sorted(farmsData, key = lambda i: i['total_active'], reverse=True)
+
+
+        return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry, "farmList": sorted_farmList})
 
 
 def selectedHogsHealth(request, farmID):
@@ -297,7 +301,6 @@ def selectedHogsHealth(request, farmID):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
 
-
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -330,6 +333,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     :type farmVersion: string
     """
 
+    # TODO: remove select_related on farm_weight here
     # (1) get farm based on farmID; get related data from hog_raiser, area, farm_weight
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
@@ -435,7 +439,6 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
 
-
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
@@ -485,7 +488,7 @@ def healthSymptoms(request):
 
     for area in areaQry :
         # (1) filter by area, then collect details for each Farm 
-        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser', 'farm_weight').annotate(
+        qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
             ).values(
@@ -505,10 +508,10 @@ def healthSymptoms(request):
             end_weight = 0.0
 
             farmID = f["id"]
-
+            
             # get current starter and fattener weights
-            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=True).order_by("-date_filed").first()
-            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_noted=True).filter(is_starter=False).order_by("-date_filed").first()
+            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
+            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
 
             # error checking for None weight values per Farm
             if s_weightQry is not None:
@@ -546,6 +549,8 @@ def healthSymptoms(request):
         # debug("-- farmsData ---")
         # debug(farmsData)
 
+        sorted_farmList = sorted(farmsData, key = lambda i: i['total_active'], reverse=True)
+
 
     # (ERROR) for checking technician Areas that have no assigned Farms
     if not farmsData: 
@@ -553,7 +558,7 @@ def healthSymptoms(request):
         return render(request, 'healthtemp/health-symptoms.html', {})
 
 
-    return render(request, 'healthtemp/health-symptoms.html', {"farmList": farmsData})
+    return render(request, 'healthtemp/health-symptoms.html', {"farmList": sorted_farmList})
 
 def selectedHealthSymptoms(request, farmID):
     """
@@ -795,7 +800,7 @@ def edit_incidStat(request, incidID):
 
         # get date diff of date_filed from date_updated
         repDateDiff = datetime.now(timezone.utc) - incidentObj.date_updated
-        debug("repDateDiff.days -- " + str(repDateDiff.days))
+        # debug("repDateDiff.days -- " + str(repDateDiff.days))
 
         if incidentObj is not None:
             # (ERROR 1) if select_status is ACTIVE & db_status is PENDING 
@@ -1210,7 +1215,6 @@ def hogsMortality(request):
     areaQry = Area.objects.all()
 
     # (3.1) Mortality details
-    # latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     mortQry = Mortality.objects.filter(is_approved=True).order_by("id").all()
     # debug(str(mortQry.query))
 

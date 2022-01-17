@@ -281,7 +281,6 @@ def selectedFarm(request, farmID):
 
     # Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
-    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
     # Get all biosecID, last_updated in extbio under a Farm
@@ -404,7 +403,6 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     # Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
-    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
     # Get all biosecID, last_updated in extbio under a Farm
@@ -987,15 +985,14 @@ def addFarm(request):
                                                         'farmForm' : farmForm,
                                                         'pigpenRowForm' : pigpenRowForm })
 
-# (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
+# (POST-AJAX) For searching a Biosec Checklist based on biosecID
 def search_bioChecklist(request, biosecID):
     """
     (POST-AJAX) For searching a Biosecurity Checklist based on biosecID.
     """
 
     if request.method == 'POST':
-
-        print("TEST LOG: in search_bioChecklist()")
+        # print("TEST LOG: in search_bioChecklist()")
 
         # Get biosecID passed from AJAX URL param 
         bioID = biosecID 
@@ -1081,8 +1078,7 @@ def update_bioChecklist(request, biosecID):
     """
 
     if request.method == 'POST':
-
-        print("TEST LOG: in update_bioChecklist()/n")
+        # print("TEST LOG: in update_bioChecklist()/n")
 
         # Get biosecID from AJAX url param
         bioID = biosecID
@@ -1200,9 +1196,9 @@ def update_bioChecklist(request, biosecID):
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
-# (POST) function for adding a Biosec Checklist
+# (POST) For adding a Biosec Checklist
 def post_addChecklist(request, farmID):
-    print("TEST LOG: in post_addChecklist/n")
+    # print("TEST LOG: in post_addChecklist/n")
 
     if request.method == "POST":
         
@@ -1229,11 +1225,11 @@ def post_addChecklist(request, farmID):
             # Array length must be 8 for the 8 fields in a Biosec checklist.
             print("biosecArr len(): " + str(len(biosecArr)))
 
-            debug("TEST LOG: List of Biocheck values")
+            # debug("TEST LOG: List of Biocheck values")
             for index, value in enumerate(biosecArr): 
                 if value is None:
                     # (ERROR) Incomplete input/s for Biosecurity Checklist
-                    debug("ERROR: Index value in biosec is None.")
+                    # debug("ERROR: Index value in biosec is None.")
                     checkComplete = False
 
                     messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
@@ -1326,6 +1322,7 @@ def post_addChecklist(request, farmID):
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
         return redirect('/add-checklist/' + farmID)
 
+# (POST-AJAX) For deleting a Biosec Checklist based on biosecID and farmID
 def delete_bioChecklist(request, biosecID, farmID):
     """
     (POST-AJAX) For deleting a biosecurity checklist based on biosecID and farmID from dropdowns.
@@ -1336,7 +1333,7 @@ def delete_bioChecklist(request, biosecID, farmID):
 
     if request.method == 'POST':
 
-        print("TEST LOG: in delete_bioChecklist()/n")
+        # print("TEST LOG: in delete_bioChecklist()/n")
 
         # Get biosecID from AJAX url param
         bioID = biosecID
@@ -1397,7 +1394,6 @@ def delete_bioChecklist(request, biosecID, farmID):
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
-# For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
     """
     For getting all Biosecurity details under a Farm. 
@@ -1489,8 +1485,6 @@ def select_biosec(request, farmID):
             'last_updated',
         ).order_by('-last_updated')
 
-        # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-        # print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
         # (ERROR) for checking Farms that have no Biosec records
         if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
@@ -1538,7 +1532,7 @@ def addChecklist_view(request, farmID):
     """
     For passing farmID from Biosecurity page to addChecklist page ("add-checklist.html")
     """
-    debug("TEST LOG: in addChecklist_view/n")
+    # debug("TEST LOG: in addChecklist_view/n")
 
     return render(request, 'farmstemp/add-checklist.html', { 'farmID' : int(farmID) })
 
@@ -2905,10 +2899,9 @@ def countNotifications(request):
 
     return HttpResponse(str(totalNotifs), status=200)
 
-# helper functions for Biosec
 def computeBioscore(farmID, intbioID, extbioID):
     """
-    For calculating Internal and External biosec scores of a Farm.
+    Helper function for calculating Internal and External biosec scores of a Farm.
     
     BIOSCORE = ( (total measure points + total checklist points) / (total points - N/A))
     """
@@ -3061,7 +3054,7 @@ def computeBioscore(farmID, intbioID, extbioID):
 # REPORTS for Module 1
 
 def farmsAssessment(request):
-    debug("TEST LOG: in farmsAssessment Report/n")
+    # debug("TEST LOG: in farmsAssessment Report/n")
 
     """
     Gets all Farm records within existing dates and all Areas due to no selected filters in dropdown
@@ -3196,7 +3189,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         - intbio score, extbio score, last_updated (in Farm/Biosec?)
     """
 
-    debug("TEST LOG: in filter_farmsAssessment Report()/n")
+    # debug("TEST LOG: in filter_farmsAssessment Report()/n")
 
     # debug("URL params:")
     # debug("startDate -- " + startDate)
@@ -3365,7 +3358,7 @@ def getBioStr(bioInt):
 
 
 def intBiosecurity(request):
-    debug("TEST LOG: in intBiosecurity Report/n")
+    # debug("TEST LOG: in intBiosecurity Report/n")
 
     """
     Gets current Internal Biosecurity record for each Farm within existing dates and all Areas due to no selected filters in dropdown.
@@ -3481,7 +3474,7 @@ def intBiosecurity(request):
 
 
 def filter_intBiosec(request, startDate, endDate, areaName):
-    debug("TEST LOG: in filter_intBiosec Report/n")
+    # debug("TEST LOG: in filter_intBiosec Report/n")
 
     """
     Gets Internal Biosecurity records for each Farm based on (1) date range and (2) area name.
@@ -3641,7 +3634,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
 
 def extBiosecurity(request):
-    debug("TEST LOG: in extBiosecurity Report/n")
+    # debug("TEST LOG: in extBiosecurity Report/n")
 
     """
     Gets current External Biosecurity record for each Farm within existing dates and all Areas due to no selected filters in dropdown.
@@ -3767,7 +3760,7 @@ def extBiosecurity(request):
 
 
 def filter_extBiosec(request, startDate, endDate, areaName):
-    debug("TEST LOG: in filter_extBiosec Report/n")
+    # debug("TEST LOG: in filter_extBiosec Report/n")
 
     """
     Gets External Biosecurity records for each Farm based on (1) date range and (2) area name.
