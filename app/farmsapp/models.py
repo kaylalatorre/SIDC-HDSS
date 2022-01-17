@@ -67,23 +67,15 @@ class Farm_Weight(models.Model):
     total_kls           = models.FloatField()
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
-    code                = models.IntegerField(null=True, blank=True)
-    weight_tech         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_Tech',  null=True, blank=True)
-    weight_mgtStaff     = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_mgtStaff', null=True, blank=True)
-    is_posted           = models.BooleanField(null=True, editable=True)
-    weight_asm          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='weight_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(null=True, editable=True)
-
-    # def __str__(self):
-    #     return self.id
 
 # FARM SYMPTOMS Table
 class Hog_Symptoms(models.Model):
+    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
     date_filed          = models.DateTimeField(default=now)
     date_updated        = models.DateTimeField(auto_now=True, editable=True)
 
-    ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     report_status       = models.CharField(max_length=50, default='Active')
     num_pigs_affected   = models.IntegerField(default=0)
 
@@ -110,25 +102,20 @@ class Hog_Symptoms(models.Model):
     trembling           = models.BooleanField(default=False, null=True, blank=True)
     conjunctivitis      = models.BooleanField(default=False, null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
 
 # HOG RAISER Table
 class Hog_Raiser(models.Model):
+    # code                = models.IntegerField(null=True, blank=True)
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=12)
 
-    # def __str__(self):
-    #     return self.id
 
 # AREA Table
 class Area(models.Model):
     area_name           = models.CharField(max_length=20, null=True, blank=True)
     tech                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='tech', null=True, blank=True)
 
-    # def __str__(self):
-    #     return self.id
 
 # FARM Table
 class Farm(models.Model): 
@@ -174,13 +161,14 @@ class Farm(models.Model):
 # PIGPEN_GROUP TABLE
 class Pigpen_Group(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    date_added          = models.DateField(auto_now=True, editable=False)
+    date_added          = models.DateField(default=now, editable=False)
 
     num_pens            = models.IntegerField(null=True, blank=True)
     total_pigs          = models.IntegerField(null=True, blank=True)
 
     start_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     final_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
 
 # PIGPEN MEASURES Table
 class Pigpen_Row(models.Model):
@@ -190,8 +178,6 @@ class Pigpen_Row(models.Model):
     width               = models.FloatField()
     num_heads           = models.IntegerField()
 
-    # def __str__(self):
-    #     return self.id
 
 # ACTIVITY Table
 class Activity(models.Model):
@@ -220,6 +206,7 @@ class Activity(models.Model):
 
     activity_form       = models.ForeignKey('Activities_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
+
 # ACTIVITIES FORM Table
 class Activities_Form(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
@@ -230,10 +217,9 @@ class Activities_Form(models.Model):
     act_tech            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_tech', null=True, blank=True)
     act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_liveop', null=True, blank=True)
     is_checked          = models.BooleanField(null=True, editable=True)
-    act_extvet          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(null=True, editable=True)
-    act_asm             = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(null=True, editable=True)
+
+    # reject_reason       = models.CharField(max_length=500, null=True, blank=True)
+
 
 # MORTALITY Table
 class Mortality(models.Model):
@@ -251,7 +237,8 @@ class Mortality(models.Model):
 
     is_approved         = models.BooleanField(null=True, editable=True)
 
-    mortality_form       = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    mortality_form      = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+
 
 # MORTALITY FORM Table
 class Mortality_Form(models.Model):
@@ -269,6 +256,9 @@ class Mortality_Form(models.Model):
     mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_asm', null=True, blank=True)
     is_noted            = models.BooleanField(null=True, editable=True)
 
+    # reject_reason       = models.CharField(max_length=500, null=True, blank=True)
+
+
 # MEMBER ANNOUNCEMENT Table
 class Mem_Announcement(models.Model):
     title               = models.CharField(max_length=150)
@@ -277,4 +267,6 @@ class Mem_Announcement(models.Model):
     mssg                = models.CharField(max_length=500)
     author              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='author', null=True, blank=True)
     timestamp           = models.DateTimeField(default=now)
+
     is_approved         = models.BooleanField(default=False, null=True)
+    reject_reason       = models.CharField(max_length=500, null=True, blank=True)

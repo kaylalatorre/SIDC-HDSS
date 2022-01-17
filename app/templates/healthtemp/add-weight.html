@@ -15,7 +15,7 @@
         <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID|stringformat:'03d'}}">{{ farmID|stringformat:"03d" }}</a> > Add Weight Slip Record</h1>
         <div class="flex subheading">
             <p class="flex-item"> <strong>Farm: </strong> {{farmID|stringformat:"03d"}} </p>
-            <div><button class="primary-btn" type="submit">Send for Approval</button></div>
+            <div><button class="primary-btn" type="submit">Save</button></div>
         </div>
         <hr>
         <div class="box-style small-table">
@@ -49,6 +49,8 @@
                 {{weightForm.remarks}}
             </div>
         </div>
+        <p class="red">Please review the details of the form before submitting.</p>
+        <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
     </form>
 </div>
 {% endblock section %}
