@@ -779,7 +779,7 @@ $('#health-symptoms-version').change(function () {
  */
 function computeMortality(currRow){
     var row = currRow.parentNode; //get row of clicked button
-    console.log(row)
+    // console.log(row)
 
     var begInv = row.getElementsByClassName('num_begInv')[0].innerHTML;
     var today = row.getElementsByClassName('num_today')[0].value;
@@ -792,17 +792,17 @@ function computeMortality(currRow){
 
     toDate.innerText = newTotal;
     console.log("toDate: " + String(toDate));
-    // console.log(toDate);
 
 
     var mortRate = newTotal / parseInt(begInv) * 100
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
     // console.log(mortality_rate);
 
-    if (mortRate == 0) {
-        mortRate = 100 }
+    if (parseInt(today) == parseInt(begInv))
+        mortRate = 100;
+    else
+        mortRate = 0;
 
     mortality_rate.innerText = mortRate.toFixed(2);
     console.log("mortality_rate: " + String(mortalzity_rate));
-    // console.log(mortality_rate);
 }

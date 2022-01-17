@@ -1890,15 +1890,9 @@ def addActivity(request, farmID):
     except:
         code = 1
     
-    # get ID of current technician
-    techID = request.user.id
-
     # collected farmID of selected tech farm
     farmQuery = Farm.objects.get(pk=farmID)
     
-    # get today's date
-    dateToday = datetime.now(timezone.utc)
-
     if request.method == 'POST':
         print("TEST LOG: Add Activity has POST method") 
         print(request.POST)
@@ -1927,8 +1921,8 @@ def addActivity(request, farmID):
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
                 code = code,
-                date_added = dateToday,
-                act_tech_id = techID,
+                date_added = datetime.now(timezone.utc),
+                act_tech_id = request.user.id,
                 ref_farm = farmQuery,
             )
             activity_form.save()

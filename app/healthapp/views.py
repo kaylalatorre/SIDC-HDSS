@@ -976,12 +976,8 @@ def addMortality(request, farmID):
     except:
         series = 1
 
-    # get today's date
-    dateToday = datetime.now(timezone.utc)
-
     # collected farmID of selected tech farm
     farmQuery = Farm.objects.get(pk=farmID)
-    # print(farmQuery.total_pigs)
 
     # get current Farm version
     farmVersion = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
@@ -1012,8 +1008,7 @@ def addMortality(request, farmID):
             # create instance of Mortality Form model
             mortality_form = Mortality_Form.objects.create(
                 series = series,
-                date_added = dateToday,
-                mort_tech_id = request.user.id,
+                date_added = datetime.now(timezone.utc),
                 ref_farm = farmQuery,
                 pigpen_grp = farmVersion
             )

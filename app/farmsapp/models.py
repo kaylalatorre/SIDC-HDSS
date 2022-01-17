@@ -18,6 +18,7 @@ class AccountData(models.Model):
     def __str__(self):
         return self.id
 
+
 # EXTERNAL BIOSEC Table
 class ExternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
@@ -39,6 +40,7 @@ class ExternalBiosec(models.Model):
     def __str__(self):
         return self.id
 
+
 # INTERNAL BIOSEC Table
 class InternalBiosec(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
@@ -55,6 +57,7 @@ class InternalBiosec(models.Model):
 
     def __str__(self):
         return self.id
+
 
 # FARM WEIGHT Table
 class Farm_Weight(models.Model):
@@ -153,10 +156,9 @@ class Farm(models.Model):
     extbio              = models.ForeignKey('ExternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
     intbio              = models.ForeignKey('InternalBiosec', on_delete=models.SET_NULL, null=True, blank=True)
 
-    farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, null=True, blank=True)
-
     def __str__(self):
         return self.id
+
 
 # PIGPEN_GROUP TABLE
 class Pigpen_Group(models.Model):
@@ -218,7 +220,7 @@ class Activities_Form(models.Model):
     act_liveop          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='act_liveop', null=True, blank=True)
     is_checked          = models.BooleanField(null=True, editable=True)
 
-    # reject_reason       = models.CharField(max_length=500, null=True, blank=True)
+    reject_reason       = models.CharField(max_length=500, null=True, blank=True)
 
 
 # MORTALITY Table
@@ -232,11 +234,6 @@ class Mortality(models.Model):
     source              = models.CharField(max_length=200, null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
-    last_updated        = models.DateTimeField(auto_now=True, editable=True)
-    date_approved       = models.DateTimeField(null=True, blank=True)
-
-    is_approved         = models.BooleanField(null=True, editable=True)
-
     mortality_form      = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
 
@@ -247,16 +244,6 @@ class Mortality_Form(models.Model):
     
     series              = models.IntegerField(null=True, blank=True)
     date_added          = models.DateField(null=True, blank=True)
-
-    mort_tech           = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mortTech',  null=True, blank=True)
-    mort_mgtStaff       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_mgtStaff', null=True, blank=True)
-    is_posted           = models.BooleanField(null=True, editable=True)
-    mort_extvet         = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_extvet', null=True, blank=True)
-    is_reported         = models.BooleanField(null=True, editable=True)
-    mort_asm            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='mort_asm', null=True, blank=True)
-    is_noted            = models.BooleanField(null=True, editable=True)
-
-    # reject_reason       = models.CharField(max_length=500, null=True, blank=True)
 
 
 # MEMBER ANNOUNCEMENT Table
