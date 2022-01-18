@@ -11,6 +11,14 @@ $(document).ready(async function () {
 
         console.log(metadata);
 
+        // console.log(metadata[0]); // whole chart data
+        // console.log(metadata[0][0]); // data for first area
+        // console.log(metadata[0][0][0]); // first area name 
+        // console.log(metadata[0][0][1]); // first area data
+        // console.log(metadata[0][0][1][0][0]); // first area data --> date
+        // console.log(metadata[0][0][1][0][1]); // first area data --> value
+
+
     var today = new Date();
     // console.log(today);
     
@@ -27,27 +35,54 @@ $(document).ready(async function () {
     if ($('#dm-active-incid').length) {
 
         var incSeries = [];
+        // console.log(metadata[0].length);
         for(i = 0; i < metadata[0].length; i++){
+            // console.log(metadata[0][i][0]);
+            // var incData = [];
+            
+            // console.log(metadata[0][i][1].length);
+            // for(j = 0; j < metadata[0][i][1].length; j++){
+            //     // console.log(metadata[0][i][1][j]);
+            //     // fixDate = metadata[0][i][1][j].map(function(elem){
+            //     //     try {
+            //     //         var dStr = elem[0].split('-');
+            //     //     } catch {
+            //     //         return metadata[0][i][1][j]; }
+
+            //     //     return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1]), parseInt(dStr[2])), elem[1]];
+            //     // });
+            //     // console.log(fixDate);
+            //     var incElem = metadata[0][i][1][j].map(function(elem){
+            //         try {
+            //             var dStr = elem[0].split('-');
+            //         } catch{
+            //             return metadata[0][i][1][j];
+            //         }
+
+            //         return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+            //     });
+
+            //     // console.log(incElem)
+
+            //     incData.push(incElem);
+            // }
+
             incSeries.push({
                 name: metadata[0][i][0],
+                data: metadata[0][i][1].map(function(elem){
+                    try {
+                        var dStr = elem[0].split('-');
+                    } catch{
+                        return metadata[0][1];
+                    }
+
+                    return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                })
             });
-
-            for(j = 0; j < metadata[0][i].length; j++){
-                incSeries.push({
-                    data: metadata[0][i][1][j].map(function(elem){
-                        try {
-                            var dStr = elem[0].split('-');
-                        } catch{
-                            return metadata[0][i][1][j];
-                        }
-
-                        return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
-                    })
-                });
-            }
         }
 
         console.log(incSeries)
+
 
         Highcharts.chart('dm-active-incid', {
             title: {
