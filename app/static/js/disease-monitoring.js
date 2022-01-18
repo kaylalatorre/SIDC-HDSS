@@ -29,7 +29,7 @@ $(document).ready(async function () {
     if ($('#dm-active-incid').length) {
 
         var incSeries = [];
-        for(i = 0; i < metadata[0].length; i++){
+        for(var i = 0; i < metadata[0].length; i++){
 
             incSeries.push({
                 name: metadata[0][i][0],
@@ -45,7 +45,7 @@ $(document).ready(async function () {
             });
         }
 
-        // console.log(incSeries)
+        // console.log(incSeries);
 
 
         Highcharts.chart('dm-active-incid', {
@@ -89,9 +89,9 @@ $(document).ready(async function () {
     if ($('#dm-mortality').length) {
 
         var mortSeries = [];
-        for(i = 0; i < metadata[1].length; i++){
+        for(var i = 0; i < metadata[1].length; i++){
 
-            incSeries.push({
+            mortSeries.push({
                 name: metadata[1][i][0],
                 data: metadata[1][i][1].map(function(elem){
                     try {
@@ -105,7 +105,7 @@ $(document).ready(async function () {
             });
         }
 
-        // console.log(mortSeries)
+        // console.log(mortSeries);
 
         Highcharts.chart('dm-mortality', {
             title: {
@@ -131,8 +131,14 @@ $(document).ready(async function () {
                     text: 'No. of Hogs Died'
                 }
             },
-            
-            series: mortSeries
+                        
+            plotOptions: {
+                series: {
+                    connectNulls: true
+                }
+            },
+
+            series: mortSeries,
     
         });
     }
@@ -142,7 +148,7 @@ $(document).ready(async function () {
     if ($('#dm-symptoms-rep').length) {
 
         var symSeries = [];
-        for(i = 0; i < metadata[2].length; i++){
+        for(var i = 0; i < metadata[2].length; i++){
 
             symSeries.push({
                 name: metadata[2][i][0],
@@ -150,7 +156,7 @@ $(document).ready(async function () {
             });
         }
 
-        // console.log(symSeries)
+        // console.log(symSeries);
 
 
         Highcharts.chart('dm-symptoms-rep', {
@@ -206,7 +212,7 @@ $(document).ready(async function () {
                     }
                 }
             },
-            series: symSeries
+            series: symSeries,
         });
     }
     
