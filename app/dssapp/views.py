@@ -73,17 +73,17 @@ def diseaseDashboard(request):
         dateFourMonths = dateToday - timedelta(30)
         
 
-        # collect all data from each farm under each area
+        # COLLECT ACTIVE/PENDING INCIDENTS PER AREA
         for area in areaQry :
             # print("- - " + str(area.area_name) + " - -")
-            incSeries.append(area.area_name)
-            mortSeries.append(area.area_name)
 
+            # initialize data list per incident; will contain --> [incident date, num. affected pigs]
             incData = []
+
             # start point of series data
             incData.append([dateFourMonths.date(), 0])
 
-            # ACTIVE INCIDENTS
+            # collect all active incidents
             active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
             # debug(active_incidents)
 
@@ -91,9 +91,8 @@ def diseaseDashboard(request):
             try:
                 inc_currDate = active_incidents.first().date_filed.date()
             except:
-                incData.append([dateFourMonths.date(), 0])
                 incData.append([dateToday.date(), 0])
-                incSeries.append(incData)
+                incSeries.append([area.area_name, incData])
                 continue
 
             for i in active_incidents:
@@ -117,22 +116,22 @@ def diseaseDashboard(request):
 
                     inc_num_pigs = i.num_pigs_affected
                     inc_currDate = inc_nextDate
-
                     # print("num pigs " + str(num_pigs))
         
 
-            incObj = [ inc_currDate, inc_num_pigs ]
-            incData.append(incObj) 
+            incData.append([inc_currDate, inc_num_pigs]) 
 
             # end point of series data
             incData.append([dateToday.date(), 0])
 
-            incSeries.append(incData)
+            # append area name and all incident data lists
+            incSeries.append([area.area_name, incData])
 
 
-        # collect all data from each farm under each area
+        # COLLECT MORTALITY RECORDS PER AREA
         for area in areaQry :
             # print("- - " + str(area.area_name) + " - -")
+            mortSeries.append(area.area_name)
 
             mortData = []
             # MORTALITY RECORDS
@@ -174,7 +173,7 @@ def diseaseDashboard(request):
             mortSeries.append(mortData)
 
 
-        # collect all data from each farm under each area
+        # COLLECT ACTIVE/PENDING SYMPTOMS RECORDED PER AREA
         for area in areaQry :
             # print("- - " + str(area.area_name) + " - -")
 
@@ -246,6 +245,7 @@ def diseaseDashboard(request):
         # print(mortSeries)
         # print(symSeries)
 
+        # append each chart series into one data array
         data.append(incSeries)
         data.append(mortSeries)
         data.append(symSeries)

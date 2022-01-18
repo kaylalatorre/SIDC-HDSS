@@ -752,7 +752,6 @@ def addFarm(request):
     except:
         farmID = 1
     # print(farmID)
-    # messages.success(request, "Farm " + str(latestFarm.id) + " has been saved successfully!", extra_tags='add-farm' + str(latestFarm.id))
 
     # get all hog raisers to be passed as dropdown
     hogRaiserQry = Hog_Raiser.objects.all().order_by('lname')
