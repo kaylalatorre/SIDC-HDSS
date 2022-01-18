@@ -54,7 +54,7 @@ def debug(m):
 
 def diseaseDashboard(request):
     """
-    Load data for highcharts
+    Load data for highcharts (active incidents, mortalities, active symptoms recorded, and activities)
     """
 
     if request.method == 'POST':
@@ -96,19 +96,13 @@ def diseaseDashboard(request):
                 continue
 
             for i in active_incidents:
-                # print("currDate " + str(currDate))
                 try:
                     inc_nextDate = i.date_filed.date()
-                    # print("nextDate " + str(nextDate))
                 except:
                     continue
-                
-                # print("num pigs aff " + str(i.num_pigs_affected))
-                # print(i.ref_farm_id)
 
                 if inc_currDate == inc_nextDate :
                     inc_num_pigs += i.num_pigs_affected
-                    # print("added num pigs " + str(num_pigs))
 
                 else : 
                     incObj = [ inc_currDate, inc_num_pigs ]
@@ -116,7 +110,6 @@ def diseaseDashboard(request):
 
                     inc_num_pigs = i.num_pigs_affected
                     inc_currDate = inc_nextDate
-                    # print("num pigs " + str(num_pigs))
         
 
             incData.append([inc_currDate, inc_num_pigs]) 
@@ -240,6 +233,7 @@ def diseaseDashboard(request):
             # print(symCountList)
             symData = [ area.area_name, symCountList ]
             symSeries.append(symData)
+
 
         # print(incSeries)
         # print(mortSeries)
