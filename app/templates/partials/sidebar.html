@@ -40,7 +40,11 @@
                     <span class="link-name">Forms Approval</span>
                 </a>
             </li>
-            {% if user.groups.all.0.name == 'Assistant Manager' %}
+            {% endif %}
+            {% if user.groups.all.0.name == 'Regional Manager' or 'Assistant Manager'%}
+                {% if user.groups.all.0.name == 'Assistant Manager' %}
+        <ul class="sidebar-header">
+            <span class="header-name">Management</span>
             <li class="nav-item" id="nav-assign" onclick="active('nav-assign')">
                 <a href="/technician-assignment">
                     <i class='bx bxs-user-pin'></i>
@@ -53,10 +57,8 @@
                     <span class="link-name">Member Announcements</span>
                 </a>
             </li>
-            {% endif %}
+                {% endif %}
         </ul>
-            {% endif %}
-        {% if user.groups.all.0.name == 'Regional Manager' or 'Assistant Manager'%}
         <ul class="sidebar-header">
             <span class="header-name">Decision Support</span>
             <li class="nav-item nav-menu" id="nav-reports" >
@@ -88,7 +90,7 @@
                 </ul>
             </li>
         </ul>
-        {% endif %}
+            {% endif %}
         {% endif %}
         <!-- FIELD TECHNICIAN LINKS -->
         {% if user.groups.all.0.name == 'Field Technician' %}
