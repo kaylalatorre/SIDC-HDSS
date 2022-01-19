@@ -59,6 +59,9 @@ from django.db.models.functions import Concat
 # from other apps
 from healthapp.views import compute_MortRate
 
+# import regex
+import re
+
 #Creating a cursor object using the cursor() method
 # from django.shortcuts import render
 
@@ -625,7 +628,7 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm' + str(farmID))
+            messages.success(request, str(len(newPigpenList)) + " new pigpens successfully added.", extra_tags='add-farm' + str(farmID))
             return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
@@ -895,7 +898,7 @@ def addFarm(request):
 
                     farm.save()
                     print("TEST LOG: Added new farm")
-                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm' + str(farm.id))
+                    messages.success(request, "Farm " + str(farm.id) + " has been successfully added.", extra_tags='add-farm' + str(farm.id))
 
                     # get recently created internal and external biosec IDs and update ref_farm_id
                     externalBiosec.ref_farm_id = farm
@@ -1298,11 +1301,11 @@ def post_addChecklist(request, farmID):
 
                 # Format time to be passed on message.success
                 ts = extBio.last_updated 
-                df = ts.strftime("%m/%d/%Y, %H:%M")
+                df = ts.strftime("%m/%d/%Y")
                 # debug(extBio.last_updated)
                 
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
+                messages.success(request, "Checklist dated " + df + " has been successfully added!", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
@@ -1887,8 +1890,8 @@ def addActivity(request, farmID):
     farmQuery = Farm.objects.get(pk=farmID)
     
     if request.method == 'POST':
-        print("TEST LOG: Add Activity has POST method") 
-        print(request.POST)
+        # print("TEST LOG: Add Activity has POST method") 
+        # print(request.POST)
 
         activityForm = ActivityForm(request.POST)
 
@@ -1939,17 +1942,21 @@ def addActivity(request, farmID):
 
                 activity.save()
                 x += 1
+
+            # update last_updated of farm
+            farmQuery.last_updated = datetime.now(timezone.utc)
+            farmQuery.save()
             
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
         else:
             # print("TEST LOG: activityForm is not valid")
-            # formError = str(activityForm.non_field_errors().as_text)
+            formError = str(activityForm.non_field_errors().as_text)
             # print(re.split("\'.*?",formError)[1])
 
-            # messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
-            messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
+            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            # messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")

@@ -229,6 +229,7 @@ class MortalityForm(ModelForm):
             'type' : 'number', 
             'class' : 'form-control num_today',
             'placeholder' : 'ex. 20',
+            'min' : '1',
         })                
         self.fields['source'].widget.attrs.update({
             'type' : 'text', 

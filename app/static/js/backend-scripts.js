@@ -1135,7 +1135,7 @@ function addCase(farmID) {
                 // redirect back to selected view page   
                 try {
                     url = "/selected-health-symptoms/" + farmID;
-                    console.log(url);
+                    // console.log(url);
                     location.href = url;
                     
                 } catch (error){

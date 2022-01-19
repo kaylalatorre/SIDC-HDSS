@@ -119,7 +119,7 @@ $(document).ready(async function () {
                 min: dateMonthsAgo,
                 max: dateSplit,
                 dateTimeLabelFormats: {
-                    week: '%e of %b' },
+                    week: '%e %b' },
                 units: [
                     [ 'week', [1] ],
                     [ 'month', [1] ]
@@ -230,7 +230,7 @@ $(document).ready(async function () {
                 endOnTick: true,
                 min: 1546819200000,
                 dateTimeLabelFormats: {
-                week: '%e of %b'
+                week: '%e %b'
                 },
                 units: [
                 [

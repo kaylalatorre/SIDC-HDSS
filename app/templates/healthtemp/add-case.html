@@ -12,9 +12,9 @@
 {% include 'partials/messages.html' %}
 
 <div class="main-div">
-    <!-- <form action="/post-addCase/{{farmID}}" method="POST">
+    <form>
 
-        {% csrf_token %} -->
+        {% csrf_token %}
         <h1 class="heading"><a href="/selected-health-symptoms/{{farmID}}">Hogs Health & Symptoms</a> >  Add Incident Case</h1>
         <div class="flex subheading">
             <p class="flex-item">Add new incidents cases here. Record all symptoms observed. </p>
@@ -30,7 +30,7 @@
             <section>
                 <div class="mb-3">
                     <label for="input-code" class="form-label">No. of Pigs Affected</label>
-                    <input type="number" class="form-control input-numAffected" id="input-title" placeholder="ex. 10" min="1" max="{{total_pigs}}">
+                    <input name="input-code" type="number" required class="form-control input-numAffected" id="input-title" placeholder="ex. 10" min="1" max="{{total_pigs}}">
                 </div>
             </section>
             <section>
@@ -173,6 +173,6 @@
         <p class="red">Please review the details of the form before submitting.</p>
         <div class="mobile-subheading"><button class="primary-btn" type="submit" id="mobile-addCase-btn" onclick="addCase('{{farmID}}')">Save</button></div>
 
-    <!-- </form> -->
+    </form>
 </div>
 {% endblock section %}

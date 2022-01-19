@@ -794,15 +794,15 @@ function computeMortality(currRow){
     console.log("toDate: " + String(toDate));
 
 
-    var mortRate = newTotal / parseInt(begInv) * 100
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
-    // console.log(mortality_rate);
 
     if (parseInt(today) == parseInt(begInv))
-        mortRate = 100;
+        var mortRate = 100;
+    else if (parseInt(today) == 0)
+        var mortRate = 0;
     else
-        mortRate = 0;
+        var mortRate = newTotal / parseInt(begInv) * 100
 
     mortality_rate.innerText = mortRate.toFixed(2);
-    console.log("mortality_rate: " + String(mortalzity_rate));
+    // console.log("mortality_rate: " + String(mortality_rate));
 }
