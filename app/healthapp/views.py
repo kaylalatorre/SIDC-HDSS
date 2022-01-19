@@ -72,7 +72,7 @@ def compute_MortRate(farmID, mortalityID):
         latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
         # Get latest Mortality record of the Farm (w Pigpen filter)
-        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by('-mortality_date')
+        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
 
         if mortQry.exists():
             m = mortQry.first()
@@ -302,7 +302,7 @@ def selectedHogsHealth(request, farmID):
     incident_symptomsList = zip(incidentQry, symptomsList)
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -440,7 +440,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     incident_symptomsList = zip(incidentQry, symptomsList)
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -645,7 +645,7 @@ def selectedHealthSymptoms(request, farmID):
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -758,7 +758,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -1214,7 +1214,7 @@ def hogsMortality(request):
     areaQry = Area.objects.all()
 
     # (3.1) Mortality details
-    mortQry = Mortality.objects.filter(is_approved=True).order_by("id").all()
+    mortQry = Mortality.objects.order_by("id").all()
     # debug(str(mortQry.query))
 
     if not mortQry.exists(): # (ERROR) No Mortality records found.
@@ -1293,7 +1293,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     if areaName == "All": # (CASE 1) search only by date range
         debug("TRACE: in areaName == 'All'")
 
-        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(is_approved=True).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")
@@ -1303,7 +1303,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
-        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).filter(is_approved=True).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")

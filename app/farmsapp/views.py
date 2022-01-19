@@ -3943,7 +3943,7 @@ def dashboard_view(request):
     farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
         intbioID = F("intbio__id"),
         extbioID = F("extbio__id"),
-        last_update = F("last_updated")
+        last_update = F("extbio__last_updated")
         ).values(
             "id",
             "total_pigs",
