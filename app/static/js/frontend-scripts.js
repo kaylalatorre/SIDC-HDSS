@@ -74,7 +74,7 @@ for(var i = 0; i < biosecEdit.length; i++) {
         let editParent = e.target.parentElement.parentElement.parentElement;
         let biosecSave = editParent.querySelector(".biosecSave");
         let biosecEdit = editParent.querySelector(".biosecEdit");
-        console.log(biosecEdit);
+        // console.log(biosecEdit);
         biosecSave.setAttribute("style", "display: block");
         biosecEdit.setAttribute("style", "display: none");
     })
@@ -177,7 +177,7 @@ for(var i = 0; i < rowStatus.length; i++) {
   
       var activeIncid = farm.querySelector('.active-incid');
       var active = activeIncid.innerText;
-      console.log(activeIncid);
+    //   console.log(activeIncid);
       if (active > 0) {
         activeIncid.parentElement.classList.add("highlight-red");
       }
@@ -191,7 +191,7 @@ for(var i = 0; i < rowStatus.length; i++) {
      checkbox[i].addEventListener('click', (e) => {
         var isChecked = e.target.checked;
         var btnGrp = document.querySelector('#announce-btn-grp');
-         console.log(isChecked);
+        //  console.log(isChecked);
          if(isChecked) {
              btnGrp.classList.remove('hide');
          } else {
@@ -311,7 +311,7 @@ $('#tech-farm-version').change(function () {
 function addBiosecPage(farmID) {
 
     var techFarm = $(farmID).val(); 
-    console.log(techFarm)
+    // console.log(techFarm)
 
     try{
         url = "/add-checklist/" + techFarm;
@@ -330,7 +330,7 @@ function addBiosecPage(farmID) {
 function addActivityPage(farmID) {
 
     var techFarm = $(farmID).val(); 
-    console.log(techFarm)
+    // console.log(techFarm)
 
     try{
         url = "/add-activity/" + techFarm;
@@ -368,7 +368,7 @@ function removePigpenRow(currRow){
 
     var row = currRow.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
+    // console.log("Row ID: " + rowIndex);
 
     var table = document.getElementById('pigpen-table');
     table.deleteRow(rowIndex);
@@ -384,7 +384,7 @@ function removeActivityRow(currRow){
 
     var row = currRow.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
+    // console.log("Row ID: " + rowIndex);
 
     var table = document.getElementById('activity-table');
     table.deleteRow(rowIndex);
@@ -424,7 +424,7 @@ function removeMortalityRow(currRow){
 
     var row = currRow.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex - 1;
-    console.log("Row ID: " + rowIndex);
+    // console.log("Row ID: " + rowIndex);
 
     var table = document.getElementById('mortality-table');
     table.deleteRow(rowIndex);
@@ -624,15 +624,15 @@ function filterRepStatus(){
     var checkedValues = $('input:checkbox:checked.ch_stat').map(function() {
         return this.id.toUpperCase();
     }).get();
-    console.log(checkedValues);
-    console.log(incidentRows.length)
+    // console.log(checkedValues);
+    // console.log(incidentRows.length)
     // console.log(table);
 
     for(i=0;i<incidentRows.length;i++){    
         repStatus = incidentRows[i].getElementsByTagName("td")[4].firstElementChild.value;
         // repStatus = repStatusRow
 
-        console.log(repStatus);
+        // console.log(repStatus);
 
         if(repStatus){    
             if(
@@ -661,7 +661,7 @@ function filterRepStatus(){
  function addSymptomsPage(farmID) {
 
     var farmID = $(farmID).val();
-    console.log(farmID);
+    // console.log(farmID);
 
     try {
         url = "/add-case/" + farmID;
@@ -761,8 +761,8 @@ $('#health-symptoms-version').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
-    console.log("Farm ID: " + farmID);
-    console.log("Farm Version: " + formatDate(farmVer));
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
 
     try {
         url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
@@ -791,7 +791,7 @@ function computeMortality(currRow){
     // console.log(toDate);
 
     toDate.innerText = newTotal;
-    console.log("toDate: " + String(toDate));
+    // console.log("toDate: " + String(toDate));
 
 
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];

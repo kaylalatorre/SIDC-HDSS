@@ -171,7 +171,7 @@ $('#farm-code').change(function () {
         farmID = $("#farm-code option:selected").val();
         try {
             url = "/biosecurity/" + farmID;
-            console.log(url);
+            // console.log(url);
             location.href = url;
         } catch (error) {
             console.log(error);
@@ -200,7 +200,7 @@ function filterFarmRep() {
     try {
 
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-farmAssess').load(url + ' #rep-farmAssess', function (response) {
@@ -244,7 +244,7 @@ function filterIntBioRep() {
 
     try {
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-intbiosec').load(url + ' #rep-intbiosec', function (response) {
@@ -287,7 +287,7 @@ function filterExtBioRep() {
 
     try {
         url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-extbiosec').load(url + ' #rep-extbiosec', function (response) {
@@ -492,7 +492,7 @@ function saveBiocheck(elem) {
 
             try {
                 url = "/biosecurity/" + farmID;
-                console.log(url);
+                // console.log(url);
                 location.href = url;
             } catch (error) {
                 console.log(error);
@@ -991,7 +991,7 @@ function viewHogsHealth(farmHTML) {
 
     try {
         url = "/selected-hogs-health/" + farmID;
-        console.log(url);
+        // console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -1009,7 +1009,7 @@ function viewHealthSymptoms(farmHTML) {
 
     try {
         url = "/selected-health-symptoms/" + farmID;
-        console.log(url);
+        // console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -1151,7 +1151,7 @@ function addCase(farmID) {
     try {
 
         url = "/hogs-mortality/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-mort').load(url + ' #rep-mort', function (response) {
@@ -1195,7 +1195,7 @@ function addCase(farmID) {
     try {
 
         url = "/disease-monitoring/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-diseaseMonitor').load(url + ' #rep-diseaseMonitor', function (response) {
