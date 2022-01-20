@@ -96,15 +96,15 @@
                             </tr>
                             <tr>
                                 <th>Ave. Starter Weight</td>
-                                <td data-label="Ave. Starter Weight">{{ start_weight.ave_weight }}</td>
+                                <td data-label="Ave. Starter Weight">{{ start_weight.ave_weight }} kg</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td data-label="Total No. of Heads">{{ start_weight.total_numHeads }}</td>
+                                <td data-label="Total No. of Heads">{{ start_weight.total_numHeads }} heads</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td data-label="Total Kls">{{ start_weight.total_kls }}</td>
+                                <td data-label="Total Kls">{{ start_weight.total_kls }} kls</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
@@ -129,15 +129,15 @@
                             </tr>
                             <tr>
                                 <th>Ave. Fattener Weight</td>
-                                <td data-label="Ave. Fattener Weight">{{ end_weight.ave_weight }}</td>
+                                <td data-label="Ave. Fattener Weight">{{ end_weight.ave_weight }} kg</td>
                             </tr>
                             <tr>
                                 <th>Total No. of Heads</td>
-                                <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }}</td>
+                                <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }} heads</td>
                             </tr>
                             <tr>
                                 <th>Total Kls</td>
-                                <td data-label="Total Kls">{{ end_weight.total_kls }}</td>
+                                <td data-label="Total Kls">{{ end_weight.total_kls }} kls</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
@@ -201,7 +201,7 @@
                         
                         <td data-label="Incident Code">{{ incident.id }}</td>
                         <td data-label="Date Reported">{{ incident.date_filed }} </td>
-                        <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }}</td>
+                        <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }} pigs</td>
                         <td data-label="Symptoms Observed">  
                             {% load healthapp_extras %}
                             {% for sKey, sVal in symptoms.items %}
@@ -279,10 +279,10 @@
                     <tr>
                         <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                         <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
-                        <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
-                        <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>
-                        <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }}</td>
-                        <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}</td>
+                        <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }} pigs</td>
+                        <td data-label="Today"  style="text-align: right;">{{ mort.num_today }} pigs</td>
+                        <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }} pigs</td>
+                        <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}%</td>
                         <td data-label="Source">{{ mort.source }}</td>
                         <td data-label="Remarks">{{ mort.remarks }}</td>
                     </tr>

@@ -96,14 +96,14 @@
                     <td data-label="Disinfect Premises"> {{farm.intbio_disinfect_prem}} </td>
                     <td data-label="Disinfect Veterinary Supplies"> {{farm.intbio_disinfect_vet_supp}} </td>
                     <td data-label="Last Update">{{farm.updated}}</td>
-                    <td data-label="Total Score" style="text-align: right;">{{farm.intbio_score}}</td>
+                    <td data-label="Total Score" style="text-align: right;">{{farm.intbio_score}}% </td>
                 </tr>
                 {% endfor %}
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="10">Average Score</td>
-                    <td style="text-align: right;"> {{farmTotalAve.ave_intbio}} </td>
+                    <td style="text-align: right;"> {{farmTotalAve.ave_intbio}}% </td>
                 </tr>
             </tbody>            
         </table>

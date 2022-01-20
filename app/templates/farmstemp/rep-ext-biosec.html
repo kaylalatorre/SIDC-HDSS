@@ -103,14 +103,14 @@
                     <td data-label="Observed 'No Visitors'"> {{farm.extbio_obs_no_visitors}} </td>
                     <td data-label="Disinfected Daily"> {{farm.extbio_chg_disinfect_daily}} </td>
                     <td data-label="Last Update">{{farm.updated}}</td>
-                    <td data-label="Total Score" style="text-align: right;">{{farm.extbio_score}}</td>
+                    <td data-label="Total Score" style="text-align: right;">{{farm.extbio_score}}%</td>
                 </tr>
                 {% endfor %}
 
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="14">Average Score</td>
-                    <td style="text-align: right;"> {{farmTotalAve.ave_extbio}} </td>
+                    <td style="text-align: right;"> {{farmTotalAve.ave_extbio}}%</td>
                 </tr>
             </tbody>            
         </table>
