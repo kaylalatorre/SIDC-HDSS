@@ -1610,40 +1610,30 @@ def formsApproval(request):
 
     ## ACTIVITY FORMS
     # get all activity forms
-    actQuery = Activities_Form.objects.values(
-                "id",
-                "date_added",
-                "act_tech",
-                "is_checked",
-                "ref_farm"
-                ).distinct("code").order_by("-code")
+    actQuery = Activities_Form.objects.filter(is_latest=True).order_by("-date_added")
     # print(actQuery)
 
     activityList = []
 
-    loggedTech = User.objects.filter(username=request.user).annotate(
-        name = Concat('first_name', Value(' '), 'last_name'),
-        ).values("name").first()
-
     for act in actQuery:       
-        getTech = User.objects.filter(id=act["act_tech"]).annotate(
+        getTech = User.objects.filter(id=act.act_tech_id).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        if act["is_checked"] == True:
+        if act.is_checked == True:
             status = 'Approved'
-        elif act["is_checked"] == False:
+        elif act.is_checked == False:
             status = 'Rejected'
-        elif act["is_checked"] == None:
+        elif act.is_checked == None:
             status = 'Pending'
 
         # pass into object and append to list 
         activityObject = {
-            "id" : act["id"],
-            "date_added" : act["date_added"],
+            "id" : act.id,
+            "date_added" : act.date_added,
             "status" : status,
             "prepared_by" : getTech["name"],
-            "farmID" : int(act["ref_farm"]) }
+            "farmID" : int(act.ref_farm_id) }
     
         activityList.append(activityObject)
 
@@ -1755,10 +1745,14 @@ def rejectActivityForm(request, activityFormID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
+        # print(request.POST)
+
         # update activity form fields for user approvals
         # is_checked for live op
         if request.POST.get("is_checked") == 'false' :
+            activity_form.is_latest = False
             activity_form.is_checked = False
+            activity_form.reject_reason = request.POST.get("reason")
 
             if request.user.groups.all()[0].name == "Livestock Operation Specialist":
                 activity_form.act_liveop_id = request.user.id
@@ -1767,6 +1761,7 @@ def rejectActivityForm(request, activityFormID):
 
         # duplicate instance (for a new version)
         activity_form.pk = None
+        activity_form.is_latest = True
         activity_form.save()
 
         # get all activities under activity form
@@ -1837,6 +1832,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
         # print("TEST LOG activityList: " + str(activityList))
 
         # reset approval status of activity form
+        activity_form.reject_reason = None
         activity_form.is_checked = None
         activity_form.date_added = datetime.now(timezone.utc)
 
@@ -1917,6 +1913,7 @@ def addActivity(request, farmID):
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
                 code = code,
+                is_latest = True,
                 date_added = datetime.now(timezone.utc),
                 act_tech_id = request.user.id,
                 ref_farm = farmQuery,
@@ -1980,7 +1977,7 @@ def saveActivity(request, farmID, activityID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        print("TEST LOG: Edit Activity is a POST Method")
+        # print("TEST LOG: Edit Activity is a POST Method")
         
         # collect data from inputs
         date = request.POST.get("date")

@@ -919,20 +919,8 @@ function resubmitActivity(actDate, actFormID, farmID) {
  *   - Approves all activities under selected activity form
  *   
  *   actFormID = id value of selected activity form
- *   userType = user group of currently logged in user
  */
-function approveActivity(actFormID, userType) {
-    var is_checked = null;
-    var is_reported = null;
-    var is_noted = null;
-
-    if (userType == "Livestock Operation Specialist") {
-        is_checked = true;
-    } else if (userType == "Extension Veterinarian") {
-        is_reported = true;
-    } else {
-        is_noted = true;
-    }
+function approveActivity(actFormID) {
 
     ajaxCSRF();
 
@@ -941,9 +929,7 @@ function approveActivity(actFormID, userType) {
         url: '/approve-activity-form/' + actFormID,
         data: {
             "id": actFormID,
-            "is_checked": is_checked,
-            "is_reported": is_reported,
-            "is_noted": is_noted
+            "is_checked": true,
         },
 
         success: function (response) {
@@ -963,19 +949,11 @@ function approveActivity(actFormID, userType) {
  *   - Rejects all activities under selected activity form
  *   
  *   actFormID = id value of selected activity form
- *   userType = user group of currently logged in user
  */
-function rejectActivity(actFormID, userType) {
-    var is_checked = null;
-    var is_reported = null;
-    var is_noted = null;
+function rejectActivity(actFormID) {
 
-    if (userType == "Livestock Operation Specialist") {
-        is_checked = false;
-    } else if (userType == "Extension Veterinarian") {
-        is_reported = false;
-    } else {
-        is_noted = false; }
+    var rejectReason = document.getElementById("reject-reason").value;
+    // console.log(rejectReason);
 
     ajaxCSRF();
 
@@ -984,9 +962,8 @@ function rejectActivity(actFormID, userType) {
         url: '/reject-activity-form/' + actFormID,
         data: {
             "id": actFormID,
-            "is_checked": is_checked,
-            "is_reported": is_reported,
-            "is_noted": is_noted },
+            "is_checked": false,
+            "reason": rejectReason },
 
         success: function (response) {
             if (response.status == 200) {
