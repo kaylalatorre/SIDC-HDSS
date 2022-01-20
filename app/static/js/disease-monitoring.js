@@ -11,28 +11,59 @@ $(document).ready(async function () {
 
         console.log(metadata);
 
-    // initialize active incidents and load corresponding data
+
+    var today = new Date();
+    // console.log(today);
+    
+    // var dateMonthsAgo = today-2592000000;
+    var dateMonthsAgo = Date.UTC(2021, 11, 7);
+    // console.log(dateMonthsAgo);
+
+    var oneMonth = 2592000000;
+
+    var dateSplit = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+    // console.log(dateSplit);
+
+    
+    // ACTIVE INCIDENTS line chart
     if ($('#dm-active-incid').length) {
+
+        var incSeries = [];
+        for(var i = 0; i < metadata[0].length; i++){
+
+            incSeries.push({
+                name: metadata[0][i][0],
+                data: metadata[0][i][1].map(function(elem){
+                    try {
+                        var dStr = elem[0].split('-');
+                    } catch{
+                        return metadata[0][1];
+                    }
+
+                    return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                })
+            });
+        }
+
+        // console.log(incSeries);
+
+
         Highcharts.chart('dm-active-incid', {
             title: {
-                text: 'Active Incidents for the past 4 mos'
+                text: 'Active Incidents for the past 4 months'
             },
         
             xAxis: {
                 type: 'datetime',
                 startOnTick: true,
                 endOnTick: true,
-                min: 1546819200000,
+                min: dateMonthsAgo,
+                max: dateSplit,
                 dateTimeLabelFormats: {
-                  week: '%e of %b'
-                },
+                    week: '%e of %b' },
                 units: [
-                  [
-                    'week', [1]
-                  ],
-                  [
-                    'month', [1]
-                  ]
+                    [ 'week', [1] ],
+                    [ 'month', [1] ]
                 ]
             },
         
@@ -42,57 +73,56 @@ $(document).ready(async function () {
                 }
             },
             
-            series: [
-                {
-                    name: metadata[0][0],
-                    data: metadata[0][1],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },
-                {
-                    name: metadata[0][2],
-                    data: metadata[0][3],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },            
-                {
-                    name: metadata[0][4],
-                    data: metadata[0][5],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },            
-                {
-                    name: metadata[0][6],
-                    data: metadata[0][7],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },
-            ]
+            plotOptions: {
+                series: {
+                    connectNulls: true
+                }
+            },
+
+            series: incSeries,
         
         });
     }
    
+
+    // MORTALITY line chart
     if ($('#dm-mortality').length) {
+
+        var mortSeries = [];
+        for(var i = 0; i < metadata[1].length; i++){
+
+            mortSeries.push({
+                name: metadata[1][i][0],
+                data: metadata[1][i][1].map(function(elem){
+                    try {
+                        var dStr = elem[0].split('-');
+                    } catch{
+                        return metadata[1][1];
+                    }
+
+                    return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                })
+            });
+        }
+
+        // console.log(mortSeries);
+
         Highcharts.chart('dm-mortality', {
             title: {
-                text: 'Mortality Reports for the past 4 mos'
+                text: 'Mortality Reports for the past 4 months'
             },
     
             xAxis: {
                 type: 'datetime',
                 startOnTick: true,
                 endOnTick: true,
-                min: 1546819200000,
+                min: dateMonthsAgo,
+                max: dateSplit,
                 dateTimeLabelFormats: {
-                week: '%e of %b'
-                },
+                    week: '%e %b' },
                 units: [
-                [
-                    'week', [1]
-                ],
-                [
-                    'month', [1]
-                ]
+                    [ 'week', [1] ],
+                    [ 'month', [1] ]
                 ]
             },
     
@@ -101,43 +131,40 @@ $(document).ready(async function () {
                     text: 'No. of Hogs Died'
                 }
             },
-            
-            series: [
-                {
-                    name: metadata[1][0],
-                    data: metadata[1][1],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },
-                {
-                    name: metadata[1][2],
-                    data: metadata[1][1],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },        {
-                    name: metadata[1][3],
-                    data: metadata[1][4],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },
-                {
-                    name: metadata[1][5],
-                    data: metadata[1][6],
-                    pointStart: Date.UTC(2019, 0, 7),
-                    pointInterval: 24 * 3600 * 1000 * 7 // one week
-                },
-            ]
+                        
+            plotOptions: {
+                series: {
+                    connectNulls: true
+                }
+            },
+
+            series: mortSeries,
     
         });
     }
     
+
+    // SYMPTOMS RECORDED bar chart
     if ($('#dm-symptoms-rep').length) {
+
+        var symSeries = [];
+        for(var i = 0; i < metadata[2].length; i++){
+
+            symSeries.push({
+                name: metadata[2][i][0],
+                data: metadata[2][i][1]
+            });
+        }
+
+        // console.log(symSeries);
+
+
         Highcharts.chart('dm-symptoms-rep', {
             chart: {
                 type: 'bar'
             },
             title: {
-                text: 'Symptoms Reported'
+                text: 'Symptoms Reported for the past 4 months'
             },
             xAxis: {
                 categories: [
@@ -185,19 +212,12 @@ $(document).ready(async function () {
                     }
                 }
             },
-            series: [
-                {
-                    name: 'TSISI',
-                    data: [10, 11, 0, 2, 2, 0, 0, 12, 2, 1, 0, 0, 0, 0, 0, 1, 10, 10, 10, 5, 2]
-                }, 
-                {
-                    name: 'West',
-                    data: [0, 21, 1, 2, 2, 0, 0, 1, 12, 14, 1, 3, 5, 0, 0, 1, 11, 0, 0, 0, 2]
-                }
-            ]
+            series: symSeries,
         });
     }
     
+
+    // ACTIVITIES line chart
     if ($('#dm-activities').length) {
         Highcharts.chart('dm-activities', {
             title: {
@@ -210,7 +230,7 @@ $(document).ready(async function () {
                 endOnTick: true,
                 min: 1546819200000,
                 dateTimeLabelFormats: {
-                week: '%e of %b'
+                week: '%e %b'
                 },
                 units: [
                 [
@@ -256,8 +276,4 @@ $(document).ready(async function () {
         });
     }
     
-
-
-
-
 })

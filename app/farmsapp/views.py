@@ -59,6 +59,9 @@ from django.db.models.functions import Concat
 # from other apps
 from healthapp.views import compute_MortRate
 
+# import regex
+import re
+
 #Creating a cursor object using the cursor() method
 # from django.shortcuts import render
 
@@ -281,7 +284,6 @@ def selectedFarm(request, farmID):
 
     # Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
-    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
     # Get all biosecID, last_updated in extbio under a Farm
@@ -404,7 +406,6 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     # Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
-    # print("TEST LOG biosec_view(): Queryset currbio-- " + str(currbioQuery.query))
 
 
     # Get all biosecID, last_updated in extbio under a Farm
@@ -627,7 +628,7 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm' + str(farmID))
+            messages.success(request, str(len(newPigpenList)) + " new pigpens successfully added.", extra_tags='add-farm' + str(farmID))
             return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
@@ -754,7 +755,6 @@ def addFarm(request):
     except:
         farmID = 1
     # print(farmID)
-    # messages.success(request, "Farm " + str(latestFarm.id) + " has been saved successfully!", extra_tags='add-farm' + str(latestFarm.id))
 
     # get all hog raisers to be passed as dropdown
     hogRaiserQry = Hog_Raiser.objects.all().order_by('lname')
@@ -898,7 +898,7 @@ def addFarm(request):
 
                     farm.save()
                     print("TEST LOG: Added new farm")
-                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm' + str(farm.id))
+                    messages.success(request, "Farm " + str(farm.id) + " has been successfully added.", extra_tags='add-farm' + str(farm.id))
 
                     # get recently created internal and external biosec IDs and update ref_farm_id
                     externalBiosec.ref_farm_id = farm
@@ -987,15 +987,14 @@ def addFarm(request):
                                                         'farmForm' : farmForm,
                                                         'pigpenRowForm' : pigpenRowForm })
 
-# (POST-AJAX) For searching a Biosec Checklist based on biosecID; called in AJAX request
+# (POST-AJAX) For searching a Biosec Checklist based on biosecID
 def search_bioChecklist(request, biosecID):
     """
     (POST-AJAX) For searching a Biosecurity Checklist based on biosecID.
     """
 
     if request.method == 'POST':
-
-        print("TEST LOG: in search_bioChecklist()")
+        # print("TEST LOG: in search_bioChecklist()")
 
         # Get biosecID passed from AJAX URL param 
         bioID = biosecID 
@@ -1081,8 +1080,7 @@ def update_bioChecklist(request, biosecID):
     """
 
     if request.method == 'POST':
-
-        print("TEST LOG: in update_bioChecklist()/n")
+        # print("TEST LOG: in update_bioChecklist()/n")
 
         # Get biosecID from AJAX url param
         bioID = biosecID
@@ -1200,9 +1198,9 @@ def update_bioChecklist(request, biosecID):
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
-# (POST) function for adding a Biosec Checklist
+# (POST) For adding a Biosec Checklist
 def post_addChecklist(request, farmID):
-    print("TEST LOG: in post_addChecklist/n")
+    # print("TEST LOG: in post_addChecklist/n")
 
     if request.method == "POST":
         
@@ -1229,11 +1227,11 @@ def post_addChecklist(request, farmID):
             # Array length must be 8 for the 8 fields in a Biosec checklist.
             print("biosecArr len(): " + str(len(biosecArr)))
 
-            debug("TEST LOG: List of Biocheck values")
+            # debug("TEST LOG: List of Biocheck values")
             for index, value in enumerate(biosecArr): 
                 if value is None:
                     # (ERROR) Incomplete input/s for Biosecurity Checklist
-                    debug("ERROR: Index value in biosec is None.")
+                    # debug("ERROR: Index value in biosec is None.")
                     checkComplete = False
 
                     messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
@@ -1303,11 +1301,11 @@ def post_addChecklist(request, farmID):
 
                 # Format time to be passed on message.success
                 ts = extBio.last_updated 
-                df = ts.strftime("%m/%d/%Y, %H:%M")
+                df = ts.strftime("%m/%d/%Y")
                 # debug(extBio.last_updated)
                 
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
+                messages.success(request, "Checklist dated " + df + " has been successfully added!", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
@@ -1326,6 +1324,7 @@ def post_addChecklist(request, farmID):
         messages.error(request, "Incomplete input/s for Biosecurity Checklist.", extra_tags='add-checklist')
         return redirect('/add-checklist/' + farmID)
 
+# (POST-AJAX) For deleting a Biosec Checklist based on biosecID and farmID
 def delete_bioChecklist(request, biosecID, farmID):
     """
     (POST-AJAX) For deleting a biosecurity checklist based on biosecID and farmID from dropdowns.
@@ -1336,7 +1335,7 @@ def delete_bioChecklist(request, biosecID, farmID):
 
     if request.method == 'POST':
 
-        print("TEST LOG: in delete_bioChecklist()/n")
+        # print("TEST LOG: in delete_bioChecklist()/n")
 
         # Get biosecID from AJAX url param
         bioID = biosecID
@@ -1397,7 +1396,6 @@ def delete_bioChecklist(request, biosecID, farmID):
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)
 
-# For getting all Biosec checklist versions under a Farm.
 def biosec_view(request):
     """
     For getting all Biosecurity details under a Farm. 
@@ -1489,8 +1487,6 @@ def select_biosec(request, farmID):
             'last_updated',
         ).order_by('-last_updated')
 
-        # print("TEST LOG biosec_view(): Queryset external-- " + str(extQuery.query))
-        # print("TEST LOG currbioQuery len(): " + str(len(currbioQuery)))
 
         # (ERROR) for checking Farms that have no Biosec records
         if not extQuery.exists() or currbioObj.intbio is None or currbioObj.extbio is None: 
@@ -1538,7 +1534,7 @@ def addChecklist_view(request, farmID):
     """
     For passing farmID from Biosecurity page to addChecklist page ("add-checklist.html")
     """
-    debug("TEST LOG: in addChecklist_view/n")
+    # debug("TEST LOG: in addChecklist_view/n")
 
     return render(request, 'farmstemp/add-checklist.html', { 'farmID' : int(farmID) })
 
@@ -1619,8 +1615,6 @@ def formsApproval(request):
                 "date_added",
                 "act_tech",
                 "is_checked",
-                "is_reported",
-                "is_noted",
                 "ref_farm"
                 ).distinct("code").order_by("-code")
     # print(actQuery)
@@ -1636,210 +1630,25 @@ def formsApproval(request):
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        status = None
+        if act["is_checked"] == True:
+            status = 'Approved'
+        elif act["is_checked"] == False:
+            status = 'Rejected'
+        elif act["is_checked"] == None:
+            status = 'Pending'
 
-        if request.user.groups.all()[0].name == "Field Technician":
-            if getTech["name"] == loggedTech["name"]:
+        # pass into object and append to list 
+        activityObject = {
+            "id" : act["id"],
+            "date_added" : act["date_added"],
+            "status" : status,
+            "prepared_by" : getTech["name"],
+            "farmID" : int(act["ref_farm"]) }
+    
+        activityList.append(activityObject)
 
-                if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
-                    status = 'Approved'
-                elif act["is_noted"] == False or act["is_reported"] == False or act["is_checked"] == False:
-                    status = 'Rejected'
-                elif act["is_noted"] == None or act["is_reported"] == None or act["is_checked"] == None:
-                    status = 'Pending'
 
-                # pass into object and append to list 
-                activityObject = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(act["ref_farm"]) }
-            
-                activityList.append(activityObject)
-
-        else :
-            if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-                if act["is_checked"] == True:
-                    status = 'Approved'
-                elif act["is_checked"] == False:
-                    status = 'Rejected'
-                else:
-                    status = 'Pending'
-                    
-            elif request.user.groups.all()[0].name == "Extension Veterinarian":
-                if act["is_reported"] == True and act["is_checked"] == True:
-                    status = 'Approved'
-                elif act["is_reported"] == False and act["is_checked"] == True:
-                    status = 'Rejected'
-                elif act["is_reported"] == None and act["is_checked"] == True:
-                    status = 'Pending'
-
-            elif request.user.groups.all()[0].name == "Assistant Manager":
-                if act["is_noted"] == True and act["is_reported"] == True and act["is_checked"] == True:
-                    status = 'Approved'
-                elif act["is_noted"] == False and act["is_reported"] == True and act["is_checked"] == True:
-                    status = 'Rejected'
-                elif act["is_noted"] == None and act["is_reported"] == True and act["is_checked"] == True:
-                    status = 'Pending'
-            
-            # pass into object and append to list 
-            if status is not None:
-                activityObject = {
-                    "id" : act["id"],
-                    "date_added" : act["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(act["ref_farm"]) }
-                
-                activityList.append(activityObject)
-
-    ## MORTALITY FORMS
-    # get all mortality forms
-    mortQuery = Mortality_Form.objects.values(
-                "id",
-                "date_added",
-                "mort_tech",
-                "is_posted",
-                "is_reported",
-                "is_noted",
-                "ref_farm"
-                ).distinct("series").order_by("-series")
-    # print(mortQuery)
-
-    mortalityList = []
-
-    for mort in mortQuery:
-        getTech = User.objects.filter(id=mort["mort_tech"]).annotate(
-            name = Concat('first_name', Value(' '), 'last_name'),
-        ).values("name").first()
-        
-        status = None
-
-        if request.user.groups.all()[0].name == "Field Technician":
-            if getTech["name"] == loggedTech["name"]:
-                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Approved'
-                elif mort["is_noted"] == False or mort["is_reported"] == False or mort["is_posted"] == False:
-                    status = 'Rejected'
-                elif mort["is_noted"] == None or mort["is_reported"] == None or mort["is_posted"] == None:
-                    status = 'Pending'
-            
-                # pass into object and append to list 
-                mortalityObject = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(mort["ref_farm"]) }
-
-                mortalityList.append(mortalityObject)
-            
-        else :
-            if request.user.groups.all()[0].name == "Paiwi Management Staff":
-                if mort["is_posted"] == True:
-                    status = 'Approved'
-                elif mort["is_posted"] == False:
-                    status = 'Rejected'
-                else:
-                    status = 'Pending'
-
-            elif request.user.groups.all()[0].name == "Extension Veterinarian":
-                if mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Approved'
-                elif mort["is_reported"] == False and mort["is_posted"] == True:
-                    status = 'Rejected'
-                elif mort["is_reported"] == None and mort["is_posted"] == True:
-                    status = 'Pending'
-
-            elif request.user.groups.all()[0].name == "Assistant Manager":
-                if mort["is_noted"] == True and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Approved'
-                elif mort["is_noted"] == False and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Rejected'
-                elif mort["is_noted"] == None and mort["is_reported"] == True and mort["is_posted"] == True:
-                    status = 'Pending'
-
-            # pass into object and append to list 
-            if status is not None:
-                mortalityObject = {
-                    "id" : mort["id"],
-                    "date_added" : mort["date_added"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(mort["ref_farm"]) }
-
-                mortalityList.append(mortalityObject)
-
-    # # WEIGHT SLIPS
-    # get all weight slips
-    weightQry = Farm_Weight.objects.values(
-                "id",
-                "date_filed",
-                "weight_tech",
-                "is_posted",
-                "is_noted",
-                "ref_farm"
-                ).distinct("code").order_by("-code")
-    # print(weightQry)
-
-    weightList = []
-
-    for weight in weightQry:       
-        getTech = User.objects.filter(id=weight["weight_tech"]).annotate(
-            name = Concat('first_name', Value(' '), 'last_name'),
-        ).values("name").first()
-
-        if request.user.groups.all()[0].name == "Field Technician":
-            if getTech["name"] == loggedTech["name"]:
-
-                if weight["is_noted"] == True and weight["is_posted"] == True:
-                    status = 'Approved'
-                elif weight["is_noted"] == False or weight["is_posted"] == False:
-                    status = 'Rejected'
-                elif weight["is_noted"] == None or weight["is_posted"] == None:
-                    status = 'Pending'
-
-                # pass into object and append to list 
-                weightObject = {
-                    "id" : weight["id"],
-                    "date_added" : weight["date_filed"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(weight["ref_farm"]) }
-            
-                weightList.append(weightObject)
-        
-        else : 
-            if request.user.groups.all()[0].name == "Paiwi Management Staff":
-                if weight["is_posted"] == True :
-                    status = 'Approved'
-                elif weight["is_posted"] == False :
-                    status = 'Rejected'
-                elif weight["is_posted"] == None :
-                    status = 'Pending'
-
-            elif request.user.groups.all()[0].name == "Assistant Manager":
-                if weight["is_noted"] == True and weight["is_posted"] == True:
-                    status = 'Approved'
-                elif weight["is_noted"] == False and weight["is_posted"] == True:
-                    status = 'Rejected'
-                elif weight["is_noted"] == None and weight["is_posted"] == True:
-                    status = 'Pending'
-                else: status = None
-
-            # pass into object and append to list 
-            if status is not None:
-                weightObject = {
-                    "id" : weight["id"],
-                    "date_added" : weight["date_filed"],
-                    "status" : status,
-                    "prepared_by" : getTech["name"],
-                    "farmID" : int(weight["ref_farm"]) }
-            
-                weightList.append(weightObject)
-
-    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList, 'mortList' : mortalityList, 'weightList' : weightList })
+    return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList })
 
 def selectedActivityForm(request, activityFormID, activityDate):
     """
@@ -1856,37 +1665,12 @@ def selectedActivityForm(request, activityFormID, activityDate):
     latestForm = Activities_Form.objects.filter(code=actFormQuery.code).last()
 
     # set status of activity form
-    if request.user.groups.all()[0].name == "Livestock Operation Specialist":
-        if actFormQuery.is_checked == True :
-            status = 'Approved'
-        elif actFormQuery.is_checked == False :
-            status = 'Rejected'
-        elif actFormQuery.is_checked == None :
-            status = 'Pending'
-
-    elif request.user.groups.all()[0].name == "Extension Veterinarian":
-        if actFormQuery.is_reported == True and actFormQuery.is_checked == True :
-            status = 'Approved'
-        elif actFormQuery.is_reported == False and actFormQuery.is_checked == True :
-            status = 'Rejected'
-        elif actFormQuery.is_reported == None and actFormQuery.is_checked == True :
-            status = 'Pending'
-
-    elif request.user.groups.all()[0].name == "Assistant Manager":
-        if actFormQuery.is_noted == True and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
-            status = 'Approved'
-        elif actFormQuery.is_noted == False and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
-            status = 'Rejected'
-        elif actFormQuery.is_noted == None and actFormQuery.is_reported == True and actFormQuery.is_checked == True : 
-            status = 'Pending'
-    
-    elif request.user.groups.all()[0].name == "Field Technician":
-        if actFormQuery.is_noted == True and actFormQuery.is_reported == True and actFormQuery.is_checked == True :
-            status = 'Approved'
-        elif actFormQuery.is_noted == False or actFormQuery.is_reported == False or actFormQuery.is_checked == False :
-            status = 'Rejected'
-        else :
-            status = 'Pending'
+    if actFormQuery.is_checked == True :
+        status = 'Approved'
+    elif actFormQuery.is_checked == False :
+        status = 'Rejected'
+    elif actFormQuery.is_checked == None :
+        status = 'Pending'
 
     # get all activities under activity form
     actQuery = Activity.objects.filter(activity_form_id=activityFormID).all().order_by("id")
@@ -1915,7 +1699,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
 
 def approveActivityForm(request, activityFormID):
     """
-    - Modify is_checked, is_reported, and is_noted values of selected activity form
+    - Modify is_checked value of selected activity form
     - Update last_updated and date_approved
 
     activityFormID = id value of activity form selected
@@ -1935,20 +1719,6 @@ def approveActivityForm(request, activityFormID):
 
             if request.user.groups.all()[0].name == "Livestock Operation Specialist":
                 activity_form.act_liveop_id = request.user.id
-    
-        # is_reported for ext vet
-        elif request.POST.get("is_reported") == 'true' :
-            activity_form.is_reported = True
-
-            if request.user.groups.all()[0].name == "Extension Veterinarian":
-                activity_form.act_extvet_id = request.user.id
-
-        # is_noted for asst. manager
-        elif request.POST.get("is_noted") == 'true' :
-            activity_form.is_noted = True
-
-            if request.user.groups.all()[0].name == "Assistant Manager":
-                activity_form.act_asm_id = request.user.id
         
         activity_form.save()
 
@@ -1957,7 +1727,7 @@ def approveActivityForm(request, activityFormID):
         for activity in actQuery:
             activity.last_updated = dateToday
             
-            if activity_form.is_noted == True and activity_form.is_reported == True and activity_form.is_checked == True :
+            if activity_form.is_checked == True :
                 activity.is_approved = True
                 activity.date_approved = dateToday
 
@@ -1972,7 +1742,7 @@ def approveActivityForm(request, activityFormID):
 
 def rejectActivityForm(request, activityFormID):
     """
-    - Modify is_checked, is_reported, and is_noted values of selected activity form
+    - Modify is_checked value of selected activity form
     - Update last_updated
 
     activityFormID = id value of activity form selected
@@ -1992,22 +1762,7 @@ def rejectActivityForm(request, activityFormID):
 
             if request.user.groups.all()[0].name == "Livestock Operation Specialist":
                 activity_form.act_liveop_id = request.user.id
-        
-        # is_reported for ext vet
-        elif request.POST.get("is_reported") == 'false' :
-            activity_form.is_reported = False
 
-            if request.user.groups.all()[0].name == "Extension Veterinarian":
-                activity_form.act_extvet_id = request.user.id
-
-        # is_noted for asst. manager
-        elif request.POST.get("is_noted") == 'false' :
-            activity_form.is_noted = False
-
-            if request.user.groups.all()[0].name == "Assistant Manager":
-                activity_form.act_asm_id = request.user.id
-
-        
         activity_form.save()
 
         # duplicate instance (for a new version)
@@ -2019,7 +1774,7 @@ def rejectActivityForm(request, activityFormID):
         for activity in actQuery:
             activity.last_updated = dateToday
             
-            if activity_form.is_noted == False or activity_form.is_reported == False or activity_form.is_checked == False :
+            if activity_form.is_checked == False :
                 activity.is_approved = False
 
             activity.save()
@@ -2083,8 +1838,6 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
 
         # reset approval status of activity form
         activity_form.is_checked = None
-        activity_form.is_reported = None
-        activity_form.is_noted = None
         activity_form.date_added = datetime.now(timezone.utc)
 
         activity_form.save()
@@ -2133,18 +1886,12 @@ def addActivity(request, farmID):
     except:
         code = 1
     
-    # get ID of current technician
-    techID = request.user.id
-
     # collected farmID of selected tech farm
     farmQuery = Farm.objects.get(pk=farmID)
     
-    # get today's date
-    dateToday = datetime.now(timezone.utc)
-
     if request.method == 'POST':
-        print("TEST LOG: Add Activity has POST method") 
-        print(request.POST)
+        # print("TEST LOG: Add Activity has POST method") 
+        # print(request.POST)
 
         activityForm = ActivityForm(request.POST)
 
@@ -2170,8 +1917,8 @@ def addActivity(request, farmID):
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
                 code = code,
-                date_added = dateToday,
-                act_tech_id = techID,
+                date_added = datetime.now(timezone.utc),
+                act_tech_id = request.user.id,
                 ref_farm = farmQuery,
             )
             activity_form.save()
@@ -2195,17 +1942,21 @@ def addActivity(request, farmID):
 
                 activity.save()
                 x += 1
+
+            # update last_updated of farm
+            farmQuery.last_updated = datetime.now(timezone.utc)
+            farmQuery.save()
             
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
         else:
             # print("TEST LOG: activityForm is not valid")
-            # formError = str(activityForm.non_field_errors().as_text)
+            formError = str(activityForm.non_field_errors().as_text)
             # print(re.split("\'.*?",formError)[1])
 
-            # messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
-            messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
+            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            # messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")
@@ -3154,10 +2905,9 @@ def countNotifications(request):
 
     return HttpResponse(str(totalNotifs), status=200)
 
-# helper functions for Biosec
 def computeBioscore(farmID, intbioID, extbioID):
     """
-    For calculating Internal and External biosec scores of a Farm.
+    Helper function for calculating Internal and External biosec scores of a Farm.
     
     BIOSCORE = ( (total measure points + total checklist points) / (total points - N/A))
     """
@@ -3310,7 +3060,7 @@ def computeBioscore(farmID, intbioID, extbioID):
 # REPORTS for Module 1
 
 def farmsAssessment(request):
-    debug("TEST LOG: in farmsAssessment Report/n")
+    # debug("TEST LOG: in farmsAssessment Report/n")
 
     """
     Gets all Farm records within existing dates and all Areas due to no selected filters in dropdown
@@ -3445,7 +3195,7 @@ def filter_farmsAssessment(request, startDate, endDate, areaName):
         - intbio score, extbio score, last_updated (in Farm/Biosec?)
     """
 
-    debug("TEST LOG: in filter_farmsAssessment Report()/n")
+    # debug("TEST LOG: in filter_farmsAssessment Report()/n")
 
     # debug("URL params:")
     # debug("startDate -- " + startDate)
@@ -3614,7 +3364,7 @@ def getBioStr(bioInt):
 
 
 def intBiosecurity(request):
-    debug("TEST LOG: in intBiosecurity Report/n")
+    # debug("TEST LOG: in intBiosecurity Report/n")
 
     """
     Gets current Internal Biosecurity record for each Farm within existing dates and all Areas due to no selected filters in dropdown.
@@ -3730,7 +3480,7 @@ def intBiosecurity(request):
 
 
 def filter_intBiosec(request, startDate, endDate, areaName):
-    debug("TEST LOG: in filter_intBiosec Report/n")
+    # debug("TEST LOG: in filter_intBiosec Report/n")
 
     """
     Gets Internal Biosecurity records for each Farm based on (1) date range and (2) area name.
@@ -3890,7 +3640,7 @@ def filter_intBiosec(request, startDate, endDate, areaName):
 
 
 def extBiosecurity(request):
-    debug("TEST LOG: in extBiosecurity Report/n")
+    # debug("TEST LOG: in extBiosecurity Report/n")
 
     """
     Gets current External Biosecurity record for each Farm within existing dates and all Areas due to no selected filters in dropdown.
@@ -4016,7 +3766,7 @@ def extBiosecurity(request):
 
 
 def filter_extBiosec(request, startDate, endDate, areaName):
-    debug("TEST LOG: in filter_extBiosec Report/n")
+    # debug("TEST LOG: in filter_extBiosec Report/n")
 
     """
     Gets External Biosecurity records for each Farm based on (1) date range and (2) area name.
@@ -4200,7 +3950,7 @@ def dashboard_view(request):
     farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
         intbioID = F("intbio__id"),
         extbioID = F("extbio__id"),
-        last_update = F("last_updated")
+        last_update = F("extbio__last_updated")
         ).values(
             "id",
             "total_pigs",

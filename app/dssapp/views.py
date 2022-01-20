@@ -54,7 +54,7 @@ def debug(m):
 
 def diseaseDashboard(request):
     """
-    Load data for highcharts
+    Load data for highcharts (active incidents, mortalities, active symptoms recorded, and activities)
     """
 
     if request.method == 'POST':
@@ -69,19 +69,18 @@ def diseaseDashboard(request):
         # get all areas
         areaQry = Area.objects.all()
     
-        # collect all data from each farm under each area
+        dateToday = datetime.now(timezone.utc)
+        dateFourMonths = dateToday - timedelta(30)
+        
+
+        # COLLECT ACTIVE/PENDING INCIDENTS PER AREA
         for area in areaQry :
             # print("- - " + str(area.area_name) + " - -")
-            incSeries.append(area.area_name)
-            mortSeries.append(area.area_name)
-            symSeries.append(area.area_name)
 
-            # arraylist to store name points for each charts
+            # initialize data list per incident; will contain --> [incident date, num. affected pigs]
             incData = []
-            mortData = []
-            symData = []
 
-            # ACTIVE INCIDENTS
+            # collect all active incidents
             active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
             # debug(active_incidents)
 
@@ -89,23 +88,23 @@ def diseaseDashboard(request):
             try:
                 inc_currDate = active_incidents.first().date_filed.date()
             except:
-                incSeries.append([0,0])
+                incData.append([dateFourMonths.date(), 0])
+                incData.append([dateToday.date(), 0])
+                incSeries.append([area.area_name, incData])
                 continue
 
+            if inc_currDate != dateFourMonths.date():
+                # start point of series data
+                incData.append([dateFourMonths.date(), 0])
+
             for i in active_incidents:
-                # print("currDate " + str(currDate))
                 try:
                     inc_nextDate = i.date_filed.date()
-                    # print("nextDate " + str(nextDate))
                 except:
                     continue
-                
-                # print("num pigs aff " + str(i.num_pigs_affected))
-                # print(i.ref_farm_id)
 
                 if inc_currDate == inc_nextDate :
                     inc_num_pigs += i.num_pigs_affected
-                    # print("added num pigs " + str(num_pigs))
 
                 else : 
                     incObj = [ inc_currDate, inc_num_pigs ]
@@ -114,38 +113,48 @@ def diseaseDashboard(request):
                     inc_num_pigs = i.num_pigs_affected
                     inc_currDate = inc_nextDate
 
-                    # print("num pigs " + str(num_pigs))
-        
 
-            incObj = [ inc_currDate, inc_num_pigs ]
-            incData.append(incObj)   
-            # print(incObj)
-            # print(incData)
+            incData.append([inc_currDate, inc_num_pigs]) 
 
-            # MORTALITY RECORDS
+            # end point of series data
+            if inc_currDate != dateToday.date():
+                incData.append([dateToday.date(), 0])
+
+            # append area name and all incident data lists
+            incSeries.append([area.area_name, incData])
+
+
+        # COLLECT MORTALITY RECORDS PER AREA
+        for area in areaQry :
+            # print("- - " + str(area.area_name) + " - -")
+
+            # initialize data list per mortality; will contain --> [mortality date, num. affected pigs]
+            mortData = []
+
+            # collect all mortality records
             mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).filter(mortality_date__range=(now()-timedelta(days=120), now())).order_by('mortality_date')
             
             mort_num_pigs = 0
             try:
                 mort_currDate = mortality.first().mortality_date
             except:
-                mortSeries.append([0,0])
-                print("hello")
+                mortData.append([dateFourMonths.date(), 0])
+                mortData.append([dateToday.date(), 0])
+                mortSeries.append([area.area_name, mortData])
                 continue
 
+            if mort_currDate != dateFourMonths.date():
+                # start point of series data
+                mortData.append([dateFourMonths.date(), 0])
+
             for m in mortality:
-                # print("currDate " + str(mort_currDate))
                 try:
                     mort_nextDate = m.mortality_date
-                    # print("nextDate " + str(mort_nextDate))
                 except:
                     continue
                 
-                # print("num pigs aff " + str(m.num_today))
-
                 if mort_currDate == mort_nextDate :
                     mort_num_pigs += m.num_today
-                    # print("added num pigs " + str(mort_num_pigs))
                 
                 else :
                     mortObj = [ mort_currDate, mort_num_pigs ]
@@ -154,49 +163,98 @@ def diseaseDashboard(request):
                     mort_num_pigs = m.num_today
                     mort_currDate = mort_nextDate
 
-                    # print("num pigs " + str(mort_num_pigs))
+            mortData.append([mort_currDate, mort_num_pigs])
+
+            # end point of series data
+            if mort_currDate != dateToday.date():
+                mortData.append([dateToday.date(), 0])
+
+            mortSeries.append([area.area_name, mortData])
 
 
-            mortObj = [ mort_currDate, mort_num_pigs ]
-            mortData.append(mortObj)
+        # COLLECT ACTIVE/PENDING SYMPTOMS RECORDED PER AREA
+        for area in areaQry :
+            # print("- - " + str(area.area_name) + " - -")
 
-
+            symDate = []
             # SYMPTOMS RECORDED
-            symptomsList = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).values(
-                        'high_fever'        ,
-                        'loss_appetite'     ,
-                        'depression'        ,
-                        'lethargic'         ,
-                        'constipation'      ,
-                        'vomit_diarrhea'    ,
-                        'colored_pigs'      ,
-                        'skin_lesions'      ,
-                        'hemorrhages'       ,
-                        'abn_breathing'     ,
-                        'discharge_eyesnose',
-                        'death_isDays'      ,
-                        'death_isWeek'      ,
-                        'cough'             ,
-                        'sneeze'            ,
-                        'runny_nose'        ,
-                        'waste'             ,
-                        'boar_dec_libido'   ,
-                        'farrow_miscarriage',
-                        'weight_loss'       ,
-                        'trembling'         ,
-                        'conjunctivitis').order_by("id").all()
+            symptomsQry = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
+                        'high_fever'        , #0
+                        'loss_appetite'     , #1
+                        'depression'        , #2
+                        'lethargic'         , #3
+                        'constipation'      , #4
+                        'vomit_diarrhea'    , #5
+                        'colored_pigs'      , #6
+                        'skin_lesions'      , #7
+                        'hemorrhages'       , #8
+                        'abn_breathing'     , #9
+                        'discharge_eyesnose', #10
+                        'death_isDays'      , #11
+                        'death_isWeek'      , #12
+                        'cough'             , #13
+                        'sneeze'            , #14
+                        'runny_nose'        , #15
+                        'waste'             , #16
+                        'boar_dec_libido'   , #17
+                        'farrow_miscarriage', #18
+                        'weight_loss'       , #19
+                        'trembling'         , #20
+                        'conjunctivitis').order_by("date_filed").all()  #21
 
-            incSeries.append(incData)
-            mortSeries.append(mortData)
+            symCountList = [0] * 22
+            try:
+                for sym in symptomsQry:
+                    symCountList[0] += sym["high_fever"]
+                    symCountList[1] += sym["loss_appetite"]
+                    symCountList[2] += sym["depression"]
+                    symCountList[3] += sym["lethargic"]
+
+                    symCountList[4] += sym["constipation"]
+                    symCountList[5] += sym["vomit_diarrhea"]
+                    symCountList[6] += sym["colored_pigs"]
+                    symCountList[7] += sym["skin_lesions"]
+
+                    symCountList[8] += sym["hemorrhages"]
+                    symCountList[9] += sym["abn_breathing"]
+                    symCountList[10] += sym["discharge_eyesnose"]
+                    symCountList[11] += sym["death_isDays"]
+
+                    symCountList[12] += sym["death_isWeek"]
+                    symCountList[13] += sym["cough"]
+                    symCountList[14] += sym["sneeze"]
+                    symCountList[15] += sym["runny_nose"]
+
+                    symCountList[16] += sym["waste"]
+                    symCountList[17] += sym["boar_dec_libido"]
+                    symCountList[18] += sym["farrow_miscarriage"]
+                    symCountList[19] += sym["weight_loss"]
+
+                    symCountList[20] += sym["trembling"]
+                    symCountList[21] += sym["conjunctivitis"]
+            
+            except:
+                symCountList = [0] * 22
+                
+            # print(symCountList)
+            symData = [ area.area_name, symCountList ]
             symSeries.append(symData)
+
+
+        # COLLECT ALL ACTIVITIES
+        
+
 
         # print(incSeries)
         # print(mortSeries)
         # print(symSeries)
+        # print(actSeries)
 
+        # append each chart series into one data array
         data.append(incSeries)
         data.append(mortSeries)
         data.append(symSeries)
+        # data.append(actSeries)
 
     return JsonResponse(data, safe=False)
 
