@@ -15,11 +15,8 @@ $(document).ready(async function () {
         var today = new Date();
         // console.log(today);
         
-        // var dateMonthsAgo = today-2592000000;
-        var dateMonthsAgo = Date.UTC(2021, 11, 7);
+        var dateMonthsAgo = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
         // console.log(dateMonthsAgo);
-    
-        var oneMonth = 2592000000;
     
         var dateSplit = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
         // console.log(dateSplit);
@@ -218,6 +215,26 @@ $(document).ready(async function () {
 
         // ACTIVITIES line chart
         if ($('#dm-activities').length) {
+
+            var actSeries = [];
+            for(var i = 0; i < metadata[3].length; i++){
+
+                actSeries.push({
+                    name: metadata[3][i][0],
+                    data: metadata[3][i][1].map(function(elem){
+                        try {
+                            var dStr = elem[0].split('-');
+                        } catch{
+                            return metadata[3][1];
+                        }
+
+                        return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                    })
+                });
+            }
+
+            // console.log(actSeries);
+
             Highcharts.chart('dm-activities', {
                 title: {
                     text: 'Activities Made'
@@ -227,51 +244,30 @@ $(document).ready(async function () {
                     type: 'datetime',
                     startOnTick: true,
                     endOnTick: true,
-                    min: 1546819200000,
+                    min: dateMonthsAgo,
+                    max: dateSplit,
                     dateTimeLabelFormats: {
                     week: '%e %b'
                     },
                     units: [
-                    [
-                        'week', [1]
-                    ],
-                    [
-                        'month', [1]
-                    ]
+                        [ 'week', [1] ],
+                        [ 'month', [1] ]
                     ]
                 },
         
                 yAxis: {
                     title: {
-                        text: 'No. of Hogs Died'
+                        text: 'Number'
                     }
                 },
                 
-                series: [
-                    {
-                        name: "Delivery of Feeds",
-                        data: metadata[1][1],
-                        pointStart: Date.UTC(2019, 0, 7),
-                        pointInterval: 24 * 3600 * 1000 * 7 // one week
-                    },
-                    {
-                        name: "Delivery of Medicine",
-                        data: metadata[1][1],
-                        pointStart: Date.UTC(2019, 0, 7),
-                        pointInterval: 24 * 3600 * 1000 * 7 // one week
-                    },        {
-                        name: "Inspection",
-                        data: metadata[1][4],
-                        pointStart: Date.UTC(2019, 0, 7),
-                        pointInterval: 24 * 3600 * 1000 * 7 // one week
-                    },
-                    {
-                        name: "Trucking",
-                        data: metadata[1][6],
-                        pointStart: Date.UTC(2019, 0, 7),
-                        pointInterval: 24 * 3600 * 1000 * 7 // one week
-                    },
-                ]
+                plotOptions: {
+                    series: {
+                        connectNulls: true
+                    }
+                },
+
+                series: actSeries,
             });
         }
     }

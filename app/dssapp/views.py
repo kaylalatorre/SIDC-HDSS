@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row)
+    Pigpen_Group, Pigpen_Row, Activity)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -65,12 +65,13 @@ def diseaseDashboard(request):
         incSeries = [] 
         mortSeries = []
         symSeries = []
+        actSeries = []
 
         # get all areas
         areaQry = Area.objects.all()
     
         dateToday = datetime.now(timezone.utc)
-        dateFourMonths = dateToday - timedelta(30)
+        dateMonthsAgo = dateToday - timedelta(30)
         
 
         # COLLECT ACTIVE/PENDING INCIDENTS PER AREA
@@ -81,21 +82,21 @@ def diseaseDashboard(request):
             incData = []
 
             # collect all active incidents
-            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).order_by('date_filed')
+            active_incidents = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=30), now())).order_by('date_filed')
             # debug(active_incidents)
 
             inc_num_pigs = 0
             try:
                 inc_currDate = active_incidents.first().date_filed.date()
             except:
-                incData.append([dateFourMonths.date(), 0])
+                incData.append([dateMonthsAgo.date(), 0])
                 incData.append([dateToday.date(), 0])
                 incSeries.append([area.area_name, incData])
                 continue
 
-            if inc_currDate != dateFourMonths.date():
+            if inc_currDate != dateMonthsAgo.date():
                 # start point of series data
-                incData.append([dateFourMonths.date(), 0])
+                incData.append([dateMonthsAgo.date(), 0])
 
             for i in active_incidents:
                 try:
@@ -132,20 +133,20 @@ def diseaseDashboard(request):
             mortData = []
 
             # collect all mortality records
-            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).filter(mortality_date__range=(now()-timedelta(days=120), now())).order_by('mortality_date')
+            mortality = Mortality.objects.filter(ref_farm__area__area_name=area.area_name).filter(mortality_date__range=(now()-timedelta(days=30), now())).order_by('mortality_date')
             
             mort_num_pigs = 0
             try:
                 mort_currDate = mortality.first().mortality_date
             except:
-                mortData.append([dateFourMonths.date(), 0])
+                mortData.append([dateMonthsAgo.date(), 0])
                 mortData.append([dateToday.date(), 0])
                 mortSeries.append([area.area_name, mortData])
                 continue
 
-            if mort_currDate != dateFourMonths.date():
+            if mort_currDate != dateMonthsAgo.date():
                 # start point of series data
-                mortData.append([dateFourMonths.date(), 0])
+                mortData.append([dateMonthsAgo.date(), 0])
 
             for m in mortality:
                 try:
@@ -178,7 +179,7 @@ def diseaseDashboard(request):
 
             symDate = []
             # SYMPTOMS RECORDED
-            symptomsQry = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
+            symptomsQry = Hog_Symptoms.objects.filter(ref_farm__area__area_name=area.area_name).filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=30), now())).values(
                         'high_fever'        , #0
                         'loss_appetite'     , #1
                         'depression'        , #2
@@ -240,10 +241,59 @@ def diseaseDashboard(request):
             symData = [ area.area_name, symCountList ]
             symSeries.append(symData)
 
+        
+        # get all activity type
+        activityTypeQry = Activity.objects.filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).distinct("trip_type")
+        # print(activityTypeQry)
 
         # COLLECT ALL ACTIVITIES
-        
+        for actType in activityTypeQry:
+            # print("- - " + str(actType.trip_type) + " - -")
+            
+            # initialize data list per activity; will contain --> [activity date, count]
+            actData = []
 
+            # collect all activities under specific type
+            activities = Activity.objects.filter(trip_type=actType.trip_type).filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).order_by("date")
+            # print(activities)
+
+            act_count = 0
+            try: 
+                act_currDate = activities.first().date
+            except:
+                actData.append([dateMonthsAgo.date(), 0])
+                actData.append([dateToday.date(), 0])
+                actSeries.append([actType.trip_type, actData])
+                continue
+
+            if act_currDate != dateMonthsAgo.date():
+                # start point of series data
+                actData.append([dateMonthsAgo.date(), 0])
+
+            for a in activities:
+                # print(a.date)
+
+                try:
+                    act_nextDate = a.date
+                except:
+                    continue
+
+                if act_currDate == act_nextDate:
+                    act_count += 1
+
+                else:
+                    actData.append([ act_currDate, act_count ])
+
+                    act_count = 1
+                    act_currDate = act_nextDate
+
+            actData.append([act_currDate, act_count])
+
+            # end point of series data
+            if act_currDate != dateToday.date():
+                actData.append([dateToday.date(), 0])
+
+            actSeries.append([actType.trip_type, actData])
 
         # print(incSeries)
         # print(mortSeries)
@@ -254,7 +304,7 @@ def diseaseDashboard(request):
         data.append(incSeries)
         data.append(mortSeries)
         data.append(symSeries)
-        # data.append(actSeries)
+        data.append(actSeries)
 
     return JsonResponse(data, safe=False)
 
