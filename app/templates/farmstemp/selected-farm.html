@@ -74,11 +74,11 @@
                         <tbody>
                             <tr>
                                 <th>Roof Height (in ft.)</td>
-                                <td>{{farm.roof_height|floatformat:"-2"}}</td>
+                                <td>{{farm.roof_height|floatformat:"-2"}} ft</td>
                             </tr>
                             <tr>
                                 <th>Warehouse Area</td>
-                                <td>{{farm.wh_length|floatformat:"-2"}} x {{farm.wh_width|floatformat:"-2"}}</td>
+                                <td>{{farm.wh_length|floatformat:"-2"}} x {{farm.wh_width|floatformat:"-2"}} ft</td>
                             </tr>
                             <tr>
                                 <th>Feeding Trough</td>
@@ -86,7 +86,7 @@
                             </tr>
                             <tr>
                                 <th>Building Capacity</td>
-                                <td>{{farm.bldg_cap}}</td>
+                                <td>{{farm.bldg_cap}} pigs</td>
                             </tr>
                             <tr>
                                 <th>Building Curtain</td>
@@ -120,8 +120,8 @@
 
                         <tr>
                             <td data-label="#">{{pen.pen_no}}</td>
-                            <td data-label="Length"> {{pen.length|floatformat:"-2"}} </td>
-                            <td data-label="Width"> {{pen.width|floatformat:"-2"}} </td>
+                            <td data-label="Length"> {{pen.length|floatformat:"-2"}} ft</td>
+                            <td data-label="Width"> {{pen.width|floatformat:"-2"}} ft</td>
                             <td data-label="No. of Pigs"> {{pen.num_heads}} </td>
                         </tr>
 
