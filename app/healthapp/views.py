@@ -1055,7 +1055,7 @@ def addMortality(request, farmID):
 
             # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
             messages.success(request, "Mortality record has been successfully added.", extra_tags='add-mortality')
-            return redirect('/health-symptoms')
+            return redirect('/selected-health-symptoms/' + str(farmID))
 
         else:
             # print("TEST LOG: mortalityForm is not valid")

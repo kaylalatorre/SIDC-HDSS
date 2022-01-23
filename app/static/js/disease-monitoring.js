@@ -46,7 +46,7 @@ $(document).ready(async function () {
 
             Highcharts.chart('dm-active-incid', {
                 title: {
-                    text: 'Active Incidents for the past 4 months'
+                    text: 'Active Incidents for the past month'
                 },
             
                 xAxis: {
@@ -105,7 +105,7 @@ $(document).ready(async function () {
 
             Highcharts.chart('dm-mortality', {
                 title: {
-                    text: 'Mortality Reports for the past 4 months'
+                    text: 'Mortality Reports for the past month'
                 },
         
                 xAxis: {
@@ -160,7 +160,7 @@ $(document).ready(async function () {
                     type: 'bar'
                 },
                 title: {
-                    text: 'Symptoms Reported for the past 4 months'
+                    text: 'Symptoms Reported for the past month'
                 },
                 xAxis: {
                     categories: [
@@ -237,7 +237,7 @@ $(document).ready(async function () {
 
             Highcharts.chart('dm-activities', {
                 title: {
-                    text: 'Activities Made'
+                    text: 'Activities Made for the past month'
                 },
         
                 xAxis: {

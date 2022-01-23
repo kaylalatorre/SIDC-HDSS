@@ -87,7 +87,7 @@
             <div class="flex-item">
                 <h2>Weight Slip Details (Starter)</h2>
                 <div class="box-style">
-                    {% if start_weight.is_noted == True %}
+                    {% if start_weight %}
                     <table class="table">
                         <tbody>
                             <tr>
@@ -120,7 +120,7 @@
             <div class="flex-item">
                 <h2>Weight Slip Details (Fattener)</h2>
                 <div class="box-style">
-                    {% if end_weight.is_noted == True %}
+                    {% if end_weight %}
                     <table class="table">
                         <tbody>
                             <tr>

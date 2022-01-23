@@ -72,7 +72,7 @@
                 </div>
                 <h2>Weight Slip Details (Starter)</h2>
                 <div class="box-style">
-                    {% if farm.start_weight.is_noted == True %}
+                    {% if farm.start_weight %}
                     <table class="table">
                         <tbody>
                             <tr>
@@ -103,7 +103,7 @@
                 </div>
                 <h2>Weight Slip Details (Fattener)</h2>
                 <div class="box-style">
-                    {% if farm.end_weight.is_noted == True %}
+                    {% if farm.end_weight %}
                     <table class="table">
                         <tbody>
                             <tr>
