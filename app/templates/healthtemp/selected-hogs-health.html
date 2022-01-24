@@ -36,105 +36,108 @@
         <p class="flex-item"></p>
     </div>
     <hr>
-    <div class="flex">
-        <section class="section-health-left">
-            <h2>Farm Details</h2>
-            <div class="box-style">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>Raiser</td>
-                            <td data-label="Raiser">{{ farm.raiser }}</td>
-                        </tr>
-                        <tr>
-                            <th>Area</td>
-                            <td data-label="Area">{{ farm.area }}</td>
-                        </tr>
-                        <tr>
-                            <th>No. of Pigs</td>
-                            <td data-label="No. of Pigs">{{ farm.pigs }}</td>
-                        </tr>
-                        <tr>
-                            <th>Mortality Rate</td>
-                            <td data-label="Mortality Rate">{{ farm.mortality_rate }}</td>
-                        </tr>
-                        <tr>
-                            <th>Incidents Reported</td>
-                            <td data-label="Incidents Reported">{{ farm.total_incidents }}</td>
-                        </tr>
-                        <tr>
-                            <th>Active Incidents</td>
-                            <td data-label="Active Incidents">{{ farm.total_active }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <h2>Weight Slip Details (Starter)</h2>
-            <div class="box-style">
-                {% if farm.start_weight.is_noted == True %}
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>Date Filed</td>
-                            <td>{{ farm.start_weight.date_filed }}</td>
-                        </tr>
-                        <tr>
-                            <th>Ave. Starter Weight</td>
-                            <td>{{ farm.start_weight.ave_weight }}</td>
-                        </tr>
-                        <tr>
-                            <th>Total No. of Heads</td>
-                            <td>{{ farm.start_weight.total_numHeads }}</td>
-                        </tr>
-                        <tr>
-                            <th>Total Kls</td>
-                            <td>{{ farm.start_weight.total_kls }}</td>
-                        </tr>
-                        <tr>
-                            <th>Remarks</td>
-                            <td>{{ farm.start_weight.remarks }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                {% else %}
-                <p>No Starter Weight Slip yet.</p>
-                {% endif %}
-            </div>
-            <h2>Weight Slip Details (Fattener)</h2>
-            <div class="box-style">
-                {% if farm.end_weight.is_noted == True %}
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>Date Filed</td>
-                            <td>{{ farm.end_weight.date_filed }}</td>
-                        </tr>
-                        <tr>
-                            <th>Ave. Fattener Weight</td>
-                            <td>{{ farm.end_weight.ave_weight }}</td>
-                        </tr>
-                        <tr>
-                            <th>Total No. of Heads</td>
-                            <td>{{ farm.end_weight.total_numHeads }}</td>
-                        </tr>
-                        <tr>
-                            <th>Total Kls</td>
-                            <td>{{ farm.end_weight.total_kls }}</td>
-                        </tr>
-                        <tr>
-                            <th>Remarks</td>
-                            <td>{{ farm.end_weight.remarks }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                {% else %}
-                <p>No Fattener Weight Slip yet.</p>
-                {% endif %}
-            </div>
-        </section>
+    <div class="flex hogs-health-flex">
+        <div class="section-health-left">
+            <section>
+                <h2>Farm Details</h2>
+                <div class="box-style">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Raiser</td>
+                                <td data-label="Raiser">{{ farm.raiser }}</td>
+                            </tr>
+                            <tr>
+                                <th>Area</td>
+                                <td data-label="Area">{{ farm.area }}</td>
+                            </tr>
+                            <tr>
+                                <th>No. of Pigs</td>
+                                <td data-label="No. of Pigs">{{ farm.pigs }} pigs</td>
+                            </tr>
+                            <tr>
+                                <th>Mortality Rate</td>
+                                <td data-label="Mortality Rate">{{ farm.mortality_rate }}%</td>
+                            </tr>
+                            <tr>
+                                <th>Incidents Reported</td>
+                                <td data-label="Incidents Reported">{{ farm.total_incidents }}</td>
+                            </tr>
+                            <tr>
+                                <th>Active Incidents</td>
+                                <td data-label="Active Incidents">{{ farm.total_active }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h2>Weight Slip Details (Starter)</h2>
+                <div class="box-style">
+                    {% if farm.start_weight %}
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Filed</td>
+                                <td>{{ farm.start_weight.date_filed }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ave. Starter Weight</td>
+                                <td>{{ farm.start_weight.ave_weight }} kg</td>
+                            </tr>
+                            <tr>
+                                <th>Total No. of Heads</td>
+                                <td>{{ farm.start_weight.total_numHeads }} heads</td>
+                            </tr>
+                            <tr>
+                                <th>Total Kls</td>
+                                <td>{{ farm.start_weight.total_kls }} kls</td>
+                            </tr>
+                            <tr>
+                                <th>Remarks</td>
+                                <td>{{ farm.start_weight.remarks }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>No Starter Weight Slip yet.</p>
+                    {% endif %}
+                </div>
+                <h2>Weight Slip Details (Fattener)</h2>
+                <div class="box-style">
+                    {% if farm.end_weight %}
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Date Filed</td>
+                                <td>{{ farm.end_weight.date_filed }}</td>
+                            </tr>
+                            <tr>
+                                <th>Ave. Fattener Weight</td>
+                                <td>{{ farm.end_weight.ave_weight }} kg</td>
+                            </tr>
+                            <tr>
+                                <th>Total No. of Heads</td>
+                                <td>{{ farm.end_weight.total_numHeads }} heads</td>
+                            </tr>
+                            <tr>
+                                <th>Total Kls</td>
+                                <td>{{ farm.end_weight.total_kls }} kls</td>
+                            </tr>
+                            <tr>
+                                <th>Remarks</td>
+                                <td>{{ farm.end_weight.remarks }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>No Fattener Weight Slip yet.</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
         
-        <div>
-            <section class="section-health-right">
+        
+        <div class="section-health-right">
+            <section>
                 <h2>Incidents Reported</h2>
                 <div class="box-style">
                     {% if total_incidents > 0 %}
@@ -153,7 +156,7 @@
                             <tr>
                                 <td data-label="Incident Code">{{ incident.id }}</td>
                                 <td data-label="Date Reported">{{ incident.date_filed }}</td>
-                                <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }}</td>
+                                <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }} pigs</td>
                                 <td data-label="Symptoms Observed">  
                                     {% load healthapp_extras %}
                                     {% for sKey, sVal in symptoms.items %}
@@ -199,10 +202,10 @@
                             <tr>
                                 <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                                 <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
-                                <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }}</td>
-                                <td data-label="Today"  style="text-align: right;">{{ mort.num_today }}</td>
-                                <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }}</td>
-                                <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}</td>
+                                <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }} pigs</td>
+                                <td data-label="Today"  style="text-align: right;">{{ mort.num_today }} pigs</td>
+                                <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }} pigs</td>
+                                <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}%</td>
                                 <td data-label="Source">{{ mort.source }}</td>
                                 <td data-label="Remarks">{{ mort.remarks }}</td>
                             </tr>

@@ -86,10 +86,10 @@
                     <td data-label="Address"> {{farm.address}} </td>
                     <td data-label="Area"> {{farm.area}} </td>
                     <td data-label="Technician"> {{tech.name}} </td>
-                    <td data-label="No. of Pigs" style="text-align: right;">{{farm.pigs}}</td>
-                    <td data-label="No. of Pens" style="text-align: right;">{{farm.pens}}</td>
-                    <td data-label="Internal Biosecurity" style="text-align: right;"> {{farm.intbio_score}} </td>
-                    <td data-label="External Biosecurity" style="text-align: right;"> {{farm.extbio_score}} </td>
+                    <td data-label="No. of Pigs" style="text-align: right;">{{farm.pigs}} pigs</td>
+                    <td data-label="No. of Pens" style="text-align: right;">{{farm.pens}} pens</td>
+                    <td data-label="Internal Biosecurity" style="text-align: right;"> {{farm.intbio_score}}% </td>
+                    <td data-label="External Biosecurity" style="text-align: right;"> {{farm.extbio_score}}% </td>
                     <td data-label="Last Update">{{farm.updated}}</td>
                 </tr>
                 {% endfor %}
@@ -98,16 +98,16 @@
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="5">Total</td>
-                    <td style="text-align: right;"> {{farmTotalAve.total_pigs}} </td>
-                    <td style="text-align: right;"> {{farmTotalAve.total_pens}} </td>
+                    <td style="text-align: right;"> {{farmTotalAve.total_pigs}} pigs</td>
+                    <td style="text-align: right;"> {{farmTotalAve.total_pens}} pens</td>
                     <td colspan="3"></td>
                 </tr>
                 <tr class="bold-lbl">
                     <td colspan="5">Average</td>
-                    <td style="text-align: right;">{{farmTotalAve.ave_pigs}}</td>
-                    <td style="text-align: right;">{{farmTotalAve.ave_pens}}</td>
-                    <td style="text-align: right;">{{farmTotalAve.ave_intbio}}</td>
-                    <td style="text-align: right;">{{farmTotalAve.ave_extbio}}</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_pigs}} pigs</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_pens}} pens</td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_intbio}}% </td>
+                    <td style="text-align: right;">{{farmTotalAve.ave_extbio}}% </td>
                     <td></td>
                 </tr>
             </tbody>            

@@ -129,4 +129,8 @@
     .section-health-left, .section-health-right {
         width: 100%!important; margin: 0!important;
     }
+
+    .hogs-health-flex {
+        display: block!important;
+    }
 }

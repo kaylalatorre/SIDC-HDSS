@@ -143,7 +143,7 @@ class PigpenRowForm(ModelForm):
         self.fields['num_heads'].widget.attrs.update({
             'input type' : 'number', 
             'aria-label' : 'No. of Pigs',
-            'class' : 'form-control',
+            'class' : 'form-control num_heads',
             'placeholder' : 'ex. 100'
         })
     
@@ -229,6 +229,7 @@ class MortalityForm(ModelForm):
             'type' : 'number', 
             'class' : 'form-control num_today',
             'placeholder' : 'ex. 20',
+            'min' : '1',
         })                
         self.fields['source'].widget.attrs.update({
             'type' : 'text', 

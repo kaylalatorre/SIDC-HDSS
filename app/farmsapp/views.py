@@ -60,6 +60,9 @@ from django.db.models.functions import Concat
 # from other apps
 from healthapp.views import compute_MortRate
 
+# import regex
+import re
+
 #Creating a cursor object using the cursor() method
 # from django.shortcuts import render
 
@@ -626,7 +629,7 @@ def techSelectedFarm(request, farmID):
             pigpen_group.total_pigs = numTotal
             pigpen_group.save()
             
-            messages.success(request, str(len(newPigpenList)) + " new pigpens added successfully.", extra_tags='add-farm' + str(farmID))
+            messages.success(request, str(len(newPigpenList)) + " new pigpens successfully added.", extra_tags='add-farm' + str(farmID))
             return redirect('/tech-selected-farm/' + str(farmID))
 
         else:
@@ -896,7 +899,7 @@ def addFarm(request):
 
                     farm.save()
                     print("TEST LOG: Added new farm")
-                    messages.success(request, "Farm " + str(farm.id) + " has been saved successfully!", extra_tags='add-farm' + str(farm.id))
+                    messages.success(request, "Farm " + str(farm.id) + " has been successfully added.", extra_tags='add-farm' + str(farm.id))
 
                     # get recently created internal and external biosec IDs and update ref_farm_id
                     externalBiosec.ref_farm_id = farm
@@ -1299,11 +1302,11 @@ def post_addChecklist(request, farmID):
 
                 # Format time to be passed on message.success
                 ts = extBio.last_updated 
-                df = ts.strftime("%m/%d/%Y, %H:%M")
+                df = ts.strftime("%m/%d/%Y")
                 # debug(extBio.last_updated)
                 
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "Checklist made on " + df + " has been successfully added!", extra_tags='add-checklist')
+                messages.success(request, "Checklist dated " + df + " has been successfully added!", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
@@ -1608,40 +1611,30 @@ def formsApproval(request):
 
     ## ACTIVITY FORMS
     # get all activity forms
-    actQuery = Activities_Form.objects.values(
-                "id",
-                "date_added",
-                "act_tech",
-                "is_checked",
-                "ref_farm"
-                ).distinct("code").order_by("-code")
+    actQuery = Activities_Form.objects.filter(is_latest=True).order_by("-date_added")
     # print(actQuery)
 
     activityList = []
 
-    loggedTech = User.objects.filter(username=request.user).annotate(
-        name = Concat('first_name', Value(' '), 'last_name'),
-        ).values("name").first()
-
     for act in actQuery:       
-        getTech = User.objects.filter(id=act["act_tech"]).annotate(
+        getTech = User.objects.filter(id=act.act_tech_id).annotate(
             name = Concat('first_name', Value(' '), 'last_name'),
         ).values("name").first()
 
-        if act["is_checked"] == True:
+        if act.is_checked == True:
             status = 'Approved'
-        elif act["is_checked"] == False:
+        elif act.is_checked == False:
             status = 'Rejected'
-        elif act["is_checked"] == None:
+        elif act.is_checked == None:
             status = 'Pending'
 
         # pass into object and append to list 
         activityObject = {
-            "id" : act["id"],
-            "date_added" : act["date_added"],
+            "id" : act.id,
+            "date_added" : act.date_added,
             "status" : status,
             "prepared_by" : getTech["name"],
-            "farmID" : int(act["ref_farm"]) }
+            "farmID" : int(act.ref_farm_id) }
     
         activityList.append(activityObject)
 
@@ -1753,10 +1746,14 @@ def rejectActivityForm(request, activityFormID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
+        # print(request.POST)
+
         # update activity form fields for user approvals
         # is_checked for live op
         if request.POST.get("is_checked") == 'false' :
+            activity_form.is_latest = False
             activity_form.is_checked = False
+            activity_form.reject_reason = request.POST.get("reason")
 
             if request.user.groups.all()[0].name == "Livestock Operation Specialist":
                 activity_form.act_liveop_id = request.user.id
@@ -1765,6 +1762,7 @@ def rejectActivityForm(request, activityFormID):
 
         # duplicate instance (for a new version)
         activity_form.pk = None
+        activity_form.is_latest = True
         activity_form.save()
 
         # get all activities under activity form
@@ -1835,6 +1833,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
         # print("TEST LOG activityList: " + str(activityList))
 
         # reset approval status of activity form
+        activity_form.reject_reason = None
         activity_form.is_checked = None
         activity_form.date_added = datetime.now(timezone.utc)
 
@@ -1888,8 +1887,8 @@ def addActivity(request, farmID):
     farmQuery = Farm.objects.get(pk=farmID)
     
     if request.method == 'POST':
-        print("TEST LOG: Add Activity has POST method") 
-        print(request.POST)
+        # print("TEST LOG: Add Activity has POST method") 
+        # print(request.POST)
 
         activityForm = ActivityForm(request.POST)
 
@@ -1915,6 +1914,7 @@ def addActivity(request, farmID):
             # create instance of Activity Form model
             activity_form = Activities_Form.objects.create(
                 code = code,
+                is_latest = True,
                 date_added = datetime.now(timezone.utc),
                 act_tech_id = request.user.id,
                 ref_farm = farmQuery,
@@ -1940,17 +1940,21 @@ def addActivity(request, farmID):
 
                 activity.save()
                 x += 1
+
+            # update last_updated of farm
+            farmQuery.last_updated = datetime.now(timezone.utc)
+            farmQuery.save()
             
             messages.success(request, "Activity Form has been sent for approval.", extra_tags='add-activity')
             return redirect('/biosecurity/' + str(farmID))
             
         else:
             # print("TEST LOG: activityForm is not valid")
-            # formError = str(activityForm.non_field_errors().as_text)
+            formError = str(activityForm.non_field_errors().as_text)
             # print(re.split("\'.*?",formError)[1])
 
-            # messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
-            messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
+            messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
+            # messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")
@@ -1974,7 +1978,7 @@ def saveActivity(request, farmID, activityID):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        print("TEST LOG: Edit Activity is a POST Method")
+        # print("TEST LOG: Edit Activity is a POST Method")
         
         # collect data from inputs
         date = request.POST.get("date")
