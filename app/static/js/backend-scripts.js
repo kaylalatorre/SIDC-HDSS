@@ -620,6 +620,7 @@ function for_approval(button, decision) {
     }
 
     console.log(forApproval_IDs);
+    console.log($('#rejectMessage').val())
     console.log('member-announcements/' + decision);
     ajaxCSRF()
     $.ajax({
@@ -627,7 +628,8 @@ function for_approval(button, decision) {
         url: '/member-announcements/' + decision,
         dataType: "json",
         data: {
-            "idList": JSON.stringify(forApproval_IDs)
+            "idList": JSON.stringify(forApproval_IDs),
+            "mssg": $('#rejectMessage').val()
         },
         success: function (response) {
             if (response.status == 200) {
@@ -649,8 +651,12 @@ function for_approval(button, decision) {
 $('#approveChecked.primary-btn').on('click', function () {
     for_approval($(this), 'approve');
 });
-$('#rejectChecked.primary-btn-red').on('click', function () {
-    for_approval($(this), 'reject');
+$('#rejectAncmts.primary-btn-red').on('click', function () {
+    if ($('#rejectMessage').val()){
+        for_approval($('#rejectChecked.primary-btn-red'), 'reject');
+        return;
+    }
+    alert("No reason provided");    
 });
 
 /**

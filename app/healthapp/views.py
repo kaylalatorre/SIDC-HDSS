@@ -834,7 +834,6 @@ def addCase(request, farmID):
     """
     # get current total_pigs in Farm for User input range in no. of pigs affected
     farmQry = Farm.objects.filter(pk=farmID).only("total_pigs").first()
-    messages.success(request, "Incident Report has death.", extra_tags='add-incidCase-death' + str(farmID))
 
     return render(request, 'healthtemp/add-case.html', {"farmID": farmID, "total_pigs": farmQry.total_pigs})
 
@@ -1073,13 +1072,10 @@ def addWeight(request, farmID):
         return redirect("healthSymptoms")
 
     if request.method == 'POST':
-
-        type = request.POST.get('weight-radio')
-
         # get latest Pigpen version
         latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
-        if type == 'starter':
+        if latestPigpen.start_weight_id == None:
             weight = Farm_Weight(
                 date_filed = now(),
                 ref_farm_id = farmID,
@@ -1091,7 +1087,10 @@ def addWeight(request, farmID):
             )
             weight.save()
             latestPigpen.start_weight = weight
-        elif type == 'fattener':
+            latestPigpen.save()    
+            messages.success(request, "Weight recorded.", extra_tags='weight')
+        
+        elif latestPigpen.final_weight_id == None:
             weight = Farm_Weight(
                 date_filed = now(),
                 ref_farm_id = farmID,
@@ -1103,8 +1102,13 @@ def addWeight(request, farmID):
             )
             weight.save()
             latestPigpen.final_weight =  weight
-        latestPigpen.save()
-        messages.success(request, "Weight recorded.", extra_tags='weight')
+            latestPigpen.save()    
+            messages.success(request, "Weight recorded.", extra_tags='weight')
+        
+        else:
+            messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
+
+        
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
