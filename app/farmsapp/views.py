@@ -246,7 +246,9 @@ def selectedFarm(request, farmID):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     versionList = []
     i = 0
@@ -364,7 +366,9 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     previous = None
     versionList = []
@@ -549,9 +553,12 @@ def techSelectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     versionList = []
     i = 0
@@ -718,7 +725,9 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     previous = None
     versionList = []
@@ -2179,7 +2188,8 @@ def viewAnnouncement(request, id):
         "title",
         "category",
         "recip_area",
-        "mssg"
+        "mssg",
+        "timestamp"
     ).first()
     context = {
         "announcement":qry

@@ -14,9 +14,9 @@
     <form action="" method="POST">
 
     {% csrf_token %}
-    <h1 class="heading"><a href="/biosecurity/{{farmID|stringformat:'03d'}}">Biosecurity</a> > Add Activity</h1>
+    <h1 class="heading"><a href="/biosecurity">Biosecurity</a> > <a href="/biosecurity/{{farmID|stringformat:'03d'}}">{{farmID|stringformat:'03d'}}</a> > Add Activity</h1>
     <div class="flex subheading">
-        <label style="font-weight: 600;">Farm Code:</label><p class="flex-item">{{ farmID|stringformat:"03d" }}</p>
+        <p class="flex-item">Add all activities here.</p>
         <!-- <p><strong>Code: </strong> {{code|stringformat:"03d"}} </p> -->
         <div><button class="primary-btn" type="submit">Send for Approval</button></div>
     </div>
