@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Member Announcements</title>
+<title>SIDC-HDSS | Member Announcements</title>
 {% endblock page_title %}
 
 {% block section %}
@@ -22,7 +22,8 @@
         <p class="flex-item">Send SMS Messages to your raisers here.</p>
 
         {% endif %}
-        <div><a href="/create-announcement" class="button primary-btn"><i class='bx bx-plus'></i>Create Announcement</a></div>
+        <div><a href="/create-announcement" class="button primary-btn"><i class='bx bx-plus'></i>Create Announcement</a>
+        </div>
     </div>
     <div class="flex mobile-subheading">
         <p style="width: 90%; padding: 4px">Send SMS Messages to your raisers here.</p>
@@ -35,9 +36,32 @@
         <div class="flex">
             <h2 class="heading flex-item">For Approval</h2>
             <!-- Only show button group when a checkbox/es is checked -->
-            <div class="btn-group hide" id="announce-btn-grp" style="margin-bottom: 8px;"> 
+            <div class="btn-group hide" id="announce-btn-grp" style="margin-bottom: 8px;">
                 <button class="primary-btn" id="approveChecked" style="margin-right: 4px;"><i class='bx bx-check'></i></button>
-                <button class="primary-btn-red" id="rejectChecked"><i class='bx bx-x'></i></button>
+                <button type="button" class="primary-btn-red" data-bs-toggle="modal" data-bs-target="#rejectReason" id="rejectChecked"><i class='bx bx-x'></i></button>
+
+                <div class="modal fade" id="rejectReason" tabindex="-1" aria-labelledby="rejectReasonLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rejectReasonLabel">Enter reason for rejection</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="rejectMessage" class="col-form-label">Message:</label>
+                                    <textarea class="form-control" id="rejectMessage" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn primary-btn-red" id="rejectAncmts">Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         {% elif user.groups.all.0.name == 'Field Technician' %}
@@ -49,7 +73,8 @@
                 <thead>
                     <tr>
                         {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <th><input type="checkbox" class="form-check-input announce-checkbox" id="select_all" style="margin-bottom: 0!important;"></th>
+                        <th><input type="checkbox" class="form-check-input announce-checkbox" id="select_all"
+                                style="margin-bottom: 0!important;"></th>
                         {% endif %}
                         <th>Timestamp</th>
                         <th>Title</th>
@@ -64,7 +89,8 @@
                     {% for announcement in unapproved %}
                     <tr>
                         {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <td data-label=""><input type="checkbox" class="form-check-input announce-checkbox" style="margin-bottom: 0!important;" id={{announcement.id}}></td>
+                        <td data-label=""><input type="checkbox" class="form-check-input announce-checkbox"
+                                style="margin-bottom: 0!important;" id={{announcement.id}}></td>
                         {% endif %}
                         <td data-label="Timestamp">{{announcement.timestamp}}</td>
                         <td data-label="Title">{{announcement.title}}</td>
@@ -72,21 +98,41 @@
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
                         <td data-label="Author">{{announcement.name}}</td>
                         <td class="text-warning" data-label="Status">Pending</td>
-                        <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}" onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
+                        <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}"
+                                onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span
+                                    class="text">View</span></button></td>
                     </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="reject-announce">
+        <h2>Rejected Announcements</h2>
+        <div class="box-style">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Recipient</th>
+                        <th>Reason</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
                     {% for announcement in rejected %}
                     <tr>
-                        {% if user.groups.all.0.name == 'Assistant Manager' %}
-                        <td data-label=""><input type="checkbox" class="form-check-input" style="margin-bottom: 0!important;" id={{announcement.id}}></td>
-                        {% endif %}
                         <td data-label="Timestamp">{{announcement.timestamp}}</td>
                         <td data-label="Title">{{announcement.title}}</td>
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
-                        <td data-label="Author">{{announcement.name}}</td>
-                        <td class="text-danger" data-label="Status">Rejected</td>
-                        <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}" onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
+                        <td data-label="Author">{{announcement.reject_reason}}</td>
+                        <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}"
+                                onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span
+                                    class="text">View</span></button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -116,10 +162,12 @@
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
                         <td data-label="Author">{{announcement.name}}</td>
-                        <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}" onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span class="text">View</span></button></td>
+                        <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}"
+                                onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span
+                                    class="text">View</span></button></td>
                     </tr>
                     {% endfor %}
-                    
+
                 </tbody>
             </table>
         </div>
