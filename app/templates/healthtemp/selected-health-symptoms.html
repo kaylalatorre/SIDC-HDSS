@@ -106,10 +106,16 @@
                                 <th>Total Kls</td>
                                 <td data-label="Total Kls">{{ start_weight.total_kls }} kls</td>
                             </tr>
+                           
                             <tr>
                                 <th>Remarks</td>
+                                {% if start_weight.remarks %}
                                 <td data-label="Remarks">{{ start_weight.remarks }}</td>
+                                {% else%}
+                                <td data-label="Remarks">-</td>
+                                {% endif %}
                             </tr>
+                            
                         </tbody>
                     </table>
                     {% else %}
@@ -136,12 +142,16 @@
                                 <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }} heads</td>
                             </tr>
                             <tr>
-                                <th>Total Kls</td>
-                                <td data-label="Total Kls">{{ end_weight.total_kls }} kls</td>
+                                <th>Total Weight</td>
+                                <td data-label="Total Kls">{{ end_weight.total_kls }} kg</td>
                             </tr>
                             <tr>
                                 <th>Remarks</td>
+                                {% if end_weight.remarks %}
                                 <td data-label="Remarks">{{ end_weight.remarks }}</td>
+                                {% else%}
+                                <td data-label="Remarks">-</td>
+                                {% endif %}
                             </tr>
                         </tbody>
                     </table>
@@ -284,7 +294,11 @@
                         <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }} pigs</td>
                         <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}%</td>
                         <td data-label="Source">{{ mort.source }}</td>
+                        {% if mort.remarks %}
                         <td data-label="Remarks">{{ mort.remarks }}</td>
+                        {% else %}
+                        <td data-label="Remarks">-</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>

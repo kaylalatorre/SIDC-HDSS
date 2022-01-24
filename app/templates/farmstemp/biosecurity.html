@@ -433,12 +433,24 @@
                             <td data-label="Time">
                                 <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
                             </td>
+                            {% if act.description %}
                             <td data-label="Description">
                                 <p class="activity-data">{{act.description}}</p>
                             </td>
+                            {% else %}
+                            <td data-label="Description">
+                                <p class="activity-data">-</p>
+                            </td>
+                            {% endif %}
+                            {% if act.remarks %}
                             <td data-label="Remarks">
                                 <p class="activity-data">{{act.remarks}}</p>
                             </td>
+                            {% else %}
+                            <td data-label="Remarks">
+                                <p class="activity-data">-</p>
+                            </td>
+                            {% endif %}
                             <td> </td>
                         </tr>
                     {% endfor %}

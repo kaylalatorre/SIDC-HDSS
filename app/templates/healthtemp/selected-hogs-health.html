@@ -88,13 +88,19 @@
                                 <td>{{ farm.start_weight.total_numHeads }} heads</td>
                             </tr>
                             <tr>
-                                <th>Total Kls</td>
-                                <td>{{ farm.start_weight.total_kls }} kls</td>
+                                <th>Total Weight</td>
+                                <td>{{ farm.start_weight.total_kls }} kg</td>
                             </tr>
+                            
                             <tr>
                                 <th>Remarks</td>
+                                {% if farm.start_weight.remarks %}
                                 <td>{{ farm.start_weight.remarks }}</td>
+                                {% else %}
+                                <td>-</td>
+                                {% endif %}
                             </tr>
+                            
                         </tbody>
                     </table>
                     {% else %}
@@ -119,13 +125,19 @@
                                 <td>{{ farm.end_weight.total_numHeads }} heads</td>
                             </tr>
                             <tr>
-                                <th>Total Kls</td>
-                                <td>{{ farm.end_weight.total_kls }} kls</td>
+                                <th>Total Weight</td>
+                                <td>{{ farm.end_weight.total_kls }} kg</td>
                             </tr>
+
                             <tr>
                                 <th>Remarks</td>
+                                {% if farm.end_weight.remarks %}
                                 <td>{{ farm.end_weight.remarks }}</td>
+                                {% else %}
+                                <td>-</td>
+                                {% endif %}
                             </tr>
+
                         </tbody>
                     </table>
                     {% else %}
@@ -207,7 +219,11 @@
                                 <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }} pigs</td>
                                 <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}%</td>
                                 <td data-label="Source">{{ mort.source }}</td>
+                                {% if mort.remarks %}
                                 <td data-label="Remarks">{{ mort.remarks }}</td>
+                                {% else %}
+                                <td data-label="Remarks">-</td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>
