@@ -152,7 +152,8 @@ $('.checklist-date').change(function () {
 
         },
         error: function (res) {
-            alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
+            console.log(res.responseJSON.error);
+            // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
     // }
@@ -504,8 +505,8 @@ function saveBiocheck(elem) {
             // alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
-
-            alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
+            console.log(res.responseJSON.error);
+            // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
 
@@ -537,11 +538,13 @@ function deleteBiocheck(elem) {
                 // // reload Biosec page to update dropdown of Biosec last_updated
                 // // window.location.reload(true);
                 window.location.replace("/biosecurity/" + farmID);
-                alert(response.success);
+                // alert(response.success);
 
             },
             error: function (res) {
-                alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
+                console.log(res.responseJSON.error);
+
+                // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
             }
         });
     }
@@ -678,7 +681,7 @@ function deleteActivity(actID) {
                 location.reload(true);
             },
             error: function (res) {
-                console.log(res.responseJSON.error)
+                console.log(res.responseJSON.error);
             }
         })
     }
@@ -820,7 +823,7 @@ function saveActivity(actID, farmID) {
                 location.reload(true);
             },
             error: function (res) {
-                console.log(res.responseJSON.error)
+                console.log(res.responseJSON.error);
             }
         })
     }
@@ -910,7 +913,7 @@ function resubmitActivity(actDate, actFormID, farmID) {
             window.location.replace("/forms-approval");
         },
         error: function (res) {
-            console.log(res.responseJSON.error)
+            console.log(res.responseJSON.error);
         }
     })
 }
@@ -940,7 +943,7 @@ function approveActivity(actFormID) {
             window.location.replace("/forms-approval");
         },
         error: function (res) {
-            console.log(res.responseJSON.error)
+            console.log(res.responseJSON.error);
         }
     })
 }
@@ -973,7 +976,7 @@ function rejectActivity(actFormID) {
             window.location.replace("/forms-approval");
         },
         error: function (res) {
-            console.log(res.responseJSON.error)
+            console.log(res.responseJSON.error);
         }
     })
 }

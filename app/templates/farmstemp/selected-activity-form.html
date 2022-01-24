@@ -17,17 +17,16 @@
         <div class="flex">
             <p class="flex-item">Approve form?</p>
             <div class="subheading btn-group" id="actForm-btn-group">
-                <button class="primary-btn act-forms-btn" id="approve-activity" style="margin-right: 4px;" onclick="approveActivity('{{ actForm.id }}')">Approve</button> 
-                <button class="primary-btn-red act-forms-btn" id="rejectBtn" type="button" data-bs-toggle="collapse" data-bs-target="#reject-input" aria-expanded="false" aria-controls="reject-input"> Reject</button>
+                <button class="primary-btn act-forms-btn" id="approveBtn" style="margin-right: 4px;" onclick="approveActivity('{{ actForm.id }}')">Approve</button> 
+                <button class="primary-btn-red act-forms-btn" id="rejectBtn" type="button" onclick="toggleRejectReason()"> Reject</button>
+                <button class="secondary-btn hide" id="cancelBtn" style="justify-content: flex-end;" onclick="toggleRejectReason()">Cancel</button> 
             </div>
         </div>
-        <div class="collapse" id="reject-input">
+        <div class="box-style reject-reason hide">
         <form>
-            <div class="flex">
+            <div class="input-group mb-3" id="new-area">
                 <input name="input-code" type="text" required class="form-control" id="reject-reason" placeholder="Reason for rejection">
-                <div class="subheading btn-group" style="margin-left: 20px;">
-                    <button class="secondary-btn-red" type="submit" id="reject-activity" onclick="rejectActivity('{{ actForm.id }}')">Submit</button>
-                </div>
+                <button class="secondary-btn-red" type="submit" id="reject-activity" onclick="rejectActivity('{{ actForm.id }}')">Submit</button>
             </div>
         </form>
         </div>

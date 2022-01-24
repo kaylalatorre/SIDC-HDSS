@@ -422,9 +422,6 @@ def techFarms(request):
     - Display all farms under areas assigned to currently logged in technician. 
     """
     
-    messages.success(request, "Farm " + str(29) + " has been successfully added.", extra_tags='add-farm' + str(29))
-
-
     # get all farms under the current technician 
     techID = request.user.id
 

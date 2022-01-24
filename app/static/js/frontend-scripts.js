@@ -353,8 +353,8 @@ function addPigPenRow() {
     $("#pigpen-table").append("<tr> \
         <td data-label='Length' id='pigpen-length'> " + length + " </td> \
         <td data-label='Width' id='pigpen-width'> " + width + " </td> \
-        <td data-label='No. of Pigs' id='pigpen-num-heads'> " + num_heads + " </td> \
-        <td><button id='remove-pigpen-row' type='button' onclick='removePigpenRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
+        <td data-label='No. of Pigs' id='pigpen-num-heads' onchange='computePigpens(this)'> " + num_heads + " </td> \
+        <td><button id='remove-pigpen-row' type='button' onclick='removePigpenRow()' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
 }
 
@@ -365,13 +365,27 @@ function addPigPenRow() {
 *   pigpen-table = table body that the row will be deleted from
 */
 function removePigpenRow(currRow){
-
     var row = currRow.parentNode.parentNode; //get row of clicked button
     var rowIndex = row.rowIndex - 1;
     // console.log("Row ID: " + rowIndex);
 
     var table = document.getElementById('pigpen-table');
     table.deleteRow(rowIndex);
+}
+
+function computePigpens(){
+
+    var today = document.getElementsByClassName('num_heads').value;
+    console.log(today)
+    var total_pigs = document.getElementById('total_pigs').innerHTML;
+    console.log(total_pigs)
+    var newTotal = parseInt(total_pigs);
+
+    for (var i = 0; i < today.length; i++){
+        newTotal += parseInt(today[i]);
+    }
+
+    total_pigs.innerText = newTotal;
 }
 
 /*
@@ -482,6 +496,29 @@ function viewActivityForm(activity) {
         location.href = url;
     }catch (error){
         console.log(error);
+    }
+}
+
+/**
+ * Show/Hide Reason for Rejection input
+ */
+ function toggleRejectReason() {
+    const reason = $('.reject-reason');
+    const approve = $('#approveBtn');
+    const reject = $('#rejectBtn');
+    const cancelBtn = $('#cancelBtn');
+    
+    if(reason.hasClass('hide')) {
+        reason.removeClass('hide').addClass('show');
+        approve.addClass('hide').removeClass('show');
+        reject.addClass('hide').removeClass('show');
+        cancelBtn.addClass('show').removeClass('hide');
+    }
+    else {
+        reason.removeClass('show').addClass('hide');
+        approve.addClass('show').removeClass('hide');
+        reject.addClass('show').removeClass('hide');
+        cancelBtn.addClass('hide').removeClass('show');
     }
 }
 
