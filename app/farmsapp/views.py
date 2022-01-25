@@ -2164,19 +2164,42 @@ def createAnnouncement(request):
         messages.success(request, "Announcement sent.", extra_tags='announcement')
         return redirect('/member-announcements')
 
-    announcementForm = MemAnnouncementForm()
+    announcementForm = MemAnnouncementForm(user=request.user)
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
 
 def viewAnnouncement(request, id):
+
+    if request.method == 'POST':
+        reancmt = Mem_Announcement.objects.filter(id = id).first()
+        reancmt.title = request.POST.get("title")
+        reancmt.category = request.POST.get("category")
+        reancmt.recip_area = request.POST.get("recip_area")
+        reancmt.mssg = request.POST.get("mssg")
+        reancmt.timestamp = now()
+        reancmt.is_approved = None
+        reancmt.reject_reason = None
+
+        reancmt.save()
+        messages.success(request, "Announcement resubmitted.", extra_tags='announcement')
+        return redirect('/member-announcements')
+
     qry = Mem_Announcement.objects.filter(pk = id).values(
+        "id",
+        "author_id",
         "title",
         "category",
         "recip_area",
-        "mssg"
+        "mssg",
+        "reject_reason"
     ).first()
+    area_choices = []
+    for choice in Area.objects.distinct().filter(tech_id = int(request.user.id)).values('area_name'):
+        area_choices.append(choice['area_name'])
     context = {
-        "announcement":qry
+        "announcement":qry,
+        'area_choices' : area_choices
     }
+    
     return render(request, 'farmstemp/view-announcement.html', context)
 
 def initNotifIDList(request):

@@ -987,6 +987,39 @@ function rejectActivity(actFormID) {
     })
 }
 
+$('.edit_ancmtRow').on("click", function(){
+    $(this).prop('hidden', true);
+    $('.edit_ancmtRow').prop('disabled', true);
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").prop('hidden', true);
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").prop('hidden', false);
+    $(this).siblings("button.ancmt_edit.save_ancmtRow").prop('hidden', false).prop('disabled', false);
+    $(this).siblings("button.ancmt_edit.cancel_ancmtRow").prop('hidden', false).prop('disabled', false);
+});
+
+$('.cancel_ancmtRow').on("click", function(){
+    $(this).prop('hidden', true).prop('disabled', true);
+    $(this).siblings("button.ancmt_edit.save_ancmtRow").prop('hidden', true).prop('disabled', true);
+
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").val($(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").text())
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").prop('hidden', false);
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").prop('hidden', true);
+    $(this).siblings("button.ancmt_display.edit_ancmtRow").prop('hidden', false);
+    $('.edit_ancmtRow').prop('disabled', false);
+});
+
+$('.save_ancmtRow').on("click", function(){
+    $(this).prop('hidden', true).prop('disabled', true);
+    $(this).siblings("button.ancmt_edit.cancel_ancmtRow").prop('hidden', true).prop('disabled', true);
+
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").text($(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").val())
+    
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").prop('hidden', false);
+    $(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").prop('hidden', true);
+    $(this).siblings("button.ancmt_display.edit_ancmtRow").prop('hidden', false);
+    $('.edit_ancmtRow').prop('disabled', false);
+});
+
+
 //---- MODULE 2 functions ----//
 
 /**

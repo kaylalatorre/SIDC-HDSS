@@ -10,7 +10,125 @@
 <div class="main-div">
     <h1 class="heading flex"><a href="/member-announcements"><i class='bx bx-chevron-left'></i>Announcements</a></h1>
     <hr>
-    <div class="box-style small-table" >
+    <div class="box-style small-table">
+        {% if announcement.reject_reason and announcement.author_id == request.user.id %}
+        <form action="/resubmit-announcement/{{announcement.id}}" method="POST">
+            {% csrf_token %}
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Title</th>
+                        <td data-label="Title" class="ancmt_editSubj">
+                            <p class="ancmt_display">{{announcement.title}}</p>
+                            <input name="title" type="text" aria-label="Title" class="form-control ancmt_edit"
+                                value="{{announcement.title}}" hidden>
+                        </td>
+                        <td>
+                            <div class="btn-group flex" style="justify-content: end; padding: 0;">
+                                <button class="secondary-btn ancmt_display edit_ancmtRow" type="button"
+                                    style="margin-right: 4px;">Edit</button>
+    
+                                <button class="secondary-btn ancmt_edit save_ancmtRow" type="button"
+                                    style="margin-right: 4px;" hidden>Save</button>
+                                <button class="secondary-btn-red ancmt_edit cancel_ancmtRow" type="button" 
+                                    hidden>Cancel</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <td data-label="Category" class="ancmt_editSubj">
+                            <p class="ancmt_display">{{announcement.category}}</p>
+                            <select name="category" aria-label="Category" class="form-select ancmt_edit" id="id_category"
+                                 hidden>
+                                <option value="Reminder" {% if announcement.category == choice %}selected{% endif %}>
+                                    Reminder</option>
+    
+                                <option value="Announcement" {% if announcement.category == choice %}selected{% endif %}>
+                                    Announcement</option>
+    
+                                <option value="Event" {% if announcement.category == choice %}selected{% endif %}>Event
+                                </option>
+    
+                                <option value="Other" {% if announcement.category == choice %}selected{% endif %}>Other
+                                </option>
+    
+                            </select>
+                        </td>
+                        <td>
+                            <div class="btn-group flex" style="justify-content: end; padding: 0;">
+                                <button class="secondary-btn ancmt_display edit_ancmtRow" type="button"
+                                    style="margin-right: 4px;">Edit</button>
+    
+                                <button class="secondary-btn ancmt_edit save_ancmtRow" type="button"
+                                    style="margin-right: 4px;"  hidden>Save</button>
+                                <button class="secondary-btn-red ancmt_edit cancel_ancmtRow" type="button" 
+                                    hidden>Cancel</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Recipient</th>
+                        <td data-label="Recipient" class="ancmt_editSubj">
+                            <p class="ancmt_display">{{announcement.recip_area}}</p>
+                            <select name="recip_area" aria-label="Recipient" class="form-select ancmt_edit" id="id_recip_area" 
+                                hidden>
+                                {% for choice in area_choices %}
+                                <option value="{{choice}}" {% if announcement.recip_area == choice %}selected{% endif %}>
+                                    {{choice}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+    
+                        <td>
+                            <div class="btn-group flex" style="justify-content: end; padding: 0;">
+                                <button class="secondary-btn ancmt_display edit_ancmtRow" type="button"
+                                    style="margin-right: 4px;">Edit</button>
+    
+                                <button class="secondary-btn ancmt_edit save_ancmtRow" type="button"
+                                    style="margin-right: 4px;"  hidden>Save</button>
+                                <button class="secondary-btn-red ancmt_edit cancel_ancmtRow" type="button" 
+                                    hidden>Cancel</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Message</th>
+                        <td data-label="Mssg" class="ancmt_editSubj">
+                            <p class="ancmt_display">{{announcement.mssg}}</p>
+                            <textarea name="mssg" cols="40" rows="10" maxlength="500" aria-label="Message"
+                                class="form-control ancmt_edit" placeholder="Construct your message here" id="id_mssg"
+                                 hidden>{{announcement.mssg}}</textarea>
+                        </td>
+    
+                        <td>
+                            <div class="btn-group flex" style="justify-content: end; padding: 0;">
+                                <button class="secondary-btn ancmt_display edit_ancmtRow" type="button"
+                                    style="margin-right: 4px;">Edit</button>
+    
+                                <button class="secondary-btn ancmt_edit save_ancmtRow" type="button"
+                                    style="margin-right: 4px;"  hidden>Save</button>
+                                <button class="secondary-btn-red ancmt_edit cancel_ancmtRow" type="button" 
+                                    hidden>Cancel</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Reason for rejection</th>
+                        <td data-label="Reason">
+                            {{announcement.reject_reason}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <p class="subheading flex-item"></p>
+                                <div><button class="primary-btn" type="submit">Resubmit for Approval</button></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        {% else %}
         <table class="table">
             <tbody>
                 <tr>
@@ -27,12 +145,13 @@
                 </tr>
                 <tr>
                     <th>Message</th>
-                    <td data-label="Title">
+                    <td data-label="Mssg">
                         {{announcement.mssg}}
                     </td>
                 </tr>
             </tbody>
         </table>
+        {% endif %}
     </div>
 </div>
 {% endblock section %}

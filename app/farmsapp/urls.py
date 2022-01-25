@@ -51,6 +51,7 @@ urlpatterns = [
     path('member-announcements/<str:decision>', views.memAnnouncements_Approval, name="memAnnouncements_Approval"),
     path('create-announcement', views.createAnnouncement, name="createAnnouncement"),
     path('view-announcement/<int:id>', views.viewAnnouncement, name="viewAnnouncement"),
+    path('resubmit-announcement/<int:id>', views.viewAnnouncement, name="resubmitAnnouncement"),
 
     # notifications
     path('notifications', views.getNotifications, name='getNotifications'),
