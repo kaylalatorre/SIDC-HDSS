@@ -353,8 +353,8 @@ function addPigPenRow() {
     $("#pigpen-table").append("<tr> \
         <td data-label='Length' id='pigpen-length'> " + length + " </td> \
         <td data-label='Width' id='pigpen-width'> " + width + " </td> \
-        <td data-label='No. of Pigs' id='pigpen-num-heads' onchange='computePigpens(this)'> " + num_heads + " </td> \
-        <td><button id='remove-pigpen-row' type='button' onclick='removePigpenRow()' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
+        <td data-label='No. of Pigs' id='pigpen-num-heads'> " + num_heads + " </td> \
+        <td><button id='remove-pigpen-row' type='button' onclick='removePigpenRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
 }
 
@@ -373,6 +373,10 @@ function removePigpenRow(currRow){
     table.deleteRow(rowIndex);
 }
 
+/*
+*
+*   Compute for total hogs for every input of num_heads in adding pigpens
+*/
 function computePigpens(){
 
     var today = document.getElementsByClassName('num_heads').value;

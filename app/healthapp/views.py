@@ -226,7 +226,8 @@ def selectedHogsHealth(request, farmID):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     versionList = []
     i = 0
@@ -360,7 +361,8 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
 
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
     lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     previous = None
@@ -580,7 +582,9 @@ def selectedHealthSymptoms(request, farmID):
 
     # collecting all past pigpens (versions)
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     versionList = []
     i = 0
@@ -685,7 +689,8 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
 
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
     lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     previous = None
