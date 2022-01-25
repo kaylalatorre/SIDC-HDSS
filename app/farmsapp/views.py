@@ -427,51 +427,44 @@ def techFarms(request):
     areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
     
     # collect number of areas assigned (for frontend purposes)
-    i = 1
     areaNum = len(areaQry)
-    areaString = ''
+    areaNames = []
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
-        if i == areaNum:
-            areaString += str(area.area_name)
+        areaNames.append(area.area_name)
+
+    # collect the corresponding hog raiser details for each farm 
+    techFarmQry  = Farm.objects.filter(area__area_name__in=areaNames).select_related('hog_raiser').annotate(
+                fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
+                        "id",
+                        "fname",
+                        "lname", 
+                        "contact", 
+                        "farm_address",
+                        "last_updated").order_by('last_updated','id')
+
+
+    # pass all data into an array
+    for farm in techFarmQry:
         
-        else : 
-            areaString += str(area.area_name) + ', '
+        farmObject = {
+            "code": farm["id"],
+            "raiser": " ".join((farm["fname"],farm["lname"])),
+            "contact": farm["contact"],
+            "address": farm["farm_address"],
+            "updated": farm["last_updated"],
+        }
 
-        i += 1
-
-        # collect the corresponding hog raiser details for each farm 
-        techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
-                    fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
-                            "id",
-                            "fname",
-                            "lname", 
-                            "contact", 
-                            "farm_address",
-                            "last_updated").order_by('id')
-
-
-        # pass all data into an array
-        for farm in techFarmQry:
-            
-            farmObject = {
-                "code": farm["id"],
-                "raiser": " ".join((farm["fname"],farm["lname"])),
-                "contact": farm["contact"],
-                "address": farm["farm_address"],
-                "updated": farm["last_updated"],
-            }
-
-            techFarmsList.append(farmObject)
+        techFarmsList.append(farmObject)
     
     techData = {
         "techFarms" : techFarmsList,
         "areaCount" : areaNum,
-        "areaString" : areaString
+        "areaString" : ','.join(areaNames)
     }
 
     # debug(techData)
@@ -2290,11 +2283,22 @@ def getNotifIDs(request):
             for item in noFarmWt:
                 notifIDs.append(';'.join([Farm._meta.db_table, str(item['id']), "NoWt"]))
 
+        # Activity Forms
+        techActFormNotifs = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now())).filter(act_tech_id = userID)
+        for item in techActFormNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "Approved"]))
+        techActFormNotifs = activityForms.filter(is_checked=False).filter(date_added__range=(now() - timedelta(days=120), now())).filter(act_tech_id = userID)
+        for item in techActFormNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "Rejected"]))
+
     elif userGroup == "Livestock Operation Specialist":
         # Activity Forms
         lopsNotifs = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now()))
         for item in lopsNotifs.values():
             notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+        lopsNotifs = activityForms.filter(is_checked=None).filter(date_added__range=(now() - timedelta(days=120), now()))
+        for item in lopsNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "Pending"]))
 
     elif userGroup == "Paiwi Management Staff":
         # Mortality Forms
@@ -2383,6 +2387,59 @@ def getActFormsNotifs(request, notifIDList):
     userGroup = request.user.groups.all()[0].name
     activityForms = Activities_Form.objects
 
+    if userGroup == "Field Technician":
+        userID = request.session['_auth_user_id']
+        techNotifs = activityForms.filter(date_added__range=(now() - timedelta(days=120), now()))
+        qry = techNotifs.filter(is_checked = True).filter(act_tech_id = userID)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "Approved"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} recently approved activity form(s)".format(count),
+                "href": "/forms-approval"
+            })
+
+        qry = techNotifs.filter(is_checked = False).filter(act_tech_id = userID)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "Rejected"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} recently rejected activity form(s)".format(count),
+                "href": "/forms-approval"
+            })
+        return {
+            "notifIDList": new_notifIDList,
+            "notifList": notifList
+        }
+    elif userGroup == "Livestock Operation Specialist":
+        lopsNotifs = activityForms.filter(is_checked = None).filter(date_added__range=(now() - timedelta(days=120), now()))
+        # notification for newly submitted activity forms
+        count = 0
+        for item in lopsNotifs.values():
+            notifID = ';'.join([tableName, str(item['id']), "Pending"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Activity Form(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+
     actForms = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now()))
     count = 0
     for item in actForms.values():
@@ -2394,7 +2451,7 @@ def getActFormsNotifs(request, notifIDList):
         notifList.append({
             "label_class": "text-success",
             "notificationID": notifID,
-            "label": "{} new Activity Form(s) were approved".format(count),
+            "label": "{} recently approved activity form(s)".format(count),
             "href": "/forms-approval"
         })
 
@@ -2427,7 +2484,7 @@ def getMortFormsNotifs(request, notifIDList):
         notifList.append({
             "label_class": "text-success",
             "notificationID": notifID,
-            "label": "{} new mortality record(s) were created".format(count),
+            "label": "{} recently created mortality record(s)".format(count),
             "href": "/forms-approval"
         })
 
@@ -2599,8 +2656,9 @@ def getNotifications(request):
         frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
         actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
         wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
-        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList']
-        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList']
+        actFormsNotifs = getActFormsNotifs(request, notifIDList)
+        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList'] + actFormsNotifs["notifIDList"]
+        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList'] + actFormsNotifs["notifList"]
     
     elif userGroup == "Livestock Operation Specialist":
         actFormsNotifs = getActFormsNotifs(request, notifIDList)
@@ -2704,7 +2762,8 @@ def countNotifications(request):
         frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
         actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
         wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
-        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList'])
+        actFormsNotifs = getActFormsNotifs(request, notifIDList)
+        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList']) + len(actFormsNotifs["notifList"])
     
     elif userGroup == "Livestock Operation Specialist":
         actFormsNotifs = getActFormsNotifs(request, notifIDList)
