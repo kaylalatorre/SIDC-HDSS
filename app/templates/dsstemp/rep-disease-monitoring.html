@@ -95,7 +95,7 @@
                         {% endfor %}
                     </td>
 
-                    <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> {{ incident.num_pigs_affected }}
+                    <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> {{ incident.num_pigs_affected }} pigs
                     </td>
 
                     <td data-label="Status" style="width: 15%">{{ incident.report_status }}</td>
@@ -115,7 +115,7 @@
                 <!-- Totals, Averages -->
                 <tr class="table-total bold-lbl">
                     <td colspan="5">Total</td>
-                    <td style="text-align: right;">{{ total_pigs_affect }}</td>
+                    <td style="text-align: right;">{{ total_pigs_affect }} pigs</td>
                     <td colspan="2"></td>
                 </tr>
             </tbody>           

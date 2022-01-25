@@ -37,6 +37,9 @@ from farmsapp.forms import (
     WeightForm
 )
 
+# import regex
+import re
+
 # for date and time fields in Models
 from datetime import date, datetime, timezone, timedelta
 from django.utils.timezone import (
@@ -72,7 +75,7 @@ def compute_MortRate(farmID, mortalityID):
         latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
         # Get latest Mortality record of the Farm (w Pigpen filter)
-        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).filter(is_approved=True).order_by('-mortality_date')
+        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
 
         if mortQry.exists():
             m = mortQry.first()
@@ -302,7 +305,7 @@ def selectedHogsHealth(request, farmID):
     incident_symptomsList = zip(incidentQry, symptomsList)
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -440,7 +443,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     incident_symptomsList = zip(incidentQry, symptomsList)
 
     # (3.1) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -645,7 +648,7 @@ def selectedHealthSymptoms(request, farmID):
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -758,7 +761,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     incident_symptomsList = zip(incidentQry, symptomsList, editList)
 
     # (2) Mortality Records
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).filter(is_approved=True).select_related(
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
@@ -849,10 +852,12 @@ def post_addCase(request, farmID):
 
     if request.method == "POST":
         
+        farm = Farm.objects.filter(id=farmID).first()
+
         # get farmID from URL param and check if Farm record exists
         if Farm.objects.filter(id=farmID).exists():
 
-            debug("in POST addCase /n: farmID -- " + str(farmID))
+            # debug("in POST addCase /n: farmID -- " + str(farmID))
             
             # get num_pigs & symptoms Array from AJAX post 
             num_pigsAffected = request.POST.get("num_pigsAffected")
@@ -867,8 +872,8 @@ def post_addCase(request, farmID):
             
 
             # Array length must be 22 for the fields in Symptoms list.
-            debug("sympArr len(): " + str(len(symptomsArr)))
-            debug("num_pigsAffected: " + str(num_pigsAffected))
+            # debug("sympArr len(): " + str(len(symptomsArr)))
+            # debug("num_pigsAffected: " + str(num_pigsAffected))
 
 
             if len(symptomsArr) > 0 and int(num_pigsAffected) > 0: # (SUCCESS) Symptoms list is complete, proceed to add in db
@@ -926,19 +931,24 @@ def post_addCase(request, farmID):
 
                     # Format time to be passed on message.success
                     ts = incidObj.date_filed
-                    df = ts.strftime("%m/%d/%Y, %H:%M")
+                    df = ts.strftime("%m/%d/%Y")
                     # debug(incidObj.date_filed)
                     
-                    debug("[death] 11 value -- " + str(symptomsArr[11]) + "// [death] 12 value -- " + str(symptomsArr[12]))
+                    # debug("[death] 11 value -- " + str(symptomsArr[11]) + "// [death] 12 value -- " + str(symptomsArr[12]))
 
-                    debug("(SUCCESS) Incident report added.")
+                    # debug("(SUCCESS) Incident report added.")
+
+                    # update last_updated of farm
+                    farm.last_updated = datetime.now(timezone.utc)
+                    farm.save()
+
                     # (SUCCESS) Incident has been added. Properly redirect to selected view page
                     # IF death is in the symptoms
                     if symptomsArr[11] == True or symptomsArr[12] == True:
-                        messages.success(request, "Incident report made on " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death' + str(farmID))
+                        messages.success(request, "Incident report dated " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death' + str(farmID))
                     # else
                     else:
-                        messages.success(request, "Incident report made on " + df + " has been successfully added!", extra_tags='add-incidCase')
+                        messages.success(request, "Incident report dated " + df + " has been successfully added!", extra_tags='add-incidCase')
                     
                     return JsonResponse({"status_code":"200"}, status=200)
         
@@ -988,7 +998,7 @@ def addMortality(request, farmID):
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
-        print(request.POST)
+        # print(request.POST)
 
         mortalityForm = MortalityForm(request.POST)
 
@@ -1035,21 +1045,25 @@ def addMortality(request, farmID):
                     mortality_form_id = mortality_form.id
                 )
             
-                print(str(mortality))
+                # print(str(mortality))
                 mortality.save()
                 x += 1
 
+            # update last_updated of farm
+            farmQuery.last_updated = datetime.now(timezone.utc)
+            farmQuery.save()
+
             # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
-            messages.success(request, "Mortality Record has been sent for approval.", extra_tags='add-mortality')
-            return redirect('/health-symptoms')
+            messages.success(request, "Mortality record has been successfully added.", extra_tags='add-mortality')
+            return redirect('/selected-health-symptoms/' + str(farmID))
 
         else:
             # print("TEST LOG: mortalityForm is not valid")
-            # formError = str(mortalityForm.non_field_errors().as_text)
+            formError = str(mortalityForm.non_field_errors().as_text)
             # print(re.split("\'.*?",formError)[1])
 
-            # messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-mortality')
-            messages.error(request, "Error adding mortality record. " + str(mortalityForm.non_field_errors().as_text), extra_tags='add-mortality')
+            messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-mortality')
+            # messages.error(request, "Error adding mortality record. " + str(mortalityForm.non_field_errors().as_text), extra_tags='add-mortality')
 
     else:
         print("TEST LOG: Add Mortality is not a POST method")
@@ -1219,7 +1233,7 @@ def hogsMortality(request):
     areaQry = Area.objects.all()
 
     # (3.1) Mortality details
-    mortQry = Mortality.objects.filter(is_approved=True).order_by("id").all()
+    mortQry = Mortality.objects.order_by("id").all()
     # debug(str(mortQry.query))
 
     if not mortQry.exists(): # (ERROR) No Mortality records found.
@@ -1298,7 +1312,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     if areaName == "All": # (CASE 1) search only by date range
         debug("TRACE: in areaName == 'All'")
 
-        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(is_approved=True).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")
@@ -1308,7 +1322,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
-        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).filter(is_approved=True).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).order_by("id").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")

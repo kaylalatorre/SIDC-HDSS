@@ -152,7 +152,8 @@ $('.checklist-date').change(function () {
 
         },
         error: function (res) {
-            alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
+            console.log(res.responseJSON.error);
+            // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
     // }
@@ -171,7 +172,7 @@ $('#farm-code').change(function () {
         farmID = $("#farm-code option:selected").val();
         try {
             url = "/biosecurity/" + farmID;
-            console.log(url);
+            // console.log(url);
             location.href = url;
         } catch (error) {
             console.log(error);
@@ -200,7 +201,7 @@ function filterFarmRep() {
     try {
 
         url = "/farms-assessment/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-farmAssess').load(url + ' #rep-farmAssess', function (response) {
@@ -244,7 +245,7 @@ function filterIntBioRep() {
 
     try {
         url = "/int-biosecurity/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-intbiosec').load(url + ' #rep-intbiosec', function (response) {
@@ -287,7 +288,7 @@ function filterExtBioRep() {
 
     try {
         url = "/ext-biosecurity/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-extbiosec').load(url + ' #rep-extbiosec', function (response) {
@@ -492,7 +493,7 @@ function saveBiocheck(elem) {
 
             try {
                 url = "/biosecurity/" + farmID;
-                console.log(url);
+                // console.log(url);
                 location.href = url;
             } catch (error) {
                 console.log(error);
@@ -504,8 +505,8 @@ function saveBiocheck(elem) {
             // alert("in AJAX error. ");
             // alert(res.status); // the status code
             // alert(res.responseJSON.error); // the message
-
-            alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
+            console.log(res.responseJSON.error);
+            // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
 
@@ -537,11 +538,13 @@ function deleteBiocheck(elem) {
                 // // reload Biosec page to update dropdown of Biosec last_updated
                 // // window.location.reload(true);
                 window.location.replace("/biosecurity/" + farmID);
-                alert(response.success);
+                // alert(response.success);
 
             },
             error: function (res) {
-                alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
+                console.log(res.responseJSON.error);
+
+                // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
             }
         });
     }
@@ -684,7 +687,7 @@ function deleteActivity(actID) {
                 location.reload(true);
             },
             error: function (res) {
-                console.log(res.responseJSON.error)
+                console.log(res.responseJSON.error);
             }
         })
     }
@@ -826,7 +829,7 @@ function saveActivity(actID, farmID) {
                 location.reload(true);
             },
             error: function (res) {
-                console.log(res.responseJSON.error)
+                console.log(res.responseJSON.error);
             }
         })
     }
@@ -916,7 +919,7 @@ function resubmitActivity(actDate, actFormID, farmID) {
             window.location.replace("/forms-approval");
         },
         error: function (res) {
-            console.log(res.responseJSON.error)
+            console.log(res.responseJSON.error);
         }
     })
 }
@@ -925,20 +928,8 @@ function resubmitActivity(actDate, actFormID, farmID) {
  *   - Approves all activities under selected activity form
  *   
  *   actFormID = id value of selected activity form
- *   userType = user group of currently logged in user
  */
-function approveActivity(actFormID, userType) {
-    var is_checked = null;
-    var is_reported = null;
-    var is_noted = null;
-
-    if (userType == "Livestock Operation Specialist") {
-        is_checked = true;
-    } else if (userType == "Extension Veterinarian") {
-        is_reported = true;
-    } else {
-        is_noted = true;
-    }
+function approveActivity(actFormID) {
 
     ajaxCSRF();
 
@@ -947,9 +938,7 @@ function approveActivity(actFormID, userType) {
         url: '/approve-activity-form/' + actFormID,
         data: {
             "id": actFormID,
-            "is_checked": is_checked,
-            "is_reported": is_reported,
-            "is_noted": is_noted
+            "is_checked": true,
         },
 
         success: function (response) {
@@ -960,7 +949,7 @@ function approveActivity(actFormID, userType) {
             window.location.replace("/forms-approval");
         },
         error: function (res) {
-            console.log(res.responseJSON.error)
+            console.log(res.responseJSON.error);
         }
     })
 }
@@ -969,19 +958,11 @@ function approveActivity(actFormID, userType) {
  *   - Rejects all activities under selected activity form
  *   
  *   actFormID = id value of selected activity form
- *   userType = user group of currently logged in user
  */
-function rejectActivity(actFormID, userType) {
-    var is_checked = null;
-    var is_reported = null;
-    var is_noted = null;
+function rejectActivity(actFormID) {
 
-    if (userType == "Livestock Operation Specialist") {
-        is_checked = false;
-    } else if (userType == "Extension Veterinarian") {
-        is_reported = false;
-    } else {
-        is_noted = false; }
+    var rejectReason = document.getElementById("reject-reason").value;
+    // console.log(rejectReason);
 
     ajaxCSRF();
 
@@ -990,9 +971,8 @@ function rejectActivity(actFormID, userType) {
         url: '/reject-activity-form/' + actFormID,
         data: {
             "id": actFormID,
-            "is_checked": is_checked,
-            "is_reported": is_reported,
-            "is_noted": is_noted },
+            "is_checked": false,
+            "reason": rejectReason },
 
         success: function (response) {
             if (response.status == 200) {
@@ -1002,7 +982,7 @@ function rejectActivity(actFormID, userType) {
             window.location.replace("/forms-approval");
         },
         error: function (res) {
-            console.log(res.responseJSON.error)
+            console.log(res.responseJSON.error);
         }
     })
 }
@@ -1020,7 +1000,7 @@ function viewHogsHealth(farmHTML) {
 
     try {
         url = "/selected-hogs-health/" + farmID;
-        console.log(url);
+        // console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -1038,7 +1018,7 @@ function viewHealthSymptoms(farmHTML) {
 
     try {
         url = "/selected-health-symptoms/" + farmID;
-        console.log(url);
+        // console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -1141,7 +1121,7 @@ function addCase(farmID) {
                 // redirect back to selected view page   
                 try {
                     url = "/selected-health-symptoms/" + farmID;
-                    console.log(url);
+                    // console.log(url);
                     location.href = url;
                     
                 } catch (error){
@@ -1180,7 +1160,7 @@ function addCase(farmID) {
     try {
 
         url = "/hogs-mortality/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-mort').load(url + ' #rep-mort', function (response) {
@@ -1224,7 +1204,7 @@ function addCase(farmID) {
     try {
 
         url = "/disease-monitoring/" + sDate + "/" + eDate + "/" + arName;
-        console.log(url);
+        // console.log(url);
 
         // for loading report table data
         $('#rep-diseaseMonitor').load(url + ' #rep-diseaseMonitor', function (response) {

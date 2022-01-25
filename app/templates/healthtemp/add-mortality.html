@@ -14,7 +14,7 @@
     <form action="" method="POST">
 
         {% csrf_token %}
-        <h1 class="heading"><a href="/selected-health-symptoms/{{farmID}}">Hogs Health & Symptoms</a> >  Add Mortality Record</h1>
+        <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID}}"> {{farmID}} </a> >  Add Mortality Record</h1>
         <div class="flex subheading">
             <p class="flex-item"> <strong>Series: </strong> {{series|stringformat:"03d"}} </p>
             <div><button class="primary-btn" type="submit">Save</button></div>
