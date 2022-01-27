@@ -253,7 +253,7 @@ def selectedFarm(request, farmID):
     versionList = []
     i = 0
     for pen in allPigpens:
-        if latestPigpen.date_added == pen.date_added:
+        if latestPigpen.id == pen.id:
             verObj = { 'date_added' : pen.date_added }
         else:
             verObj = {
@@ -374,7 +374,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
     versionList = []
     i = 0
     for pen in allPigpens:
-        if lastPigpen.date_added == pen.date_added:
+        if lastPigpen.id == pen.id:
             verObj = { 'date_added' : pen.date_added }
         else:
             verObj = {
@@ -563,7 +563,7 @@ def techSelectedFarm(request, farmID):
     versionList = []
     i = 0
     for pen in allPigpens:
-        if latestPigpen.date_added == pen.date_added:
+        if latestPigpen.id == pen.id:
             verObj = { 'date_added' : pen.date_added }
         else:
             verObj = {
@@ -733,7 +733,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     versionList = []
     i = 0
     for pen in allPigpens:
-        if lastPigpen.date_added == pen.date_added:
+        if lastPigpen.id == pen.id:
             verObj = { 'date_added' : pen.date_added }
         else:
             verObj = {
@@ -789,64 +789,6 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenRowForm       = PigpenRowForm(request.POST)   
-
-
-        # collect internal biosec checkbox inputs and convert to integer value
-        if request.POST.get("cb-isolation", None) == 'on':
-            isol_pen = 0
-        else :
-            isol_pen = 1
-
-        if request.POST.get("cb-footdip", None) == 'on':
-            foot_dip = 0
-        else :
-            foot_dip = 1
-
-        # create new instance of InternalBiosec model and pass converted checkbox inputs
-        internalBiosec = InternalBiosec.objects.create(
-            isol_pen = isol_pen,
-            foot_dip = foot_dip,
-            waste_mgt = request.POST.get("waste-mgt", None)
-        )
-
-        # collect external biosec checkbox inputs and convert to integer value
-        if request.POST.get("cb-birdproof", None) == 'on':
-            bird_proof = 0
-        else :
-            bird_proof = 1
-
-        if request.POST.get("cb-fence", None) == 'on':
-            perim_fence = 0
-        else :
-            perim_fence = 1
-
-        if request.POST.get("cb-distance", None) == 'on':
-            fiveh_m_dist = 0
-        else :
-            fiveh_m_dist = 1
-
-        # create new instance of ExternalBiosec model and pass converted checkbox inputs
-        externalBiosec = ExternalBiosec.objects.create(
-            bird_proof = bird_proof,
-            perim_fence = perim_fence,
-            fiveh_m_dist = fiveh_m_dist
-        )
-
-
-        # pass all pigpens values into array pigpenList
-        pigpenList = []
-
-        i = 0
-        for num_heads in request.POST.getlist('num_heads', default=None):
-            pigpenObj = {
-                "length" : request.POST.getlist('length', default=None)[i],
-                "width" : request.POST.getlist('width', default=None)[i],
-                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
-            }
-
-            pigpenList.append(pigpenObj)
-            i += 1
-
         
         # validate django farm and pigpen forms
         if farmForm.is_valid():
@@ -899,6 +841,47 @@ def addFarm(request):
                         # save raiser ID to farm
                         farm.hog_raiser_id = raiserID
 
+                    # collect internal biosec checkbox inputs and convert to integer value
+                    if request.POST.get("cb-isolation", None) == 'on':
+                        isol_pen = 0
+                    else :
+                        isol_pen = 1
+
+                    if request.POST.get("cb-footdip", None) == 'on':
+                        foot_dip = 0
+                    else :
+                        foot_dip = 1
+
+                    # create new instance of InternalBiosec model and pass converted checkbox inputs
+                    internalBiosec = InternalBiosec.objects.create(
+                        isol_pen = isol_pen,
+                        foot_dip = foot_dip,
+                        waste_mgt = request.POST.get("waste-mgt", None)
+                    )
+
+                    # collect external biosec checkbox inputs and convert to integer value
+                    if request.POST.get("cb-birdproof", None) == 'on':
+                        bird_proof = 0
+                    else :
+                        bird_proof = 1
+
+                    if request.POST.get("cb-fence", None) == 'on':
+                        perim_fence = 0
+                    else :
+                        perim_fence = 1
+
+                    if request.POST.get("cb-distance", None) == 'on':
+                        fiveh_m_dist = 0
+                    else :
+                        fiveh_m_dist = 1
+
+                    # create new instance of ExternalBiosec model and pass converted checkbox inputs
+                    externalBiosec = ExternalBiosec.objects.create(
+                        bird_proof = bird_proof,
+                        perim_fence = perim_fence,
+                        fiveh_m_dist = fiveh_m_dist
+                    )
+
 
                     # pass data as FKs for farm
                     farm.extbio = externalBiosec
@@ -930,6 +913,20 @@ def addFarm(request):
 
                         pigpen_group.save()
 
+                        # pass all pigpens values into array pigpenList
+                        pigpenList = []
+
+                        i = 0
+                        for num_heads in request.POST.getlist('num_heads', default=None):
+                            pigpenObj = {
+                                "length" : request.POST.getlist('length', default=None)[i],
+                                "width" : request.POST.getlist('width', default=None)[i],
+                                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
+                            }
+
+                            pigpenList.append(pigpenObj)
+                            i += 1
+                            
                         # temporary variable to store total of all num_heads
                         numTotal = 0 
                 

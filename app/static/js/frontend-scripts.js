@@ -282,9 +282,11 @@ $('#farm-version').change(function () {
 *   - Appends selected farm ID and farm version to URL
 *   - Will display pigpens of selected farm version
 */
-$('#tech-farm-version').change(function () {
+$('.tech-farm-version').change(function () {
 
-    var value = document.getElementById("tech-farm-version").value;
+    // var value = $('.tech-farm-version option:selected').val();
+    // var value = $('.tech-farm-version').find(":selected").val();
+    var value = document.getElementsByClassName("tech-farm-version")[0].value;
     // console.log(value);
 
     var split = value.split("-");
@@ -768,9 +770,9 @@ function filterRepStatus(){
 *   - Appends selected farm ID and farm version to URL
 *   - Will display weight slips, incidents, and mortality records of selected farm version
 */
-$('#hogs-health-version').change(function () {
+$('.hogs-health-version').change(function () {
 
-    var value = document.getElementById("hogs-health-version").value;
+    var value = document.getElementsByClassName("hogs-health-version")[0].value;
     // console.log(value);
 
     var split = value.split("-");
@@ -793,9 +795,9 @@ $('#hogs-health-version').change(function () {
 *   - Appends selected farm ID and farm version to URL
 *   - Will display incidents, and mortality records of selected farm version
 */
-$('#health-symptoms-version').change(function () {
+$('.health-symptoms-version').change(function () {
 
-    var value = document.getElementById("health-symptoms-version").value;
+    var value = document.getElementsByClassName("health-symptoms-version")[0].value;
     // console.log(value);
 
     var split = value.split("-");
