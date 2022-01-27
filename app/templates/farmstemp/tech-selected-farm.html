@@ -43,7 +43,7 @@
     <div class="flex subheading">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
-            <select class="form-select tech-farm-version" name="tech-farm-version" style="margin-bottom: 0; width: 100px">
+            <select class="form-select" name="tech-farm-version" id="tech-farm-version" style="margin-bottom: 0; width: 100px">
                 {% if latest.date_added == selectedPigpen.date_added %}
                 <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} (Current)</option>
                 {% else %}
@@ -65,7 +65,7 @@
     <div class="flex mobile-subheading">
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
-            <select class="form-select tech-farm-version" name="tech-farm-version" style="margin-bottom: 0; width: 100px">
+            <select class="form-select" name="tech-farm-version" id="tech-farm-version-mobile" style="margin-bottom: 0; width: 100px">
                 {% if latest.date_added == selectedPigpen.date_added %}
                 <option hidden value="{{farm.id|stringformat:'03d'}}-{{selectedPigpen.date_added}}">{{selectedPigpen.date_added}} (Current)</option>
                 {% else %}

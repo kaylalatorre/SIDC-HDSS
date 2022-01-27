@@ -1058,6 +1058,8 @@ def addMortality(request, farmID):
                     remarks = mort['remarks'],
                     mortality_form_id = mortality_form.id
                 )
+
+                farmQuery.total_pigs -= mort['num_today']
             
                 # print(str(mortality))
                 mortality.save()

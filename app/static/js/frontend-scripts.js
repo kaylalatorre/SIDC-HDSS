@@ -284,9 +284,27 @@ $('#farm-version').change(function () {
 */
 $('.tech-farm-version').change(function () {
 
-    // var value = $('.tech-farm-version option:selected').val();
-    // var value = $('.tech-farm-version').find(":selected").val();
-    var value = document.getElementsByClassName("tech-farm-version")[0].value;
+    var value = document.getElementById("tech-farm-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+$('#tech-farm-version-mobile').change(function () {
+
+    var value = document.getElementById("tech-farm-version-mobile").value;
     // console.log(value);
 
     var split = value.split("-");
@@ -795,9 +813,30 @@ $('.hogs-health-version').change(function () {
 *   - Appends selected farm ID and farm version to URL
 *   - Will display incidents, and mortality records of selected farm version
 */
-$('.health-symptoms-version').change(function () {
+$('#health-symptoms-version').change(function () {
 
-    var value = document.getElementsByClassName("health-symptoms-version")[0].value;
+    var value = document.getElementById("health-symptoms-version").value;
+    // console.log(value);
+
+    var split = value.split("-");
+    var farmID = split[0];
+    var farmVer = split[1];
+
+    // console.log("Farm ID: " + farmID);
+    // console.log("Farm Version: " + formatDate(farmVer));
+
+    try {
+        url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
+        location.href = url;
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+
+$('#health-symptoms-version-mobile').change(function () {
+
+    var value = document.getElementById("health-symptoms-version-mobile").value;
     // console.log(value);
 
     var split = value.split("-");
