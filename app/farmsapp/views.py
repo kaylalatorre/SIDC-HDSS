@@ -139,22 +139,23 @@ def farms(request):
     """
 
     # TODO get areas for filter
-    qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
-            fname=F("hog_raiser__fname"), 
-            lname=F("hog_raiser__lname"), 
-            contact=F("hog_raiser__contact_no"),
-            farm_area = F("area__area_name")
-            ).values(
-                "id",
-                "fname",
-                "lname", 
-                "contact", 
-                "farm_address",
-                "farm_area",
-                "total_pigs",
-                "num_pens",
-                "last_updated"
-                ).order_by('last_updated','id')
+    qry = Farm.objects.select_related('hog_raiser', 'area', 'extbio').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        contact=F("hog_raiser__contact_no"),
+        farm_area = F("area__area_name"),
+        last_update = F("extbio__last_updated")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "contact", 
+            "farm_address",
+            "farm_area",
+            "total_pigs",
+            "num_pens",
+            "last_update"
+            ).order_by('last_update','id')
     # debug(qry)
     
     farmsData = []
@@ -167,7 +168,7 @@ def farms(request):
             "area": str(f["farm_area"]),
             "pigs": str(f["total_pigs"]),
             "pens": str(f["num_pens"]),
-            "updated": f["last_updated"]
+            "updated": f["last_update"]
         }
         farmsData.append(farmObject)
 
@@ -440,27 +441,28 @@ def techFarms(request):
     for area in areaQry :
         areaNames.append(area.area_name)
 
-    # collect the corresponding hog raiser details for each farm 
-    techFarmQry  = Farm.objects.filter(area__area_name__in=areaNames).select_related('hog_raiser').annotate(
-                fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no")).values(
-                        "id",
-                        "fname",
-                        "lname", 
-                        "contact", 
-                        "farm_address",
-                        "last_updated").order_by('last_updated','id')
+        # collect the corresponding hog raiser details for each farm 
+        techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser','extbio').annotate(
+                    fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no"),
+                    last_update = F("extbio__last_updated")).values(
+                            "id",
+                            "fname",
+                            "lname", 
+                            "contact", 
+                            "farm_address",
+                            "last_update").order_by('id')
 
 
-    # pass all data into an array
-    for farm in techFarmQry:
-        
-        farmObject = {
-            "code": farm["id"],
-            "raiser": " ".join((farm["fname"],farm["lname"])),
-            "contact": farm["contact"],
-            "address": farm["farm_address"],
-            "updated": farm["last_updated"],
-        }
+        # pass all data into an array
+        for farm in techFarmQry:
+            
+            farmObject = {
+                "code": farm["id"],
+                "raiser": " ".join((farm["fname"],farm["lname"])),
+                "contact": farm["contact"],
+                "address": farm["farm_address"],
+                "updated": farm["last_update"],
+            }
 
         techFarmsList.append(farmObject)
     

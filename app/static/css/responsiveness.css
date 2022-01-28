@@ -2,9 +2,10 @@
 
 /* General, Typography, etc */
 @media screen and (max-width: 848px) {
-    body {
+
+    * {
         font-family: 'Roboto'; 
-        font-size: 0.875rem;
+        font-size: 0.82rem;
         line-height: 1rem;
         box-sizing: border-box;
     }
