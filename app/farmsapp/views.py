@@ -460,7 +460,6 @@ def techFarms(request):
                             "farm_address",
                             "last_update").order_by('id')
 
-
         # pass all data into an array
         for farm in techFarmQry:
             
@@ -472,12 +471,14 @@ def techFarms(request):
                 "updated": farm["last_update"],
             }
 
-        techFarmsList.append(farmObject)
+            techFarmsList.append(farmObject)
     
+    # debug(techFarmsList)
+
     techData = {
         "techFarms" : techFarmsList,
         "areaCount" : areaNum,
-        "areaString" : ','.join(areaNames)
+        "areaString" : ', '.join(areaNames)
     }
 
     # debug(techData)

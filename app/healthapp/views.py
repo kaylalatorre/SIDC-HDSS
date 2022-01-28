@@ -141,19 +141,19 @@ def hogsHealth(request):
 
             farmID = f["id"]
 
-            # get latest Pigpen version
+            # get latest version of Pigpen
             latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
 
-            # get current starter and fattener weights
-            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
-            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
+            # get current starter and fattener weights acc. to current Pigpen
+            s_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").first()
+            e_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("final_weight").first()
 
             # error checking for None weight values per Farm
-            if s_weightQry is not None:
-                start_weight = s_weightQry.ave_weight
+            if s_weightQry.start_weight is not None:
+                start_weight = s_weightQry.start_weight.ave_weight
 
-            if e_weightQry is not None:
-                end_weight = e_weightQry.ave_weight
+            if e_weightQry.final_weight is not None:
+                end_weight = e_weightQry.final_weight.ave_weight
 
             # for computing Mortality %
             mortality_rate = compute_MortRate(farmID, None)
@@ -524,22 +524,22 @@ def healthSymptoms(request):
 
             farmID = f["id"]
             
-            # get current starter and fattener weights
-            s_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=True).order_by("-date_filed").first()
-            e_weightQry = Farm_Weight.objects.filter(ref_farm_id=farmID).filter(is_starter=False).order_by("-date_filed").first()
+            # get latest version of Pigpen
+            latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+
+            # get current starter and fattener weights acc. to current Pigpen
+            s_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").first()
+            e_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("final_weight").first()
 
             # error checking for None weight values per Farm
-            if s_weightQry is not None:
-                start_weight = s_weightQry.ave_weight
+            if s_weightQry.start_weight is not None:
+                start_weight = s_weightQry.start_weight.ave_weight
 
-            if e_weightQry is not None:
-                end_weight = e_weightQry.ave_weight
+            if e_weightQry.final_weight is not None:
+                end_weight = e_weightQry.final_weight.ave_weight
 
             # for computing Mortality %
             mortality_rate = compute_MortRate(farmID, None)
-
-            # get latest version of Pigpen
-            latestPP = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
         
             # for "Incidents Reported" column --> counts how many Symptoms record FK-ed to a Farm
             total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).count()
