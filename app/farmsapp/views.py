@@ -1643,14 +1643,26 @@ def formsApproval(request):
             status = 'Pending'
 
         # pass into object and append to list 
-        activityObject = {
-            "id" : act.id,
-            "date_added" : act.date_added,
-            "status" : status,
-            "prepared_by" : getTech["name"],
-            "farmID" : int(act.ref_farm_id) }
+        if request.user.groups.all()[0].name == "Field Technician" :
+            if act.act_tech_id == request.user.id:
+                activityObject = {
+                        "id" : act.id,
+                        "date_added" : act.date_added,
+                        "status" : status,
+                        "prepared_by" : str(request.user.first_name) + " " + str(request.user.last_name),
+                        "farmID" : int(act.ref_farm_id) }
+
+                activityList.append(activityObject)
+                
+        else:
+            activityObject = {
+                "id" : act.id,
+                "date_added" : act.date_added,
+                "status" : status,
+                "prepared_by" : getTech["name"],
+                "farmID" : int(act.ref_farm_id) }
     
-        activityList.append(activityObject)
+            activityList.append(activityObject)
 
 
     return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList })
