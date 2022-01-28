@@ -91,7 +91,7 @@ def login(request):
 
 
 def home_view(request):
-    print("TEST LOG: in Home view/n")
+    print("TEST LOG: in Home view")
 
     if request.user.is_authenticated :
         userGroup = request.user.groups.all()[0].name

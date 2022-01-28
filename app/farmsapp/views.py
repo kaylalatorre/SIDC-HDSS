@@ -247,17 +247,21 @@ def selectedFarm(request, farmID):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     versionList = []
     i = 0
     for pen in allPigpens:
-        if latestPigpen.date_added == pen.date_added:
-            verObj = { 'date_added' : pen.date_added }
+        if latestPigpen.id == pen.id:
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)  
@@ -344,7 +348,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
     ).first()
    
     # collect pigpens
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     pen_no = 1
@@ -365,23 +369,27 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     previous = None
     versionList = []
     i = 0
     for pen in allPigpens:
-        if lastPigpen.date_added == pen.date_added:
-            verObj = { 'date_added' : pen.date_added }
+        if lastPigpen.id == pen.id:
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)  
 
-        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
     # collect activities
@@ -551,19 +559,24 @@ def techSelectedFarm(request, farmID):
         pigpenList.append(pigpenObj)
         pen_no += 1
 
+
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     versionList = []
     i = 0
     for pen in allPigpens:
-        if latestPigpen.date_added == pen.date_added:
-            verObj = { 'date_added' : pen.date_added }
+        if latestPigpen.id == pen.id:
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)
@@ -654,7 +667,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
     farmID - selected farmID passed as parameter
-    farmVersion - date of the selected farm version
+    farmVersion - id of the selected farm version
     """
 
     ## get details of selected farm
@@ -696,7 +709,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     ).first()
 
     # collect the corresponding pigpens for selected farm
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     # get current starter and fattener weights acc. to selected Pigpen
@@ -720,23 +733,27 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:1]
+
+    count = int(allPigpens.count()) - 1
+    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
 
     previous = None
     versionList = []
     i = 0
     for pen in allPigpens:
-        if lastPigpen.date_added == pen.date_added:
-            verObj = { 'date_added' : pen.date_added }
+        if lastPigpen.id == pen.id:
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)  
 
-        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
     return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : versionList, 'starter' : weightSlip.start_weight, 'total_pigs' : total_pigs,
@@ -782,64 +799,6 @@ def addFarm(request):
         hogRaiserForm       = HogRaiserForm(request.POST)
         farmForm            = FarmForm(request.POST)
         pigpenRowForm       = PigpenRowForm(request.POST)   
-
-
-        # collect internal biosec checkbox inputs and convert to integer value
-        if request.POST.get("cb-isolation", None) == 'on':
-            isol_pen = 0
-        else :
-            isol_pen = 1
-
-        if request.POST.get("cb-footdip", None) == 'on':
-            foot_dip = 0
-        else :
-            foot_dip = 1
-
-        # create new instance of InternalBiosec model and pass converted checkbox inputs
-        internalBiosec = InternalBiosec.objects.create(
-            isol_pen = isol_pen,
-            foot_dip = foot_dip,
-            waste_mgt = request.POST.get("waste-mgt", None)
-        )
-
-        # collect external biosec checkbox inputs and convert to integer value
-        if request.POST.get("cb-birdproof", None) == 'on':
-            bird_proof = 0
-        else :
-            bird_proof = 1
-
-        if request.POST.get("cb-fence", None) == 'on':
-            perim_fence = 0
-        else :
-            perim_fence = 1
-
-        if request.POST.get("cb-distance", None) == 'on':
-            fiveh_m_dist = 0
-        else :
-            fiveh_m_dist = 1
-
-        # create new instance of ExternalBiosec model and pass converted checkbox inputs
-        externalBiosec = ExternalBiosec.objects.create(
-            bird_proof = bird_proof,
-            perim_fence = perim_fence,
-            fiveh_m_dist = fiveh_m_dist
-        )
-
-
-        # pass all pigpens values into array pigpenList
-        pigpenList = []
-
-        i = 0
-        for num_heads in request.POST.getlist('num_heads', default=None):
-            pigpenObj = {
-                "length" : request.POST.getlist('length', default=None)[i],
-                "width" : request.POST.getlist('width', default=None)[i],
-                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
-            }
-
-            pigpenList.append(pigpenObj)
-            i += 1
-
         
         # validate django farm and pigpen forms
         if farmForm.is_valid():
@@ -892,6 +851,47 @@ def addFarm(request):
                         # save raiser ID to farm
                         farm.hog_raiser_id = raiserID
 
+                    # collect internal biosec checkbox inputs and convert to integer value
+                    if request.POST.get("cb-isolation", None) == 'on':
+                        isol_pen = 0
+                    else :
+                        isol_pen = 1
+
+                    if request.POST.get("cb-footdip", None) == 'on':
+                        foot_dip = 0
+                    else :
+                        foot_dip = 1
+
+                    # create new instance of InternalBiosec model and pass converted checkbox inputs
+                    internalBiosec = InternalBiosec.objects.create(
+                        isol_pen = isol_pen,
+                        foot_dip = foot_dip,
+                        waste_mgt = request.POST.get("waste-mgt", None)
+                    )
+
+                    # collect external biosec checkbox inputs and convert to integer value
+                    if request.POST.get("cb-birdproof", None) == 'on':
+                        bird_proof = 0
+                    else :
+                        bird_proof = 1
+
+                    if request.POST.get("cb-fence", None) == 'on':
+                        perim_fence = 0
+                    else :
+                        perim_fence = 1
+
+                    if request.POST.get("cb-distance", None) == 'on':
+                        fiveh_m_dist = 0
+                    else :
+                        fiveh_m_dist = 1
+
+                    # create new instance of ExternalBiosec model and pass converted checkbox inputs
+                    externalBiosec = ExternalBiosec.objects.create(
+                        bird_proof = bird_proof,
+                        perim_fence = perim_fence,
+                        fiveh_m_dist = fiveh_m_dist
+                    )
+
 
                     # pass data as FKs for farm
                     farm.extbio = externalBiosec
@@ -923,6 +923,20 @@ def addFarm(request):
 
                         pigpen_group.save()
 
+                        # pass all pigpens values into array pigpenList
+                        pigpenList = []
+
+                        i = 0
+                        for num_heads in request.POST.getlist('num_heads', default=None):
+                            pigpenObj = {
+                                "length" : request.POST.getlist('length', default=None)[i],
+                                "width" : request.POST.getlist('width', default=None)[i],
+                                "num_heads" : request.POST.getlist('num_heads', default=None)[i],
+                            }
+
+                            pigpenList.append(pigpenObj)
+                            i += 1
+                            
                         # temporary variable to store total of all num_heads
                         numTotal = 0 
                 
@@ -962,7 +976,7 @@ def addFarm(request):
 
                         messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors))
                 else: 
-                    # debug("farmLoc not obtained")
+                    debug("farmLoc not obtained")
                     messages.error(request, "Farm location not obtained.")
             except:
                 debug("farmLoc not obtained")
@@ -980,7 +994,7 @@ def addFarm(request):
         # if the forms have no input yet, only display empty forms
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
-        pigpenRowForm  = PigpenRowForm()
+        pigpenRowForm       = PigpenRowForm()
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'farmCode' : farmID,
@@ -1631,14 +1645,26 @@ def formsApproval(request):
             status = 'Pending'
 
         # pass into object and append to list 
-        activityObject = {
-            "id" : act.id,
-            "date_added" : act.date_added,
-            "status" : status,
-            "prepared_by" : getTech["name"],
-            "farmID" : int(act.ref_farm_id) }
+        if request.user.groups.all()[0].name == "Field Technician" :
+            if act.act_tech_id == request.user.id:
+                activityObject = {
+                        "id" : act.id,
+                        "date_added" : act.date_added,
+                        "status" : status,
+                        "prepared_by" : str(request.user.first_name) + " " + str(request.user.last_name),
+                        "farmID" : int(act.ref_farm_id) }
+
+                activityList.append(activityObject)
+                
+        else:
+            activityObject = {
+                "id" : act.id,
+                "date_added" : act.date_added,
+                "status" : status,
+                "prepared_by" : getTech["name"],
+                "farmID" : int(act.ref_farm_id) }
     
-        activityList.append(activityObject)
+            activityList.append(activityObject)
 
 
     return render(request, 'farmstemp/forms-approval.html', { 'actList' : activityList })
@@ -2181,7 +2207,8 @@ def viewAnnouncement(request, id):
         "title",
         "category",
         "recip_area",
-        "mssg"
+        "mssg",
+        "timestamp"
     ).first()
     context = {
         "announcement":qry

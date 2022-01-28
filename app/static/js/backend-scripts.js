@@ -1,3 +1,9 @@
+/**
+ * Helper function to format date objects 
+ * for frontend display.
+ * @param {date} date 
+ * @returns a formatted date YYYY-MM-DD
+ */
 function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -11,9 +17,6 @@ function formatDate(date) {
 
     return [year, month, day].join('-');
 }
-
-/* BACKEND-specific Functions */
-
 
 /**
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
@@ -156,7 +159,6 @@ $('.checklist-date').change(function () {
             // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
-    // }
 });
 
 /** 
@@ -401,8 +403,6 @@ function saveBiocheck(elem) {
     else
         checkArr[7] = 2;
 
-    // alert("checkArr length: " + checkArr.length);
-
     ajaxCSRF();
 
     $.ajax({
@@ -412,14 +412,6 @@ function saveBiocheck(elem) {
             "checkArr": checkArr
         },
         success: function (response) {
-
-            // if (response.status_code == '200'){
-            //     alert("Biosec checklist successfully updated!");
-            // }
-
-            // if (response.status == 400){
-            //     alert("ERROR [" + res.status + "]: " +  res.responseJSON.error);
-            // }
 
             var biofields = JSON.parse(response["instance"]);
 
@@ -486,14 +478,8 @@ function saveBiocheck(elem) {
             var farmID = $("#farm-code option:selected").val();
             // alert("in saveBiocheck() -- farmID: " +  farmID);
 
-            // reload Biosec page to update dropdown of Biosec last_updated
-            // window.location.reload(true);
-            // window.location.replace("/biosecurity");
-            // window.location.replace("/biosecurity/" + farmID);
-
             try {
                 url = "/biosecurity/" + farmID;
-                // console.log(url);
                 location.href = url;
             } catch (error) {
                 console.log(error);
@@ -502,11 +488,7 @@ function saveBiocheck(elem) {
 
         },
         error: function (res) {
-            // alert("in AJAX error. ");
-            // alert(res.status); // the status code
-            // alert(res.responseJSON.error); // the message
             console.log(res.responseJSON.error);
-            // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
         }
     });
 
@@ -532,19 +514,10 @@ function deleteBiocheck(elem) {
             success: function (response) {
 
                 // console.log(response);
-                // if (response.status == 200){
-                //     alert("Biochecklist record deleted.");
-                // }
-                // // reload Biosec page to update dropdown of Biosec last_updated
-                // // window.location.reload(true);
                 window.location.replace("/biosecurity/" + farmID);
-                // alert(response.success);
-
             },
             error: function (res) {
                 console.log(res.responseJSON.error);
-
-                // alert("ERROR [" + res.status + "]: " + res.responseJSON.error);
             }
         });
     }
@@ -1018,7 +991,6 @@ function viewHealthSymptoms(farmHTML) {
 
     try {
         url = "/selected-health-symptoms/" + farmID;
-        // console.log(url);
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -1223,9 +1195,7 @@ function addCase(farmID) {
 
         });
 
-
     } catch (error) {
         console.log(error);
     }
  }
- 
