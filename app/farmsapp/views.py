@@ -439,27 +439,20 @@ def techFarms(request):
     areaQry = Area.objects.filter(tech_id=techID).all().order_by('id')
     
     # collect number of areas assigned (for frontend purposes)
-    i = 1
     areaNum = len(areaQry)
-    areaString = ''
+    areaNames = []
 
     # array to store all farms under each area
     techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
-        if i == areaNum:
-            areaString += str(area.area_name)
-        
-        else : 
-            areaString += str(area.area_name) + ', '
-
-        i += 1
+        areaNames.append(area.area_name)
 
         # collect the corresponding hog raiser details for each farm 
         techFarmQry  = Farm.objects.filter(area_id=area.id).select_related('hog_raiser','extbio').annotate(
                     fname=F("hog_raiser__fname"), lname=F("hog_raiser__lname"), contact=F("hog_raiser__contact_no"),
-last_update = F("extbio__last_updated")).values(
+                    last_update = F("extbio__last_updated")).values(
                             "id",
                             "fname",
                             "lname", 
@@ -479,12 +472,12 @@ last_update = F("extbio__last_updated")).values(
                 "updated": farm["last_update"],
             }
 
-            techFarmsList.append(farmObject)
+        techFarmsList.append(farmObject)
     
     techData = {
         "techFarms" : techFarmsList,
         "areaCount" : areaNum,
-        "areaString" : areaString
+        "areaString" : ','.join(areaNames)
     }
 
     # debug(techData)
@@ -2199,20 +2192,43 @@ def createAnnouncement(request):
         messages.success(request, "Announcement sent.", extra_tags='announcement')
         return redirect('/member-announcements')
 
-    announcementForm = MemAnnouncementForm()
+    announcementForm = MemAnnouncementForm(user=request.user)
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
 
 def viewAnnouncement(request, id):
+
+    if request.method == 'POST':
+        reancmt = Mem_Announcement.objects.filter(id = id).first()
+        reancmt.title = request.POST.get("title")
+        reancmt.category = request.POST.get("category")
+        reancmt.recip_area = request.POST.get("recip_area")
+        reancmt.mssg = request.POST.get("mssg")
+        reancmt.timestamp = now()
+        reancmt.is_approved = None
+        reancmt.reject_reason = None
+
+        reancmt.save()
+        messages.success(request, "Announcement resubmitted.", extra_tags='announcement')
+        return redirect('/member-announcements')
+
     qry = Mem_Announcement.objects.filter(pk = id).values(
+        "id",
+        "author_id",
         "title",
         "category",
         "recip_area",
         "mssg",
         "timestamp"
+        "reject_reason"
     ).first()
+    area_choices = []
+    for choice in Area.objects.distinct().filter(tech_id = int(request.user.id)).values('area_name'):
+        area_choices.append(choice['area_name'])
     context = {
-        "announcement":qry
+        "announcement":qry,
+        'area_choices' : area_choices
     }
+    
     return render(request, 'farmstemp/view-announcement.html', context)
 
 def initNotifIDList(request):
@@ -2323,11 +2339,22 @@ def getNotifIDs(request):
             for item in noFarmWt:
                 notifIDs.append(';'.join([Farm._meta.db_table, str(item['id']), "NoWt"]))
 
+        # Activity Forms
+        techActFormNotifs = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now())).filter(act_tech_id = userID)
+        for item in techActFormNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "Approved"]))
+        techActFormNotifs = activityForms.filter(is_checked=False).filter(date_added__range=(now() - timedelta(days=120), now())).filter(act_tech_id = userID)
+        for item in techActFormNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "Rejected"]))
+
     elif userGroup == "Livestock Operation Specialist":
         # Activity Forms
         lopsNotifs = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now()))
         for item in lopsNotifs.values():
             notifIDs.append(';'.join([actFormTable, str(item['id'])]))
+        lopsNotifs = activityForms.filter(is_checked=None).filter(date_added__range=(now() - timedelta(days=120), now()))
+        for item in lopsNotifs.values():
+            notifIDs.append(';'.join([actFormTable, str(item['id']), "Pending"]))
 
     elif userGroup == "Paiwi Management Staff":
         # Mortality Forms
@@ -2416,6 +2443,59 @@ def getActFormsNotifs(request, notifIDList):
     userGroup = request.user.groups.all()[0].name
     activityForms = Activities_Form.objects
 
+    if userGroup == "Field Technician":
+        userID = request.session['_auth_user_id']
+        techNotifs = activityForms.filter(date_added__range=(now() - timedelta(days=120), now()))
+        qry = techNotifs.filter(is_checked = True).filter(act_tech_id = userID)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "Approved"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} recently approved activity form(s)".format(count),
+                "href": "/forms-approval"
+            })
+
+        qry = techNotifs.filter(is_checked = False).filter(act_tech_id = userID)
+        count = 0
+        for item in qry.values():
+            notifID = ';'.join([tableName, str(item['id']), "Rejected"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-success",
+                "notificationID": notifID,
+                "label": "{} recently rejected activity form(s)".format(count),
+                "href": "/forms-approval"
+            })
+        return {
+            "notifIDList": new_notifIDList,
+            "notifList": notifList
+        }
+    elif userGroup == "Livestock Operation Specialist":
+        lopsNotifs = activityForms.filter(is_checked = None).filter(date_added__range=(now() - timedelta(days=120), now()))
+        # notification for newly submitted activity forms
+        count = 0
+        for item in lopsNotifs.values():
+            notifID = ';'.join([tableName, str(item['id']), "Pending"])
+            new_notifIDList.append(notifID)
+            if notifID not in notifIDList:
+                count = count + 1
+        if count != 0:
+            notifList.append({
+                "label_class": "text-warning",
+                "notificationID": notifID,
+                "label": "{} Activity Form(s) are pending approval".format(count),
+                "href": "/forms-approval"
+            })
+
     actForms = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now()))
     count = 0
     for item in actForms.values():
@@ -2427,7 +2507,7 @@ def getActFormsNotifs(request, notifIDList):
         notifList.append({
             "label_class": "text-success",
             "notificationID": notifID,
-            "label": "{} new Activity Form(s) were approved".format(count),
+            "label": "{} recently approved activity form(s)".format(count),
             "href": "/forms-approval"
         })
 
@@ -2460,7 +2540,7 @@ def getMortFormsNotifs(request, notifIDList):
         notifList.append({
             "label_class": "text-success",
             "notificationID": notifID,
-            "label": "{} new mortality record(s) were created".format(count),
+            "label": "{} recently created mortality record(s)".format(count),
             "href": "/forms-approval"
         })
 
@@ -2632,8 +2712,9 @@ def getNotifications(request):
         frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
         actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
         wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
-        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList']
-        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList']
+        actFormsNotifs = getActFormsNotifs(request, notifIDList)
+        notifIDList += frmInspcNotifs['notifIDList'] + actIncdsNotifs['notifIDList'] + wtUpdateNotifs['notifIDList'] + actFormsNotifs["notifIDList"]
+        notifList += frmInspcNotifs['notifList'] + actIncdsNotifs['notifList'] + wtUpdateNotifs['notifList'] + actFormsNotifs["notifList"]
     
     elif userGroup == "Livestock Operation Specialist":
         actFormsNotifs = getActFormsNotifs(request, notifIDList)
@@ -2737,7 +2818,8 @@ def countNotifications(request):
         frmInspcNotifs = getFarmInspectNotifs(request, notifIDList)
         actIncdsNotifs = getActiveIncsNotifs(request, notifIDList)
         wtUpdateNotifs = getWtUpdateNotifs(request, notifIDList)
-        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList'])
+        actFormsNotifs = getActFormsNotifs(request, notifIDList)
+        totalNotifs += len(frmInspcNotifs['notifList']) + len(actIncdsNotifs['notifList']) + len(wtUpdateNotifs['notifList']) + len(actFormsNotifs["notifList"])
     
     elif userGroup == "Livestock Operation Specialist":
         actFormsNotifs = getActFormsNotifs(request, notifIDList)

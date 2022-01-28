@@ -31,10 +31,10 @@
     </div>
     <hr>
 
-    <section class="for-approval">
-        {% if user.groups.all.0.name == 'Assistant Manager' %}
+    <section class="for-approval">        
         <div class="flex">
-            <h2 class="heading flex-item">For Approval</h2>
+            <h2 class="heading flex-item">Pending Announcements</h2>
+            {% if user.groups.all.0.name == 'Assistant Manager' %}
             <!-- Only show button group when a checkbox/es is checked -->
             <div class="btn-group hide" id="announce-btn-grp" style="margin-bottom: 8px;">
                 <button class="primary-btn" id="approveChecked" style="margin-right: 4px;"><i class='bx bx-check'></i></button>
@@ -63,11 +63,8 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
-        {% elif user.groups.all.0.name == 'Field Technician' %}
-        <h2>Pending Approvals</h2>
-
-        {% endif %}
         <div class="box-style">
             <table class="table">
                 <thead>
@@ -129,7 +126,7 @@
                         <td data-label="Title">{{announcement.title}}</td>
                         <td data-label="Category">{{announcement.category}}</td>
                         <td data-label="Recipient">{{announcement.recip_area}}</td>
-                        <td data-label="Author">{{announcement.reject_reason}}</td>
+                        <td data-label="Reason">{{announcement.reject_reason}}</td>
                         <td data-label="" class="td-btn"><button class="secondary-btn" id="{{announcement.id}}"
                                 onclick="viewAnnounce(this)"><span class="material-icons md-18">visibility</span><span
                                     class="text">View</span></button></td>

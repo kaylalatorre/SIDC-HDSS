@@ -1109,6 +1109,16 @@ def addWeight(request, farmID):
         debug("farm does not exist")
         return redirect("healthSymptoms")
 
+    weightType = ""
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
+    if latestPigpen.start_weight_id == None:
+        weightType = 'starter'
+    elif latestPigpen.final_weight_id == None:
+        weightType = "fattener"
+    else:
+        messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
+        return redirect(request.META.get('HTTP_REFERER'))
+
     if request.method == 'POST':
         # get latest Pigpen version
         latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
@@ -1149,7 +1159,7 @@ def addWeight(request, farmID):
         
         
     weightForm = WeightForm()
-    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID)})
+    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID), 'weightType': weightType})
 
 
 # REPORTS for Module 2

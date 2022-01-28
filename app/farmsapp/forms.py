@@ -262,23 +262,36 @@ class MortalityForm(ModelForm):
             raise forms.ValidationError("Date can not be later than today.")
 
 
+
 class MemAnnouncementForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        self.user = kwargs.pop('user', "0")
+        super(MemAnnouncementForm, self).__init__(*args, **kwargs)
+
+        AREA_CHOICES = []
+        for choice in Area.objects.distinct().filter(tech_id = int(self.user.id)).values('area_name'):
+            AREA_CHOICES.append((choice['area_name'], choice['area_name']))
+
+        if self.user.groups.all()[0].name == "Assistant Manager":
+            AREA_CHOICES.append(('All Raisers', 'All Raisers'))
+
         self.fields['title'].widget.attrs.update({
             'input type' : 'text', 
             'aria-label' : 'Title',
             'class' : 'form-control',
             'placeholder' : 'ex. Biosecurity Check'
         })
+        self.fields['category'] = forms.ChoiceField(choices=(('Reminder','Reminder'), ('Announcement','Announcement'), ('Event','Event'), ('Other','Other')))
         self.fields['category'].widget.attrs.update({ 
             'aria-label' : 'Category',
             'class' : 'form-select'
         })
+
+        self.fields['recip_area'] = forms.ChoiceField(choices=AREA_CHOICES)
         self.fields['recip_area'].widget.attrs.update({ 
             'aria-label' : 'Recipient',
             'class' : 'form-select',
-        })
+        }) 
         self.fields['mssg'].widget.attrs.update({ 
             'aria-label' : 'Message',
             'class' : 'form-control',
@@ -287,19 +300,10 @@ class MemAnnouncementForm(ModelForm):
 
     class Meta:
         model = Mem_Announcement
-        AREA_CHOICES = [('All Raisers', 'All Raisers')]
-
-        for choice in Area.objects.distinct().values('area_name'):
-            AREA_CHOICES.append((choice['area_name'], choice['area_name']))
 
         fields = ('__all__')
         widgets = {
-            'category': widgets.Select(
-                choices=(('Reminder','Reminder'), ('Announcement','Announcement'), ('Event','Event'), ('Other','Other'))
-            ),
-            'recip_area': widgets.Select(
-                choices=AREA_CHOICES
-            ),
+            
             'mssg': widgets.Textarea()
         }
 
