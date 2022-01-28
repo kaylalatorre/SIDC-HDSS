@@ -233,11 +233,13 @@ def selectedHogsHealth(request, farmID):
     i = 0
     for pen in allPigpens:
         if latestPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)
@@ -333,7 +335,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     :param farmID: PK of selected farm
     :type farmID: string
 
-    :param farmVersion: date added of farm version (pigpen group)
+    :param farmVersion: id of farm version (pigpen group)
     :type farmVersion: string
     """
 
@@ -359,7 +361,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
     # collecting all past and selected pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
 
     count = int(allPigpens.count()) - 1
     oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
@@ -370,16 +372,18 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     i = 0
     for pen in allPigpens:
         if lastPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)
 
-        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
     # get current starter and fattener weights acc. to current Pigpen
@@ -596,11 +600,13 @@ def selectedHealthSymptoms(request, farmID):
     i = 0
     for pen in allPigpens:
         if latestPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)
@@ -687,13 +693,13 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     :param farmID: PK of selected farm
     :type farmID: string
     
-    :param farmVersion: date added of farm version (pigpen group)
+    :param farmVersion: id of farm version (pigpen group)
     :type farmVersion: string
     """
 
     # collecting all past and selected pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
 
     count = int(allPigpens.count()) - 1
     oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
@@ -704,16 +710,18 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     i = 0
     for pen in allPigpens:
         if lastPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)
 
-        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
     # get current starter and fattener weights acc. to current Pigpen

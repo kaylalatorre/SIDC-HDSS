@@ -34,6 +34,8 @@ function getDiffDays(date) {
     return diffDays;
 }
 
+//---- MODULE 1 functions ----//
+
 /* 
 * Tech assignment edit button 
 */
@@ -266,11 +268,8 @@ $('#farm-version').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
-    // console.log("Farm ID: " + farmID);
-    // console.log("Farm Version: " + formatDate(farmVer));
-
     try {
-        url = "/selected-farm/" + farmID + '/' + formatDate(farmVer);
+        url = "/selected-farm/" + farmID + '/' + farmVer;
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -282,7 +281,7 @@ $('#farm-version').change(function () {
 *   - Appends selected farm ID and farm version to URL
 *   - Will display pigpens of selected farm version
 */
-$('.tech-farm-version').change(function () {
+$('#tech-farm-version').change(function () {
 
     var value = document.getElementById("tech-farm-version").value;
     // console.log(value);
@@ -291,11 +290,8 @@ $('.tech-farm-version').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
-    // console.log("Farm ID: " + farmID);
-    // console.log("Farm Version: " + formatDate(farmVer));
-
     try {
-        url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
+        url = "/tech-selected-farm/" + farmID + '/' + farmVer;
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -311,11 +307,8 @@ $('#tech-farm-version-mobile').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
-    // console.log("Farm ID: " + farmID);
-    // console.log("Farm Version: " + formatDate(farmVer));
-
     try {
-        url = "/tech-selected-farm/" + farmID + '/' + formatDate(farmVer);
+        url = "/tech-selected-farm/" + farmID + '/' + farmVer;
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -394,7 +387,6 @@ function removePigpenRow(currRow){
 }
 
 /*
-*
 *   Compute for total hogs for every input of num_heads in adding pigpens
 */
 function computePigpens(){
@@ -477,10 +469,8 @@ function addMortalityRow() {
     const mortality_date = document.getElementById('mortality_date').innerHTML;
     const num_begInv = document.getElementById('begInv').innerHTML;
     const num_today = document.getElementById('today').innerHTML;
-    // const num_toDate = document.getElementById('num_toDate').innerHTML;
     const source = document.getElementById('source').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
-    // const mortality_rate = document.getElementById('mortality_rate').innerHTML;
 
     $("#mortality-table").append("<tr> \
         <td data-label='Mortality Date'> " + mortality_date + " </td> \
@@ -524,7 +514,7 @@ function viewActivityForm(activity) {
 }
 
 /**
- * Show/Hide Reason for Rejection input
+ *  Show/Hide Reason for Rejection input for Activity Form
  */
  function toggleRejectReason() {
     const reason = $('.reject-reason');
@@ -758,11 +748,10 @@ function filterRepStatus(){
     var toHide = document.getElementsByClassName("pigpen-data");
 
     for (var i = 0; i < toHide.length; i++) {
-        toHide[i].style.display = "none";
-    }
+        toHide[i].style.display = "none"; }
+
     for (var i = 0; i < toShow.length; i++) {
-        toShow[i].style.display = "block";
-    }
+        toShow[i].style.display = "block"; }
 
 }
 
@@ -775,11 +764,10 @@ function filterRepStatus(){
     var toShow = document.getElementsByClassName("pigpen-data");
 
     for (var i = 0; i < toHide.length; i++) {
-        toHide[i].style.display = "none";
-    }
+        toHide[i].style.display = "none"; }
+
     for (var i = 0; i < toShow.length; i++) {
-        toShow[i].style.display = "block";
-    }
+        toShow[i].style.display = "block"; }
 
 }
 
@@ -788,20 +776,17 @@ function filterRepStatus(){
 *   - Appends selected farm ID and farm version to URL
 *   - Will display weight slips, incidents, and mortality records of selected farm version
 */
-$('.hogs-health-version').change(function () {
+$('#hogs-health-version').change(function () {
 
-    var value = document.getElementsByClassName("hogs-health-version")[0].value;
+    var value = document.getElementById("hogs-health-version").value;
     // console.log(value);
 
     var split = value.split("-");
     var farmID = split[0];
     var farmVer = split[1];
 
-    // console.log("Farm ID: " + farmID);
-    // console.log("Farm Version: " + formatDate(farmVer));
-
     try {
-        url = "/selected-hogs-health/" + farmID + '/' + formatDate(farmVer);
+        url = "/selected-hogs-health/" + farmID + '/' + farmVer;
         location.href = url;
     } catch (error) {
         console.log(error);
@@ -822,17 +807,13 @@ $('#health-symptoms-version').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
-    // console.log("Farm ID: " + farmID);
-    // console.log("Farm Version: " + formatDate(farmVer));
-
     try {
-        url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
+        url = "/selected-health-symptoms/" + farmID + '/' + farmVer;
         location.href = url;
     } catch (error) {
         console.log(error);
     }
 })
-
 
 $('#health-symptoms-version-mobile').change(function () {
 
@@ -843,11 +824,8 @@ $('#health-symptoms-version-mobile').change(function () {
     var farmID = split[0];
     var farmVer = split[1];
 
-    // console.log("Farm ID: " + farmID);
-    // console.log("Farm Version: " + formatDate(farmVer));
-
     try {
-        url = "/selected-health-symptoms/" + farmID + '/' + formatDate(farmVer);
+        url = "/selected-health-symptoms/" + farmID + '/' + farmVer;
         location.href = url;
     } catch (error) {
         console.log(error);

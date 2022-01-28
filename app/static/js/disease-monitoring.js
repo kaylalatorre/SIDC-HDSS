@@ -12,6 +12,7 @@ $(document).ready(async function () {
 
         console.log(metadata);
 
+        
         var today = new Date();
         // console.log(today);
         
@@ -20,6 +21,7 @@ $(document).ready(async function () {
     
         var dateToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
         // console.log(dateToday);
+
 
         // ACTIVE INCIDENTS line chart
         if ($('#dm-active-incid').length) {

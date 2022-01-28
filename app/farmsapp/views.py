@@ -254,11 +254,13 @@ def selectedFarm(request, farmID):
     i = 0
     for pen in allPigpens:
         if latestPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)  
@@ -345,7 +347,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
     ).first()
    
     # collect pigpens
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     pen_no = 1
@@ -375,16 +377,18 @@ def selectedFarmVersion(request, farmID, farmVersion):
     i = 0
     for pen in allPigpens:
         if lastPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)  
 
-        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
     # collect activities
@@ -564,11 +568,13 @@ def techSelectedFarm(request, farmID):
     i = 0
     for pen in allPigpens:
         if latestPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)
@@ -659,7 +665,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     - Display details of the selected farm under the currently logged in technician.
     - Will collect the hog raiser, area, internal and external biosecurity, and pigpen measures connected to the farm.   
     farmID - selected farmID passed as parameter
-    farmVersion - date of the selected farm version
+    farmVersion - id of the selected farm version
     """
 
     ## get details of selected farm
@@ -701,7 +707,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     ).first()
 
     # collect the corresponding pigpens for selected farm
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(date_added=farmVersion).first()
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     # get current starter and fattener weights acc. to selected Pigpen
@@ -734,16 +740,18 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     i = 0
     for pen in allPigpens:
         if lastPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added }
+            verObj = { 'date_added' : pen.date_added,
+                        'id' : pen.id }
         else:
             verObj = {
                 'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added }
+                'endDate' : oldPigpens[i].date_added,
+                'id' : pen.id }
             i += 1
         
         versionList.append(verObj)  
 
-        if str(farmVersion) == str(pen.date_added) and lastPigpen.date_added != pen.date_added:
+        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
     return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : versionList, 'starter' : weightSlip.start_weight, 'total_pigs' : total_pigs,
@@ -966,7 +974,7 @@ def addFarm(request):
 
                         messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors))
                 else: 
-                    # debug("farmLoc not obtained")
+                    debug("farmLoc not obtained")
                     messages.error(request, "Farm location not obtained.")
             except:
                 debug("farmLoc not obtained")
@@ -984,7 +992,7 @@ def addFarm(request):
         # if the forms have no input yet, only display empty forms
         hogRaiserForm       = HogRaiserForm()
         farmForm            = FarmForm()
-        pigpenRowForm  = PigpenRowForm()
+        pigpenRowForm       = PigpenRowForm()
 
     # pass django forms to template
     return render(request, 'farmstemp/add-farm.html', { 'farmCode' : farmID,
