@@ -2213,7 +2213,7 @@ def viewAnnouncement(request, id):
         "category",
         "recip_area",
         "mssg",
-        "timestamp"
+        "timestamp",
         "reject_reason"
     ).first()
     area_choices = []
