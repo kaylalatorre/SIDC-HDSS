@@ -12,9 +12,9 @@
 {% include 'partials/messages.html' %}
 
 <div class="main-div">
-    <form>
+    <form action="" method="POST">
 
-        <!-- {% csrf_token %} -->
+        {% csrf_token %}
         <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID}}"> {{farmID}}</a> >  Add Incident Case</h1>
         <div class="flex subheading">
             <p class="flex-item">Add new incidents cases here. Record all symptoms observed. </p>

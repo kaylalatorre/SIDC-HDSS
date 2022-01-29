@@ -463,6 +463,7 @@ def techFarms(request):
         for farm in techFarmQry:
             
             farmObject = {
+                "area" : area.area_name,
                 "code": farm["id"],
                 "raiser": " ".join((farm["fname"],farm["lname"])),
                 "contact": farm["contact"],
@@ -1310,7 +1311,7 @@ def post_addChecklist(request, farmID):
                 # debug(extBio.last_updated)
                 
                 # (SUCCESS) Biochecklist has been added. Properly redirect to Biosec main page
-                messages.success(request, "Checklist dated " + df + " has been successfully added!", extra_tags='add-checklist')
+                messages.success(request, "Checklist dated " + df + " has been successfully added.", extra_tags='add-checklist')
                 return redirect('/biosecurity/' + farmID)
         
             else:
@@ -2213,7 +2214,7 @@ def viewAnnouncement(request, id):
         "category",
         "recip_area",
         "mssg",
-        "timestamp"
+        "timestamp",
         "reject_reason"
     ).first()
     area_choices = []

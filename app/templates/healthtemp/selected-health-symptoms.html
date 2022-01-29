@@ -207,7 +207,7 @@
                     <tr>
                         <th>Incident Code</th>
                         <th>Date Reported</th>
-                        <th style="width: 10%">No. of Pigs Affected</th>
+                        <th style="width:30%">No. of Pigs Affected</th>
                         <th style="width: 35%">Symptoms Observed</th>
                         <th>Status</th>
                         <th></th>
@@ -219,7 +219,7 @@
                         
                         <td data-label="Incident Code">{{ incident.id }}</td>
                         <td data-label="Date Reported">{{ incident.date_filed }} </td>
-                        <td data-label="No. of Pigs Affected">{{ incident.num_pigs_affected }} pigs</td>
+                        <td data-label="Pigs Affected">{{ incident.num_pigs_affected }} pigs</td>
                         <td data-label="Symptoms Observed">  
                             {% load healthapp_extras %}
                             {% for sKey, sVal in symptoms.items %}

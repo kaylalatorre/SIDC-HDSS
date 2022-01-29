@@ -23,6 +23,7 @@
                 <tr>
                     <th>Farm Code</th>
                     <th>Raiser</th>
+                    <th>Area</th>
                     <th>No. of Pigs</th>
                     <th>Ave. Starter Weight</th>
                     <th>Ave. Fattener Weight</th>
@@ -39,6 +40,7 @@
                 <tr class="health-row">
                     <td data-label="Farm Code">{{ farm.code|stringformat:"03d" }}</td>
                     <td data-label="Raiser">{{ farm.raiser }}</td>
+                    <td data-label="Area">{{ farm.area }}</td>
                     <td data-label="No. of Pigs">{{ farm.pigs }}</td>
                     {% if farm.ave_startWeight != 0.0 %}
                         <td data-label="Ave. Starter Weight">{{ farm.ave_startWeight }} kg</td>

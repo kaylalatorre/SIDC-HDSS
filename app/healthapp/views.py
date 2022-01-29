@@ -558,6 +558,7 @@ def healthSymptoms(request):
             total_active = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
 
             farmObject = {
+                "area":             area.area_name,
                 "code":             f["id"],
                 "raiser":           " ".join((f["fname"],f["lname"])),
                 "pigs":             f["total_pigs"],
@@ -849,7 +850,7 @@ def edit_incidStat(request, incidID):
                 incidentObj.report_status = select_status
                 incidentObj.save()
 
-                debug("(SUCCESS) Incident status successfully updated!")
+                debug("(SUCCESS) Incident status successfully updated.")
 
                 # Get updated status from db
                 updatedStat = incidentObj.report_status
@@ -977,10 +978,10 @@ def post_addCase(request, farmID):
                     # (SUCCESS) Incident has been added. Properly redirect to selected view page
                     # IF death is in the symptoms
                     if symptomsArr[11] == True or symptomsArr[12] == True:
-                        messages.success(request, "Incident report dated " + df + " has been successfully added! Death is one of the symptoms reported.", extra_tags='add-incidCase-death' + str(farmID))
+                        messages.success(request, "New incident report has been successfully added. Death is one of the symptoms reported.", extra_tags='add-incidCase-death' + str(farmID))
                     # else
                     else:
-                        messages.success(request, "Incident report dated " + df + " has been successfully added!", extra_tags='add-incidCase')
+                        messages.success(request, "New incident report dated " + df + " has been successfully added.", extra_tags='add-incidCase')
                     
                     return JsonResponse({"status_code":"200"}, status=200)
                     # return redirect('/selected-health-symptoms/' + str(farmID))
@@ -1148,6 +1149,7 @@ def addWeight(request, farmID):
             latestPigpen.start_weight = weight
             latestPigpen.save()    
             messages.success(request, "Weight recorded.", extra_tags='weight')
+            return redirect('/selected-health-symptoms/' + str(farmID))
         
         elif latestPigpen.final_weight_id == None:
             weight = Farm_Weight(
@@ -1163,11 +1165,11 @@ def addWeight(request, farmID):
             latestPigpen.final_weight =  weight
             latestPigpen.save()    
             messages.success(request, "Weight recorded.", extra_tags='weight')
+            return redirect('/selected-health-symptoms/' + str(farmID))
         
         else:
             messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
 
-        
         
     weightForm = WeightForm()
     return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID), 'weightType': weightType})
@@ -1278,7 +1280,7 @@ def hogsMortality(request):
     areaQry = Area.objects.all()
 
     # (3.1) Mortality details
-    mortQry = Mortality.objects.order_by("id").all()
+    mortQry = Mortality.objects.order_by("mortality_date").all()
     # debug(str(mortQry.query))
 
     if not mortQry.exists(): # (ERROR) No Mortality records found.
@@ -1357,7 +1359,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     if areaName == "All": # (CASE 1) search only by date range
         debug("TRACE: in areaName == 'All'")
 
-        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).order_by("mortality_date").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")
@@ -1367,7 +1369,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
     else: # (CASE 2) search by BOTH date range and areaName
         debug("TRACE: in else/")
 
-        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).order_by("id").all()
+        mortQry = Mortality.objects.filter(mortality_date__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).order_by("mortality_date").all()
 
         if not mortQry.exists(): # (ERROR) No Mortality records found.
             messages.error(request, "No Mortality records found.", extra_tags="mort-report")

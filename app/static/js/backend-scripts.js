@@ -1122,16 +1122,18 @@ function addCase(farmID) {
         success: function (response) {
             
             if (response.status_code === "200"){
+                url = "/selected-health-symptoms/" + farmID;
+                location.href = url;
 
-                // redirect back to selected view page   
-                try {
-                    url = "/selected-health-symptoms/" + farmID;
-                    // console.log(url);
-                    location.href = url;
+                // // redirect back to selected view page   
+                // try {
+                //     url = "/selected-health-symptoms/" + farmID;
+                //     // console.log(url);
+                //     location.href = url;
                     
-                } catch (error){
-                    console.log(error);
-                }              
+                // } catch (error){
+                //     console.log(error);
+                // }              
             } 
             else {
                 console.log("ERROR [" + response.status_code + "]: " + response.error);
