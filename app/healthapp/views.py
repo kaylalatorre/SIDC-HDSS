@@ -287,7 +287,7 @@ def selectedHogsHealth(request, farmID):
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).only(
         'date_filed', 
         'report_status',
-        'num_pigs_affected').order_by("id").all()
+        'num_pigs_affected').order_by("-date_filed").all()
 
     # (2.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=latestPigpen.id).values(
@@ -312,7 +312,7 @@ def selectedHogsHealth(request, farmID):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').order_by("id").all()
+            'conjunctivitis').order_by("-date_filed").all()
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
@@ -434,7 +434,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     incidentQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).only(
         'date_filed', 
         'report_status',
-        'num_pigs_affected').order_by("id").all()
+        'num_pigs_affected').order_by("-date_filed").all()
 
     # (2.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(pigpen_grp_id=selectedPigpen.id).values(
@@ -459,7 +459,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').order_by("id").all()
+            'conjunctivitis').order_by("-date_filed").all()
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidentQry, symptomsList)
@@ -626,7 +626,7 @@ def selectedHealthSymptoms(request, farmID):
         'date_filed',
         'date_updated', 
         'report_status',
-        'num_pigs_affected').order_by("id").all()
+        'num_pigs_affected').order_by("-date_filed").all()
 
     # for checking if Incident record is "RESOLVED" and exceeds 1 day
     editList = []
@@ -667,7 +667,7 @@ def selectedHealthSymptoms(request, farmID):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').order_by("id").all()
+            'conjunctivitis').order_by("-date_filed").all()
     
 
     # combine the 2 previous queries into 1 temporary list
@@ -745,7 +745,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         'date_filed',
         'date_updated', 
         'report_status',
-        'num_pigs_affected').order_by("id").all()
+        'num_pigs_affected').order_by("-date_filed").all()
 
     # for checking if Incident record is "RESOLVED" and exceeds 1 day
     editList = []
@@ -786,7 +786,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').order_by("id").all()
+            'conjunctivitis').order_by("-date_filed").all()
     
 
     # combine the 2 previous queries into 1 temporary list

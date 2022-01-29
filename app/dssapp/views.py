@@ -399,7 +399,7 @@ def diseaseMonitoring(request):
             "num_pigs_affected",
             "report_status",
             "date_filed"
-            ).order_by("id")
+            ).order_by("date_filed")
 
     incidList = []
     total_pigs_affect = 0
@@ -440,7 +440,7 @@ def diseaseMonitoring(request):
             'farrow_miscarriage',
             'weight_loss'       ,
             'trembling'         ,
-            'conjunctivitis').order_by("id").all()
+            'conjunctivitis').order_by("date_filed").all()
 
     sDiseaseList = []
     for sRow in symptomsList:
@@ -504,7 +504,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
                 "num_pigs_affected",
                 "report_status",
                 "date_filed"
-                ).order_by("id")
+                ).order_by("date_filed")
 
 
         if not incidQry.exists(): # (ERROR) No Disease records found.
@@ -551,7 +551,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
                 'farrow_miscarriage',
                 'weight_loss'       ,
                 'trembling'         ,
-                'conjunctivitis').order_by("id").all()
+                'conjunctivitis').order_by("date_filed").all()
         
 
     else: # (CASE 2) search by BOTH date range and areaName
@@ -567,7 +567,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
                 "num_pigs_affected",
                 "report_status",
                 "date_filed"
-                ).order_by("id")
+                ).order_by("date_filed")
 
         if not incidQry.exists(): # (ERROR) No Disease records found.
             messages.error(request, "No Disease records found.", extra_tags="disease-report")
@@ -612,7 +612,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
                 'farrow_miscarriage',
                 'weight_loss'       ,
                 'trembling'         ,
-                'conjunctivitis').order_by("id").all()
+                'conjunctivitis').order_by("date_filed").all()
         
 
     sDiseaseList = []
