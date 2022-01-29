@@ -44,11 +44,11 @@ $(document).ready(async function () {
         var map = L.map('map-containter').setView([lat, long], zoom);
         console.log(map.getZoom());
         // initialize osm tile layer
-        // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        // }).addTo(map);
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-        var osm = L.tileLayer(
+        var carto = L.tileLayer(
             'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
             {
               attribution:
@@ -104,11 +104,16 @@ $(document).ready(async function () {
             let sxRept = metadata[i]['sxRept'];
             let sxActv = metadata[i]['sxActv'];
 
+            // Approximate distance of 100 meteres
+            // Approximate Metric Equivalents for Degrees, Minutes, and Seconds: https://www.usna.edu/Users/oceano/pguth/md_help/html/approx_equivalents.htm
+            // degRadius = 0.0009;
+            degRadius = 0.0009* 10;
+
             // NumPigs
             let dots = []
             while(dots.length < numPigs){
                 let ang = Math.random() * 2 * Math.PI;
-                let hyp = Math.sqrt(Math.random()) * 0.0009;
+                let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
                 let opp = Math.sin(ang) * hyp;
 
@@ -123,7 +128,7 @@ $(document).ready(async function () {
             dots = []
             while(dots.length < morts){
                 let ang = Math.random() * 2 * Math.PI;
-                let hyp = Math.sqrt(Math.random()) * 0.0009;
+                let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
                 let opp = Math.sin(ang) * hyp;
 
@@ -138,7 +143,7 @@ $(document).ready(async function () {
             dots = []
             while(dots.length < sxActv){
                 let ang = Math.random() * 2 * Math.PI;
-                let hyp = Math.sqrt(Math.random()) * 0.0009;
+                let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
                 let opp = Math.sin(ang) * hyp;
 
@@ -150,7 +155,7 @@ $(document).ready(async function () {
             }
 
             farmsRadius.addLayer(new L.circle([farmLat, farmLong], {
-                radius: 100,
+                radius: 1000,
                 color: '#432',
                 weight: 1
             })).addTo(map);
@@ -184,7 +189,8 @@ $(document).ready(async function () {
          */
 
         var baseMaps = {
-            "OpenStreetMap": osm
+            "OpenStreetMap": osm,
+            "CARTO": carto
         }   
 
         var overlayMaps = {
