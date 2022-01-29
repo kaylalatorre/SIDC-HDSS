@@ -47,6 +47,7 @@ from .models import (
     InternalBiosec, 
     Farm, 
     Hog_Raiser,
+    Mortality,
     Pigpen_Group, 
     Pigpen_Row,
     Activity, 
@@ -101,7 +102,6 @@ def debugFunc(func, message):
 # Farms Management Module Views
 
 def getMapData(request):
-    # TODO investigate why is_ajax is included
     if request.method == 'POST':
         data = []
         qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
@@ -118,6 +118,9 @@ def getMapData(request):
                     "last_updated"
                     )
         for f in qry:
+            morts = 0
+            for mort in Mortality.objects.filter(ref_farm_id = f["id"]).filter(mortality_date__range=(now() - timedelta(days=120), now())).values("num_today"):
+                morts += mort["num_today"]
             farmObject = {
                 "code":  str(f["id"]),
                 "latitude": f["loc_lat"],
@@ -125,8 +128,9 @@ def getMapData(request):
                 "numPigs": str(f["total_pigs"]),
                 "address": f["farm_address"],
                 "mortRts": compute_MortRate(f["id"], None),
-                "sxRept": Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).count(),
-                "sxActv": Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(report_status="Active").count(),
+                "morts": morts,
+                "sxRept": Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(date_updated__range=(now() - timedelta(days=120), now())).count(),
+                "sxActv": Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(report_status="Active").filter(date_updated__range=(now() - timedelta(days=120), now())).count(),
                 "latest": f["last_updated"]
             }
             data.append(farmObject)
@@ -2276,14 +2280,6 @@ def getNotifIDs(request):
         pendingAnnouncements = memancmtForms.filter(is_approved = None)
         for item in pendingAnnouncements.values():
             notifIDs.append(';'.join([announceTable, str(item['id']), "Pending"]))
-        # Activity Forms
-        asmaNotifs = activityForms.filter(is_checked=True).filter(date_added__range=(now() - timedelta(days=120), now()))
-        for item in asmaNotifs.values():
-            notifIDs.append(';'.join([actFormTable, str(item['id'])]))
-        # Mortality Forms
-        asmaNotifs = mortalityForms.filter(date_added__range=(now() - timedelta(days=120), now()))
-        for item in asmaNotifs.values():
-            notifIDs.append(';'.join([mortFormTable, str(item['id'])]))
         # Tech Inspection
         for tech in Area.objects.distinct("tech_id").values_list("tech_id"):
             technician  = User.objects.filter(id = tech[0]).values("id", "first_name", "last_name").first()
@@ -2734,10 +2730,8 @@ def getNotifications(request):
 
     elif userGroup == "Assistant Manager":
         tchNspctNotifs = getTechInspectNotifs(request, notifIDList)
-        actFormsNotifs = getActFormsNotifs(request, notifIDList)
-        mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
-        notifIDList += tchNspctNotifs["notifIDList"] + actFormsNotifs["notifIDList"] + mrtFormsNotifs["notifIDList"]
-        notifList += tchNspctNotifs["notifList"] + actFormsNotifs["notifList"] + mrtFormsNotifs["notifList"]
+        notifIDList += tchNspctNotifs["notifIDList"]
+        notifList += tchNspctNotifs["notifList"] 
 
     elif userGroup == "Regional Manager":
         tchNspctNotifs = getTechInspectNotifs(request, notifIDList)
@@ -2837,9 +2831,7 @@ def countNotifications(request):
 
     elif userGroup == "Assistant Manager":
         tchNspctNotifs = getTechInspectNotifs(request, notifIDList)
-        actFormsNotifs = getActFormsNotifs(request, notifIDList)
-        mrtFormsNotifs = getMortFormsNotifs(request, notifIDList)
-        totalNotifs += len(tchNspctNotifs["notifList"]) + len(actFormsNotifs["notifList"]) + len(mrtFormsNotifs["notifList"])
+        totalNotifs += len(tchNspctNotifs["notifList"])
 
     elif userGroup == "Regional Manager":
         tchNspctNotifs = getTechInspectNotifs(request, notifIDList)
