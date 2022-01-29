@@ -80,16 +80,11 @@ $(document).ready(async function () {
         var farmsRadius = new L.layerGroup();
         var pigsPerFarm = new L.layerGroup();
         var mortalities = new L.layerGroup();
-        var symptomsAct = new L.layerGroup();
+        var symptoms = new L.layerGroup();
 
         var pigData = [];
-        var totalPigs = 0;
-
         var mortData = [];
-        var totalMort = 0;
-
         var sxData = [];
-        var totalSx = 0;
 
         // add markers and popups to layer groups
         for (let i = 0; i < metadata.length; i++) {
@@ -141,7 +136,7 @@ $(document).ready(async function () {
 
             // Symptopms Active
             dots = []
-            while(dots.length < sxActv){
+            while(dots.length < sxRept){
                 let ang = Math.random() * 2 * Math.PI;
                 let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
@@ -179,11 +174,8 @@ $(document).ready(async function () {
             mortalities.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'red' })).addTo(map);
         });
         sxData.forEach(function(point){
-            symptomsAct.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'blue' })).addTo(map);
+            symptoms.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'blue' })).addTo(map);
         });
-        // pigsPerFarm.addLayer(new L.heatLayer(pigData, {radius: 50, max: totalPigs, maxZoom:11})).addTo(map);
-        // mortalityRates.addLayer(new L.heatLayer(mortData, {radius: 50, max: totalMort, maxZoom: 11})).addTo(map);
-        // symptomsRep.addLayer(new L.heatLayer(sxData, {radius: 50, max: totalSx, maxZoom: 11})).addTo(map);
         /**
          * Layer Controls
          */
@@ -197,7 +189,7 @@ $(document).ready(async function () {
             "Farms": allFarms,
             "No. of Pigs per farm": pigsPerFarm,
             "Mortality Rates": mortalities,
-            "Symptoms Reported": symptomsAct,
+            "Symptoms Reported": symptoms,
         }
         
         // if(allFarms.getLayers().length != 0){
