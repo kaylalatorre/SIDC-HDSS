@@ -221,14 +221,14 @@ $(document).ready(async function () {
         legend.onAdd = function (map) {
             var div = L.DomUtil.create("div", "legend");
             div.innerHTML += "<h4>Legend</h4>";
-            div.innerHTML += '<i style="background: violet"></i><span>No. of Pigs</span><br>';
-            div.innerHTML += '<i style="background: red"></i><span>Mortality Rates</span><br>';
-            div.innerHTML += '<i style="background: orange"></i><span>Symptoms Reported</span><br>';
+            div.innerHTML += '<br><i style="background: black"></i><span>No. of Pigs</span><br>';
+            div.innerHTML += '<br><i style="background: red"></i><span>Mortalities</span><br>';
+            div.innerHTML += '<br><i style="background: blue"></i><span>Symptoms Reported</span><br>';
 
             return div;
         };
 
-        // legend.addTo(map);
+        legend.addTo(map);
         L.control.layers(baseMaps, overlayMaps).addTo(map);
 
         
