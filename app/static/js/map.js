@@ -151,8 +151,8 @@ $(document).ready(async function () {
 
             farmsRadius.addLayer(new L.circle([farmLat, farmLong], {
                 radius: 1000,
-                color: '#432',
-                weight: 1
+                color: '#A9A9A9',
+                weight: 0
             })).addTo(map);
 
             allFarms.addLayer(new L.marker([farmLat, farmLong])
@@ -174,7 +174,7 @@ $(document).ready(async function () {
             mortalities.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'red' })).addTo(map);
         });
         sxData.forEach(function(point){
-            symptoms.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'blue' })).addTo(map);
+            symptoms.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'orange' })).addTo(map);
         });
         /**
          * Layer Controls
@@ -215,7 +215,7 @@ $(document).ready(async function () {
             div.innerHTML += "<h4>Legend</h4>";
             div.innerHTML += '<br><i style="background: black"></i><span>No. of Pigs</span><br>';
             div.innerHTML += '<br><i style="background: red"></i><span>Mortalities</span><br>';
-            div.innerHTML += '<br><i style="background: blue"></i><span>Symptoms Reported</span><br>';
+            div.innerHTML += '<br><i style="background: orange"></i><span>Symptoms Reported</span><br>';
 
             return div;
         };
