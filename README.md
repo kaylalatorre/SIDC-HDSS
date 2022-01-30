@@ -92,7 +92,7 @@ conda config --env --set channel_priority strict
 Step 3: BASH > create virtual environment
 
 ```bash
-conda create -p ~/SIDC-HDSS/venv uWSGI Python Django djangorestframework GeoPandas PostGis psycopg2
+conda create -p ~/SIDC-HDSS/venv uWSGI Python Django djangorestframework GeoPandas geopy PostGis psycopg2 twilio python-dotenv
 ```
 
 >Can also use:
