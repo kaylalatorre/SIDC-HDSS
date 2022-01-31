@@ -43,9 +43,6 @@ $(document).ready(async function () {
                 });
             }
 
-            // console.log(incSeries);
-
-
             Highcharts.chart('dm-active-incid', {
                 title: {
                     text: 'Active Incidents for the past month'
@@ -103,8 +100,6 @@ $(document).ready(async function () {
                 });
             }
 
-            // console.log(mortSeries);
-
             Highcharts.chart('dm-mortality', {
                 title: {
                     text: 'Mortality Reports for the past month'
@@ -153,9 +148,6 @@ $(document).ready(async function () {
                     data: metadata[2][i][1]
                 });
             }
-
-            // console.log(symSeries);
-
 
             Highcharts.chart('dm-symptoms-rep', {
                 chart: {

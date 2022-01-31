@@ -58,10 +58,6 @@ $(document).ready(async function () {
 
         console.log("map loaded");
 
-        // map.on('zoomend', function(){
-        //     console.log(map.getZoom());
-        // });
-
         /**
          * Populate map
          */
@@ -176,6 +172,7 @@ $(document).ready(async function () {
         sxData.forEach(function(point){
             symptoms.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'orange' })).addTo(map);
         });
+        
         /**
          * Layer Controls
          */
@@ -191,20 +188,6 @@ $(document).ready(async function () {
             "Mortality Rates": mortalities,
             "Symptoms Reported": symptoms,
         }
-        
-        // if(allFarms.getLayers().length != 0){
-        //     overlayMaps["Farms"] = allFarms;
-        //     // inside if to make sure overlays are only checked when there are farms
-        //     if(pigsPerFarm.getLayers().length != 0){
-        //         overlayMaps["No. of Pigs per farm"] = pigsPerFarm;
-        //     }
-        //     if(mortalityRates.getLayers().length != 0){
-        //         overlayMaps["Moratlity Rates"] = mortalityRates;
-        //     }
-        //     if(symptomsRep.getLayers().length != 0){
-        //         overlayMaps["Symptoms Reported"] = symptomsRep;
-        //     }
-        // }
 
         var legend = L.control({
             position: "bottomleft"
