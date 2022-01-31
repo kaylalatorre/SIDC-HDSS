@@ -100,18 +100,6 @@ WSGI_APPLICATION = 'src.wsgi.application'
 # django.contrib.gis.db.backends.postgis
 # django.db.backends.postgresql_psycopg2
 
-# for LOCAL db
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#         'NAME': 'sidcDB',
-#         'USER': 'sidcdbuser',
-#         'PASSWORD': 'sidcdb123',
-#         'HOST': 'localhost',
-#         'PORT': '5432'
-#     }
-# }
-
 # for CLOUD db
 DATABASES = {
     'default': {
@@ -156,9 +144,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Date and Time Format
-# DATETIME_FORMAT = 'N j, Y, P'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

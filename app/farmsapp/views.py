@@ -446,6 +446,7 @@ def techFarms(request):
 
     # array to store all farms under each area
     techFarmsList = []
+    sorted_techFarmsList = []
     
     # collect all farms under each area
     for area in areaQry :
@@ -478,10 +479,17 @@ def techFarms(request):
 
         sorted_techFarmsList = sorted(techFarmsList, key = lambda i: i['updated'], reverse=False)
     
-    techData = {
-        "techFarms" : sorted_techFarmsList,
-        "areaCount" : areaNum,
-        "areaString" : ', '.join(areaNames) }
+    if sorted_techFarmsList is not None:
+        techData = {
+            "techFarms" : sorted_techFarmsList,
+            "areaCount" : areaNum,
+            "areaString" : ', '.join(areaNames) }
+    
+    else :
+        techData = {
+            "techFarms" : techFarmsList,
+            "areaCount" : areaNum,
+            "areaString" : ', '.join(areaNames) }
 
     return techData
 
