@@ -737,7 +737,7 @@ def dashboard_SusCases():
             if case['ref_farm_id'] not in diseaseInfo['ADV']['farms']:
                 diseaseInfo['ADV']['farms'].append(case['ref_farm_id'])
             diseaseInfo['ADV']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['ASF']['symptoms'].extend(
+            diseaseInfo['ADV']['symptoms'].extend(
                 list(set(diseaseInfo['ADV']['symptoms'])-set(diseaseSymptoms['ADV']).intersection(currCase)) + 
                 list(set(diseaseSymptoms['ADV']).intersection(currCase)-set(diseaseInfo['ADV']['symptoms']))
             )
@@ -745,7 +745,7 @@ def dashboard_SusCases():
             if case['ref_farm_id'] not in diseaseInfo['PRRS']['farms']:
                 diseaseInfo['PRRS']['farms'].append(case['ref_farm_id'])
             diseaseInfo['PRRS']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['ASF']['symptoms'].extend(
+            diseaseInfo['PRRS']['symptoms'].extend(
                 list(set(diseaseInfo['PRRS']['symptoms'])-set(diseaseSymptoms['PRRS']).intersection(currCase)) + 
                 list(set(diseaseSymptoms['PRRS']).intersection(currCase)-set(diseaseInfo['PRRS']['symptoms']))
             )
