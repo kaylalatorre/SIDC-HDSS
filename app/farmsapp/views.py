@@ -1980,10 +1980,8 @@ def addActivity(request, farmID):
         else:
             # print("TEST LOG: activityForm is not valid")
             formError = str(activityForm.non_field_errors().as_text)
-            # print(re.split("\'.*?",formError)[1])
 
             messages.error(request, "Error adding activity. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-activity')
-            # messages.error(request, "Error adding activity. " + str(activityForm.non_field_errors().as_text), extra_tags='add-activity')
 
     else:
         print("TEST LOG: Add Activity is not a POST method")
@@ -3902,7 +3900,7 @@ def dashboard_view(request):
     # debug(farmQry)
 
     if not farmQry.exists(): 
-        messages.error(request, "No farm details found.", extra_tags="farm-dashboard")
+        # messages.error(request, "No farm details found.", extra_tags="farm-dashboard")
         return render(request, 'dashboard.html', {})
 
     total_farms = 0

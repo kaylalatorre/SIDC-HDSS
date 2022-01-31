@@ -136,7 +136,6 @@ def hogsHealth(request):
 
 
     if not qry.exists(): 
-        messages.error(request, "No hogs health records found.", extra_tags="view-hogsHealth")
         return render(request, 'healthtemp/hogs-health.html', {"areaList": areaQry})
     else:
 
@@ -224,7 +223,6 @@ def selectedHogsHealth(request, farmID):
     # debug(qry)
 
     if selectFarm is None: 
-        messages.error(request, "Hogs health record not found.", extra_tags="selected-hogsHealth")
         return render(request, 'healthtemp/selected-hogs-health.html', {})
 
     # get current starter and fattener weights acc. to current Pigpen
@@ -1096,10 +1094,8 @@ def addMortality(request, farmID):
         else:
             # print("TEST LOG: mortalityForm is not valid")
             formError = str(mortalityForm.non_field_errors().as_text)
-            # print(re.split("\'.*?",formError)[1])
 
             messages.error(request, "Error adding mortality record. " + str(re.split("\'.*?",formError)[1]), extra_tags='add-mortality')
-            # messages.error(request, "Error adding mortality record. " + str(mortalityForm.non_field_errors().as_text), extra_tags='add-mortality')
 
     else:
         print("TEST LOG: Add Mortality is not a POST method")
