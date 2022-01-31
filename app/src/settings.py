@@ -56,8 +56,6 @@ INSTALLED_APPS = [
     'dssapp',
     'farmsapp',
     'healthapp',
-
-    # third-parties
 ]
 
 MIDDLEWARE = [
@@ -68,9 +66,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # app middlewares
-
-    # 'farmsapp.middleware.ErrorPageRedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'src.urls'
@@ -96,9 +91,6 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-# python manage.py makemigrations
-# django.contrib.gis.db.backends.postgis
-# django.db.backends.postgresql_psycopg2
 
 # for CLOUD db
 DATABASES = {
@@ -156,17 +148,6 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# Email settings
-DEFAULT_FROM_EMAIL = '<paste your gmail account here>'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'training.tvh@gmail.com'
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = False
 
 # for Django success to error messages
 from django.contrib.messages import constants as messages
