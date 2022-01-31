@@ -580,7 +580,7 @@ def healthSymptoms(request):
 
     # (ERROR) for checking technician Areas that have no assigned Farms
     if not farmsData: 
-        messages.error(request, "Hogs health record/s not found.", extra_tags="view-healthSymp")
+        # messages.error(request, "Hogs health record/s not found.", extra_tags="view-healthSymp")
         return render(request, 'healthtemp/health-symptoms.html', {})
 
 
