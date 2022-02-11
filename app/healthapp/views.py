@@ -1116,6 +1116,9 @@ def addWeight(request, farmID):
     except:
         debug("farm does not exist")
         return redirect("healthSymptoms")
+    
+    # get total num. of pigs in farm
+    farm = Farm.objects.filter(id=farmID).only("total_pigs").first()
 
     weightType = ""
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
@@ -1168,7 +1171,7 @@ def addWeight(request, farmID):
 
         
     weightForm = WeightForm()
-    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID), 'weightType': weightType})
+    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID), 'weightType': weightType, 'total_pigs': farm.total_pigs})
 
 
 # REPORTS for Module 2
