@@ -1225,19 +1225,15 @@ function addCase(farmID) {
     }
  }
 
- // FOR TECH ASSIGNMENT DETAILS //
- /* Search function for retrieving Biosecurity details based on 
- * 
+ /**
+ * Search function for retrieving incident, biosecurity, and announcement details based on techID.
+ * @param {String} techID 
+ * @returns loaded data for incident, biosecurity, and announcement records
  */
-
- $('.assignEdit').on('click', function () {
-    var techID = $(this).parent().parent().siblings(":eq(3)").children().children().val();
-    // var techName = $(this).parent().parent().siblings(":eq(3)").children().children().text(); // buggy
-    var areaName = $(this).parent().parent().siblings(":eq(0)").text();
-
+ function searchTechTasks(techID) {
     try {
 
-        url = '/technician-assignment/search-tasks/' + techID + '/' + areaName;
+        url = '/technician-assignment/search-tasks/' + techID;
         // console.log(url);
 
         // for loading tech-assign table data
@@ -1261,29 +1257,23 @@ function addCase(farmID) {
     } catch (error) {
         console.log(error);
     }
+ }
 
+ /**
+ * On-click function for Edit button. Calls search searchTechTasks() once triggered.
+ */
+ $('.assignEdit').on('click', function () {
+    var techID = $(this).parent().parent().siblings(":eq(3)").children().children().val();
+
+    searchTechTasks(techID);
     
  });
 
+ /**
+ * On-change function for technician assigment dropdown. Calls search searchTechTasks() once triggered.
+ */
+ $('.tech-assign-drop').change(function () {
+    var techID = $(this).val();
 
-//  $('.tech-assign-drop').change(function () {
-//     // Get biosec ID of selected option tag
-//     var biosecID = $(this).val();
-
-//     ajaxCSRF();
-
-//     $.ajax({
-//         type: 'POST',
-//         // url: '/biosecurity/getchecklist/' + biosecID,
-//         url: '/technician-assignment/search-tasks' + techID,
-//         success: function (response) {
-
-//             // alert("in AJAX success");
-//             var biofields = JSON.parse(response["instance"]);
-
-//         },
-//         error: function (res) {
-//             console.log(res.responseJSON.error);
-//         }
-//     });
-//  });
+    searchTechTasks(techID);
+ });

@@ -1590,27 +1590,32 @@ def techAssignment(request):
     }
     return render(request, 'farmstemp/assignment.html', context)
 
-def search_techTasks(request, techID, areaName):
+def search_techTasks(request, techID):
     """
-    For retrieving details of tasks left by a technician. This includes:
+    For retrieving details of tasks left by a technician which includes:
     - (1) technician name
     - (2) Farm Biosecurity details
     - (3) Incident records (Active and Pending)
     - (4) Recent member announcements created
     """
 
-    debug("in search_techTasks()/n")
-    debug("techID: " + techID)
-    debug("areaName: " + areaName) 
+    # debug("in search_techTasks()/n")
+    # debug("techID: " + techID)
 
-    # (1) Get and format technician name
-    tech = Area.objects.filter(tech_id=int(techID)).annotate(
-        fname=F("tech_id__first_name"), lname=F("tech_id__last_name")
-    ).values(
-        "fname","lname"        
-    ).first()
+    # (1) Get formatted technician name
+    tech = User.objects.filter(groups__name="Field Technician").filter(id=int(techID)).annotate(
+        full_name = Concat('first_name', Value(' '), 'last_name'),
+        ).values(
+        "full_name"
+        ).first()
 
-    techName = " ".join((tech["fname"],tech["lname"]))
+    techName = " "
+    if tech is None:
+        debug("ERROR: Technician not found.")
+        messages.error(request, "Technician not found.", extra_tags='search-techTasks')
+        return render(request, 'farmstemp/assignment.html', {})
+    else:
+        techName = tech["full_name"]
 
     # (2) Get Farm details 
     farmQry = Farm.objects.filter(area__tech_id=int(techID)).select_related('extbio').annotate(
