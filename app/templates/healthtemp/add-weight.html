@@ -15,7 +15,7 @@
         <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID|stringformat:'03d'}}">{{ farmID|stringformat:"03d" }}</a> > Add Weight Slip Record</h1>
         <div class="flex subheading">
             <p class="flex-item"> <strong>Farm: </strong> {{farmID|stringformat:"03d"}} </p>
-            <p class="flex-item" id="total_pigs" value="{{total_pigs}}"> {{total_pigs}} </p>
+            <p hidden class="flex-item" id="total_pigs" value="{{total_pigs}}"> {{total_pigs}} </p>
             <div><button class="primary-btn" type="submit">Save</button></div>
         </div>
         <hr>
@@ -57,12 +57,7 @@
                     </tr>
                 </thead>
                 <tbody id="fattenerTable">                    
-                    <!-- <tr>
-                        <td>{{total_pigs}}</td>
-                        <td>
-                            <input type="number" class="form-control" name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01>
-                        </td>
-                    </tr> -->
+
                 </tbody>
             </table>
             

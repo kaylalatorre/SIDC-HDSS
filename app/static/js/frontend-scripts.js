@@ -630,10 +630,8 @@ $(document).ready(function(){
 
         for(var i = 0 ; i < rowNum ; i++) {
             resultHtml += ["<tr>", 
-            "<td>", 
-            (i+1),
-            "</td>",
-            '<td><input type="number" class="form-control" name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01></td>',
+            "<td>", (i+1), "</td>",
+            '<td><input type="number" class="form-control" required name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01></td>',
             '</tr>'].join("\n");
         }  
         
