@@ -43,7 +43,7 @@
                             <th width="10%">Beg. Inv.</th>
                             <th width="10%">Today</th>
                             <th width="10%">To Date</th>
-                            <th>Source</th>
+                            <th>Incident Case</th>
                             <th>Remarks</th>
                             <th style="text-align: right;">Mortality %</th>
                             <th></th>
@@ -55,7 +55,14 @@
                             <td data-label="Beg. Inv." id="begInv" class="num_begInv" value="{{num_begInv}}"> {{num_begInv}} </td>
                             <td data-label="Today" id="today" onchange="computeMortality(this)"> {{mortalityForm.num_today}} </td>
                             <td data-label="To Date"> <p class="num_toDate">-</p> </td>
-                            <td data-label="Source" id="source"> {{mortalityForm.source}} </td>
+                            <td data-label="Source" id="source"> 
+                                <select class="form-select" id="input-case" name="input-case">
+                                    <option></option>
+                                    {% for case in incid_cases %}
+                                    <option>{{case.id}}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
                             <td data-label="Remarks" id="remarks"> {{mortalityForm.remarks}} </td>
                             <td data-label="Mortality Rate" style="text-align: right;"> <p class="mortality_rate">-</p> </td>
                             <td></td>

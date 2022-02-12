@@ -232,9 +232,9 @@ class Mortality(models.Model):
     num_begInv          = models.IntegerField(null=True, blank=True)
     num_today           = models.IntegerField()
     num_toDate          = models.IntegerField(null=True, blank=True)
-    source              = models.CharField(max_length=200, null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
+    incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     mortality_form      = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
 
