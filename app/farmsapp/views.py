@@ -1714,8 +1714,82 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # get all other versions of selected activity form
     versionList = Activities_Form.objects.filter(code=actFormQuery.code).all().order_by("-id")
     
-    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm,
-                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList})
+    # get reference data (farm)
+    techFarmQry = Farm.objects.filter(id=actFormQuery.ref_farm_id).select_related('hog_raiser', 'area').annotate(
+                    raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact     = F("hog_raiser__contact_no"),
+                    farm_area   = F("area__area_name"))
+
+    farmRef = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+    ).first()
+
+    # get reference data (health)
+    start_weight = 0.0
+    end_weight   = 0.0
+
+    # get latest version of Pigpen
+    latestPP = Pigpen_Group.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).order_by("-date_added").first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPP.id).order_by("id")
+    
+    # get current starter and fattener weights acc. to current Pigpen
+    s_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").first()
+    e_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("final_weight").first()
+
+    # assign values for start and end weight
+    if s_weightQry.start_weight is not None:
+        start_weight = s_weightQry.start_weight.ave_weight
+
+    if e_weightQry.final_weight is not None:
+        end_weight = e_weightQry.final_weight.ave_weight
+
+    # compute for mortality rate (borrowed from comp_MortRate function)
+    total_pigs = 0
+    for pen in pigpenQry:
+        total_pigs += pen.num_heads
+
+    # Get latest Mortality record of the Farm (w Pigpen filter)
+    mortQry = Mortality.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
+
+    mortality_rate = 0
+    toDate = 0
+
+    if mortQry is not None:
+        for m in mortQry:
+            toDate += m.num_today
+
+        mortality_rate = (toDate / total_pigs) * 100
+
+    # count total number of cases reported
+    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).filter(pigpen_grp_id=latestPP.id).count()
+
+    # count total number of active cases
+    total_active = Hog_Symptoms.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
+
+    healthRef = {
+        "ave_startWeight":  start_weight,
+        "ave_endWeight":    end_weight,
+        "mortality_rate":   round(mortality_rate, 2),
+        "total_incidents":  total_incidents,
+        "total_active":     total_active,
+    }
+
+    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm, 'healthRef' : healthRef,
+                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList, 'farmRef' : farmRef})
 
 def approveActivityForm(request, activityFormID):
     """
