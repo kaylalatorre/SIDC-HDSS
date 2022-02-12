@@ -4023,6 +4023,7 @@ def dashboard_view(request):
     total_active = 0
     ave_intbio = 0
     ave_extbio = 0
+    ave_mortRate = 0
 
     for f in farmQry:
         # compute int-extbio scores per Farm
@@ -4034,9 +4035,10 @@ def dashboard_view(request):
         ave_intbio += biosec_score[0]
         ave_extbio += biosec_score[1]
 
+        ave_mortRate += compute_MortRate(f["id"], None)
+
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
-        # print(str(f["id"]) + " " + str(bioDateDiff))
         
         if bioDateDiff.days > 7:
             total_needInspect += 1
@@ -4051,11 +4053,11 @@ def dashboard_view(request):
 
     total_farms = len(farmQry)
     # compute for -- total (pigs) and ave columns (intbio, extbio)
-    ave_pigs   = round((total_pigs / len(farmQry)), 2)
-    ave_intbio = round((ave_intbio / len(farmQry)), 2)
-    ave_extbio = round((ave_extbio / len(farmQry)), 2)
+    ave_pigs     = round((total_pigs / len(farmQry)), 2)
+    ave_intbio   = round((ave_intbio / len(farmQry)), 2)
+    ave_extbio   = round((ave_extbio / len(farmQry)), 2)
+    ave_mortRate = round((ave_mortRate / len(farmQry)), 2)
     
-    # debug("total_farms -- " + str(total_farms))
 
     farmStats = {
         "total_farms": total_farms,
@@ -4064,8 +4066,7 @@ def dashboard_view(request):
         "total_active": total_active,
         "ave_intbio": round(ave_intbio, 2),
         "ave_extbio": round(ave_extbio, 2),
-        "rem_intbio": round((100 - ave_intbio), 2),
-        "rem_extbio": round((100 - ave_extbio), 2),
+        "ave_mortRate": round(ave_mortRate, 2),
     }
 
     # return render(request, 'dashboard.html', {"fStats": farmStats})
