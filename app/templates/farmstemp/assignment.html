@@ -147,7 +147,7 @@
                 </div>
                 
                 <h3>Recent Announcements</h3>
-                <div class="box-style">
+                <div class="box-style" id="table-techAnnounce">
                     <table class="table">
                         <thead>
                             <tr>
@@ -159,16 +159,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for announcement in approved %}
+                            {% for a in announceList %}
                             <tr>
-                                <td data-label="Timestamp"> Dec. 22, 1289, 12:30 </td>
-                                <td data-label="Title"> Title </td>
-                                <td data-label="Category"> dd</td>
-                                <td data-label="Recipient"> West, Tsisi </td>
-                                <td data-label="Message"> HELLO </td>
+                                <td data-label="Timestamp">{{ a.timestamp }}</td>
+                                <td data-label="Title">{{ a.title }}</td>
+                                <td data-label="Category">{{ a.category }}</td>
+                                <td data-label="Recipient">{{ a.recip_area }}</td>
+                                <td data-label="Message">{{ a.mssg }}</td>
                             </tr>
                             {% endfor %}
-        
                         </tbody>
                     </table>
                 </div>

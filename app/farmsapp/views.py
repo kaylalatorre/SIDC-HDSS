@@ -1593,17 +1593,17 @@ def techAssignment(request):
 def search_techTasks(request, techID, areaName):
     """
     For retrieving details of tasks left by a technician. This includes:
-    - technician name
-    - Farm Biosecurity details
-    - Incident records (Active and Pending)
-    - Recent member announcements created
+    - (1) technician name
+    - (2) Farm Biosecurity details
+    - (3) Incident records (Active and Pending)
+    - (4) Recent member announcements created
     """
 
     debug("in search_techTasks()/n")
     debug("techID: " + techID)
     debug("areaName: " + areaName) 
 
-    # Get and format technician name
+    # (1) Get and format technician name
     tech = Area.objects.filter(tech_id=int(techID)).annotate(
         fname=F("tech_id__first_name"), lname=F("tech_id__last_name")
     ).values(
@@ -1612,7 +1612,7 @@ def search_techTasks(request, techID, areaName):
 
     techName = " ".join((tech["fname"],tech["lname"]))
 
-    # Get Farm details 
+    # (2) Get Farm details 
     farmQry = Farm.objects.filter(area__tech_id=int(techID)).select_related('extbio').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
@@ -1626,7 +1626,6 @@ def search_techTasks(request, techID, areaName):
             "total_pigs",
             "last_update"
             ).order_by("id").all()
-    # debug(farmQry)
 
     farmsData = []
     for f in farmQry:
@@ -1639,7 +1638,7 @@ def search_techTasks(request, techID, areaName):
         }
         farmsData.append(farmObject)
 
-    # Get Incident details
+    # (3) Get Incident details
     incidData = []
     for farm in farmQry:
         # for current Pigpen version
@@ -1684,8 +1683,12 @@ def search_techTasks(request, techID, areaName):
         }
         incidData.append(incidObject)
 
+    # (4) Get Mem Announcements
+    memQry = Mem_Announcement.objects.filter(author_id=int(techID)).filter(is_approved=True).order_by("-timestamp")    
+
     return render(request, 'farmstemp/assignment.html', {"techName": techName, "farmBioList": farmsData,
-                                                                                "incidList":  incidData})
+                                                                                "incidList":  incidData,
+                                                                                "announceList": memQry})
 
 
 def assign_technician(request):

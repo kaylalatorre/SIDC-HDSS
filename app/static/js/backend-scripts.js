@@ -1231,18 +1231,9 @@ function addCase(farmID) {
  */
 
  $('.assignEdit').on('click', function () {
-    // var techID =  $(".tech-assign-drop option:selected").val();
-    // var areaID =  $("#hidden-areaID").text();
-
-    // var techName = $(".tech-assign-drop option:selected").text();
     var techID = $(this).parent().parent().siblings(":eq(3)").children().children().val();
     // var techName = $(this).parent().parent().siblings(":eq(3)").children().children().text(); // buggy
     var areaName = $(this).parent().parent().siblings(":eq(0)").text();
-
-    // alert(techName);
-    // alert(areaName);
-
-    // techHeader.innerText = techName + "'s Pending Activities";
 
     try {
 
@@ -1259,6 +1250,10 @@ function addCase(farmID) {
         });
 
         $('#table-techFarmBio').load(url + ' #table-techFarmBio', function (response) {
+            $(this).children().unwrap();
+        });
+
+        $('#table-techAnnounce').load(url + ' #table-techAnnounce', function (response) {
             $(this).children().unwrap();
         });
 
