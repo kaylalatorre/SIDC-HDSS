@@ -1224,3 +1224,71 @@ function addCase(farmID) {
         console.log(error);
     }
  }
+
+ // FOR TECH ASSIGNMENT DETAILS //
+ /* Search function for retrieving Biosecurity details based on 
+ * 
+ */
+
+ $('.assignEdit').on('click', function () {
+    // var techID =  $(".tech-assign-drop option:selected").val();
+    // var areaID =  $("#hidden-areaID").text();
+
+    // var techName = $(".tech-assign-drop option:selected").text();
+    var techID = $(this).parent().parent().siblings(":eq(3)").children().children().val();
+    // var techName = $(this).parent().parent().siblings(":eq(3)").children().children().text(); // buggy
+    var areaName = $(this).parent().parent().siblings(":eq(0)").text();
+
+    // alert(techName);
+    // alert(areaName);
+
+    // techHeader.innerText = techName + "'s Pending Activities";
+
+    try {
+
+        url = '/technician-assignment/search-tasks/' + techID + '/' + areaName;
+        // console.log(url);
+
+        // for loading tech-assign table data
+        $('#techHeader').load(url + ' #techHeader', function (response) {
+            $(this).children().unwrap();
+        });
+
+        $('#table-techIncid').load(url + ' #table-techIncid', function (response) {
+            $(this).children().unwrap();
+        });
+
+        $('#table-techFarmBio').load(url + ' #table-techFarmBio', function (response) {
+            $(this).children().unwrap();
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+
+    
+ });
+
+
+//  $('.tech-assign-drop').change(function () {
+//     // Get biosec ID of selected option tag
+//     var biosecID = $(this).val();
+
+//     ajaxCSRF();
+
+//     $.ajax({
+//         type: 'POST',
+//         // url: '/biosecurity/getchecklist/' + biosecID,
+//         url: '/technician-assignment/search-tasks' + techID,
+//         success: function (response) {
+
+//             // alert("in AJAX success");
+//             var biofields = JSON.parse(response["instance"]);
+
+//         },
+//         error: function (res) {
+//             console.log(res.responseJSON.error);
+//         }
+//     });
+//  });

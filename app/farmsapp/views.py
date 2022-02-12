@@ -1567,13 +1567,21 @@ def techAssignment(request):
         "id",
         "name",
     )
+
     for a in areas:
+        # get total pigs per area
+        aFarmQry = Farm.objects.filter(area=a["id"]).all()
+        total_pigs = 0
+        for af in aFarmQry:
+            total_pigs += af.total_pigs
+
         areaObject = {
             "id": str(a["id"]),
             "area_name": a["area_name"],
             "curr_tech_id": a["tech_id"],
             "curr_tech": a["curr_tech"],
-            "farm_count": Farm.objects.filter(area=a["id"]).count()
+            "farm_count": Farm.objects.filter(area=a["id"]).count(),
+            "total_pigs": total_pigs
         }
         areasData.append(areaObject)
     context = {
@@ -1581,6 +1589,104 @@ def techAssignment(request):
         "technicians":techs
     }
     return render(request, 'farmstemp/assignment.html', context)
+
+def search_techTasks(request, techID, areaName):
+    """
+    For retrieving details of tasks left by a technician. This includes:
+    - technician name
+    - Farm Biosecurity details
+    - Incident records (Active and Pending)
+    - Recent member announcements created
+    """
+
+    debug("in search_techTasks()/n")
+    debug("techID: " + techID)
+    debug("areaName: " + areaName) 
+
+    # Get and format technician name
+    tech = Area.objects.filter(tech_id=int(techID)).annotate(
+        fname=F("tech_id__first_name"), lname=F("tech_id__last_name")
+    ).values(
+        "fname","lname"        
+    ).first()
+
+    techName = " ".join((tech["fname"],tech["lname"]))
+
+    # Get Farm details 
+    farmQry = Farm.objects.filter(area__tech_id=int(techID)).select_related('extbio').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        a_name=F("area__area_name"),
+        last_update = F("extbio__last_updated")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "a_name",
+            "total_pigs",
+            "last_update"
+            ).order_by("id").all()
+    # debug(farmQry)
+
+    farmsData = []
+    for f in farmQry:
+        farmObject = {
+            "code":  f["id"],
+            "area_name": f["a_name"],
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "num_pigs": str(f["total_pigs"]),
+            "last_inspected": f["last_update"]
+        }
+        farmsData.append(farmObject)
+
+    # Get Incident details
+    incidData = []
+    for farm in farmQry:
+        # for current Pigpen version
+        latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farm["id"]).order_by("-date_added").first()
+
+        # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
+        incidentQry = Hog_Symptoms.objects.filter(ref_farm__area__tech_id=int(techID)).filter(pigpen_grp_id=latestPigpen.id).filter(~Q(report_status='Resolved')).only(
+            'date_filed',
+            'date_updated', 
+            'report_status',
+            'num_pigs_affected').order_by("-date_filed").all()
+
+        # (1.2) Incidents Reported (symptoms list)
+        symptomsList = Hog_Symptoms.objects.filter(ref_farm__area__tech_id=int(techID)).filter(pigpen_grp_id=latestPigpen.id).filter(~Q(report_status='Resolved')).values(
+                'high_fever'        ,
+                'loss_appetite'     ,
+                'depression'        ,
+                'lethargic'         ,
+                'constipation'      ,
+                'vomit_diarrhea'    ,
+                'colored_pigs'      ,
+                'skin_lesions'      ,
+                'hemorrhages'       ,
+                'abn_breathing'     ,
+                'discharge_eyesnose',
+                'death_isDays'      ,
+                'death_isWeek'      ,
+                'cough'             ,
+                'sneeze'            ,
+                'runny_nose'        ,
+                'waste'             ,
+                'boar_dec_libido'   ,
+                'farrow_miscarriage',
+                'weight_loss'       ,
+                'trembling'         ,
+                'conjunctivitis').order_by("-date_filed").all()
+        
+        incidObject = {
+            "farm_code":  farm["id"],
+            "area_name": f["a_name"],
+            "incident_symptomsList": zip(incidentQry, symptomsList)
+        }
+        incidData.append(incidObject)
+
+    return render(request, 'farmstemp/assignment.html', {"techName": techName, "farmBioList": farmsData,
+                                                                                "incidList":  incidData})
+
 
 def assign_technician(request):
     """
