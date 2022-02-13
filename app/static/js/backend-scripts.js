@@ -585,6 +585,18 @@ $('#save-area').on('click', function () {
     alert("No area name provided");
 });
 
+$('.submutAncmt').on('click', function(){
+    alert($('input[type="checkbox"]').first());
+});
+
+$('input[type="checkbox"][value="All Raisers"]').on('click', function(){
+    $('input[type="checkbox"]:not([value="All Raisers"])').prop("checked", false);
+});
+
+$('input[type="checkbox"]:not([value="All Raisers"])').on('click', function(){
+    $('input[type="checkbox"][value="All Raisers"]').prop("checked", false);
+});
+
 function for_approval(button, decision) {
     var forApproval_IDs = [];
     button.closest('div.flex').siblings('div.box-style').children('table.table').children('tbody').find(':checkbox:checked').each(function () {
