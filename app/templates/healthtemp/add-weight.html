@@ -23,7 +23,7 @@
         {% if weightType == "starter" %}
         <div class="box-style small-table">
             <div>
-                <h1>Adding Starter Weight to Farm {{farmID|stringformat:"03d"}}</h1>
+                <h2>Adding Starter Weight to Farm {{farmID|stringformat:"03d"}}</h2>
             </div>
             <hr>
             <div class="mb-3">
@@ -47,27 +47,19 @@
 
         {% else %}
         <section>
-        <div class="box-style large-table">
+        <div class="box-style small-table">
             <div>
-                <h1>Adding Fattener Weight to Farm {{farmID|stringformat:"03d"}}</h1>
+                <h2>Adding Fattener Weight to Farm {{farmID|stringformat:"03d"}}</h2>
+                <p>Input weight of each pig. </p>
             </div>
             <hr>
             <br>
-            <div class="flex">
-            <div class="flex-item">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Pig No.</th>
-                            <th>Weight (in kg)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fattenerTable">                    
+            <div>
+                <ul id="fattenerTable">                    
 
-                    </tbody>
-                </table>
-            </div>
-            <div class="flex-item">
+                </ul>
+                <br>
+                <hr>
                 <div class="flex">
                     <p class="flex"><strong>Total Weight:&nbsp;</strong><p class="fattener-total">-</p>&nbsp;kls</p> <br>
                 </div>
@@ -80,8 +72,6 @@
                     {{weightForm.remarks}}
                 </div>
                 <p class="red">Please review the details of the form before submitting.</p>
-
-            </div>
             </div>
         </div>
         </section>
