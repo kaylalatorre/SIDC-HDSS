@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row)
+    Pigpen_Group, Pigpen_Row, Hog_Weight)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -1171,14 +1171,29 @@ def addWeight(request, farmID):
                 date_filed = now(),
                 ref_farm_id = farmID,
                 is_starter = False,
-                ave_weight = request.POST.get('ave_weight'),
-                total_numHeads = request.POST.get('total_numHeads'),
-                total_kls =  request.POST.get('total_kls'),
+                ave_weight = 0,
+                total_numHeads = 0,
+                total_kls =  0,
                 remarks = request.POST.get('remarks'),
             )
+            
+            weightList = []
+
+            for i in request.POST.getlist('input-kls'):
+                weight.total_kls += float(i)
+                weightList.append(Hog_Weight(
+                    farm_weight = weight,
+                    final_weight = float(i)
+                ))
+
+            weight.total_numHeads = len(request.POST.getlist('input-kls'))
+            weight.ave_weight = weight.total_kls / weight.total_numHeads
+
             weight.save()
+            Hog_Weight.objects.bulk_create(weightList)
             latestPigpen.final_weight =  weight
-            latestPigpen.save()    
+            latestPigpen.save() 
+
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
