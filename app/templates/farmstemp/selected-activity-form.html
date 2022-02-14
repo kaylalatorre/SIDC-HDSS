@@ -12,7 +12,7 @@
 
 <div class="table-container main-div">
     <h1 class="heading"><a href="/forms-approval">Forms Approval</a> > Activity Form for Farm {{actForm.ref_farm_id|stringformat:'03d'}} ({{actForm.date_added}}) </h1>
-    {% if user.groups.all.0.name != 'Field Technician' %}
+        {% if user.groups.all.0.name != 'Field Technician' %}
         {% if formStatus == 'Pending' %}
         <div class="flex">
             <p class="flex-item">Approve form?</p>
@@ -304,5 +304,109 @@
         
     </div>
     {% endif %}
+
+
+    <!-- Selected Farm References -->
+    <h2>Farm [code] References</h2>
+    <hr>
+    <div class="flex">
+        <div class="flex-item">
+           
+            <h3>Farm Details</h3>
+            <div class="box-style">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Raiser</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Contact No.</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Directly Managed</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Address</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Area</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Road Access</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Roof Height (in ft.)</td>
+                            <td>- ft</td>
+                        </tr>
+                        <tr>
+                            <th>Warehouse Area</td>
+                            <td>- x - ft</td>
+                        </tr>
+                        <tr>
+                            <th>Feeding Trough</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Building Capacity</td>
+                            <td>- pigs</td>
+                        </tr>
+                        <tr>
+                            <th>Building Curtain</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Medic Tank</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            
+        </div>
+        
+        <div class="flex-item">
+            <h3>Health Details</h3>
+            <div class="box-style">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>No. of Pigs</th>
+                            <td>55 pigs</td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Starter Weight</th>
+                            <td>20 kg</td>
+                        </tr>
+                        <tr>
+                            <th>Ave. Fattener Weight</th>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <th>Mortality Rate</th>
+                            <td>2%</td>
+                        </tr>
+                       <tr>
+                            <th>Incidents Reported</th>
+                            <td>34</td>
+                       </tr>
+                       <tr>
+                            <th>Active Incidents</th>
+                            <td>3</td>
+                       </tr> 
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    
+
 </div>
 {% endblock section %}

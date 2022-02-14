@@ -71,6 +71,13 @@ class Farm_Weight(models.Model):
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
 
+# INVIDUAL HOG FINAL WEIGHT
+class Hog_Weight(models.Model):
+    farm_weight         = models.ForeignKey('Farm_Weight', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+
+    final_weight        = models.FloatField()
+    
+
 # FARM SYMPTOMS Table
 class Hog_Symptoms(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
@@ -232,9 +239,9 @@ class Mortality(models.Model):
     num_begInv          = models.IntegerField(null=True, blank=True)
     num_today           = models.IntegerField()
     num_toDate          = models.IntegerField(null=True, blank=True)
-    source              = models.CharField(max_length=200, null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
+    incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     mortality_form      = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
 

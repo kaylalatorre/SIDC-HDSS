@@ -15,33 +15,59 @@
         <h1 class="heading"><a href="/health-symptoms">Hogs Health & Symptoms</a> > <a href="/selected-health-symptoms/{{farmID|stringformat:'03d'}}">{{ farmID|stringformat:"03d" }}</a> > Add Weight Slip Record</h1>
         <div class="flex subheading">
             <p class="flex-item"> <strong>Farm: </strong> {{farmID|stringformat:"03d"}} </p>
+            <p hidden class="flex-item" id="total_pigs" value="{{total_pigs}}"> {{total_pigs}} </p>
             <div><button class="primary-btn" type="submit">Save</button></div>
         </div>
         <hr>
+
+        {% if weightType == starter %}
         <div class="box-style small-table">
             <div>
-                <h1>Adding {{weightType}} weight to Farm {{farmID|stringformat:"03d"}}</h1>
+                <h1>Adding Starter Weight to Farm {{farmID|stringformat:"03d"}}</h1>
             </div>
             <hr>
             <div class="mb-3">
                 <label for="input-ave" class="form-label">Ave. Weight (in kg)</label>
-                <!-- <input type="number" class="form-control" name="input-ave" id="input-ave" placeholder="ex. 120" min=0 step=0.01> -->
                 {{weightForm.ave_weight}}
             </div>
             <div class="mb-3">
                 <label for="input-heads" class="form-label">Total No. of Heads</label>
-                <!-- <input type="number" class="form-control" name="input-heads" id="input-heads" placeholder="ex. 100" min=0> -->
                 {{weightForm.total_numHeads}}
                 <label for="input-kls" class="form-label">Total Weight (in kg)</label>
-                <!-- <input type="number" class="form-control" name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01> -->
                 {{weightForm.total_kls}}
             </div>
             <div class="mb-3">
                 <label for="input-remarks" class="form-label">Remarks</label>
-                <!-- <input type="text" class="form-control" name="input-remarks" id="input-remarks" placeholder=""> -->
                 {{weightForm.remarks}}
             </div>
         </div>
+
+        {% else %}
+        <div class="box-style small-table">
+            <div>
+                <h1>Adding Fattener Weight to Farm {{farmID|stringformat:"03d"}}</h1>
+            </div>
+            <hr>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Pig No.</th>
+                        <th>Weight (in kg)</th>
+                    </tr>
+                </thead>
+                <tbody id="fattenerTable">                    
+
+                </tbody>
+            </table>
+            
+            <div class="mb-3">
+                <label for="input-remarks" class="form-label">Remarks</label>
+                {{weightForm.remarks}}
+            </div>
+        </div>
+
+        {% endif %}
         <p class="red">Please review the details of the form before submitting.</p>
         <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
     </form>

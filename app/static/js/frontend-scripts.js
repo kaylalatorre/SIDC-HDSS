@@ -39,6 +39,9 @@ function getDiffDays(date) {
 /* 
 * Tech assignment edit button 
 */
+
+let pendingAct = document.querySelector('#pending-activities'); // container of pending activities
+
 let assignEdit = document.querySelectorAll('.assignEdit');
 for(var i = 0; i < assignEdit.length; i++) { 
     assignEdit[i].addEventListener("click", (e)=> {
@@ -50,6 +53,10 @@ for(var i = 0; i < assignEdit.length; i++) {
         editDropdown.removeAttribute("disabled");
         assignSave.setAttribute("style", "display: block");
         assignEdit.setAttribute("style", "display: none");
+
+        pendingAct.classList.add("show");
+        pendingAct.classList.remove("hide");
+        //console.log(pendingAct);
     })
 }
 
@@ -64,6 +71,9 @@ for(var i = 0; i < assignSave.length; i++) {
         saveDropdown.setAttribute("disabled", true);
         assignSave.setAttribute("style", "display: none");
         assignEdit.setAttribute("style", "display: block");
+
+        pendingAct.classList.add("hide");
+        pendingAct.classList.remove("show");
     })
 }
 
@@ -601,13 +611,32 @@ function filterSearch(){
     }
 } 
 
+/**
+*   Hides hog raiser fname, lname, and contact input when an existing raiser is selected
+*/
+$('#input-exist-raiser').change(function(){
+    $("#div-raiser-name").remove();
+    $("#div-raiser-contact").remove();
+});
+
 $(document).ready(function(){
-    /**
-    *   Hides hog raiser fname, lname, and contact input when an existing raiser is selected
-    */
-    $('#input-exist-raiser').change(function(){
-        $("#div-raiser-name").remove();
-        $("#div-raiser-contact").remove();
+    $(function(){
+        // load fattener table rows according to total_pigs
+        var table = $("#fattenerTable");
+        var rowNum = parseInt($("#total_pigs").text());
+        var resultHtml = '';
+        
+        console.log($("#total_pigs"));
+
+        for(var i = 0 ; i < rowNum ; i++) {
+            resultHtml += ["<tr>", 
+            "<td>", (i+1), "</td>",
+            '<td><input type="number" class="form-control" required name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01></td>',
+            '</tr>'].join("\n");
+        }  
+        
+        table.html(resultHtml);
+        return false; 
     });
 
 });

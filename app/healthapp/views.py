@@ -320,14 +320,17 @@ def selectedHogsHealth(request, farmID):
                     'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
 
     mortality_rate = 0
-    mRateList = [] 
+    mRateList = []
+    mCaseList = [] 
     # (3.2) Mortality % per record
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
+        mCaseList.append(m.incid_case_id)
+
     # temporarily combine mortality qry w/ computed mortality % in one list
-    mortalityList = zip(mortQry, mRateList)
+    mortalityList = zip(mortQry, mRateList, mCaseList)
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
@@ -468,13 +471,16 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
     mortality_rate = 0
     mRateList = [] 
+    mCaseList = [] 
     # (3.2) Mortality % per record
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
+        mCaseList.append(m.incid_case_id)
+
     # temporarily combine mortality qry w/ computed mortality % in one list
-    mortalityList = zip(mortQry, mRateList)
+    mortalityList = zip(mortQry, mRateList, mCaseList)
 
     # for getting length of Incident, Mortality records
     total_incidents = incidentQry.count()
@@ -678,13 +684,16 @@ def selectedHealthSymptoms(request, farmID):
 
     mortality_rate = 0
     mRateList = [] 
+    mCaseList = [] 
     # (3.2) Mortality % per record
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
+        mCaseList.append(m.incid_case_id)
+
     # temporarily combine mortality qry w/ computed mortality % in one list
-    mortalityList = zip(mortQry, mRateList)
+    mortalityList = zip(mortQry, mRateList, mCaseList)
 
     # for getting length of Incident records
     total_incidents = incidentQry.count()
@@ -797,13 +806,16 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
 
     mortality_rate = 0
     mRateList = [] 
+    mCaseList = [] 
     # (3.2) Mortality % per record
     for m in mortQry:
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
+        mCaseList.append(m.incid_case_id)
+
     # temporarily combine mortality qry w/ computed mortality % in one list
-    mortalityList = zip(mortQry, mRateList)
+    mortalityList = zip(mortQry, mRateList, mCaseList)
 
     # for getting length of Incident, Mortality records
     total_incidents = incidentQry.count()
@@ -1028,6 +1040,9 @@ def addMortality(request, farmID):
     # get current Farm version
     farmVersion = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
+    # get all active and pending incident cases for the farm
+    incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
+
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
         # print(request.POST)
@@ -1042,7 +1057,7 @@ def addMortality(request, farmID):
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "source" : request.POST.getlist('source', default=None)[i],
+                "incid_case" : request.POST.getlist('input-case', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
@@ -1072,7 +1087,7 @@ def addMortality(request, farmID):
                     num_begInv = farmQuery.total_pigs,
                     num_today = mort['num_today'],
                     num_toDate = farmQuery.total_pigs - int(mort['num_today']),
-                    source = mort['source'],
+                    incid_case_id = mort['incid_case'],
                     remarks = mort['remarks'],
                     mortality_form_id = mortality_form.id
                 )
@@ -1102,7 +1117,8 @@ def addMortality(request, farmID):
 
         mortalityForm = MortalityForm()
     
-    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm, 'num_begInv' : farmQuery.total_pigs})
+    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm,
+                                                                'num_begInv' : farmQuery.total_pigs, 'incid_cases' : incidQry})
 
 
 def addWeight(request, farmID):
@@ -1116,6 +1132,9 @@ def addWeight(request, farmID):
     except:
         debug("farm does not exist")
         return redirect("healthSymptoms")
+    
+    # get total num. of pigs in farm
+    farm = Farm.objects.filter(id=farmID).only("total_pigs").first()
 
     weightType = ""
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
@@ -1168,7 +1187,7 @@ def addWeight(request, farmID):
 
         
     weightForm = WeightForm()
-    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID), 'weightType': weightType})
+    return render(request, 'healthtemp/add-weight.html', {'weightForm': weightForm, 'farmID': int(farmID), 'weightType': weightType, 'total_pigs': farm.total_pigs})
 
 
 # REPORTS for Module 2
