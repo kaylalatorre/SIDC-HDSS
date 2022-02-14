@@ -529,7 +529,7 @@ function deleteBiocheck(elem) {
  */
 $('.assignSave').on('click', function () {
     var area = $(this).parent().parent().siblings(":eq(0)").text();
-    var technician = $(this).parent().parent().siblings(":eq(2)").children().children().val();
+    var technician = $(this).parent().parent().siblings(":eq(3)").children().children().val();
     ajaxCSRF();
     if (technician) {
         $.ajax({
@@ -1224,3 +1224,56 @@ function addCase(farmID) {
         console.log(error);
     }
  }
+
+ /**
+ * Search function for retrieving incident, biosecurity, and announcement details based on techID.
+ * @param {String} techID 
+ * @returns loaded data for incident, biosecurity, and announcement records
+ */
+ function searchTechTasks(techID) {
+    try {
+
+        url = '/technician-assignment/search-tasks/' + techID;
+        // console.log(url);
+
+        // for loading tech-assign table data
+        $('#techHeader').load(url + ' #techHeader', function (response) {
+            $(this).children().unwrap();
+        });
+
+        $('#table-techIncid').load(url + ' #table-techIncid', function (response) {
+            $(this).children().unwrap();
+        });
+
+        $('#table-techFarmBio').load(url + ' #table-techFarmBio', function (response) {
+            $(this).children().unwrap();
+        });
+
+        $('#table-techAnnounce').load(url + ' #table-techAnnounce', function (response) {
+            $(this).children().unwrap();
+        });
+
+
+    } catch (error) {
+        console.log(error);
+    }
+ }
+
+ /**
+ * On-click function for Edit button. Calls search searchTechTasks() once triggered.
+ */
+ $('.assignEdit').on('click', function () {
+    var techID = $(this).parent().parent().siblings(":eq(3)").children().children().val();
+
+    searchTechTasks(techID);
+    
+ });
+
+ /**
+ * On-change function for technician assigment dropdown. Calls search searchTechTasks() once triggered.
+ */
+ $('.tech-assign-drop').change(function () {
+    var techID = $(this).val();
+
+    searchTechTasks(techID);
+ });
