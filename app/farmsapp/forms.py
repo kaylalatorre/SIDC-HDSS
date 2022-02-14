@@ -269,6 +269,8 @@ class MemAnnouncementForm(ModelForm):
 
         if self.user.groups.all()[0].name == "Assistant Manager":
             AREA_CHOICES.append(('All Raisers', 'All Raisers'))
+            for choice in Area.objects.distinct().values('area_name'):
+                AREA_CHOICES.append((choice['area_name'], choice['area_name']))
 
         self.fields['title'].widget.attrs.update({
             'input type' : 'text', 
@@ -281,11 +283,10 @@ class MemAnnouncementForm(ModelForm):
             'aria-label' : 'Category',
             'class' : 'form-select'
         })
-
-        self.fields['recip_area'] = forms.ChoiceField(choices=AREA_CHOICES)
+        
+        self.fields['recip_area'] = forms.MultipleChoiceField(choices=AREA_CHOICES, widget=forms.CheckboxSelectMultiple,)
         self.fields['recip_area'].widget.attrs.update({ 
             'aria-label' : 'Recipient',
-            'class' : 'form-select',
         }) 
         self.fields['mssg'].widget.attrs.update({ 
             'aria-label' : 'Message',
