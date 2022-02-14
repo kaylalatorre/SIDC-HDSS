@@ -266,8 +266,13 @@ $(document).ready(async function () {
         }
 
         // WEIGHT column chart
+            // **not functional 
         if ($('#dm-weight').length) {
             Highcharts.chart('dm-weight', {
+                title: 
+                {
+                    text: 'No. of Fattener Pigs per Weight Range'
+                },
                 chart: 
                 {
                     type: 'column'
@@ -281,9 +286,10 @@ $(document).ready(async function () {
 
                 // areas
                 xAxis: {
-                    categories: ['TISISI', 'West', 'East']
+                    categories: ['TISISI', 'West', 'East', 'North']
                 },
                 yAxis: {
+                    text: 'Population',
                     stackLabels: {
                         enabled: true,
                     },
@@ -291,108 +297,62 @@ $(document).ready(async function () {
                     max: 120
                 },
 
-                /*
-                    series: per weight range,
-                    name: farm code,
-                    y: no. of pigs in weight
+                series: [
+                    {
+                        name: "100-120 kg",
+                        data: [{
+                            y: 101.0,
+                            drilldown: "test1"
+                        }, 
+                        {
+                            y: 110.2,
+                            drilldown: "test1"
+                        },
+                        {
+                            y: 120.2,
+                            drilldown: "test1"
+                        },
+                        {
+                            y: 100.2,
+                            drilldown: "test1"
+                        }
+                        ]
+                    },
+                    {
+                        name: "80-99 kg",
+                        data: [{
+                            y: 88.0,
+                            drilldown: "test1"
+                        }, 
+                        {
+                            y: 82.4,
+                            drilldown: "test1"
+                        },
+                        {
+                            y: 80.2,
+                            drilldown: "test1"
+                        },
+                        {
+                            y: 94.2,
+                            drilldown: "test1"
+                        }
+                        ]
+                    },
+                    {
+                        name: "60-79 kg",
+                        data: [{
+                            y: 60.0,
+                            drilldown: "test1"
+                        }, 
+                        {
+                            y: 70.4,
+                            drilldown: "test1"
+                        },
+                        ]
+                    }
                     
-                */
-                series: [
-                {
-                    name: "100-120 kg",
-                    data: [{
-                        name: "Farm 001",
-                        y: 62.74,
-                        drilldown: "test1"
-                    },
-                    {
-                        name: "Farm 002",
-                        y: 10.57,
-                        drilldown: "test2"
-                    }
-                    ]
-                },
-                {
-                    name: "80-99 kg",
-                    data: [{
-                        name: "Farm 003",
-                        y: 15,
-                        drilldown: "test3"
-                    },
-                    {
-                        name: "Farm 002",
-                        y: 23,
-                        drilldown: "test4"
-                    }
-                    ]
-                },
-                {
-                    name: "60-79 kg",
-                    data: [{
-                        name: "Farm 002",
-                        y: 15,
-                        drilldown: "test3"
-                        },
-                        {
-                        name: "Farm 002",
-                        y: 23,
-                        drilldown: "test4"
-                        }
-                    ]
-                    },
-                    {
-                    name: "40-59 kg",
-                    data: [{
-                        name: "Farm 001",
-                        y: 15,
-                        drilldown: "test3"
-                        },
-                        {
-                        name: "Farm 002",
-                        y: 23,
-                        drilldown: "test4"
-                        }
-                    ]
-                    }
-                ],
-                // per farm
-                drilldown: {
-                series: [
-                {
-                    id: "test1",
-                    data: [
-                    [
-                        "asd",
-                        0.1
-                    ],
-                    [
-                        "dsa",
-                        1.3
-                    ],
-                    [
-                        "aaa",
-                        53.02
-                    ]
-                    ]
-                }, 
-                {
-                    id: "test3",
-                    data: [
-                    [
-                        "bbb",
-                        23
-                    ],
-                    [
-                        "bbs",
-                        12
-                    ],
-                    [
-                        "bbbb",
-                        5
-                    ]
-                    ]
-                }, ]
-                }
+                ]
+                
             });
         }
     }
