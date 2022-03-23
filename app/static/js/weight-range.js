@@ -115,41 +115,41 @@ $(document).ready(async function () {
 
 
         // SELECTED WEIGHT pie chart (hogs-health and health-symptoms)
-        if ($('#wr-hogs-weight').length) {
-            Highcharts.chart('wr-hogs-weight', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: 'No. of Fattener Pigs per Weight Rangel'
-                },
-                xAxis: {
-                    categories: [
-                        '60-79 kg',
-                        '80-99 kg',
-                        '100-120 kg',
-                    ],
-                    crosshair: true
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: 'Count'
-                    }
-                },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
-                series: [{
-                    showInLegend: false,             
-                    data: [49.9, 71.5, 106.4]
+        // if ($('#wr-hogs-weight').length) {
+        //     Highcharts.chart('wr-hogs-weight', {
+        //         chart: {
+        //             type: 'column'
+        //         },
+        //         title: {
+        //             text: 'No. of Fattener Pigs per Weight Range'
+        //         },
+        //         xAxis: {
+        //             categories: [
+        //                 '60-79 kg',
+        //                 '80-99 kg',
+        //                 '100-120 kg',
+        //             ],
+        //             crosshair: true
+        //         },
+        //         yAxis: {
+        //             min: 0,
+        //             title: {
+        //                 text: 'Count'
+        //             }
+        //         },
+        //         plotOptions: {
+        //             column: {
+        //                 pointPadding: 0.2,
+        //                 borderWidth: 0
+        //             }
+        //         },
+        //         series: [{
+        //             showInLegend: false,             
+        //             data: [49.9, 71.5, 106.4]
             
-                }]
-            });
-        }
+        //         }]
+        //     });
+        // }
 
 
         // SELECTED WEIGHT pie chart (hogs-health and health-symptoms)
