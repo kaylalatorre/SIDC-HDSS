@@ -1183,11 +1183,11 @@ def addWeight(request, farmID):
                 weight.total_kls += float(i)
                 weightList.append(Hog_Weight(
                     farm_weight = weight,
-                    final_weight = float(i)
+                    final_weight = round(float(i), 2)
                 ))
 
             weight.total_numHeads = len(request.POST.getlist('input-kls'))
-            weight.ave_weight = weight.total_kls / weight.total_numHeads
+            weight.ave_weight = round(weight.total_kls / weight.total_numHeads, 2)
 
             weight.save()
             Hog_Weight.objects.bulk_create(weightList)

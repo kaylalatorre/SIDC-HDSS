@@ -308,6 +308,17 @@ def diseaseDashboard(request):
 
     return JsonResponse(data, safe=False)
 
+def weightRange(request):
+    """
+    Load data for highcharts (weight range)
+    """
+
+    if request.method == 'POST':
+
+        data = []
+
+    return JsonResponse(data, safe=False)
+
 
 def checkDiseaseList(s):
     """
