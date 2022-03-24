@@ -244,7 +244,6 @@ def diseaseDashboard(request):
         
         # get all activity type
         activityTypeQry = Activity.objects.filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).distinct("trip_type")
-        # print(activityTypeQry)
 
         # COLLECT ALL ACTIVITIES
         for actType in activityTypeQry:
@@ -312,6 +311,50 @@ def weightRange(request):
     """
     Load data for highcharts (weight range)
     """
+
+
+    """
+    kimi's suggestion for formatting data hek or something // logic na 'di sure // i'll delete this when i code again
+
+    NOTE: Suggested this in accordance to how data is formatted dun sa highcharts, as long
+    as nakukuha niyo data, i can format it and loop it properly sa weight-range.js file.
+    
+    NOTE: IF EVER iba naisip niyong process/logic, okay lang, but refer to the weight-range.js file for the data
+    format for the main series and the drilldown series.  
+
+    NOTE: (Question) Dapat ba within the last month 'yung chart? or all time?
+
+    1. declare empty array (dict?) again for series (like weightSeries = [])
+    2. get all areas again
+
+
+    --- main series ---
+    3. gawa ng tatlong array (one for each weight range)
+    4. while looping through each area, count all fattener hogs within range
+            ---> pwede kunin lahat ng hog_weight na connected sa mga farm fattener slips (it FK-ed)
+                    then kunin ang area ? maybe may simpler way hehe
+    5. store data in an array pwedeng ---> weightRange[areaName][count]
+    6. store these three arrays into a mainSeries[] or something like that
+
+
+    --- drilldown series ---
+    NOTE: I think for this one, inevitable na maraming array/object/something pero baka
+    may better way kayong maisip !
+
+    7. loop through each area and count all fattener hogs within range
+            ---> start with lowest range first
+    8. store data in an array, like farmCount[farmID][count]
+    9. store each farmCount array in another array (to collect all farms and their count per area per range)
+            ---> areaRange[] or something
+    10. store areaRange into a drilldownSeries[] or something 
+
+
+    11. append both mainSeries and drilldownSeries into weightSeries[]
+            ---> OR SKIP weightSeries[] altogether and just :
+                    data.append(mainSeries)
+                    data.append(drilldownSeries)
+    """
+
 
     if request.method == 'POST':
 

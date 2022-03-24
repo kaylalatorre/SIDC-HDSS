@@ -35,7 +35,12 @@ $(document).ready(async function () {
                 xAxis: {
                     type: 'category'
                 },
-        
+                yAxis: {
+                    title: {
+                        text: 'Count'
+                    }
+                },
+
                 plotOptions: {
                     series: {
                         stacking: 'normal',
@@ -46,6 +51,7 @@ $(document).ready(async function () {
                     }
                 },
         
+                /* Each series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL AREAS. */
                 series: [{
                     name: '60-79 kg',
                     data: [{
@@ -68,7 +74,7 @@ $(document).ready(async function () {
                     }]
                 },
                 
-                {
+                { 
                     name: '80-99 kg',
                     data: [{
                         name: 'TISISI',
@@ -111,8 +117,11 @@ $(document).ready(async function () {
                     }]
                 }],
 
+                /* Each drilldown series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL FARMS under ONE AREA. */
                 drilldown: {
-                    series: [{
+                    series: [
+                    {
+                        // showInLegend: false,
                         id: 'tisisi-low',
                         data: [
                             ['Farm 001', 4],
@@ -121,6 +130,7 @@ $(document).ready(async function () {
                             ['Farm 004', 4]
                         ]
                     }, {
+                        // showInLegend: false,
                         id: 'west-low',
                         data: [
                             ['Farm 008', 6],
@@ -137,7 +147,7 @@ $(document).ready(async function () {
                             ['Farm 015', 3],
                             ['Farm 016', 2]
                         ]
-                    },{
+                    }, {
                         id: 'north-low',
                         data: [
                             ['Farm 017', 2],
