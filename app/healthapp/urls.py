@@ -27,4 +27,7 @@ urlpatterns = [
     path('add-mortality/<str:farmID>', views.addMortality, name="addMortality"),
 
     path('add-weight/<str:farmID>', views.addWeight, name="addWeight"),
+
+    # dashboard - weight range
+    path('weight-range', views.weightRange, name="weightRange"),
 ]

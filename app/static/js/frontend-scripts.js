@@ -622,20 +622,22 @@ $('#input-exist-raiser').change(function(){
 $(document).ready(function(){
     $(function(){
         // load fattener table rows according to total_pigs
-        var table = $("#fattenerTable");
+        var list = $("#fattenerTable");
         var rowNum = parseInt($("#total_pigs").text());
         var resultHtml = '';
         
         console.log($("#total_pigs"));
 
         for(var i = 0 ; i < rowNum ; i++) {
-            resultHtml += ["<tr>", 
-            "<td>", (i+1), "</td>",
-            '<td><input type="number" class="form-control" required name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01></td>',
-            '</tr>'].join("\n");
+            resultHtml += ["<li>",
+            "<div class='mb3'>", 
+            "<label style='font-weight: 600;'>", (i+1), "</label>",
+            '<input type="number" class="form-control fattener-weight" onchange="computeWeight(this)" required name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01>',
+            '</div>',
+            '</li>'].join("\n");
         }  
         
-        table.html(resultHtml);
+        list.html(resultHtml);
         return false; 
     });
 
@@ -894,4 +896,34 @@ function computeMortality(currRow){
 
     mortality_rate.innerText = mortRate.toFixed(2);
     // console.log("mortality_rate: " + String(mortality_rate));
+}
+
+/**
+ * Compute for the total weight and average weight for fattener pigs
+ */
+ function computeWeight(){
+
+    var weight = document.getElementsByClassName('fattener-weight');
+    // console.log(weight);
+    var numPigs = parseInt($("#total_pigs").text());
+    // console.log(numPigs);
+    
+    var total = 0;
+    var average = 0;
+
+    for (var i=0; i < weight.length; i++){
+        console.log(weight[i].value);
+
+        total += parseFloat(weight[i].value);
+        average = parseFloat(total)/numPigs
+    }
+
+    console.log(total);
+    console.log(average);
+
+    var totalVal = document.getElementsByClassName('fattener-total')[0];
+    var averageVal = document.getElementsByClassName('fattener-average')[0];
+
+    totalVal.innerText = total.toFixed(2);
+    averageVal.innerText = average.toFixed(2);
 }

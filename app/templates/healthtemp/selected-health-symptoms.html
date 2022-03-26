@@ -163,7 +163,7 @@
                             </tr>
                             <tr>
                                 <th>Total Pigs Reached Market Weight</th>
-                                <td>18</td>
+                                <td>xx</td>
                             </tr>
                         </tbody>
                     </table>
@@ -172,6 +172,32 @@
                     {% endif %}
                 </div>
             </div>
+            {% if end_weight %}
+            <div class="flex-item">
+                <h2>Fattener Weight Range</h2>
+                <div class="box-style">
+                    <!-- <div class="box-style-chart" id="wr-hogs-weight" style="width: 100%; height: 250px; ">
+                    </div> -->
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>60-79 kg</td>
+                                <td>xx</td>
+                            </tr>
+                            <tr>
+                                <th>80-99 kg</td>
+                                <td>xx</td>
+                            </tr>
+                            <tr>
+                                <th>100-120 kg</td>
+                                <td>xx</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
         </div>
     </section>
     <section class="health-symptoms">
@@ -292,7 +318,7 @@
                         <th style="text-align: right;">Today</th>
                         <th style="text-align: right;">To Date</th>
                         <th style="text-align: right;">Mortality %</th>
-                        <th>Incident Case</th>
+                        <th style="text-align: right;">Incident Case</th>
                         <th>Remarks</th>
                     </tr>
                 </thead>
@@ -301,14 +327,14 @@
                     <tr>
                         <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
                         <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
-                        <td data-label="Beg. Inv."  style="text-align: right;">{{ mort.num_begInv }} pigs</td>
-                        <td data-label="Today"  style="text-align: right;">{{ mort.num_today }} pigs</td>
-                        <td data-label="To Date"  style="text-align: right;">{{ mort.num_toDate }} pigs</td>
-                        <td data-label="Mortality %"  style="text-align: right;">{{ mRate }}%</td>
+                        <td data-label="Beg. Inv." style="text-align: right;">{{ mort.num_begInv }} pigs</td>
+                        <td data-label="Today" style="text-align: right;">{{ mort.num_today }} pigs</td>
+                        <td data-label="To Date" style="text-align: right;">{{ mort.num_toDate }} pigs</td>
+                        <td data-label="Mortality %" style="text-align: right;">{{ mRate }}%</td>
                         {% if mCase %}
-                        <td data-label="Source">{{ mCase }}</td>
+                        <td data-label="Incident Case" style="text-align: right;">{{ mCase }}</td>
                         {% else %}
-                        <td data-label="Source">-</td>
+                        <td data-label="Incident Case" style="text-align: right;">-</td>
                         {% endif %}
                         {% if mort.remarks %}
                         <td data-label="Remarks">{{ mort.remarks }}</td>

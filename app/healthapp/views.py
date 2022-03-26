@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row)
+    Pigpen_Group, Pigpen_Row, Hog_Weight)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -1171,14 +1171,29 @@ def addWeight(request, farmID):
                 date_filed = now(),
                 ref_farm_id = farmID,
                 is_starter = False,
-                ave_weight = request.POST.get('ave_weight'),
-                total_numHeads = request.POST.get('total_numHeads'),
-                total_kls =  request.POST.get('total_kls'),
+                ave_weight = 0,
+                total_numHeads = 0,
+                total_kls =  0,
                 remarks = request.POST.get('remarks'),
             )
+            
+            weightList = []
+
+            for i in request.POST.getlist('input-kls'):
+                weight.total_kls += float(i)
+                weightList.append(Hog_Weight(
+                    farm_weight = weight,
+                    final_weight = round(float(i), 2)
+                ))
+
+            weight.total_numHeads = len(request.POST.getlist('input-kls'))
+            weight.ave_weight = round(weight.total_kls / weight.total_numHeads, 2)
+
             weight.save()
+            Hog_Weight.objects.bulk_create(weightList)
             latestPigpen.final_weight =  weight
-            latestPigpen.save()    
+            latestPigpen.save() 
+
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
@@ -1426,3 +1441,57 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
                                                                 "areaList": areaQry, "mortList": mortalityList, "mortStats": mortStats})
 
 
+def weightRange(request):
+    """
+    Load data for highcharts (weight range)
+    """
+
+
+    """
+    kimi's suggestion for formatting data hek or something // logic na 'di sure // i'll delete this when i code again
+
+    NOTE: Suggested this in accordance to how data is formatted dun sa highcharts, as long
+    as nakukuha niyo data, i can format it and loop it properly sa weight-range.js file.
+    
+    NOTE: IF EVER iba naisip niyong process/logic, okay lang, but refer to the weight-range.js file for the data
+    format for the main series and the drilldown series.  
+
+    NOTE: (Question) Dapat ba within the last month 'yung chart? or all time?
+
+    1. declare empty array (dict?) again for series (like weightSeries = [])
+    2. get all areas again
+
+
+    --- main series ---
+    3. gawa ng tatlong array (one for each weight range)
+    4. while looping through each area, count all fattener hogs within range
+            ---> pwede kunin lahat ng hog_weight na connected sa mga farm fattener slips (it FK-ed)
+                    then kunin ang area ? maybe may simpler way hehe
+    5. store data in an array pwedeng ---> weightRange[areaName][count]
+    6. store these three arrays into a mainSeries[] or something like that
+
+
+    --- drilldown series ---
+    NOTE: I think for this one, inevitable na maraming array/object/something pero baka
+    may better way kayong maisip !
+
+    7. loop through each area and count all fattener hogs within range
+            ---> start with lowest range first
+    8. store data in an array, like farmCount[farmID][count]
+    9. store each farmCount array in another array (to collect all farms and their count per area per range)
+            ---> areaRange[] or something
+    10. store areaRange into a drilldownSeries[] or something 
+
+
+    11. append both mainSeries and drilldownSeries into weightSeries[]
+            ---> OR SKIP weightSeries[] altogether and just :
+                    data.append(mainSeries)
+                    data.append(drilldownSeries)
+    """
+
+
+    if request.method == 'POST':
+
+        data = []
+
+    return JsonResponse(data, safe=False)

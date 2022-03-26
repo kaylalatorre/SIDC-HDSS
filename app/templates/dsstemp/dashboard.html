@@ -24,63 +24,60 @@
     <div class="tab-content">
         <!-- Overview and Map Tab -->
         <div class="tab-pane fade show active" id="overviewmap" role="tabpanel" aria-labelledby="overviewmap-tab">
-           
             
             <!-- Overview, Alerts -->
             <section>
             <div class="block-grid">
                 <div>
                      <!-- Overview -->
-                    <section id="overview">
-                        <h3 class="heading">Overview</h3>
-                        <div class="overview">
-                            <div class="overview-item">
-                                <div class="ov-icon">
-                                    <i class='bx bx-home'></i>
-                                </div>
-                                <div class="ov-info">
-                                    <h2 id="total-farms">{{ fStats.total_farms }}</h2>
-                                    <label for="total-farms">Total Farms</label>
-                                </div>
-                            </div>
-                            <div class="overview-item">
-                                <div class="ov-icon">
-                                    <i class='bx bx-home-circle' ></i>
-                                </div>
-                                <div class="ov-info">
-                                    <h2 id="total-hogs">{{ fStats.total_pigs }}</h2>
-                                    <label for="total-hogs">Total Hogs</label>
-                                </div>
-                            </div>
-                            <div class="overview-item">
-                                <div class="ov-icon">
-                                    <i class='bx bx-intersect' ></i>
-                                </div>
-                                <div class="ov-info">
-                                    <h2 id="ave-int">{{ fStats.ave_intbio }}% </h2>
-                                    <label for="ave-int">Ave. Int. Biosecurity Score</label>
-                                </div>
-                            </div>
-                            <div class="overview-item">
-                                <div class="ov-icon">
-                                    <i class='bx bx-exclude' ></i>
-                                </div>
-                                <div class="ov-info">
-                                    <h2 id="ave-ext">{{ fStats.ave_extbio }}% </h2>
-                                    <label for="ave-ext">Ave. Ext. Biosecurity Score</label>
-                                </div>
-                            </div>
-                            <div class="overview-item">
-                                <div class="ov-icon">
-                                    <i class='bx bx-exclude' ></i>
-                                </div>
-                                <div class="ov-info">
-                                    <h2 id="ave-mortality">{{ fStats.ave_mortRate }}%</h2>
-                                    <label for="ave-mortality">Ave. Mortality Rate</label>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                     <h3 class="heading">Overview</h3>
+                     <div class="overview">
+                         <div class="overview-item">
+                             <div class="ov-icon">
+                                 <i class='bx bx-home'></i>
+                             </div>
+                             <div class="ov-info">
+                                 <h2 id="total-farms">{{ fStats.total_farms }}</h2>
+                                 <label for="total-farms">Total Farms</label>
+                             </div>
+                         </div>
+                         <div class="overview-item">
+                             <div class="ov-icon">
+                                 <i class='bx bx-home-circle' ></i>
+                             </div>
+                             <div class="ov-info">
+                                 <h2 id="total-hogs">{{ fStats.total_pigs }}</h2>
+                                 <label for="total-hogs">Total Hogs</label>
+                             </div>
+                         </div>
+                         <div class="overview-item">
+                             <div class="ov-icon">
+                                 <i class='bx bx-intersect' ></i>
+                             </div>
+                             <div class="ov-info">
+                                 <h2 id="ave-int">{{ fStats.ave_intbio }}% </h2>
+                                 <label for="ave-int">Ave. Int. Biosecurity Score</label>
+                             </div>
+                         </div>
+                         <div class="overview-item">
+                             <div class="ov-icon">
+                                 <i class='bx bx-exclude' ></i>
+                             </div>
+                             <div class="ov-info">
+                                 <h2 id="ave-ext">{{ fStats.ave_extbio }}% </h2>
+                                 <label for="ave-ext">Ave. Ext. Biosecurity Score</label>
+                             </div>
+                         </div>
+                         <div class="overview-item">
+                             <div class="ov-icon">
+                                 <i class='bx bxs-x-circle'></i>
+                             </div>
+                             <div class="ov-info">
+                                 <h2 id="ave-mortality">{{ fStats.ave_mortRate }}% </h2>
+                                 <label for="ave-mortality">Ave. Mortality Rate</label>
+                             </div>
+                         </div>
+                     </div>
 
                     <div class="alerts">
                             <h3 class="heading">Alerts</h3>
@@ -134,10 +131,10 @@
                         </div>
                     
                         <!-- Weight Range -->
-                        <div class="flex-item">
+                        <div class="flex-item" style="padding-right: 0px!important;">
                             <h3>Fattener Weight Range</h3>
-                            <div class="box-style-chart" id="dm-weight" style="width: 100%; height: 278px;">
-                                <!-- Data handled in disease-monitoring.js -->
+                            <div class="box-style-chart" id="wr-weight" style="width: 100%; height: 278px; ">
+                                <!-- Data handled in weight-range.js -->
                             </div>
                         </div>
                         
