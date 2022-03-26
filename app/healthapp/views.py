@@ -1494,4 +1494,67 @@ def weightRange(request):
 
         data = []
 
+        weightSeries = []
+        
+        # get all areas
+        areaQry = Area.objects.all()
+
+        weight_arrLow = []
+        weight_arrMed = []
+        weight_arrHigh = []
+
+
+        for area in areaQry:
+
+            count_low = 0
+            count_med = 0
+            count_high = 0
+
+            farm_lowDict = {}
+            farm_medDict = {}
+            farm_highDict = {}
+
+            final_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm__area = area.id).annotate(
+                farm = F("farm_weight__ref_farm")).all()
+
+            # loop through each Farm
+            for f in final_weightQry:
+
+                # format 3-digit farm ID
+                farmID = f.farm
+                farmID = "Farm {id:03}".format(id = farmID)
+
+                # classify per weight categ
+                if f.final_weight in range(60, 80):
+                    count_low += 1
+                    try:
+                        farm_lowDict.update({farmID: farm_lowDict.get(farmID) + 1})
+                    except:
+                        farm_lowDict.update({farmID: 1})
+
+                elif f.final_weight in range(80, 100):
+                    count_med += 1
+                    try:
+                        farm_medDict.update({farmID: farm_medDict.get(farmID) + 1})
+                    except:
+                        farm_medDict.update({farmID: 1})
+
+                elif f.final_weight in range(100, 121):
+                    count_high += 1
+                    try:
+                        farm_highDict.update({farmID: farm_highDict.get(farmID) + 1})
+                    except:
+                        farm_highDict.update({farmID: 1})
+
+            # debug(area.area_name)
+
+            # add in series -> (total count per weight range, list of farms)
+            weightSeries.append([area.area_name, 
+                                [count_low, list(farm_lowDict.items())],
+                                [count_med, list(farm_medDict.items())],
+                                [count_high, list(farm_highDict.items())]
+                                ])
+
+        debug(weightSeries)
+
     return JsonResponse(data, safe=False)
