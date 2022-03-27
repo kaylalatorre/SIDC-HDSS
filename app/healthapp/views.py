@@ -1443,7 +1443,7 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
 
 def weightRange(request):
     """
-    Load data for highcharts (weight range)
+    For loading data for Highcharts (weight range)
     """
 
 
@@ -1506,13 +1506,17 @@ def weightRange(request):
 
         for area in areaQry:
 
-            count_low = 0
-            count_med = 0
-            count_high = 0
+            count_base = 0      # 0-59kg
+            count_low = 0       # 60-79kg
+            count_med = 0       # 80-99kg
+            count_high = 0      # 100-120kg
+            count_ceil = 0      # 121kg <
 
+            farm_baseDict = {}
             farm_lowDict = {}
             farm_medDict = {}
             farm_highDict = {}
+            farm_ceilDict = {}
 
             final_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm__area = area.id).annotate(
                 farm = F("farm_weight__ref_farm")).all()
@@ -1525,7 +1529,13 @@ def weightRange(request):
                 farmID = "Farm {id:03}".format(id = farmID)
 
                 # classify per weight categ
-                if f.final_weight in range(60, 80):
+                if f.final_weight in range(0, 60):
+                    count_base += 1
+                    try:
+                        farm_baseDict.update({farmID: farm_baseDict.get(farmID) + 1})
+                    except:
+                        farm_baseDict.update({farmID: 1})
+                elif f.final_weight in range(60, 80):
                     count_low += 1
                     try:
                         farm_lowDict.update({farmID: farm_lowDict.get(farmID) + 1})
@@ -1545,14 +1555,22 @@ def weightRange(request):
                         farm_highDict.update({farmID: farm_highDict.get(farmID) + 1})
                     except:
                         farm_highDict.update({farmID: 1})
+                elif f.final_weight <= 121:
+                    count_ceil += 1
+                    try:
+                        farm_ceilDict.update({farmID: farm_ceilDict.get(farmID) + 1})
+                    except:
+                        farm_ceilDict.update({farmID: 1})
 
             # debug(area.area_name)
 
-            # add in series -> (total count per weight range, list of farms)
+            # add in series -> (total count per weight range, [list of farm IDs within range, total count in per farm])
             weightSeries.append([area.area_name, 
+                                [count_base, list(farm_baseDict.items())],
                                 [count_low, list(farm_lowDict.items())],
                                 [count_med, list(farm_medDict.items())],
-                                [count_high, list(farm_highDict.items())]
+                                [count_high, list(farm_highDict.items())],
+                                [count_ceil, list(farm_ceilDict.items())]
                                 ])
 
         debug(weightSeries)
