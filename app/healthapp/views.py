@@ -61,7 +61,6 @@ def debug(m):
 
 # (Module 2) Hogs Health view functions
 
-
 def compute_MortRate(farmID, mortalityID):
     """
     Helper function that computes for the mortality rate of a Farm.
@@ -100,6 +99,33 @@ def compute_MortRate(farmID, mortalityID):
             mortality_rate = (mortObj.num_today / mortObj.num_begInv) * 100
 
     return round(mortality_rate, 2)
+
+
+def categHogWeight(weight_list):
+
+    ctr_base = 0
+    ctr_low = 0
+    ctr_med = 0
+    ctr_high = 0
+    ctr_ceil = 0
+    ctr_marketable = 0
+
+    for w in weight_list:
+        # classify given hog weight
+        if w.final_weight in range(0, 60):
+            ctr_base += 1
+        elif w.final_weight in range(60, 80):
+            ctr_low += 1
+        elif w.final_weight in range(80, 100):
+            ctr_med += 1
+        elif w.final_weight in range(100, 121):
+            ctr_high += 1
+        elif w.final_weight <= 121:
+            ctr_ceil += 1
+
+    ctr_marketable = ctr_high + ctr_ceil
+
+    return ctr_base, ctr_low, ctr_med, ctr_high, ctr_ceil, ctr_marketable
 
 
 # for Asst. Manager view Hogs Health
@@ -229,9 +255,6 @@ def selectedHogsHealth(request, farmID):
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
 
-    # debug("pigpenQry.start_weight -- " + str(pigpenQry.start_weight))
-    # debug("pigpenQry.final_weight -- " + str(pigpenQry.final_weight))
-
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     count = int(allPigpens.count()) - 1
@@ -336,8 +359,14 @@ def selectedHogsHealth(request, farmID):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen })
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen,
+                                                                    "weightList": weightList})
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
     """
@@ -487,8 +516,14 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     total_mortalities = mortQry.count()
     # debug("total_incidents -- " + str(total_incidents))
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'prev' : previous })
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'prev' : previous,
+                                                                    "weightList": weightList})
 
 
 # for Technician view Hogs Health
@@ -699,9 +734,15 @@ def selectedHealthSymptoms(request, farmID):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
-                                                                        'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
+                                                                        'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
+                                                                        "weightList": weightList})
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -821,9 +862,15 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
-                                                                        'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
+                                                                        'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
+                                                                        "weightList": weightList})
 
 
 def edit_incidStat(request, incidID):
