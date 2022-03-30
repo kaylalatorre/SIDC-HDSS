@@ -26,6 +26,7 @@ $(document).ready(async function () {
         // DASHBOARD WEIGHT column chart 
         if ($('#wr-weight').length) {
 
+            // ADDING DATA TO THE MAIN SERIES
             var weightSeries = [], range0 = [],
                 range1 = [], range2 = [],
                 range3 = [], range4 = [];
@@ -33,40 +34,42 @@ $(document).ready(async function () {
             // looping through all areas
             for(var i = 0; i < metadata.length; i++){
 
+                // feeding data of current area to each weight range
                 range0.push({
                     name: metadata[i][0],
-                    y: metadata[i][0][0],
-                    // drilldown: metadata[i][0].concat("-range0")
+                    y: metadata[i][1][0],
+                    drilldown: metadata[i][0].concat("-range0")
                 });
 
                 range1.push({
                     name: metadata[i][0],
-                    y: metadata[i][1][0],
-                    // drilldown: metadata[i][0].concat("-range1")
+                    y: metadata[i][2][0],
+                    drilldown: metadata[i][0].concat("-range1")
                 });
 
                 range2.push({
                     name: metadata[i][0],
-                    y: metadata[i][2][0],
-                    // drilldown: metadata[i][0].concat("-range2")
+                    y: metadata[i][3][0],
+                    drilldown: metadata[i][0].concat("-range2")
                 });
 
                 range3.push({
                     name: metadata[i][0],
-                    y: metadata[i][3][0],
-                    // drilldown: metadata[i][0].concat("-range3")
+                    y: metadata[i][4][0],
+                    drilldown: metadata[i][0].concat("-range3")
                 });
 
                 range4.push({
                     name: metadata[i][0],
-                    y: metadata[i][4][0],
-                    // drilldown: metadata[i][0].concat("-range4")
+                    y: metadata[i][5][0],
+                    drilldown: metadata[i][0].concat("-range4")
                 });
             }
 
+            // feeding all weight range data to the corresponding categories (main series)
             weightSeries.push({
                 name: '59 kg and below',
-                data: range1
+                data: range0
             }, {
                 name: '60-79 kg',
                 data: range1
@@ -80,6 +83,42 @@ $(document).ready(async function () {
                 name: '120 kg and above',
                 data: range4
             })
+
+
+            // ADDING DATA TO THE DRILLDOWN SERIES
+            var drilldownSeries = [];
+
+            for(var i = 0; i < metadata.length; i++){
+
+                drilldownSeries.push({
+                    id: metadata[i][0].concat("-range0"),
+                    data: metadata[i][1][1]
+                })
+
+                drilldownSeries.push({
+                    id: metadata[i][0].concat("-range1"),
+                    data: metadata[i][2][1]
+                })
+                
+                drilldownSeries.push({
+                    id: metadata[i][0].concat("-range2"),
+                    data: metadata[i][3][1]
+                })
+                
+                drilldownSeries.push({
+                    id: metadata[i][0].concat("-range3"),
+                    data: metadata[i][4][1]
+                })
+                
+                drilldownSeries.push({
+                    id: metadata[i][0].concat("-range4"),
+                    data: metadata[i][5][1]
+                })
+            }
+
+            // console.log(weightSeries);
+            // console.log(drilldownSeries);
+
 
             Highcharts.chart('wr-weight', {
                 chart: {
@@ -176,115 +215,118 @@ $(document).ready(async function () {
                 series: weightSeries,
 
                 /* Each drilldown series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL FARMS under ONE AREA. */
-                drilldown: {
-                    series: [
-                    {
-                        // showInLegend: false,
-                        id: 'tisisi-low',
-                        data: [
-                            ['Farm 001', 4],
-                            ['Farm 002', 2],
-                            ['Farm 003', 1],
-                            ['Farm 004', 4]
-                        ]
-                    }, {
-                        // showInLegend: false,
-                        id: 'west-low',
-                        data: [
-                            ['Farm 008', 6],
-                            ['Farm 009', 2],
-                            ['Farm 010', 2],
-                            ['Farm 011', 4],
-                            ['Farm 012', 4],
-                        ]
-                    }, {
-                        id: 'east-low',
-                        data: [
-                            ['Farm 013', 2],
-                            ['Farm 014', 7],
-                            ['Farm 015', 3],
-                            ['Farm 016', 2]
-                        ]
-                    }, {
-                        id: 'north-low',
-                        data: [
-                            ['Farm 017', 2],
-                            ['Farm 018', 7],
-                            ['Farm 019', 3],
-                            ['Farm 020', 2]
-                        ]
-                    },
+
+                drilldown: drilldownSeries,
+
+                // drilldown: {
+                //     series: [
+                //     {
+                //         // showInLegend: false,
+                //         id: 'tisisi-low',
+                //         data: [
+                //             ['Farm 001', 4],
+                //             ['Farm 002', 2],
+                //             ['Farm 003', 1],
+                //             ['Farm 004', 4]
+                //         ]
+                //     }, {
+                //         // showInLegend: false,
+                //         id: 'west-low',
+                //         data: [
+                //             ['Farm 008', 6],
+                //             ['Farm 009', 2],
+                //             ['Farm 010', 2],
+                //             ['Farm 011', 4],
+                //             ['Farm 012', 4],
+                //         ]
+                //     }, {
+                //         id: 'east-low',
+                //         data: [
+                //             ['Farm 013', 2],
+                //             ['Farm 014', 7],
+                //             ['Farm 015', 3],
+                //             ['Farm 016', 2]
+                //         ]
+                //     }, {
+                //         id: 'north-low',
+                //         data: [
+                //             ['Farm 017', 2],
+                //             ['Farm 018', 7],
+                //             ['Farm 019', 3],
+                //             ['Farm 020', 2]
+                //         ]
+                //     },
                     
-                    {
-                        id: 'tisisi-med',
-                        data: [
-                            ['Farm 001', 2],
-                            ['Farm 002', 4],
-                            ['Farm 003', 1],
-                            ['Farm 004', 7]
-                        ]
-                    }, {
-                        id: 'west-med',
-                        data: [
-                            ['Farm 008', 4],
-                            ['Farm 009', 2],
-                            ['Farm 010', 5],
-                            ['Farm 011', 3],
-                            ['Farm 012', 4],
-                        ]
-                    }, {
-                        id: 'east-med',
-                        data: [
-                            ['Farm 013', 7],
-                            ['Farm 014', 8],
-                            ['Farm 015', 2],
-                            ['Farm 016', 2]
-                        ]
-                    }, {
-                        id: 'north-med',
-                        data: [
-                            ['Farm 017', 7],
-                            ['Farm 018', 8],
-                            ['Farm 019', 2],
-                            ['Farm 020', 2]
-                        ]
-                    },
+                //     {
+                //         id: 'tisisi-med',
+                //         data: [
+                //             ['Farm 001', 2],
+                //             ['Farm 002', 4],
+                //             ['Farm 003', 1],
+                //             ['Farm 004', 7]
+                //         ]
+                //     }, {
+                //         id: 'west-med',
+                //         data: [
+                //             ['Farm 008', 4],
+                //             ['Farm 009', 2],
+                //             ['Farm 010', 5],
+                //             ['Farm 011', 3],
+                //             ['Farm 012', 4],
+                //         ]
+                //     }, {
+                //         id: 'east-med',
+                //         data: [
+                //             ['Farm 013', 7],
+                //             ['Farm 014', 8],
+                //             ['Farm 015', 2],
+                //             ['Farm 016', 2]
+                //         ]
+                //     }, {
+                //         id: 'north-med',
+                //         data: [
+                //             ['Farm 017', 7],
+                //             ['Farm 018', 8],
+                //             ['Farm 019', 2],
+                //             ['Farm 020', 2]
+                //         ]
+                //     },
                     
-                    {
-                        id: 'tisisi-high',
-                        data: [
-                            ['Farm 001', 4],
-                            ['Farm 002', 2],
-                            ['Farm 003', 1],
-                            ['Farm 004', 4]
-                        ]
-                    }, {
-                        id: 'west-high',
-                        data: [
-                            ['Farm 008', 6],
-                            ['Farm 009', 2],
-                            ['Farm 010', 2],
-                            ['Farm 011', 4],
-                            ['Farm 012', 4],
-                        ]
-                    }, {
-                        id: 'east-high',
-                        data: [
-                            ['Farm 013', 2],
-                            ['Farm 014', 7],
-                            ['Farm 015', 3],
-                            ['Farm 016', 2]
-                        ]
-                    },{
-                        id: 'north-high',
-                        data: [
-                            ['Farm 017', 2],
-                            ['Farm 018', 7],
-                            ['Farm 019', 3],
-                            ['Farm 020', 2]
-                        ]
-                    }]
-                }
+                //     {
+                //         id: 'tisisi-high',
+                //         data: [
+                //             ['Farm 001', 4],
+                //             ['Farm 002', 2],
+                //             ['Farm 003', 1],
+                //             ['Farm 004', 4]
+                //         ]
+                //     }, {
+                //         id: 'west-high',
+                //         data: [
+                //             ['Farm 008', 6],
+                //             ['Farm 009', 2],
+                //             ['Farm 010', 2],
+                //             ['Farm 011', 4],
+                //             ['Farm 012', 4],
+                //         ]
+                //     }, {
+                //         id: 'east-high',
+                //         data: [
+                //             ['Farm 013', 2],
+                //             ['Farm 014', 7],
+                //             ['Farm 015', 3],
+                //             ['Farm 016', 2]
+                //         ]
+                //     },{
+                //         id: 'north-high',
+                //         data: [
+                //             ['Farm 017', 2],
+                //             ['Farm 018', 7],
+                //             ['Farm 019', 3],
+                //             ['Farm 020', 2]
+                //         ]
+                //     }]
+                // }
                 
             });
         }
