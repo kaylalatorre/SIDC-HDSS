@@ -25,6 +25,62 @@ $(document).ready(async function () {
 
         // DASHBOARD WEIGHT column chart 
         if ($('#wr-weight').length) {
+
+            var weightSeries = [], range0 = [],
+                range1 = [], range2 = [],
+                range3 = [], range4 = [];
+
+            // looping through all areas
+            for(var i = 0; i < metadata.length; i++){
+
+                range0.push({
+                    name: metadata[i][0],
+                    y: metadata[i][0][0],
+                    // drilldown: metadata[i][0].concat("-range0")
+                });
+
+                range1.push({
+                    name: metadata[i][0],
+                    y: metadata[i][1][0],
+                    // drilldown: metadata[i][0].concat("-range1")
+                });
+
+                range2.push({
+                    name: metadata[i][0],
+                    y: metadata[i][2][0],
+                    // drilldown: metadata[i][0].concat("-range2")
+                });
+
+                range3.push({
+                    name: metadata[i][0],
+                    y: metadata[i][3][0],
+                    // drilldown: metadata[i][0].concat("-range3")
+                });
+
+                range4.push({
+                    name: metadata[i][0],
+                    y: metadata[i][4][0],
+                    // drilldown: metadata[i][0].concat("-range4")
+                });
+            }
+
+            weightSeries.push({
+                name: '59 kg and below',
+                data: range1
+            }, {
+                name: '60-79 kg',
+                data: range1
+            }, {
+                name: '80-99 kg',
+                data: range2
+            }, {
+                name: '100-119 kg',
+                data: range3
+            }, {
+                name: '120 kg and above',
+                data: range4
+            })
+
             Highcharts.chart('wr-weight', {
                 chart: {
                     type: 'column'
@@ -52,70 +108,72 @@ $(document).ready(async function () {
                 },
         
                 /* Each series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL AREAS. */
-                series: [{
-                    name: '60-79 kg',
-                    data: [{
-                        name: 'TISISI',
-                        y: 5,
-                        drilldown: 'tisisi-low'
-                    }, {
-                        name: 'West',
-                        y: 2,
-                        drilldown: 'west-low'
-                    }, {
-                        name: 'East',
-                        y: 4,
-                        drilldown: 'east-low'
-                    },
-                    {
-                        name: 'North',
-                        y: 4,
-                        drilldown: 'north-low'
-                    }]
-                },
+                // series: [{
+                //     name: '60-79 kg',
+                //     data: [{
+                //         name: 'TISISI',
+                //         y: 5,
+                //         drilldown: 'tisisi-low'
+                //     }, {
+                //         name: 'West',
+                //         y: 2,
+                //         drilldown: 'west-low'
+                //     }, {
+                //         name: 'East',
+                //         y: 4,
+                //         drilldown: 'east-low'
+                //     },
+                //     {
+                //         name: 'North',
+                //         y: 4,
+                //         drilldown: 'north-low'
+                //     }]
+                // },
                 
-                { 
-                    name: '80-99 kg',
-                    data: [{
-                        name: 'TISISI',
-                        y: 4,
-                        drilldown: 'tisisi-med'
-                    }, {
-                        name: 'West',
-                        y: 4,
-                        drilldown: 'west-med'
-                    }, {
-                        name: 'East',
-                        y: 4,
-                        drilldown: 'east-med'
-                    }, {
-                        name: 'North',
-                        y: 4,
-                        drilldown: 'north-med'
-                    }]
-                },
+                // { 
+                //     name: '80-99 kg',
+                //     data: [{
+                //         name: 'TISISI',
+                //         y: 4,
+                //         drilldown: 'tisisi-med'
+                //     }, {
+                //         name: 'West',
+                //         y: 4,
+                //         drilldown: 'west-med'
+                //     }, {
+                //         name: 'East',
+                //         y: 4,
+                //         drilldown: 'east-med'
+                //     }, {
+                //         name: 'North',
+                //         y: 4,
+                //         drilldown: 'north-med'
+                //     }]
+                // },
                 
-                {
-                    name: '100-120 kg',
-                    data: [{
-                        name: 'TISISI',
-                        y: 5,
-                        drilldown: 'tisisi-high'
-                    }, {
-                        name: 'West',
-                        y: 2,
-                        drilldown: 'west-high'
-                    }, {
-                        name: 'East',
-                        y: 4,
-                        drilldown: 'east-high'
-                    },
-                    {
-                        name: 'North',
-                        y: 4,
-                        drilldown: 'north-high'
-                    }]
-                }],
+                // {
+                //     name: '100-120 kg',
+                //     data: [{
+                //         name: 'TISISI',
+                //         y: 5,
+                //         drilldown: 'tisisi-high'
+                //     }, {
+                //         name: 'West',
+                //         y: 2,
+                //         drilldown: 'west-high'
+                //     }, {
+                //         name: 'East',
+                //         y: 4,
+                //         drilldown: 'east-high'
+                //     },
+                //     {
+                //         name: 'North',
+                //         y: 4,
+                //         drilldown: 'north-high'
+                //     }]
+                // }],
+
+                series: weightSeries,
 
                 /* Each drilldown series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL FARMS under ONE AREA. */
                 drilldown: {
