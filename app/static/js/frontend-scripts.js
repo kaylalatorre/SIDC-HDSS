@@ -870,18 +870,21 @@ $('#health-symptoms-version-mobile').change(function () {
  */
 function computeMortality(currRow){
     var row = currRow.parentNode; //get row of clicked button
-    // console.log(row)
+    console.log(row.rowIndex);
 
     var begInv = row.getElementsByClassName('num_begInv')[0].innerHTML;
     var today = row.getElementsByClassName('num_today')[0].value;
-    // console.log("today: " + String(begInv));
-    // console.log("today: " + String(today));
-
-    var newTotal = parseInt(begInv) - parseInt(today);
     var toDate = row.getElementsByClassName('num_toDate')[0];
-    // console.log(toDate);
 
-    toDate.innerText = newTotal;
+    // console.log("begInv: " + String(begInv));
+    // console.log("today: " + String(today));
+    console.log(toDate);
+    console.log($(toDate).val());
+
+    var newTotal = parseInt(today) + parseInt(toDate); 
+    console.log(newTotal);    
+
+    toDate.innerHTML = String(newTotal);
     // console.log("toDate: " + String(toDate));
 
 

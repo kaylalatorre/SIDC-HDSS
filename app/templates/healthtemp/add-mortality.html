@@ -54,7 +54,7 @@
                             <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
                             <td data-label="Beg. Inv." id="begInv" class="num_begInv" value="{{num_begInv}}"> {{num_begInv}} </td>
                             <td data-label="Today" id="today" onchange="computeMortality(this)"> {{mortalityForm.num_today}} </td>
-                            <td data-label="To Date"> <p class="num_toDate">-</p> </td>
+                            <td data-label="To Date"> <p class="num_toDate" value="{{latest_toDate}}"> </p> </td>
                             <td data-label="Source" id="source"> 
                                 <select class="form-select" id="input-case" name="input-case">
                                     <option></option>
