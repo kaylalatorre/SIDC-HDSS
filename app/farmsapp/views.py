@@ -147,6 +147,7 @@ def farms(request):
     qry = Farm.objects.select_related('hog_raiser', 'area', 'extbio').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         contact=F("hog_raiser__contact_no"),
         farm_area = F("area__area_name"),
         last_update = F("extbio__last_updated")
@@ -154,6 +155,7 @@ def farms(request):
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "contact", 
             "farm_address",
             "farm_area",
@@ -168,6 +170,7 @@ def farms(request):
         farmObject = {
             "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
+            "mem_code": f["mem_code"],
             "contact": f["contact"],
             "address": f["farm_address"],
             "area": str(f["farm_area"]),
@@ -181,8 +184,15 @@ def farms(request):
     for choice in Area.objects.distinct().order_by('area_name').values('area_name'):
             areaList.append({"area_name": choice['area_name']})
 
+    memList = []
+    for mem in Hog_Raiser.objects.distinct().order_by('mem_code').values('mem_code'):
+        if mem['mem_code'] is not None:
+            memList.append(mem['mem_code'])
+
+    # debug(memList)
+
     # debug(farmsData)
-    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList}) ## Farms table for all users except Technicians
+    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList, "memList":memList}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
     """
@@ -195,6 +205,7 @@ def selectedFarm(request, farmID):
     # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        raiser_mem_code=F("hog_raiser__mem_code"),
         contact=F("hog_raiser__contact_no"),
         length=F("wh_length"),
         width=F("wh_width"),
@@ -210,6 +221,7 @@ def selectedFarm(request, farmID):
     selectedFarm = qry.values(
         "id",
         "raiser",
+        "raiser_mem_code",
         "contact",
         "directly_manage",
         "farm_address",
@@ -505,6 +517,7 @@ def techSelectedFarm(request, farmID):
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
     techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    raiser_mem_code=F("hog_raiser__mem_code"),
                     contact     = F("hog_raiser__contact_no"),
                     farm_area   = F("area__area_name"),
                     waste_mgt   = F("intbio__waste_mgt"),
@@ -518,6 +531,7 @@ def techSelectedFarm(request, farmID):
     selTechFarm = techFarmQry.values(
         "id",
         "raiser",
+        "raiser_mem_code",
         "contact",
         "directly_manage",
         "farm_address",

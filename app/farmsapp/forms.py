@@ -99,6 +99,13 @@ class FarmForm(ModelForm):
 class HogRaiserForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['mem_code'].widget.attrs.update({
+            'input type' : 'text', 
+            'class' : 'form-control',
+            'id' : 'input-mem-code',
+            'name' : 'input-mem-code',
+            'placeholder' : 'ex. 001'
+        })
         self.fields['fname'].widget.attrs.update({
             'input type' : 'text', 
             'class' : 'form-control',

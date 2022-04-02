@@ -587,19 +587,33 @@ function filterSearch(){
     }).get();
     console.log(checkedValues);
 
+    var checkedMem = $('input:checkbox:checked.ch_mem').map(function() {
+        return this.id.toUpperCase();
+    }).get();
+    console.log(checkedMem);
+
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
         address=tr[i].getElementsByTagName("td")[3];
         area = tr[i].getElementsByTagName("td")[4];
+        memcode = tr[i].getElementsByTagName("td")[8];
         
-        if(raiser && address && area){    
+        console.log(memcode)
+
+        if(raiser && address && area && memcode){    
             if(
                 (raiser.innerHTML.toUpperCase().indexOf(filter)>-1 || address.innerHTML.toUpperCase().indexOf(filter)>-1) 
                 &&(
                     (
                         ($.inArray(area.innerHTML.toUpperCase(), checkedValues) != -1) ||
                         (checkedValues.length == 0)
-                    ) 
+                    )
+                )
+                &&(
+                    (
+                        ($.inArray(memcode.innerHTML.toUpperCase(), checkedMem) != -1) ||
+                        (checkedMem.length == 0)
+                    )    
                 )
             ){    
                 tr[i].style.display="";        
@@ -617,6 +631,7 @@ function filterSearch(){
 $('#input-exist-raiser').change(function(){
     $("#div-raiser-name").remove();
     $("#div-raiser-contact").remove();
+    $("#div-mem-code").remove();
 });
 
 $(document).ready(function(){
