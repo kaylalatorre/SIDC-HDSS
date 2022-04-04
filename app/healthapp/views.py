@@ -149,11 +149,13 @@ def hogsHealth(request):
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         farm_area = F("area__area_name"),
         ).values(
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "farm_area",
             "total_pigs",
             "last_updated",
@@ -202,6 +204,7 @@ def hogsHealth(request):
             farmObject = {
                 "code":             f["id"],
                 "raiser":           " ".join((f["fname"],f["lname"])),
+                "r_mem_code":       f["mem_code"],
                 "area":             f["farm_area"],
                 "pigs":             f["total_pigs"],
                 "updated":          f["last_updated"],
@@ -237,11 +240,13 @@ def selectedHogsHealth(request, farmID):
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         farm_area = F("area__area_name"),
         ).values(
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "farm_area",
             "total_pigs",
             "last_updated",
@@ -291,6 +296,7 @@ def selectedHogsHealth(request, farmID):
     farmObject = {
         "code":  int(farmID),
         "raiser": " ".join((selectFarm["fname"], selectFarm["lname"])),
+        "r_mem_code": selectFarm["mem_code"],
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
         "updated": selectFarm["last_updated"],
@@ -384,11 +390,13 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         farm_area = F("area__area_name"),
         ).values(
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "farm_area",
             "total_pigs",
             "last_updated",
@@ -447,6 +455,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     farmObject = {
         "code":  int(farmID),
         "raiser": " ".join((selectFarm["fname"], selectFarm["lname"])),
+        "r_mem_code": selectFarm["mem_code"],
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
         "updated": selectFarm["last_updated"],
@@ -555,10 +564,12 @@ def healthSymptoms(request):
         qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
+            mem_code=F("hog_raiser__mem_code"), 
             ).values(
                 "id",
                 "fname",
                 "lname", 
+                "mem_code",
                 "total_pigs",
                 "last_updated",
                 ).order_by("id")
@@ -600,6 +611,7 @@ def healthSymptoms(request):
                 "area":             area.area_name,
                 "code":             f["id"],
                 "raiser":           " ".join((f["fname"],f["lname"])),
+                "r_mem_code":       f["mem_code"],
                 "pigs":             f["total_pigs"],
                 "updated":          f["last_updated"],
                 "ave_startWeight":  start_weight,
