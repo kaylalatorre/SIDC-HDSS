@@ -39,22 +39,24 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Date</th>
                             <th>Trip Type</th>
+                            <th>Date</th>
                             <th>Arrival Time</th>
                             <th>Departure Time</th>
-                            <th>Description</th>
+                            <th>No. of Pigs Involved</th>
                             <th>Remarks</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody id="activity-table">
                         <tr>
-                            <td data-label="Date" id="date"> {{activityForm.date}} </td>
-                            <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>                            
+                            <td data-label="Trip Type" id="trip_type"> {{activityForm.trip_type}} </td>  
+                            <td data-label="Date" id="date"> {{activityForm.date}} </td>                                                      
                             <td data-label="Arrival Time" id="time_arrival"> {{activityForm.time_arrival}} </td>
                             <td data-label="Departure Time" id="time_departure"> {{activityForm.time_departure}} </td>
-                            <td data-label="Description" id="description"> {{activityForm.description}} </td>
+                            <td data-label="No. of Pigs Involved" id="act_no_pigs"> 
+                                <input type="number" class="form-control" placeholder="ex. 1">    
+                            </td>
                             <td data-label="Remarks" id="remarks"> {{activityForm.remarks}} </td>
                             <td></td>
                         </tr>
