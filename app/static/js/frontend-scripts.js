@@ -212,6 +212,35 @@ for(var i = 0; i < rowStatus.length; i++) {
          
      });
  }   
+
+ /**
+ * Toggling view of Laboratory Results and Reference input for Tentative Diagnosis
+ */
+let refBtn = document.querySelectorAll('.result-ref-btn');
+for(var i = 0; i < refBtn.length; i++) { 
+    refBtn[i].addEventListener('click', (e) => {
+       var refInput = document.querySelector('.diagnosis-result-ref')
+       
+       e.target.classList.add('hide');
+       refInput.classList.add('show');
+       e.target.classList.remove('show');
+       refInput.classList.remove('hide');
+    });
+}
+
+let cancelRefBtn = document.querySelectorAll('.cancel-ref-btn');
+for(var i = 0; i < cancelRefBtn.length; i++) { 
+    cancelRefBtn[i].addEventListener('click', (e) => {
+       var refInput = document.querySelector('.diagnosis-result-ref')
+       var inputBtn = refInput.parentElement.querySelector('.result-ref-btn');
+       
+       // e.target.classList.add('hide');
+       refInput.classList.add('hide');
+       refInput.classList.remove('show');
+       inputBtn.classList.add('show');
+       inputBtn.classList.remove('hide');
+    });
+}
  
 /**
  * Toggling view to adding of area
