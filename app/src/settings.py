@@ -92,15 +92,14 @@ WSGI_APPLICATION = 'src.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# for CLOUD db
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv("ENGINE"),
-        'NAME': os.getenv("DBNAME"),
-        'USER': os.getenv("DBUSER"),
-        'PASSWORD': os.getenv("PASSWORD"),
-        'HOST': os.getenv("HOST"),
-        'PORT': os.getenv("PORT")
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'sidcDB',
+        'USER': 'sidcdbuser',
+        'PASSWORD': 'sidcdb123',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 

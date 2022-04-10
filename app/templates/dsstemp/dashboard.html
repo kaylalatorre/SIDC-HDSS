@@ -11,14 +11,19 @@
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="overviewmap-tab" data-bs-toggle="tab" data-bs-target="#overviewmap" type="button" role="tab" aria-controls="overviewmap" aria-selected="true">
-              Overview and Map
+              Farms Overview
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="diseasemonitor-tab" data-bs-toggle="tab" data-bs-target="#diseasemonitor" type="button" role="tab" aria-controls="diseasemonitor" aria-selected="false">
-              Disease Monitoring
+          <button class="nav-link" id="symptomsmonitor-tab" data-bs-toggle="tab" data-bs-target="#symptomsmonitor" type="button" role="tab" aria-controls="symptomsmonitor" aria-selected="false">
+              Symptoms Monitoring
           </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="diseasemonitor-tab" data-bs-toggle="tab" data-bs-target="#diseasemonitor" type="button" role="tab" aria-controls="diseasemonitor" aria-selected="false">
+                Disease Monitoring
+            </button>
+          </li>
     </ul>
     <br>
     <div class="tab-content">
@@ -154,8 +159,8 @@
             </div>
             </section>
         </div>
-        <!-- Disease Monitoring Tab -->
-        <div class="tab-pane fade" id="diseasemonitor" role="tabpanel" aria-labelledby="diseasemonitor-tab">
+        <!-- Symptoms Monitoring Tab -->
+        <div class="tab-pane fade" id="symptomsmonitor" role="tabpanel" aria-labelledby="symptomsmonitor-tab">
             <!-- Active Incidents, Mortality, Symptoms Observed -->
             <section>
                 <div class="flex">
@@ -449,6 +454,10 @@
                     </div>
                 </div>
             </section>
+        </div>
+        <!-- Disease Monitoring Tab -->
+        <div class="tab-pane fade" id="diseasemonitor" role="tabpanel" aria-labelledby="diseasemonitor-tab">
+            
         </div>
     </div>
     
