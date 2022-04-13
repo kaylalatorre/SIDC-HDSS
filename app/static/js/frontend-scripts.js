@@ -899,29 +899,32 @@ $('#health-symptoms-version-mobile').change(function () {
  */
 function computeMortality(currRow){
     var row = currRow.parentNode; //get row of clicked button
-    // console.log(row)
+    console.log(row.rowIndex);
 
     var begInv = row.getElementsByClassName('num_begInv')[0].innerHTML;
     var today = row.getElementsByClassName('num_today')[0].value;
-    // console.log("today: " + String(begInv));
-    // console.log("today: " + String(today));
-
-    var newTotal = parseInt(begInv) - parseInt(today);
+    var latest_toDate = document.getElementById('latest_toDate').innerHTML;
     var toDate = row.getElementsByClassName('num_toDate')[0];
-    // console.log(toDate);
 
-    toDate.innerText = newTotal;
+    // console.log("begInv: " + String(begInv));
+    console.log("today: " + String(today));
+    console.log(latest_toDate);
+
+    var newTotal = parseInt(today) + parseInt(latest_toDate); 
+    console.log(newTotal);    
+
+    toDate.innerHTML = String(newTotal);
     // console.log("toDate: " + String(toDate));
 
 
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
 
-    if (parseInt(today) == parseInt(begInv))
+    if (parseInt(newTotal) == parseInt(begInv))
         var mortRate = 100;
     else if (parseInt(today) == 0)
         var mortRate = 0;
     else
-        var mortRate = parseInt(today) / parseInt(begInv) * 100
+        var mortRate = parseInt(newTotal) / parseInt(begInv) * 100
 
     mortality_rate.innerText = mortRate.toFixed(2);
     // console.log("mortality_rate: " + String(mortality_rate));

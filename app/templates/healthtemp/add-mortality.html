@@ -22,6 +22,7 @@
         <div class="mobile-subheading">
             <p> <strong>Series: </strong> {{series|stringformat:"03d"}} </p>
         </div>
+        <div class="flex subheading"><strong>Mortality To Date:&nbsp; </strong> <p id="latest_toDate"> {{latest_toDate}} </p></div>
         <hr>
 
         <div class="box-style">
@@ -72,6 +73,8 @@
                             </td>
                             <td data-label="Case No." id="case_no"> 
                                 <!-- Dropdown content will depend on which source is selected -->
+                            <td data-label="To Date"> <p class="num_toDate"> </p> </td>
+                            <td data-label="Source" id="source"> 
                                 <select class="form-select" id="input-case" name="input-case">
                                     <option></option>
                                     {% for case in incid_cases %}
