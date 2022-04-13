@@ -1,6 +1,6 @@
 $(document).ready(async function () {
 
-    if($('#wr-weight').length || $('#wr-hogs-weight').length){
+    if($('#wr-weight').length){
         ajaxCSRF();
         metadata = await $.ajax({
             type: 'POST',
@@ -11,16 +11,6 @@ $(document).ready(async function () {
         });
 
         console.log(metadata);
-
-        
-        var today = new Date();
-        // console.log(today);
-        
-        var dateBefore = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
-        // console.log(dateBefore);
-    
-        var dateToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-        // console.log(dateToday);
 
 
         // DASHBOARD WEIGHT column chart 
@@ -64,7 +54,7 @@ $(document).ready(async function () {
                     y: metadata[i][5][0],
                     drilldown: metadata[i][0].concat("-range4")
                 });
-            }
+            };
 
             // feeding all weight range data to the corresponding categories (main series)
             weightSeries.push({
@@ -82,7 +72,7 @@ $(document).ready(async function () {
             }, {
                 name: '120 kg and above',
                 data: range4
-            })
+            });
 
 
             // ADDING DATA TO THE DRILLDOWN SERIES
@@ -114,10 +104,10 @@ $(document).ready(async function () {
                     id: metadata[i][0].concat("-range4"),
                     data: metadata[i][5][1]
                 })
-            }
+            };
 
-            // console.log(weightSeries);
-            // console.log(drilldownSeries);
+            console.log(weightSeries);
+            console.log(drilldownSeries);
 
 
             Highcharts.chart('wr-weight', {
@@ -132,7 +122,7 @@ $(document).ready(async function () {
                 },
                 yAxis: {
                     title: {
-                        text: 'Count'
+                        text: 'Hog Count'
                     }
                 },
 
@@ -147,187 +137,11 @@ $(document).ready(async function () {
                 },
         
                 /* Each series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL AREAS. */
-                // series: [{
-                //     name: '60-79 kg',
-                //     data: [{
-                //         name: 'TISISI',
-                //         y: 5,
-                //         drilldown: 'tisisi-low'
-                //     }, {
-                //         name: 'West',
-                //         y: 2,
-                //         drilldown: 'west-low'
-                //     }, {
-                //         name: 'East',
-                //         y: 4,
-                //         drilldown: 'east-low'
-                //     },
-                //     {
-                //         name: 'North',
-                //         y: 4,
-                //         drilldown: 'north-low'
-                //     }]
-                // },
-                
-                // { 
-                //     name: '80-99 kg',
-                //     data: [{
-                //         name: 'TISISI',
-                //         y: 4,
-                //         drilldown: 'tisisi-med'
-                //     }, {
-                //         name: 'West',
-                //         y: 4,
-                //         drilldown: 'west-med'
-                //     }, {
-                //         name: 'East',
-                //         y: 4,
-                //         drilldown: 'east-med'
-                //     }, {
-                //         name: 'North',
-                //         y: 4,
-                //         drilldown: 'north-med'
-                //     }]
-                // },
-                
-                // {
-                //     name: '100-120 kg',
-                //     data: [{
-                //         name: 'TISISI',
-                //         y: 5,
-                //         drilldown: 'tisisi-high'
-                //     }, {
-                //         name: 'West',
-                //         y: 2,
-                //         drilldown: 'west-high'
-                //     }, {
-                //         name: 'East',
-                //         y: 4,
-                //         drilldown: 'east-high'
-                //     },
-                //     {
-                //         name: 'North',
-                //         y: 4,
-                //         drilldown: 'north-high'
-                //     }]
-                // }],
-
                 series: weightSeries,
 
                 /* Each drilldown series includes the count of fattener hogs in ONE WEIGHT RANGE in ALL FARMS under ONE AREA. */
+                // drilldown: drilldownSeries,
 
-                drilldown: drilldownSeries,
-
-                // drilldown: {
-                //     series: [
-                //     {
-                //         // showInLegend: false,
-                //         id: 'tisisi-low',
-                //         data: [
-                //             ['Farm 001', 4],
-                //             ['Farm 002', 2],
-                //             ['Farm 003', 1],
-                //             ['Farm 004', 4]
-                //         ]
-                //     }, {
-                //         // showInLegend: false,
-                //         id: 'west-low',
-                //         data: [
-                //             ['Farm 008', 6],
-                //             ['Farm 009', 2],
-                //             ['Farm 010', 2],
-                //             ['Farm 011', 4],
-                //             ['Farm 012', 4],
-                //         ]
-                //     }, {
-                //         id: 'east-low',
-                //         data: [
-                //             ['Farm 013', 2],
-                //             ['Farm 014', 7],
-                //             ['Farm 015', 3],
-                //             ['Farm 016', 2]
-                //         ]
-                //     }, {
-                //         id: 'north-low',
-                //         data: [
-                //             ['Farm 017', 2],
-                //             ['Farm 018', 7],
-                //             ['Farm 019', 3],
-                //             ['Farm 020', 2]
-                //         ]
-                //     },
-                    
-                //     {
-                //         id: 'tisisi-med',
-                //         data: [
-                //             ['Farm 001', 2],
-                //             ['Farm 002', 4],
-                //             ['Farm 003', 1],
-                //             ['Farm 004', 7]
-                //         ]
-                //     }, {
-                //         id: 'west-med',
-                //         data: [
-                //             ['Farm 008', 4],
-                //             ['Farm 009', 2],
-                //             ['Farm 010', 5],
-                //             ['Farm 011', 3],
-                //             ['Farm 012', 4],
-                //         ]
-                //     }, {
-                //         id: 'east-med',
-                //         data: [
-                //             ['Farm 013', 7],
-                //             ['Farm 014', 8],
-                //             ['Farm 015', 2],
-                //             ['Farm 016', 2]
-                //         ]
-                //     }, {
-                //         id: 'north-med',
-                //         data: [
-                //             ['Farm 017', 7],
-                //             ['Farm 018', 8],
-                //             ['Farm 019', 2],
-                //             ['Farm 020', 2]
-                //         ]
-                //     },
-                    
-                //     {
-                //         id: 'tisisi-high',
-                //         data: [
-                //             ['Farm 001', 4],
-                //             ['Farm 002', 2],
-                //             ['Farm 003', 1],
-                //             ['Farm 004', 4]
-                //         ]
-                //     }, {
-                //         id: 'west-high',
-                //         data: [
-                //             ['Farm 008', 6],
-                //             ['Farm 009', 2],
-                //             ['Farm 010', 2],
-                //             ['Farm 011', 4],
-                //             ['Farm 012', 4],
-                //         ]
-                //     }, {
-                //         id: 'east-high',
-                //         data: [
-                //             ['Farm 013', 2],
-                //             ['Farm 014', 7],
-                //             ['Farm 015', 3],
-                //             ['Farm 016', 2]
-                //         ]
-                //     },{
-                //         id: 'north-high',
-                //         data: [
-                //             ['Farm 017', 2],
-                //             ['Farm 018', 7],
-                //             ['Farm 019', 3],
-                //             ['Farm 020', 2]
-                //         ]
-                //     }]
-                // }
-                
             });
         }
 

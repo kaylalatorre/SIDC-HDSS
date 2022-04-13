@@ -22,6 +22,7 @@
         <div class="mobile-subheading">
             <p> <strong>Series: </strong> {{series|stringformat:"03d"}} </p>
         </div>
+        <div class="flex subheading"><strong>Mortality To Date:&nbsp; </strong> <p id="latest_toDate"> {{latest_toDate}} </p></div>
         <hr>
 
         <div class="box-style">
@@ -54,7 +55,7 @@
                             <td data-label="Mortality Date" id="mortality_date"> {{mortalityForm.mortality_date}} </td>                            
                             <td data-label="Beg. Inv." id="begInv" class="num_begInv" value="{{num_begInv}}"> {{num_begInv}} </td>
                             <td data-label="Today" id="today" onchange="computeMortality(this)"> {{mortalityForm.num_today}} </td>
-                            <td data-label="To Date"> <p class="num_toDate" value="{{latest_toDate}}"> </p> </td>
+                            <td data-label="To Date"> <p class="num_toDate"> </p> </td>
                             <td data-label="Source" id="source"> 
                                 <select class="form-select" id="input-case" name="input-case">
                                     <option></option>

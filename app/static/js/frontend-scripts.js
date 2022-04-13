@@ -874,14 +874,14 @@ function computeMortality(currRow){
 
     var begInv = row.getElementsByClassName('num_begInv')[0].innerHTML;
     var today = row.getElementsByClassName('num_today')[0].value;
+    var latest_toDate = document.getElementById('latest_toDate').innerHTML;
     var toDate = row.getElementsByClassName('num_toDate')[0];
 
     // console.log("begInv: " + String(begInv));
-    // console.log("today: " + String(today));
-    console.log(toDate);
-    console.log($(toDate).val());
+    console.log("today: " + String(today));
+    console.log(latest_toDate);
 
-    var newTotal = parseInt(today) + parseInt(toDate); 
+    var newTotal = parseInt(today) + parseInt(latest_toDate); 
     console.log(newTotal);    
 
     toDate.innerHTML = String(newTotal);
@@ -890,12 +890,12 @@ function computeMortality(currRow){
 
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
 
-    if (parseInt(today) == parseInt(begInv))
+    if (parseInt(newTotal) == parseInt(begInv))
         var mortRate = 100;
     else if (parseInt(today) == 0)
         var mortRate = 0;
     else
-        var mortRate = parseInt(today) / parseInt(begInv) * 100
+        var mortRate = parseInt(newTotal) / parseInt(begInv) * 100
 
     mortality_rate.innerText = mortRate.toFixed(2);
     // console.log("mortality_rate: " + String(mortality_rate));
