@@ -413,11 +413,11 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th style="width: 10%">Date</th>
                             <th style="width: 20%">Trip Type</th>
-                            <th>Time</th>
-                            <th style="width: 30%">Description</th>
-                            <th style="width: 15%">Remarks</th>
+                            <th style="width: 15%">Time</th>
+                            <th style="width: 15%; text-align: right;">Number of Pigs Involved</th>
+                            <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -433,23 +433,17 @@
                                 <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
                             </td>
                             {% if act.description %}
-                            <td data-label="Description">
+                            <td data-label="Description" style="text-align: right;">
                                 <p class="activity-data">{{act.description}}</p>
                             </td>
                             {% else %}
-                            <td data-label="Description">
+                            <td data-label="Description" style="text-align: right;">
                                 <p class="activity-data">-</p>
                             </td>
                             {% endif %}
-                            {% if act.remarks %}
                             <td data-label="Remarks">
                                 <p class="activity-data">{{act.remarks}}</p>
                             </td>
-                            {% else %}
-                            <td data-label="Remarks">
-                                <p class="activity-data">-</p>
-                            </td>
-                            {% endif %}
                             <td> </td>
                         </tr>
                     {% endfor %}
