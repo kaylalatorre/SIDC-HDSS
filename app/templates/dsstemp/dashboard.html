@@ -11,14 +11,19 @@
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="overviewmap-tab" data-bs-toggle="tab" data-bs-target="#overviewmap" type="button" role="tab" aria-controls="overviewmap" aria-selected="true">
-              Overview and Map
+              Farms Overview
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="diseasemonitor-tab" data-bs-toggle="tab" data-bs-target="#diseasemonitor" type="button" role="tab" aria-controls="diseasemonitor" aria-selected="false">
-              Disease Monitoring
+          <button class="nav-link" id="symptomsmonitor-tab" data-bs-toggle="tab" data-bs-target="#symptomsmonitor" type="button" role="tab" aria-controls="symptomsmonitor" aria-selected="false">
+              Symptoms Monitoring
           </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="diseasemonitor-tab" data-bs-toggle="tab" data-bs-target="#diseasemonitor" type="button" role="tab" aria-controls="diseasemonitor" aria-selected="false">
+                Disease Monitoring
+            </button>
+          </li>
     </ul>
     <br>
     <div class="tab-content">
@@ -154,301 +159,113 @@
             </div>
             </section>
         </div>
-        <!-- Disease Monitoring Tab -->
-        <div class="tab-pane fade" id="diseasemonitor" role="tabpanel" aria-labelledby="diseasemonitor-tab">
+        <!-- Symptoms Monitoring Tab -->
+        <div class="tab-pane fade" id="symptomsmonitor" role="tabpanel" aria-labelledby="symptomsmonitor-tab">
             <!-- Active Incidents, Mortality, Symptoms Observed -->
             <section>
                 <div class="flex">
-                    <div class="flex-item" style="width: 40%!important">
-                        <div>
-                            <h3>Active Incidents</h3>
-                            <div class="box-style-chart" id="dm-active-incid" style="width: 100%; height: 360px;">
-                                <!-- Data handled in disease-monitoring.js -->
-                            </div>
+                     
+                     <div class="flex-item">
+                         <!-- Tentative Diagnosis --> 
+                        <div class="flex">
+                            <h3 style="padding-right: 8px">Tentative Diagnosis</h3><p style="margin-bottom: 8px;">(Suspected disease cases based on reported symptoms only.)</p>
                         </div>
-                        <div>
-                            <h3>Mortality</h3>
-                            <div class="box-style-chart" id="dm-mortality" style="width: 100%; height: 360px;">
-                                <!-- Data handled in disease-monitoring.js -->
-                            </div>
+                        <div class="box-style">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Suspected Disease</th>
+                                        <th>Incidents Involved</th>
+                                        <th>Farms Affected</th>
+                                        <th>No. of Pigs Affected</th>
+                                        <th width="20%">Symptoms</th>
+                                        <th width="25%">Result</th> 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td data-label="Suspected Disease"> PRRS </td>
+                                        <td data-label="Incidents Involved"> 001, 002</td>
+                                        <td data-label="Farms Affected"> 005, 003, 008 </td>
+                                        <td data-label="No. of Pigs Affected"> 24 </td>
+                                        <td data-label="Symptoms"> 
+                                            <ul class="ul-symptoms">
+                                                <li class="li-symptoms"> symptom 1 </li>
+                                            </ul>
+                                        </td>
+                                        <td data-label="Confirmed">
+                                            <!-- default - input button -->
+                                            <div class="flex">
+                                                <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                            </div>
+                                            
+                                            <!-- hidden result display -->
+                                            <div class="hide">
+                                                <p>Result: Negative</p> 
+                                                <p>Laboratory Reference: 01293829</p> 
+                                            </div>
+                                            
+                                            <!-- hidden reference form -->
+                                            <div class="box-style diagnosis-result-ref hide">
+                                                <form>
+                                                    <label class="bold-lbl">Laboratory Result</label> <br>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                                        <label class="form-check-label" for="inlineRadio1">Positive</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                                        <label class="form-check-label" for="inlineRadio2">Negative</label>
+                                                    </div>
+                                                    
+                                                    <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                    <input type="text" required class="form-control" id="input-reference" placeholder="ex. 001232">
+                                          
+                                                    <div class="flex" style="margin-top: 8px">
+                                                        <button class="secondary-btn" type="submit" id="submit-reference" style="margin-right: 4px">Submit</button>
+                                                        <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="flex-item">
-                        <h3>Symptoms Reported</h3>
-                        <div class="box-style-chart" id="dm-symptoms-rep" style="width: 100%; height: 768px;">
-                            <!-- Data handled in disease-monitoring.js -->
-                        </div>
+                    <!-- Charts -->
+                    <div class="flex-item container-scroll" style="width: 35%!important">
+                        <div class="info-scroll">
+                            <section>
+                                <h3>Symptoms Reported</h3>
+                                <div class="box-style-chart" id="dm-symptoms-rep" style="width: 100%; height: 768px;">
+                                    <!-- Data handled in disease-monitoring.js -->
+                                </div>
+                            </section>
+                            <section>
+                                <h3>Active Incidents</h3>
+                                <div class="box-style-chart" id="dm-active-incid" style="width: 100%; height: 360px;">
+                                    <!-- Data handled in disease-monitoring.js -->
+                                </div>
+                            </section>
+                            <section>
+                                <h3>Mortality</h3>
+                                <div class="box-style-chart" id="dm-mortality" style="width: 100%; height: 360px;">
+                                    <!-- Data handled in disease-monitoring.js -->
+                                </div>
+                            </section>
+                        </div>                  
                     </div>
+                   
+                    
                 </div>      
             </section>
-            <hr>
-            <!-- Suspected Disease Cases -->
-            <section>
-                <h3>Suspected Disease Cases</h3>
-                <div>
-                    <div class="d-flex align-items-start box-style">
-                        <!-- Disease Tabs -->
-                        <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <button class="nav-link active" id="v-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-asf" type="button" role="tab" aria-controls="v-pills-asf" aria-selected="true">
-                                <div class="disease-info">
-                                    <p class="di-disease">African swine fever (ASF)</p>
-                                    <h3 class="di-no-affected {% if susCases.ASF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.ASF.hogs }}</h3>
-                                </div>
-                            </button>
-                            <button class="nav-link" id="v-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-csf" type="button" role="tab" aria-controls="v-pills-csf" aria-selected="false">
-                                <div class="disease-info">
-                                    <p class="di-disease">Clinical swine fever (CSF)</p>
-                                    <h3 class="di-no-affected {% if susCases.CSF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.CSF.hogs }}</h3>
-                                </div>
-                            </button>
-                            <button class="nav-link" id="v-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#v-pills-iav" type="button" role="tab" aria-controls="v-pills-iav" aria-selected="false">
-                                <div class="disease-info">
-                                    <p class="di-disease">Swine influenza (IAV-S)</p>
-                                    <h3 class="di-no-affected {% if susCases.IAVS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.IAVS.hogs }}</h3>
-                                </div>
-                            </button>
-                            <button class="nav-link" id="v-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#v-pills-adv" type="button" role="tab" aria-controls="v-pills-adv" aria-selected="false">
-                                <div class="disease-info">
-                                    <p class="di-disease">Pseudorabies (ADV)</p>
-                                    <h3 class="di-no-affected {% if susCases.ADV.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.ADV.hogs }}</h3>
-                                </div>
-                            </button>
-                            <button class="nav-link" id="v-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prrs" type="button" role="tab" aria-controls="v-pills-prrs" aria-selected="false">
-                                <div class="disease-info">
-                                    <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
-                                    <h3 class="di-no-affected {% if susCases.PRRS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PRRS.hogs }}</h3>
-                                </div>
-                            </button>
-                            <button class="nav-link" id="v-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ped" type="button" role="tab" aria-controls="v-pills-ped" aria-selected="false">
-                                <div class="disease-info">
-                                    <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
-                                    <h3 class="di-no-affected {% if susCases.PED.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs }}</h3>
-                                </div>
-                            </button>
-                        </div>
-                        <!-- Tab Content -->
-                        {% load healthapp_extras %}
-                        <div class="tab-content" id="v-pills-tabContent">
-                            <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
-                                {% if  susCases.ASF.hogs == 0 %}
-                                <div>
-                                    No suspected cases.
-                                </div>
-                                {% else %}
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th> No. of Hogs Affected </td>
-                                            <td> {{susCases.ASF.hogs}} hogs </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Farms Affected</td>
-                                            <td>
-                                                <ul class="farms-affected-list" data-column="4">
-                                                    {% for id in susCases.ASF.farms %}
-                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Symptoms Observed</td>
-                                            <td>
-                                                <ul class="symtptoms-master-list" data-column="4">
-                                                    {% for symptom in susCases.ASF.symptoms %}
-                                                    <li>{{ symptom | formatField }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% endif %}
-                            </div>
-                            <div class="tab-pane fade" id="v-pills-csf" role="tabpanel" aria-labelledby="v-pills-csf-tab">
-                                {% if  susCases.CSF.hogs == 0 %}
-                                <div>
-                                    No suspected cases.
-                                </div>
-                                {% else %}
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th> No. of Hogs Affected </td>
-                                            <td> {{susCases.CSF.hogs}} hogs </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Farms Affected</td>
-                                            <td>
-                                                <ul class="farms-affected-list" data-column="4">
-                                                    {% for id in susCases.CSF.farms %}
-                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Symptoms Observed</td>
-                                            <td>
-                                                <ul class="symtptoms-master-list" data-column="4">
-                                                    {% for symptom in susCases.CSF.symptoms %}
-                                                    <li>{{ symptom | formatField }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% endif %}
-                            </div>
-                            <div class="tab-pane fade" id="v-pills-iav" role="tabpanel" aria-labelledby="v-pills-iav-tab">
-                                {% if  susCases.IAVS.hogs == 0 %}
-                                <div>
-                                    No suspected cases.
-                                </div>
-                                {% else %}
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th> No. of Hogs Affected </td>
-                                            <td> {{susCases.IAVS.hogs}} hogs </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Farms Affected</td>
-                                            <td>
-                                                <ul class="farms-affected-list" data-column="4">
-                                                    {% for id in susCases.IAVS.farms %}
-                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Symptoms Observed</td>
-                                            <td>
-                                                <ul class="symtptoms-master-list" data-column="4">
-                                                    {% for symptom in susCases.IAVS.symptoms %}
-                                                    <li>{{ symptom | formatField }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% endif %}
-                            </div>
-                            <div class="tab-pane fade" id="v-pills-adv" role="tabpanel" aria-labelledby="v-pills-adv-tab">
-                                {% if  susCases.ADV.hogs == 0 %}
-                                <div>
-                                    No suspected cases.
-                                </div>
-                                {% else %}
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th> No. of Hogs Affected </td>
-                                            <td> {{susCases.ADV.hogs}} hogs </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Farms Affected</td>
-                                            <td>
-                                                <ul class="farms-affected-list" data-column="4">
-                                                    {% for id in susCases.ADV.farms %}
-                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Symptoms Observed</td>
-                                            <td>
-                                                <ul class="symtptoms-master-list" data-column="4">
-                                                    {% for symptom in susCases.ADV.symptoms %}
-                                                    <li>{{ symptom | formatField }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% endif %}
-                            </div>
-                            <div class="tab-pane fade" id="v-pills-prrs" role="tabpanel" aria-labelledby="v-pills-prrs-tab">
-                                {% if  susCases.PRRS.hogs == 0 %}
-                                <div>
-                                    No suspected cases.
-                                </div>
-                                {% else %}
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th> No. of Hogs Affected </td>
-                                            <td> {{susCases.PRRS.hogs}} hogs </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Farms Affected</td>
-                                            <td>
-                                                <ul class="farms-affected-list" data-column="4">
-                                                    {% for id in susCases.PRRS.farms %}
-                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Symptoms Observed</td>
-                                            <td>
-                                                <ul class="symtptoms-master-list" data-column="4">
-                                                    {% for symptom in susCases.PRRS.symptoms %}
-                                                    <li>{{ symptom | formatField }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% endif %}
-                            </div>
-                            <div class="tab-pane fade" id="v-pills-ped" role="tabpanel" aria-labelledby="v-pills-ped-tab">
-                                {% if  susCases.PED.hogs == 0 %}
-                                <div>
-                                    No suspected cases.
-                                </div>
-                                {% else %}
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            <th> No. of Hogs Affected </td>
-                                            <td> {{susCases.PED.hogs}} hogs </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Farms Affected</td>
-                                            <td>
-                                                <ul class="farms-affected-list" data-column="4">
-                                                    {% for id in susCases.PED.farms %}
-                                                    <li><a href="#">{{ id | stringformat:"03d" }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Symptoms Observed</td>
-                                            <td>
-                                                <ul class="symtptoms-master-list" data-column="4">
-                                                    {% for symptom in susCases.PED.symptoms %}
-                                                    <li>{{ symptom | formatField }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+   
+        </div>
+        <!-- Disease Monitoring Tab -->
+        <div class="tab-pane fade" id="diseasemonitor" role="tabpanel" aria-labelledby="diseasemonitor-tab">
+            
         </div>
     </div>
     

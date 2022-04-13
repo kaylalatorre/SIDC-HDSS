@@ -43,7 +43,8 @@
                             <th width="10%">Beg. Inv.</th>
                             <th width="10%">Today</th>
                             <th width="10%">To Date</th>
-                            <th>Incident Case</th>
+                            <th width="25%">Source</th>
+                            <th width="15%">Case No.</th>
                             <th>Remarks</th>
                             <th style="text-align: right;">Mortality %</th>
                             <th></th>
@@ -55,7 +56,22 @@
                             <td data-label="Beg. Inv." id="begInv" class="num_begInv" value="{{num_begInv}}"> {{num_begInv}} </td>
                             <td data-label="Today" id="today" onchange="computeMortality(this)"> {{mortalityForm.num_today}} </td>
                             <td data-label="To Date"> <p class="num_toDate">-</p> </td>
-                            <td data-label="Source" id="source"> 
+                            <td data-label="Source">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case">
+                                    <label class="form-check-label" for="src-incident">Incident Case</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case">
+                                    <label class="form-check-label" for="src-disease">Disease Case</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown">
+                                    <label class="form-check-label" for="src-unknown">Unknown</label>
+                                </div>
+                            </td>
+                            <td data-label="Case No." id="case_no"> 
+                                <!-- Dropdown content will depend on which source is selected -->
                                 <select class="form-select" id="input-case" name="input-case">
                                     <option></option>
                                     {% for case in incid_cases %}
