@@ -284,7 +284,7 @@ def selectedFarm(request, farmID):
             'trip_type' : activity.trip_type,
             'time_arrival' : activity.time_arrival,
             'time_departure' : activity.time_departure,
-            'description' : activity.description,
+            'num_pigs_inv' : activity.num_pigs_inv,
             'remarks' : activity.remarks,
         })
 
@@ -410,7 +410,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
             'trip_type' : activity.trip_type,
             'time_arrival' : activity.time_arrival,
             'time_departure' : activity.time_departure,
-            'description' : activity.description,
+            'num_pigs_inv' : activity.num_pigs_inv,
             'remarks' : activity.remarks,
         })
 
@@ -1520,12 +1520,6 @@ def select_biosec(request, farmID):
         # store all data to an array
         for activity in actQuery:
             
-            # check if activity record date is still within the 24 hour mark of current time
-            if (localtime() - activity.date_approved).days <= 1:
-                editable = True
-            else : 
-                editable = False
-
             actList.append({
                 'id' : activity.id,
                 'date' : activity.date,
@@ -1535,9 +1529,8 @@ def select_biosec(request, farmID):
                 'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
                 'time_departure' : activity.time_departure,
                 'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
-                'description' : activity.description,
+                'num_pigs_inv' : activity.num_pigs_inv,
                 'remarks' : activity.remarks,
-                'editable' : editable
             })
 
         # pass in context:
@@ -1822,7 +1815,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'format_arrival' : (activity.time_arrival).strftime('%H:%M:%S'),
             'time_departure' : activity.time_departure,
             'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
-            'description' : activity.description,
+            'num_pigs_inv' : activity.num_pigs_inv,
             'remarks' : activity.remarks,
         })
 
@@ -2033,7 +2026,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             actType = str('activityList[') + str(i) + str('][trip_type]')
             actArrival = str('activityList[') + str(i) + str('][time_arrival]')
             actDeparture = str('activityList[') + str(i) + str('][time_departure]')
-            actDescription = str('activityList[') + str(i) + str('][description]')
+            actNumPigsInv = str('activityList[') + str(i) + str('][num_pigs_inv]')
             actRemarks = str('activityList[') + str(i) + str('][remarks]')
 
             activityObject = {
@@ -2041,7 +2034,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
                 "trip_type" : request.POST.get(actType, default=None),
                 "time_arrival" : request.POST.get(actArrival, default=None),
                 "time_departure" : request.POST.get(actDeparture, default=None),
-                "description" : request.POST.get(actDescription, default=None),
+                "num_pigs_inv" : request.POST.get(actNumPigsInv, default=None),
                 "remarks" : request.POST.get(actRemarks, default=None),
             }
 
@@ -2070,7 +2063,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
                 trip_type = act['trip_type'],
                 time_arrival = act['time_arrival'],
                 time_departure = act['time_departure'],
-                description = act['description'],
+                num_pigs_inv = act['num_pigs_inv'],
                 remarks = act['remarks'],
                 activity_form_id = activity_form.id
             )
@@ -2120,7 +2113,7 @@ def addActivity(request, farmID):
                 "trip_type" : request.POST.getlist('trip_type', default=None)[i],
                 "time_arrival" : request.POST.getlist('time_arrival', default=None)[i],
                 "time_departure" : request.POST.getlist('time_departure', default=None)[i],
-                "description" : request.POST.getlist('description', default=None)[i],
+                "num_pigs_inv" : request.POST.getlist('num_pigs_inv', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
@@ -2151,7 +2144,7 @@ def addActivity(request, farmID):
                     trip_type = act['trip_type'],
                     time_arrival = act['time_arrival'],
                     time_departure = act['time_departure'],
-                    description = act['description'],
+                    num_pigs_inv = act['num_pigs_inv'],
                     remarks = act['remarks'],
                     activity_form_id = activity_form.id
                 )
@@ -2201,7 +2194,7 @@ def saveActivity(request, farmID, activityID):
         trip_type = request.POST.get("trip_type")
         time_departure = request.POST.get("time_departure")
         time_arrival = request.POST.get("time_arrival")
-        description = request.POST.get("description")
+        num_pigs_inv = request.POST.get("num_pigs_inv")
         remarks = request.POST.get("remarks")
         # print("DATA COLLECTED: " + str(date) + " - " + str(trip_type) + " - " + str(time_arrival) + " to " + str(time_departure) )
 
@@ -2214,7 +2207,7 @@ def saveActivity(request, farmID, activityID):
         activity.trip_type = trip_type
         activity.time_departure = time_departure
         activity.time_arrival = time_arrival
-        activity.description = description
+        activity.num_pigs_inv = num_pigs_inv
         activity.remarks = remarks
         activity.last_updated = dateToday
         

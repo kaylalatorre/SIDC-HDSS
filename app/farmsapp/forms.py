@@ -174,11 +174,11 @@ class ActivityForm(forms.ModelForm):
             'aria-label' : 'Departure Time',
             'class' : 'form-control',
         })
-        self.fields['description'].widget.attrs.update({
-            'input type' : 'text', 
-            'aria-label' : 'Description',
+        self.fields['num_pigs_inv'].widget.attrs.update({
+            'input type' : 'number', 
+            'aria-label' : 'Num. Pigs Involved',
             'class' : 'form-control',
-            'placeholder' : 'Description'
+            'placeholder' : 'ex. 1'
         })
         self.fields['remarks'].widget.attrs.update({
             'input type' : 'text', 

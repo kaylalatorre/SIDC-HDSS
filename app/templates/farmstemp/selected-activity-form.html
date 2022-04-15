@@ -76,10 +76,10 @@
             <thead>
                 <tr>
                     <th width="15%">Date</th>
-                    <th width="15%">Trip Type</th>
-                    <th width="15%">Time</th>
-                    <th>Description</th>
-                    <th>Remarks</th>
+                    <th width="20%">Trip Type</th>
+                    <th width="10%">Time</th>
+                    <th style="text-align: right;">Number of Pigs Involved</th>
+                    <th width="35%">Remarks</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,8 +94,8 @@
                     <td data-label="Time">
                         <p class="activity-data ">{{act.time_arrival}} - {{act.time_departure}}</p>
                     </td>
-                    <td data-label="Description">
-                        <p class="activity-data">{{act.description}}</p>
+                    <td data-label="Num Pigs Involved" style="text-align: right;">
+                        <p class="activity-data">{{act.num_pigs_inv}}</p>
                     </td>
                     <td data-label="Remarks">
                         <p class="activity-data">{{act.remarks}}</p>
