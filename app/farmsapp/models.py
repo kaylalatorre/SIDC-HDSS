@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 # for importing Users from
 from django.conf import settings
 
+
 class User(User):
     pass
 
@@ -78,7 +79,7 @@ class Hog_Weight(models.Model):
     final_weight        = models.FloatField()
     
 
-# FARM SYMPTOMS Table
+# HOG SYMPTOMS Table
 class Hog_Symptoms(models.Model):
     ref_farm            = models.ForeignKey('Farm', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
@@ -112,10 +113,23 @@ class Hog_Symptoms(models.Model):
     trembling           = models.BooleanField(default=False, null=True, blank=True)
     conjunctivitis      = models.BooleanField(default=False, null=True, blank=True)
 
+    others              = models.JSONField(default=dict, null=True)
+    remarks             = models.CharField(max_length=200, null=True, blank=True)
+
+
+# DISEASE CASE Table
+class Disease_Case(models.Model):
+    disease_name        = models.CharField(max_length=100)
+    lab_result          = models.IntegerField()
+    lab_ref_no          = models.IntegerField()
+    date_updated        = models.DateTimeField()
+
+    incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
 
 # HOG RAISER Table
 class Hog_Raiser(models.Model):
-    # code                = models.IntegerField(null=True, blank=True)
+    mem_code            = models.IntegerField(null=True, blank=True)
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=12)
@@ -205,7 +219,7 @@ class Activity(models.Model):
     trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
-    description         = models.CharField(max_length=200, null=True, blank=True)
+    num_pigs_inv        = models.IntegerField(null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)
@@ -239,6 +253,7 @@ class Mortality(models.Model):
     num_begInv          = models.IntegerField(null=True, blank=True)
     num_today           = models.IntegerField()
     num_toDate          = models.IntegerField(null=True, blank=True)
+    source              = models.IntegerField(null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)

@@ -337,7 +337,7 @@ def selectedHogsHealth(request, farmID):
 
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = []
@@ -493,7 +493,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -712,7 +712,7 @@ def selectedHealthSymptoms(request, farmID):
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -840,7 +840,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -1089,6 +1089,7 @@ def addMortality(request, farmID):
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
+    num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
@@ -1124,6 +1125,8 @@ def addMortality(request, farmID):
 
             # pass all objects in mortalityList into Mortality model
             x = 0
+            toDate = int(mortQry.get("num_toDate"))
+            
             for mort in mortalityList:
                 mort = mortalityList[x]
 
@@ -1131,9 +1134,9 @@ def addMortality(request, farmID):
                 mortality = Mortality.objects.create(
                     ref_farm = farmQuery,
                     mortality_date = mort['mortality_date'],
-                    num_begInv = farmQuery.total_pigs,
+                    num_begInv = num_begInv,
                     num_today = mort['num_today'],
-                    num_toDate = farmQuery.total_pigs - int(mort['num_today']),
+                    num_toDate = toDate + int(mort['num_today']),
                     incid_case_id = mort['incid_case'],
                     remarks = mort['remarks'],
                     mortality_form_id = mortality_form.id
@@ -1144,6 +1147,7 @@ def addMortality(request, farmID):
                 # print(str(mortality))
                 mortality.save()
                 x += 1
+                toDate += int(mort['num_today'])
 
             # update last_updated of farm
             farmQuery.last_updated = datetime.now(timezone.utc)
@@ -1165,7 +1169,7 @@ def addMortality(request, farmID):
         mortalityForm = MortalityForm()
     
     return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm,
-                                                                'num_begInv' : farmQuery.total_pigs, 'incid_cases' : incidQry, 'latest_toDate' : mortQry.get("num_toDate")})
+                                                                'num_begInv' : num_begInv, 'incid_cases' : incidQry, 'latest_toDate' : mortQry.get("num_toDate")})
 
 
 def addWeight(request, farmID):
