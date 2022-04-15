@@ -469,15 +469,15 @@ function addActivityRow() {
     const trip_type = document.getElementById('trip_type').innerHTML;
     const time_arrival = document.getElementById('time_arrival').innerHTML;
     const time_departure = document.getElementById('time_departure').innerHTML;
-    const description = document.getElementById('description').innerHTML;
+    const act_no_pigs = document.getElementById('act_no_pigs').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#activity-table").append("<tr> \
-        <td data-label='Date'> " + date + " </td> \
         <td data-label='Trip Type'> " + trip_type + " </td> \
+        <td data-label='Date'> " + date + " </td> \
         <td data-label='Arrival Time'> " + time_arrival + " </td> \
         <td data-label='Departure Time'> " + time_departure + " </td> \
-        <td data-label='Description'> " + description + " </td> \
+        <td data-label='No. of Pigs Involved'> " + act_no_pigs + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
@@ -509,6 +509,7 @@ function addMortalityRow() {
     const num_begInv = document.getElementById('begInv').innerHTML;
     const num_today = document.getElementById('today').innerHTML;
     const source = document.getElementById('source').innerHTML;
+    const case_no = document.getElementById('case_no').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#mortality-table").append("<tr> \
@@ -516,9 +517,10 @@ function addMortalityRow() {
         <td data-label='Beg. Inv.' id='begInv' class='num_begInv'> " + num_begInv + " </td> \
         <td data-label='Today' id='today' onchange='computeMortality(this)'> " + num_today + " </td> \
         <td data-label='To Date'> <p class='num_toDate'></p> </td> \
-        <td data-label='Source'> " + source + " </td> \
-        <td data-label='Remarks'> " + remarks + " </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> <p class='mortality_rate'></p> </td> \
+        <td data-label='Source'> " + source + " </td> \
+        <td data-label='Case-No'> " + case_no + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
 }
