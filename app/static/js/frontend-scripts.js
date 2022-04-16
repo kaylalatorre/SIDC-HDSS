@@ -469,7 +469,7 @@ function addActivityRow() {
     const trip_type = document.getElementById('trip_type').innerHTML;
     const time_arrival = document.getElementById('time_arrival').innerHTML;
     const time_departure = document.getElementById('time_departure').innerHTML;
-    const act_no_pigs = document.getElementById('act_no_pigs').innerHTML;
+    const num_pigs_inv = document.getElementById('num_pigs_inv').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#activity-table").append("<tr> \
@@ -477,7 +477,7 @@ function addActivityRow() {
         <td data-label='Date'> " + date + " </td> \
         <td data-label='Arrival Time'> " + time_arrival + " </td> \
         <td data-label='Departure Time'> " + time_departure + " </td> \
-        <td data-label='No. of Pigs Involved'> " + act_no_pigs + " </td> \
+        <td data-label='Num Pigs Involved'> " + num_pigs_inv + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");

@@ -180,6 +180,7 @@ class ActivityForm(forms.ModelForm):
             'class' : 'form-control',
             'placeholder' : 'ex. 1'
         })
+        self.fields['num_pigs_inv'].required = False
         self.fields['remarks'].widget.attrs.update({
             'input type' : 'text', 
             'aria-label' : 'Remarks',

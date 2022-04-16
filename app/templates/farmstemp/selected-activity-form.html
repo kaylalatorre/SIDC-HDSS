@@ -75,11 +75,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th width="15%">Date</th>
-                    <th width="20%">Trip Type</th>
-                    <th width="10%">Time</th>
-                    <th style="text-align: right;">Number of Pigs Involved</th>
-                    <th width="35%">Remarks</th>
+                    <th width="10%">Date</th>
+                    <th width="15%">Trip Type</th>
+                    <th width="20%">Time</th>
+                    <th width="15%" style="text-align: right;">Number of Pigs Involved</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,7 +94,7 @@
                     <td data-label="Time">
                         <p class="activity-data ">{{act.time_arrival}} - {{act.time_departure}}</p>
                     </td>
-                    <td data-label="Num Pigs Involved" style="text-align: right;">
+                    <td data-label="Num Pigs Involved">
                         <p class="activity-data">{{act.num_pigs_inv}}</p>
                     </td>
                     <td data-label="Remarks">
@@ -120,11 +120,11 @@
             <thead>
                 <tr>
                     <th width="10%">Date</th>
-                    <th width="12%">Trip Type</th>
+                    <th width="15%">Trip Type</th>
                     <th width="20%">Time</th>
-                    <th>Description</th>
+                    <th width="15%" style="text-align: right;">Number of Pigs Involved</th>
                     <th>Remarks</th>
-                    <th width="10%"></th>
+                    <th width="5%"></th>
                 </tr>
             </thead>
             <tbody id="activity-form-table">
@@ -214,9 +214,9 @@
                         <input type="time" aria-label="Arrival Time" value="{{act.format_arrival}}" class="input-arrival form-control activity-input">
                         <input type="time" aria-label="Arrival Time" value="{{act.format_departure}}" class="input-departure form-control activity-input"></div>
                     </td>
-                    <td data-label="Description">
-                        <p class="activity-data act-description">{{act.description}}</p>
-                        <input type="text" aria-label="Description" class="input-description form-control activity-input" value="{{act.description}}">
+                    <td data-label="Num Pigs Involved">
+                        <p class="activity-data act-num-pigs-inv" style="text-align: right;">{{act.num_pigs_inv}}</p>
+                        <input type="number" aria-label="Num Pigs Involved" class="input-num-pigs-inv form-control activity-input" value="{{act.num_pigs_inv}}">
                     </td>
                     <td data-label="Remarks">
                         <p class="activity-data act-remarks">{{act.remarks}}</p>
@@ -244,8 +244,8 @@
                     <td data-label="Time">
                         <p class="activity-data">{{act.time_arrival}} - {{act.time_departure}}</p>
                     </td>
-                    <td data-label="Description">
-                        <p class="activity-data">{{act.description}}</p>
+                    <td data-label="Num Pigs Involved">
+                        <p class="activity-data"  style="text-align: right;">{{act.num_pigs_inv}}</p>
                     </td>
                     <td data-label="Remarks">
                         <p class="activity-data">{{act.remarks}}</p>
@@ -265,7 +265,7 @@
         {% endif %}
         
         {% if formStatus == 'Rejected' and latest.id == actForm.id %}
-        <div class="flex subheading">
+        <div class="flex subheading" style="margin-top: 5%">
             <p class="flex-item"> Add new activities here. </p>
             <div>
                 <button class="secondary-btn" type="button" onclick="addActivityRow()" style="justify-content: flex-end;">+ Add Activity</button> <!-- Adds another row -->
@@ -278,9 +278,9 @@
                     <th width="15%">Trip Type</th>
                     <th width="10%">Arrival Time</th>
                     <th width="10%">Departure Time</th>
-                    <th>Description</th>
+                    <th width="15%">Number of Pigs Involved</th>
                     <th>Remarks</th>
-                    <th width="10%"></th>
+                    <th width="5%"></th>
                 </tr>
             </thead>
             <tbody id="activity-table">
@@ -296,7 +296,7 @@
                         <option>Other</option></select></td>                            
                     <td data-label="Arrival Time" id="time_arrival"><input type="time" aria-label="Arrival Time" class="form-control act-arrival-input"></td>
                     <td data-label="Departure Time" id="time_departure"><input type="time" aria-label="Departure Time" class="form-control act-departure-input"></td>
-                    <td data-label="Description" id="description"><input type="text" aria-label="Description" placeholder="Description" class="form-control act-description-input"></td>
+                    <td data-label="Num Pigs Involved" id="num_pigs_inv"><input type="number" aria-label="Num Pigs Involved" placeholder="ex. 1" class="form-control act-pigs-inv-input"></td>
                     <td data-label="Remarks" id="remarks"><input type="text" aria-label="Remarks" placeholder="Remarks" class="form-control act-remarks-input"></td>
                     <td></td>
                 </tr>
