@@ -22,6 +22,7 @@
         <div class="mobile-subheading">
             <p> <strong>Series: </strong> {{series|stringformat:"03d"}} </p>
         </div>
+        <div hidden class="flex subheading"><strong>Mortality To Date:&nbsp; </strong> <p id="latest_toDate"> {{latest_toDate}} </p></div>
         <hr>
 
         <div class="box-style">
@@ -43,9 +44,10 @@
                             <th width="10%">Beg. Inv.</th>
                             <th width="10%">Today</th>
                             <th width="10%">To Date</th>
-                            <th>Incident Case</th>
-                            <th>Remarks</th>
-                            <th style="text-align: right;">Mortality %</th>
+                            <th>Mortality %</th>
+                            <th width="20%">Source</th>
+                            <th width="10%">Case No.</th>
+                            <th width="15%">Remarks</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -55,7 +57,23 @@
                             <td data-label="Beg. Inv." id="begInv" class="num_begInv" value="{{num_begInv}}"> {{num_begInv}} </td>
                             <td data-label="Today" id="today" onchange="computeMortality(this)"> {{mortalityForm.num_today}} </td>
                             <td data-label="To Date"> <p class="num_toDate">-</p> </td>
+                            <td data-label="Mortality Rate"> <p class="mortality_rate">-</p> </td>
                             <td data-label="Source" id="source"> 
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case">
+                                    <label class="form-check-label" for="src-incident">Incident Case</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case">
+                                    <label class="form-check-label" for="src-disease">Disease Case</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown">
+                                    <label class="form-check-label" for="src-unknown">Unknown</label>
+                                </div>
+                            </td>
+                            <td data-label="Case No." id="case_no"> 
+                                <!-- Dropdown content will depend on which source is selected -->
                                 <select class="form-select" id="input-case" name="input-case">
                                     <option></option>
                                     {% for case in incid_cases %}
@@ -64,8 +82,7 @@
                                 </select>
                             </td>
                             <td data-label="Remarks" id="remarks"> {{mortalityForm.remarks}} </td>
-                            <td data-label="Mortality Rate" style="text-align: right;"> <p class="mortality_rate">-</p> </td>
-                            <td></td>
+                            <td><button style="background:transparent; border:none; color:transparent;" class='secondary-btn-red'><i class='bx bx-minus'></i></button></td>
                         </tr>
                         
                     </tbody>

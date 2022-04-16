@@ -107,11 +107,22 @@ ul .li-symptoms { list-style: circle!important;}
 
 .heading .box-style .input-group { width: 40%!important; }
 
+.container-scroll {
+    max-height: 80vh;
+    width: 300px;
+    background-color: #F1f1f1;
+    padding: 16px;
+
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
 .content-section {
     position: relative;
     left: 264px;
     width: calc(100% - 264px);
-    height: 100vh;
+    height: 90vh;
 }
 
 section {

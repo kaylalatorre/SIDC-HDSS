@@ -212,6 +212,35 @@ for(var i = 0; i < rowStatus.length; i++) {
          
      });
  }   
+
+ /**
+ * Toggling view of Laboratory Results and Reference input for Tentative Diagnosis
+ */
+let refBtn = document.querySelectorAll('.result-ref-btn');
+for(var i = 0; i < refBtn.length; i++) { 
+    refBtn[i].addEventListener('click', (e) => {
+       var refInput = document.querySelector('.diagnosis-result-ref')
+       
+       e.target.classList.add('hide');
+       refInput.classList.add('show');
+       e.target.classList.remove('show');
+       refInput.classList.remove('hide');
+    });
+}
+
+let cancelRefBtn = document.querySelectorAll('.cancel-ref-btn');
+for(var i = 0; i < cancelRefBtn.length; i++) { 
+    cancelRefBtn[i].addEventListener('click', (e) => {
+       var refInput = document.querySelector('.diagnosis-result-ref')
+       var inputBtn = refInput.parentElement.querySelector('.result-ref-btn');
+       
+       // e.target.classList.add('hide');
+       refInput.classList.add('hide');
+       refInput.classList.remove('show');
+       inputBtn.classList.add('show');
+       inputBtn.classList.remove('hide');
+    });
+}
  
 /**
  * Toggling view to adding of area
@@ -440,15 +469,15 @@ function addActivityRow() {
     const trip_type = document.getElementById('trip_type').innerHTML;
     const time_arrival = document.getElementById('time_arrival').innerHTML;
     const time_departure = document.getElementById('time_departure').innerHTML;
-    const description = document.getElementById('description').innerHTML;
+    const act_no_pigs = document.getElementById('act_no_pigs').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#activity-table").append("<tr> \
-        <td data-label='Date'> " + date + " </td> \
         <td data-label='Trip Type'> " + trip_type + " </td> \
+        <td data-label='Date'> " + date + " </td> \
         <td data-label='Arrival Time'> " + time_arrival + " </td> \
         <td data-label='Departure Time'> " + time_departure + " </td> \
-        <td data-label='Description'> " + description + " </td> \
+        <td data-label='No. of Pigs Involved'> " + act_no_pigs + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
@@ -480,6 +509,7 @@ function addMortalityRow() {
     const num_begInv = document.getElementById('begInv').innerHTML;
     const num_today = document.getElementById('today').innerHTML;
     const source = document.getElementById('source').innerHTML;
+    const case_no = document.getElementById('case_no').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#mortality-table").append("<tr> \
@@ -487,9 +517,10 @@ function addMortalityRow() {
         <td data-label='Beg. Inv.' id='begInv' class='num_begInv'> " + num_begInv + " </td> \
         <td data-label='Today' id='today' onchange='computeMortality(this)'> " + num_today + " </td> \
         <td data-label='To Date'> <p class='num_toDate'></p> </td> \
-        <td data-label='Source'> " + source + " </td> \
-        <td data-label='Remarks'> " + remarks + " </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> <p class='mortality_rate'></p> </td> \
+        <td data-label='Source'> " + source + " </td> \
+        <td data-label='Case-No'> " + case_no + " </td> \
+        <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
 }
@@ -885,29 +916,32 @@ $('#health-symptoms-version-mobile').change(function () {
  */
 function computeMortality(currRow){
     var row = currRow.parentNode; //get row of clicked button
-    // console.log(row)
+    console.log(row.rowIndex);
 
     var begInv = row.getElementsByClassName('num_begInv')[0].innerHTML;
     var today = row.getElementsByClassName('num_today')[0].value;
-    // console.log("today: " + String(begInv));
-    // console.log("today: " + String(today));
-
-    var newTotal = parseInt(begInv) - parseInt(today);
+    var latest_toDate = document.getElementById('latest_toDate').innerHTML;
     var toDate = row.getElementsByClassName('num_toDate')[0];
-    // console.log(toDate);
 
-    toDate.innerText = newTotal;
+    // console.log("begInv: " + String(begInv));
+    console.log("today: " + String(today));
+    console.log(latest_toDate);
+
+    var newTotal = parseInt(today) + parseInt(latest_toDate); 
+    console.log(newTotal);    
+
+    toDate.innerHTML = String(newTotal);
     // console.log("toDate: " + String(toDate));
 
 
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
 
-    if (parseInt(today) == parseInt(begInv))
+    if (parseInt(newTotal) == parseInt(begInv))
         var mortRate = 100;
     else if (parseInt(today) == 0)
         var mortRate = 0;
     else
-        var mortRate = parseInt(today) / parseInt(begInv) * 100
+        var mortRate = parseInt(newTotal) / parseInt(begInv) * 100
 
     mortality_rate.innerText = mortRate.toFixed(2);
     // console.log("mortality_rate: " + String(mortality_rate));
