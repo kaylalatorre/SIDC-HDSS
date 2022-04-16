@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row, Hog_Weight)
+    Pigpen_Group, Pigpen_Row, Hog_Weight, Disease_Case)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -1086,6 +1086,16 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
+    
+    # get all disease cases for the farm
+    disCases = []
+    for incid in incidQry:
+        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).values("id").order_by('-id')
+
+        if disQry:
+            for dis in disQry:
+                disCases.append(dis['id'])
+
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
@@ -1168,7 +1178,7 @@ def addMortality(request, farmID):
 
         mortalityForm = MortalityForm()
     
-    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm,
+    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm, 'dis_cases' : disCases,
                                                                 'num_begInv' : num_begInv, 'incid_cases' : incidQry, 'latest_toDate' : mortQry.get("num_toDate")})
 
 

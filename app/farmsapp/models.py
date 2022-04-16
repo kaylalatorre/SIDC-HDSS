@@ -120,8 +120,8 @@ class Hog_Symptoms(models.Model):
 # DISEASE CASE Table
 class Disease_Case(models.Model):
     disease_name        = models.CharField(max_length=100)
-    lab_result          = models.IntegerField()
-    lab_ref_no          = models.IntegerField()
+    lab_result          = models.BooleanField(null=True, blank=True)
+    lab_ref_no          = models.IntegerField(null=True, blank=True)
     date_updated        = models.DateTimeField()
 
     incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
@@ -219,7 +219,7 @@ class Activity(models.Model):
     trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
-    num_pigs_inv        = models.IntegerField(default=0)
+    num_pigs_inv        = models.IntegerField(null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)

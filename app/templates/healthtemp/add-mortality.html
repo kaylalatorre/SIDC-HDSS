@@ -76,8 +76,11 @@
                                 <!-- Dropdown content will depend on which source is selected -->
                                 <select class="form-select" id="input-case" name="input-case">
                                     <option></option>
-                                    {% for case in incid_cases %}
-                                    <option>{{case.id}}</option>
+                                    {% for icase in incid_cases %}
+                                    <option class="incident-case"> {{icase.id}}</option>
+                                    {% endfor %}
+                                    {% for dcase in dis_cases %}
+                                    <option class="disease-case"> {{dcase}}</option>
                                     {% endfor %}
                                 </select>
                             </td>

@@ -320,13 +320,13 @@
             <table class="table" id="mortality-records">
                 <thead>
                     <tr>
-                        <th>Series</th>
-                        <th>Mortality Date</th>
+                        <th width="5%">Series</th>
+                        <th width="10%">Mortality Date</th>
                         <th style="text-align: right;">Beg. Inv.</th>
                         <th style="text-align: right;">Today</th>
                         <th style="text-align: right;">To Date</th>
-                        <th style="text-align: right;">Mortality %</th>
-                        <th style="text-align: right;">Case Reference</th>
+                        <th width="10%"style="text-align: right;">Mortality %</th>
+                        <th width="15%">Case Reference</th>
                         <th>Remarks</th>
                     </tr>
                 </thead>
@@ -339,16 +339,14 @@
                         <td data-label="Today" style="text-align: right;">{{ mort.num_today }} pigs</td>
                         <td data-label="To Date" style="text-align: right;">{{ mort.num_toDate }} pigs</td>
                         <td data-label="Mortality %" style="text-align: right;">{{ mRate }}%</td>
-                        {% if mCase %}
-                        <td data-label="Incident Case" style="text-align: right;">{{ mCase }}</td>
+                        {% if mort.source == 1 %}
+                        <td data-label="Incident Case">Incident Case {{ mCase }}</td>
+                        {% elif mort.source == 2 %}
+                        <td data-label="Incident Case">Disease Case {{ mCase }}</td>
                         {% else %}
-                        <td data-label="Incident Case" style="text-align: right;">-</td>
+                        <td data-label="Incident Case">Unknown</td>
                         {% endif %}
-                        {% if mort.remarks %}
                         <td data-label="Remarks">{{ mort.remarks }}</td>
-                        {% else %}
-                        <td data-label="Remarks">-</td>
-                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
