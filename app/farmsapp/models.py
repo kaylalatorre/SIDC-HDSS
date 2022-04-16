@@ -219,7 +219,7 @@ class Activity(models.Model):
     trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
     time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
-    num_pigs_inv        = models.IntegerField(null=True, blank=True)
+    num_pigs_inv        = models.IntegerField(default=0)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
     last_updated        = models.DateTimeField(auto_now=True, editable=True)

@@ -57,7 +57,7 @@
                 {% for version in actFormList %}
                     {% if latest.id == version.id and formStatus == 'Rejected' %}
                     <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}} (For resubmission)</option>
-                    {% elif latest.id == actForm.id and formStatus != 'Rejected' %}
+                    {% elif latest.id == version.id and formStatus != 'Rejected' %}
                     <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}} (Latest Version)</option>
                     {% else %}
                     <option value="{{version.id}}-{{version.date_added}}">{{version.date_added}}</option>
@@ -95,7 +95,7 @@
                         <p class="activity-data ">{{act.time_arrival}} - {{act.time_departure}}</p>
                     </td>
                     <td data-label="Num Pigs Involved">
-                        <p class="activity-data">{{act.num_pigs_inv}}</p>
+                        <p class="activity-data" style="text-align: right;">{{act.num_pigs_inv}}</p>
                     </td>
                     <td data-label="Remarks">
                         <p class="activity-data">{{act.remarks}}</p>
@@ -296,7 +296,7 @@
                         <option>Other</option></select></td>                            
                     <td data-label="Arrival Time" id="time_arrival"><input type="time" aria-label="Arrival Time" class="form-control act-arrival-input"></td>
                     <td data-label="Departure Time" id="time_departure"><input type="time" aria-label="Departure Time" class="form-control act-departure-input"></td>
-                    <td data-label="Num Pigs Involved" id="num_pigs_inv"><input type="number" aria-label="Num Pigs Involved" placeholder="ex. 1" class="form-control act-pigs-inv-input"></td>
+                    <td data-label="Num Pigs Involved" id="num_pigs_inv"><input type="number" aria-label="Num Pigs Involved" value="0" class="form-control act-pigs-inv-input"></td>
                     <td data-label="Remarks" id="remarks"><input type="text" aria-label="Remarks" placeholder="Remarks" class="form-control act-remarks-input"></td>
                     <td></td>
                 </tr>

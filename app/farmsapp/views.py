@@ -1816,7 +1816,7 @@ def selectedActivityForm(request, activityFormID, activityDate):
             'time_departure' : activity.time_departure,
             'format_departure' : (activity.time_departure).strftime('%H:%M:%S'),
             'num_pigs_inv' : activity.num_pigs_inv,
-            'remarks' : activity.remarks,
+            'remarks' : activity.remarks
         })
 
     # get all other versions of selected activity form
