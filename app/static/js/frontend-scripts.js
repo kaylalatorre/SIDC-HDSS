@@ -961,3 +961,35 @@ function computeMortality(currRow){
     totalVal.innerText = total.toFixed(2);
     averageVal.innerText = average.toFixed(2);
 }
+
+function switchMortCase(caseVal){
+    var incidCase = document.getElementsByClassName("incident-case");
+    var disCase = document.getElementsByClassName("disease-case");
+
+    if(caseVal == 1) { // chosen source is an incident
+        // hide disease cases
+        for (var i = 0; i < disCase.length; i++) {
+            disCase[i].style.display = "none"; }
+
+        // display incident cases
+        for (var j = 0; j < incidCase.length; j++) {
+            incidCase[j].style.display = "block"; }
+    }
+    else if(caseVal == 2) { // chosen source is a disease
+        // hide incident cases
+        for (var i = 0; i < incidCase.length; i++) {
+            incidCase[i].style.display = "none"; }
+
+        // show disease cases
+        for (var j = 0; j < disCase.length; j++) {
+            disCase[j].style.display = "block"; }
+    }
+    else { // chosen source is unknown, hide all cases
+        for (var i = 0; i < disCase.length; i++) {
+            disCase[i].style.display = "none"; }
+
+        for (var j = 0; j < incidCase.length; j++) {
+            incidCase[j].style.display = "none"; }
+    }
+    
+}

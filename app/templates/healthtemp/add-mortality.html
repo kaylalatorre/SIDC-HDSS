@@ -60,28 +60,27 @@
                             <td data-label="Mortality Rate"> <p class="mortality_rate">-</p> </td>
                             <td data-label="Source" id="source"> 
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case" onclick="switchMortCase(this);" value="1">
                                     <label class="form-check-label" for="src-incident">Incident Case</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case" onclick="switchMortCase(this);" value="2">
                                     <label class="form-check-label" for="src-disease">Disease Case</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown" onclick="switchMortCase(this);" value="3">
                                     <label class="form-check-label" for="src-unknown">Unknown</label>
                                 </div>
                             </td>
                             <td data-label="Case No." id="case_no"> 
                                 <!-- Dropdown content will depend on which source is selected -->
                                 <select class="form-select" id="input-case" name="input-case">
-                                    <option></option>
-                                    {% for icase in incid_cases %}
-                                    <option class="incident-case"> {{icase.id}}</option>
-                                    {% endfor %}
-                                    {% for dcase in dis_cases %}
-                                    <option class="disease-case"> {{dcase}}</option>
-                                    {% endfor %}
+                                        {% for icase in incid_cases %}
+                                        <option class="incident-case"> {{icase.id}}</option>
+                                        {% endfor %}
+                                        {% for dcase in dis_cases %}
+                                        <option class="disease-case"> {{dcase}}</option>
+                                        {% endfor %}
                                 </select>
                             </td>
                             <td data-label="Remarks" id="remarks"> {{mortalityForm.remarks}} </td>
