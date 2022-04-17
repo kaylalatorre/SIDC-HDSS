@@ -119,6 +119,7 @@ for(var i = 0; i < biosecSave.length; i++) {
          symptomsSave.setAttribute("style", "display: block");
          symptomsEdit.setAttribute("style", "display: none");
 
+        //  for onchange of incident case dropdown status
          dropdown.addEventListener("change", (e)=> {
             let remarksInput = e.target.parentElement.parentElement.childNodes[4].nextSibling;
             if (e.target.value == "Resolved") {
