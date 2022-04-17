@@ -118,6 +118,15 @@ ul .li-symptoms { list-style: circle!important;}
     overflow-y: scroll; 
 }
 
+.filter-scroll {
+    max-height: 20vh;
+    width: 200px;
+
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
 .content-section {
     position: relative;
     left: 264px;

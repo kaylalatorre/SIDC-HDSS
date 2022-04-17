@@ -21,7 +21,7 @@
                 <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Filters
                 </button>
-                <ul class="dropdown-menu" style="padding: 8px;">
+                <ul class="dropdown-menu filter-scroll" style="padding: 8px;">
                     <label style="font-weight: 600;">Area</label>
                     {% for area in areaList %}
                     <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_area" id="{{area.area_name}}"  onclick="filterSearch()"/>&nbsp;{{area.area_name}}</a></li>
