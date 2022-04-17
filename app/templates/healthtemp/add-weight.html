@@ -20,10 +20,10 @@
         </div>
         <hr>
 
-        {% if weightType == starter %}
+        {% if weightType == "starter" %}
         <div class="box-style small-table">
             <div>
-                <h1>Adding Starter Weight to Farm {{farmID|stringformat:"03d"}}</h1>
+                <h2>Adding Starter Weight to Farm {{farmID|stringformat:"03d"}}</h2>
             </div>
             <hr>
             <div class="mb-3">
@@ -42,34 +42,43 @@
             </div>
         </div>
 
-        {% else %}
-        <div class="box-style small-table">
-            <div>
-                <h1>Adding Fattener Weight to Farm {{farmID|stringformat:"03d"}}</h1>
-            </div>
-            <hr>
-            
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Pig No.</th>
-                        <th>Weight (in kg)</th>
-                    </tr>
-                </thead>
-                <tbody id="fattenerTable">                    
-
-                </tbody>
-            </table>
-            
-            <div class="mb-3">
-                <label for="input-remarks" class="form-label">Remarks</label>
-                {{weightForm.remarks}}
-            </div>
-        </div>
-
-        {% endif %}
         <p class="red">Please review the details of the form before submitting.</p>
         <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
+
+        {% else %}
+        <section>
+        <div class="box-style small-table">
+            <div>
+                <h2>Adding Fattener Weight to Farm {{farmID|stringformat:"03d"}}</h2>
+                <p>Input weight of each pig. </p>
+            </div>
+            <hr>
+            <br>
+            <div>
+                <ul id="fattenerTable">                    
+
+                </ul>
+                <br>
+                <hr>
+                <div class="flex">
+                    <p class="flex"><strong>Total Weight:&nbsp;</strong><p class="fattener-total">-</p>&nbsp;kls</p> <br>
+                </div>
+                <div class="flex">
+                    <p><strong>Average Weight:&nbsp;</strong><p class="fattener-average">-</p>&nbsp;kls</p>
+                </div>
+                <br>
+                <div class="mb-3">
+                    <label for="input-remarks" class="form-label">Remarks</label>
+                    {{weightForm.remarks}}
+                </div>
+                <p class="red">Please review the details of the form before submitting.</p>
+            </div>
+        </div>
+        </section>
+        {% endif %}
+        
+        <div class="mobile-subheading"><button class="primary-btn" type="submit">Save</button></div>
+
     </form>
 </div>
 {% endblock section %}

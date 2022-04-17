@@ -44,13 +44,14 @@
                 <tbody>
                     <!-- Data (per area)-->
                     {% for area in areasData %}
-                    <tr>                    
+                    <tr> 
+                        <div hidden id="hidden-areaID">{{area.id}}</div>                   
                         <td>{{area.area_name}}</td>
                         <td>{{area.farm_count}}</td>
-                        <td>- pigs</td>
+                        <td>{{area.total_pigs}} pigs </td>
                         <td style="padding-bottom: 0; vertical-align: middle;" id="assign-technician">
                             <div class="mb-3">
-                                <select aria-label="Technician Assigned" class="form-select" disabled>
+                                <select aria-label="Technician Assigned" class="form-select tech-assign-drop" disabled>
                                     <option value={{area.curr_tech_id}}>{{area.curr_tech}}</option>
                                     {% for tech in technicians %}
                                         {% if tech.id != area.curr_tech_id %}
@@ -77,11 +78,13 @@
                 <h2>[Technician name]'s Pending Activities</h2>
                 <hr>
                 <h3>Active and Pending Incident Cases</h3>
-                <div class="box-style">
+                <div class="box-style" id="table-techIncid">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Incident Code</th>
+                                <th>Farm Code</th>
+                                <th>Area</th>
                                 <th>Date Reported</th>
                                 <th style="width:30%">No. of Pigs Affected</th>
                                 <th style="width: 35%">Symptoms Observed</th>
@@ -89,47 +92,62 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="incident-row">
-                               
-                               <td data-label="Incident Code">1</td>
-                               <td data-label="Date Reported">Dec. 20, 1999</td>
-                               <td data-label="Pigs Affected">5 pigs</td>
-                               <td data-label="Symptoms Observed">  
-                                   <ul>
-                                       <li>symptom 1</li>
-                                       <li>symptom 1</li>
-                                   </ul>
-                               </td>
-                               <td data-label="Status">Active</td>
-                           </tr>
+                            {% for i in incidList %}
+                                {% for incident,symptoms in i.incident_symptomsList %}
+                                <tr class="incident-row">
+                                
+                                    <td data-label="Incident Code">{{ incident.id }}</td>
+                                    <td data-label="Farm Code">{{ i.farm_code|stringformat:"03d" }}</td>
+                                    <td data-label="Area">{{ i.area_name }}</td>
+                                    <td data-label="Date Reported">{{ incident.date_filed }}</td>
+                                    <td data-label="Pigs Affected">{{ incident.num_pigs_affected }}</td>
+                                    <td data-label="Symptoms Observed">  
+                                        {% load healthapp_extras %}
+                                        {% for sKey, sVal in symptoms.items %}
+                                        <ul class="ul-symptoms"></ul>
+                                            {% if sVal %}
+                                            <li class="li-symptoms">{{ sKey|formatField }}</li>
+                                            {% endif %}
+                                        </ul>
+                                        {% endfor %}
+                                    </td>
+                                    
+                                    <td data-label="Status">{{ incident.report_status }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
                        </tbody>
                    </table>
                 </div>
                 
                 <h3>Farms' Biosecurity</h3>
-                <div class="box-style">
+                <div class="box-style" id="table-techFarmBio">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Farm Code</th>
+                                <th>Area</th>
                                 <th>Raiser</th>
                                 <th>No. of Pigs</th>
                                 <th>Last Inspected</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for f in farmBioList %}
                             <tr>
-                                <td data-label="Farm Code">001</td>
-                                <td data-label="Raiser">Rommel</td>
-                                <td data-label="No. of Pigs">12</td>
-                                <td data-label="Last Inspected">Dec. 5, 1928</td>
+                                <td data-label="Farm Code">{{ f.code }}</td>
+                                <td data-label="Area">{{ f.area_name }}</td>
+                                <td data-label="Raiser">{{ f.raiser }}</td>
+                                <td data-label="No. of Pigs">{{ f.num_pigs }}</td>
+                                <td data-label="Last Inspected">{{ f.last_inspected }}</td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 
                 <h3>Recent Announcements</h3>
-                <div class="box-style">
+                <div class="box-style" id="table-techAnnounce">
                     <table class="table">
                         <thead>
                             <tr>
@@ -141,16 +159,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for announcement in approved %}
+                            {% for a in announceList %}
                             <tr>
-                                <td data-label="Timestamp"> Dec. 22, 1289, 12:30 </td>
-                                <td data-label="Title"> Title </td>
-                                <td data-label="Category"> dd</td>
-                                <td data-label="Recipient"> West, Tsisi </td>
-                                <td data-label="Message"> HELLO </td>
+                                <td data-label="Timestamp">{{ a.timestamp }}</td>
+                                <td data-label="Title">{{ a.title }}</td>
+                                <td data-label="Category">{{ a.category }}</td>
+                                <td data-label="Recipient">{{ a.recip_area }}</td>
+                                <td data-label="Message">{{ a.mssg }}</td>
                             </tr>
                             {% endfor %}
-        
                         </tbody>
                     </table>
                 </div>

@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row)
+    Pigpen_Group, Pigpen_Row, Hog_Weight)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -61,7 +61,6 @@ def debug(m):
 
 # (Module 2) Hogs Health view functions
 
-
 def compute_MortRate(farmID, mortalityID):
     """
     Helper function that computes for the mortality rate of a Farm.
@@ -102,6 +101,33 @@ def compute_MortRate(farmID, mortalityID):
     return round(mortality_rate, 2)
 
 
+def categHogWeight(weight_list):
+
+    ctr_base = 0
+    ctr_low = 0
+    ctr_med = 0
+    ctr_high = 0
+    ctr_ceil = 0
+    ctr_marketable = 0
+
+    for w in weight_list:
+        # classify given hog weight
+        if w.final_weight in range(0, 60):
+            ctr_base += 1
+        elif w.final_weight in range(60, 80):
+            ctr_low += 1
+        elif w.final_weight in range(80, 100):
+            ctr_med += 1
+        elif w.final_weight in range(100, 121):
+            ctr_high += 1
+        elif w.final_weight <= 121:
+            ctr_ceil += 1
+
+    ctr_marketable = ctr_high + ctr_ceil
+
+    return ctr_base, ctr_low, ctr_med, ctr_high, ctr_ceil, ctr_marketable
+
+
 # for Asst. Manager view Hogs Health
 def hogsHealth(request):
     """
@@ -123,11 +149,13 @@ def hogsHealth(request):
     qry = Farm.objects.select_related('hog_raiser', 'area').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         farm_area = F("area__area_name"),
         ).values(
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "farm_area",
             "total_pigs",
             "last_updated",
@@ -176,6 +204,7 @@ def hogsHealth(request):
             farmObject = {
                 "code":             f["id"],
                 "raiser":           " ".join((f["fname"],f["lname"])),
+                "r_mem_code":       f["mem_code"],
                 "area":             f["farm_area"],
                 "pigs":             f["total_pigs"],
                 "updated":          f["last_updated"],
@@ -211,11 +240,13 @@ def selectedHogsHealth(request, farmID):
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         farm_area = F("area__area_name"),
         ).values(
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "farm_area",
             "total_pigs",
             "last_updated",
@@ -228,9 +259,6 @@ def selectedHogsHealth(request, farmID):
     # get current starter and fattener weights acc. to current Pigpen
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     pigpenQry = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
-
-    # debug("pigpenQry.start_weight -- " + str(pigpenQry.start_weight))
-    # debug("pigpenQry.final_weight -- " + str(pigpenQry.final_weight))
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -268,6 +296,7 @@ def selectedHogsHealth(request, farmID):
     farmObject = {
         "code":  int(farmID),
         "raiser": " ".join((selectFarm["fname"], selectFarm["lname"])),
+        "r_mem_code": selectFarm["mem_code"],
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
         "updated": selectFarm["last_updated"],
@@ -336,8 +365,14 @@ def selectedHogsHealth(request, farmID):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen })
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen,
+                                                                    "weightList": weightList})
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
     """
@@ -355,11 +390,13 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     selectFarm = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'farm_weight').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         farm_area = F("area__area_name"),
         ).values(
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "farm_area",
             "total_pigs",
             "last_updated",
@@ -418,6 +455,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     farmObject = {
         "code":  int(farmID),
         "raiser": " ".join((selectFarm["fname"], selectFarm["lname"])),
+        "r_mem_code": selectFarm["mem_code"],
         "area": selectFarm["farm_area"],
         "pigs": selectFarm["total_pigs"],
         "updated": selectFarm["last_updated"],
@@ -487,8 +525,14 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     total_mortalities = mortQry.count()
     # debug("total_incidents -- " + str(total_incidents))
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'prev' : previous })
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'prev' : previous,
+                                                                    "weightList": weightList})
 
 
 # for Technician view Hogs Health
@@ -520,10 +564,12 @@ def healthSymptoms(request):
         qry = Farm.objects.filter(area_id=area.id).select_related('hog_raiser').annotate(
             fname=F("hog_raiser__fname"), 
             lname=F("hog_raiser__lname"), 
+            mem_code=F("hog_raiser__mem_code"), 
             ).values(
                 "id",
                 "fname",
                 "lname", 
+                "mem_code",
                 "total_pigs",
                 "last_updated",
                 ).order_by("id")
@@ -565,6 +611,7 @@ def healthSymptoms(request):
                 "area":             area.area_name,
                 "code":             f["id"],
                 "raiser":           " ".join((f["fname"],f["lname"])),
+                "r_mem_code":       f["mem_code"],
                 "pigs":             f["total_pigs"],
                 "updated":          f["last_updated"],
                 "ave_startWeight":  start_weight,
@@ -699,9 +746,15 @@ def selectedHealthSymptoms(request, farmID):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
-                                                                        'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
+                                                                        'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
+                                                                        "weightList": weightList})
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -821,9 +874,15 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     total_incidents = incidentQry.count()
     total_mortalities = mortQry.count()
 
+    # (4) hog weight count acc. to weight range, no. of pigs reached market weight (100kg <)
+    f_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm = farmID).all()
+
+    weightList = categHogWeight(f_weightQry)
+
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
-                                                                        'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight })
+                                                                        'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
+                                                                        "weightList": weightList})
 
 
 def edit_incidStat(request, incidID):
@@ -1171,14 +1230,29 @@ def addWeight(request, farmID):
                 date_filed = now(),
                 ref_farm_id = farmID,
                 is_starter = False,
-                ave_weight = request.POST.get('ave_weight'),
-                total_numHeads = request.POST.get('total_numHeads'),
-                total_kls =  request.POST.get('total_kls'),
+                ave_weight = 0,
+                total_numHeads = 0,
+                total_kls =  0,
                 remarks = request.POST.get('remarks'),
             )
+            
+            weightList = []
+
+            for i in request.POST.getlist('input-kls'):
+                weight.total_kls += float(i)
+                weightList.append(Hog_Weight(
+                    farm_weight = weight,
+                    final_weight = round(float(i), 2)
+                ))
+
+            weight.total_numHeads = len(request.POST.getlist('input-kls'))
+            weight.ave_weight = round(weight.total_kls / weight.total_numHeads, 2)
+
             weight.save()
+            Hog_Weight.objects.bulk_create(weightList)
             latestPigpen.final_weight =  weight
-            latestPigpen.save()    
+            latestPigpen.save() 
+
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
@@ -1426,3 +1500,138 @@ def filter_mortalityRep(request, startDate, endDate, areaName):
                                                                 "areaList": areaQry, "mortList": mortalityList, "mortStats": mortStats})
 
 
+def weightRange(request):
+    """
+    For loading data for Highcharts (weight range)
+    """
+
+
+    """
+    kimi's suggestion for formatting data hek or something // logic na 'di sure // i'll delete this when i code again
+
+    NOTE: Suggested this in accordance to how data is formatted dun sa highcharts, as long
+    as nakukuha niyo data, i can format it and loop it properly sa weight-range.js file.
+    
+    NOTE: IF EVER iba naisip niyong process/logic, okay lang, but refer to the weight-range.js file for the data
+    format for the main series and the drilldown series.  
+
+    NOTE: (Question) Dapat ba within the last month 'yung chart? or all time?
+
+    1. declare empty array (dict?) again for series (like weightSeries = [])
+    2. get all areas again
+
+
+    --- main series ---
+    3. gawa ng tatlong array (one for each weight range)
+    4. while looping through each area, count all fattener hogs within range
+            ---> pwede kunin lahat ng hog_weight na connected sa mga farm fattener slips (it FK-ed)
+                    then kunin ang area ? maybe may simpler way hehe
+    5. store data in an array pwedeng ---> weightRange[areaName][count]
+    6. store these three arrays into a mainSeries[] or something like that
+
+
+    --- drilldown series ---
+    NOTE: I think for this one, inevitable na maraming array/object/something pero baka
+    may better way kayong maisip !
+
+    7. loop through each area and count all fattener hogs within range
+            ---> start with lowest range first
+    8. store data in an array, like farmCount[farmID][count]
+    9. store each farmCount array in another array (to collect all farms and their count per area per range)
+            ---> areaRange[] or something
+    10. store areaRange into a drilldownSeries[] or something 
+
+
+    11. append both mainSeries and drilldownSeries into weightSeries[]
+            ---> OR SKIP weightSeries[] altogether and just :
+                    data.append(mainSeries)
+                    data.append(drilldownSeries)
+    """
+
+
+    if request.method == 'POST':
+
+        data = []
+
+        weightSeries = []
+        
+        # get all areas
+        areaQry = Area.objects.all()
+
+        weight_arrLow = []
+        weight_arrMed = []
+        weight_arrHigh = []
+
+
+        for area in areaQry:
+
+            count_base = 0      # 0-59kg
+            count_low = 0       # 60-79kg
+            count_med = 0       # 80-99kg
+            count_high = 0      # 100-120kg
+            count_ceil = 0      # 121kg <
+
+            farm_baseDict = {}
+            farm_lowDict = {}
+            farm_medDict = {}
+            farm_highDict = {}
+            farm_ceilDict = {}
+
+            final_weightQry = Hog_Weight.objects.filter(farm_weight__ref_farm__area = area.id).annotate(
+                farm = F("farm_weight__ref_farm")).all()
+
+            # loop through each Farm
+            for f in final_weightQry:
+
+                # format 3-digit farm ID
+                farmID = f.farm
+                farmID = "Farm {id:03}".format(id = farmID)
+
+                # classify per weight categ
+                if f.final_weight in range(0, 60):
+                    count_base += 1
+                    try:
+                        farm_baseDict.update({farmID: farm_baseDict.get(farmID) + 1})
+                    except:
+                        farm_baseDict.update({farmID: 1})
+                elif f.final_weight in range(60, 80):
+                    count_low += 1
+                    try:
+                        farm_lowDict.update({farmID: farm_lowDict.get(farmID) + 1})
+                    except:
+                        farm_lowDict.update({farmID: 1})
+
+                elif f.final_weight in range(80, 100):
+                    count_med += 1
+                    try:
+                        farm_medDict.update({farmID: farm_medDict.get(farmID) + 1})
+                    except:
+                        farm_medDict.update({farmID: 1})
+
+                elif f.final_weight in range(100, 121):
+                    count_high += 1
+                    try:
+                        farm_highDict.update({farmID: farm_highDict.get(farmID) + 1})
+                    except:
+                        farm_highDict.update({farmID: 1})
+                elif f.final_weight <= 121:
+                    count_ceil += 1
+                    try:
+                        farm_ceilDict.update({farmID: farm_ceilDict.get(farmID) + 1})
+                    except:
+                        farm_ceilDict.update({farmID: 1})
+
+            # debug(area.area_name)
+
+            # add in series -> (total count per weight range, [list of farm IDs within range, total count in per farm])
+            weightSeries.append([area.area_name, 
+                                [count_base, list(farm_baseDict.items())],
+                                [count_low, list(farm_lowDict.items())],
+                                [count_med, list(farm_medDict.items())],
+                                [count_high, list(farm_highDict.items())],
+                                [count_ceil, list(farm_ceilDict.items())]
+                                ])
+
+        debug(weightSeries)
+
+    return JsonResponse(data, safe=False)

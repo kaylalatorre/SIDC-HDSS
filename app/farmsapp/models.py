@@ -119,6 +119,7 @@ class Hog_Raiser(models.Model):
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=12)
+    mem_code            = models.IntegerField(null=True, unique=True)
 
 
 # AREA Table
@@ -148,7 +149,7 @@ class Farm(models.Model):
                             ('Trough', 'Trough')]
 
     feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES, default='Semi-automatic')
-    bldg_cap            = models.IntegerField()
+    bldg_cap            = models.IntegerField(unique=True)
 
     MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
                             ('50 GAL', '50 GAL')]

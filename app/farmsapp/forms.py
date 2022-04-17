@@ -99,6 +99,13 @@ class FarmForm(ModelForm):
 class HogRaiserForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['mem_code'].widget.attrs.update({
+            'input type' : 'text', 
+            'class' : 'form-control',
+            'id' : 'input-mem-code',
+            'name' : 'input-mem-code',
+            'placeholder' : 'ex. 001'
+        })
         self.fields['fname'].widget.attrs.update({
             'input type' : 'text', 
             'class' : 'form-control',
@@ -269,6 +276,8 @@ class MemAnnouncementForm(ModelForm):
 
         if self.user.groups.all()[0].name == "Assistant Manager":
             AREA_CHOICES.append(('All Raisers', 'All Raisers'))
+            for choice in Area.objects.distinct().values('area_name'):
+                AREA_CHOICES.append((choice['area_name'], choice['area_name']))
 
         self.fields['title'].widget.attrs.update({
             'input type' : 'text', 
@@ -281,11 +290,10 @@ class MemAnnouncementForm(ModelForm):
             'aria-label' : 'Category',
             'class' : 'form-select'
         })
-
-        self.fields['recip_area'] = forms.ChoiceField(choices=AREA_CHOICES)
+        
+        self.fields['recip_area'] = forms.MultipleChoiceField(choices=AREA_CHOICES, widget=forms.CheckboxSelectMultiple,)
         self.fields['recip_area'].widget.attrs.update({ 
             'aria-label' : 'Recipient',
-            'class' : 'form-select',
         }) 
         self.fields['mssg'].widget.attrs.update({ 
             'aria-label' : 'Message',

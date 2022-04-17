@@ -26,6 +26,11 @@
                     {% for area in areaList %}
                     <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_area" id="{{area.area_name}}"  onclick="filterSearch()"/>&nbsp;{{area.area_name}}</a></li>
                     {% endfor %}
+
+                    <label style="font-weight: 600;">Member Code</label>
+                    {% for mem in memList %}
+                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_mem" id="{{mem}}"  onclick="filterSearch()"/>&nbsp;{{mem}}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -39,7 +44,6 @@
                 <tr>
                     <th>Farm Code</th>
                     <th>Raiser</th>
-                    <th>Contact No.</th>
                     <th>Address</th>
                     <th>Area</th>
                     <th>No. of Pigs</th>
@@ -53,13 +57,13 @@
             {% for farm in farms %}
                 <tr class="farm-row">
                     <td data-label="Farm Code">{{farm.code|stringformat:"03d"}}</td>
-                    <td data-label="Raiser">{{farm.raiser}}</td>
-                    <td data-label="Contact No.">{{farm.contact}}</td>
+                    <td data-label="Raiser">{{farm.raiser}} ({{farm.mem_code}})</td>
                     <td data-label="Address">{{farm.address}}</td>
                     <td data-label="Area">{{farm.area}}</td>
                     <td data-label="No. of Pigs">{{farm.pigs}}</td>
                     <td data-label="No. of Pens">{{farm.pens}}</td>
                     <td data-label="Last Inspected" class="farm-last-update"> {{farm.updated|date:'N j, Y'}} </td>
+                    <td data-label="Member Code" hidden>{{farm.mem_code}}</td>
                     <td data-label="" class="td-btn">
                         <button class="secondary-btn" id="viewFarm" onclick="viewFarm(this)"><span class="material-icons md-18">visibility</span>View</button>
                     </td>

@@ -244,7 +244,6 @@ def diseaseDashboard(request):
         
         # get all activity type
         activityTypeQry = Activity.objects.filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).distinct("trip_type")
-        # print(activityTypeQry)
 
         # COLLECT ALL ACTIVITIES
         for actType in activityTypeQry:

@@ -1,5 +1,6 @@
 from os import getenv
 from threading import activeCount
+from xmlrpc.client import Boolean
 from django.contrib.auth.models import User
 from django.db.models import (
     F,Q,
@@ -146,6 +147,7 @@ def farms(request):
     qry = Farm.objects.select_related('hog_raiser', 'area', 'extbio').annotate(
         fname=F("hog_raiser__fname"), 
         lname=F("hog_raiser__lname"), 
+        mem_code=F("hog_raiser__mem_code"), 
         contact=F("hog_raiser__contact_no"),
         farm_area = F("area__area_name"),
         last_update = F("extbio__last_updated")
@@ -153,6 +155,7 @@ def farms(request):
             "id",
             "fname",
             "lname", 
+            "mem_code",
             "contact", 
             "farm_address",
             "farm_area",
@@ -167,6 +170,7 @@ def farms(request):
         farmObject = {
             "code":  f["id"],
             "raiser": " ".join((f["fname"],f["lname"])),
+            "mem_code": f["mem_code"],
             "contact": f["contact"],
             "address": f["farm_address"],
             "area": str(f["farm_area"]),
@@ -180,8 +184,15 @@ def farms(request):
     for choice in Area.objects.distinct().order_by('area_name').values('area_name'):
             areaList.append({"area_name": choice['area_name']})
 
+    memList = []
+    for mem in Hog_Raiser.objects.distinct().order_by('mem_code').values('mem_code'):
+        if mem['mem_code'] is not None:
+            memList.append(mem['mem_code'])
+
+    # debug(memList)
+
     # debug(farmsData)
-    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList}) ## Farms table for all users except Technicians
+    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList, "memList":memList}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
     """
@@ -194,6 +205,7 @@ def selectedFarm(request, farmID):
     # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        raiser_mem_code=F("hog_raiser__mem_code"),
         contact=F("hog_raiser__contact_no"),
         length=F("wh_length"),
         width=F("wh_width"),
@@ -209,6 +221,7 @@ def selectedFarm(request, farmID):
     selectedFarm = qry.values(
         "id",
         "raiser",
+        "raiser_mem_code",
         "contact",
         "directly_manage",
         "farm_address",
@@ -315,6 +328,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
     # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
     qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
         raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+        raiser_mem_code=F("hog_raiser__mem_code"), 
         contact=F("hog_raiser__contact_no"),
         length=F("wh_length"),
         width=F("wh_width"),
@@ -330,6 +344,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
     selectedFarm = qry.values(
         "id",
         "raiser",
+        "raiser_mem_code",
         "contact",
         "directly_manage",
         "farm_address",
@@ -504,6 +519,7 @@ def techSelectedFarm(request, farmID):
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
     techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    raiser_mem_code=F("hog_raiser__mem_code"),
                     contact     = F("hog_raiser__contact_no"),
                     farm_area   = F("area__area_name"),
                     waste_mgt   = F("intbio__waste_mgt"),
@@ -517,6 +533,7 @@ def techSelectedFarm(request, farmID):
     selTechFarm = techFarmQry.values(
         "id",
         "raiser",
+        "raiser_mem_code",
         "contact",
         "directly_manage",
         "farm_address",
@@ -675,6 +692,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     # collect the corresponding details for: hog raiser, area, internal and external biosecurity
     techFarmQry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
                     raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    raiser_mem_code = F("hog_raiser__mem_code"), 
                     contact     = F("hog_raiser__contact_no"),
                     farm_area   = F("area__area_name"),
                     waste_mgt   = F("intbio__waste_mgt"),
@@ -688,6 +706,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     selTechFarm = techFarmQry.values(
         "id",
         "raiser",
+        "raiser_mem_code",
         "contact",
         "directly_manage",
         "farm_address",
@@ -1567,13 +1586,21 @@ def techAssignment(request):
         "id",
         "name",
     )
+
     for a in areas:
+        # get total pigs per area
+        aFarmQry = Farm.objects.filter(area=a["id"]).all()
+        total_pigs = 0
+        for af in aFarmQry:
+            total_pigs += af.total_pigs
+
         areaObject = {
             "id": str(a["id"]),
             "area_name": a["area_name"],
             "curr_tech_id": a["tech_id"],
             "curr_tech": a["curr_tech"],
-            "farm_count": Farm.objects.filter(area=a["id"]).count()
+            "farm_count": Farm.objects.filter(area=a["id"]).count(),
+            "total_pigs": total_pigs
         }
         areasData.append(areaObject)
     context = {
@@ -1581,6 +1608,112 @@ def techAssignment(request):
         "technicians":techs
     }
     return render(request, 'farmstemp/assignment.html', context)
+
+def search_techTasks(request, techID):
+    """
+    For retrieving details of tasks left by a technician which includes:
+    - (1) technician name
+    - (2) Farm Biosecurity details
+    - (3) Incident records (Active and Pending)
+    - (4) Recent member announcements created
+    """
+
+    # debug("in search_techTasks()/n")
+    # debug("techID: " + techID)
+
+    # (1) Get formatted technician name
+    tech = User.objects.filter(groups__name="Field Technician").filter(id=int(techID)).annotate(
+        full_name = Concat('first_name', Value(' '), 'last_name'),
+        ).values(
+        "full_name"
+        ).first()
+
+    techName = " "
+    if tech is None:
+        debug("ERROR: Technician not found.")
+        messages.error(request, "Technician not found.", extra_tags='search-techTasks')
+        return render(request, 'farmstemp/assignment.html', {})
+    else:
+        techName = tech["full_name"]
+
+    # (2) Get Farm details 
+    farmQry = Farm.objects.filter(area__tech_id=int(techID)).select_related('extbio').annotate(
+        fname=F("hog_raiser__fname"), 
+        lname=F("hog_raiser__lname"), 
+        a_name=F("area__area_name"),
+        last_update = F("extbio__last_updated")
+        ).values(
+            "id",
+            "fname",
+            "lname", 
+            "a_name",
+            "total_pigs",
+            "last_update"
+            ).order_by("id").all()
+
+    farmsData = []
+    for f in farmQry:
+        farmObject = {
+            "code":  f["id"],
+            "area_name": f["a_name"],
+            "raiser": " ".join((f["fname"],f["lname"])),
+            "num_pigs": str(f["total_pigs"]),
+            "last_inspected": f["last_update"]
+        }
+        farmsData.append(farmObject)
+
+    # (3) Get Incident details
+    incidData = []
+    for farm in farmQry:
+        # for current Pigpen version
+        latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farm["id"]).order_by("-date_added").first()
+
+        # (1.1) Incidents Reported (code, date_filed, num_pigs_affected, report_status)
+        incidentQry = Hog_Symptoms.objects.filter(ref_farm__area__tech_id=int(techID)).filter(pigpen_grp_id=latestPigpen.id).filter(~Q(report_status='Resolved')).only(
+            'date_filed',
+            'date_updated', 
+            'report_status',
+            'num_pigs_affected').order_by("-date_filed").all()
+
+        # (1.2) Incidents Reported (symptoms list)
+        symptomsList = Hog_Symptoms.objects.filter(ref_farm__area__tech_id=int(techID)).filter(pigpen_grp_id=latestPigpen.id).filter(~Q(report_status='Resolved')).values(
+                'high_fever'        ,
+                'loss_appetite'     ,
+                'depression'        ,
+                'lethargic'         ,
+                'constipation'      ,
+                'vomit_diarrhea'    ,
+                'colored_pigs'      ,
+                'skin_lesions'      ,
+                'hemorrhages'       ,
+                'abn_breathing'     ,
+                'discharge_eyesnose',
+                'death_isDays'      ,
+                'death_isWeek'      ,
+                'cough'             ,
+                'sneeze'            ,
+                'runny_nose'        ,
+                'waste'             ,
+                'boar_dec_libido'   ,
+                'farrow_miscarriage',
+                'weight_loss'       ,
+                'trembling'         ,
+                'conjunctivitis').order_by("-date_filed").all()
+        
+        incidObject = {
+            "farm_code":  farm["id"],
+            "area_name": f["a_name"],
+            "incident_symptomsList": zip(incidentQry, symptomsList)
+        }
+        incidData.append(incidObject)
+
+    # (4) Get Mem Announcements
+    memQry = Mem_Announcement.objects.filter(author_id=int(techID)).filter(is_approved=True).order_by("-timestamp")    
+
+    return render(request, 'farmstemp/assignment.html', {"techName": techName, "farmBioList": farmsData,
+                                                                                "incidList":  incidData,
+                                                                                "announceList": memQry})
+
 
 def assign_technician(request):
     """
@@ -1714,8 +1847,82 @@ def selectedActivityForm(request, activityFormID, activityDate):
     # get all other versions of selected activity form
     versionList = Activities_Form.objects.filter(code=actFormQuery.code).all().order_by("-id")
     
-    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm,
-                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList})
+    # get reference data (farm)
+    techFarmQry = Farm.objects.filter(id=actFormQuery.ref_farm_id).select_related('hog_raiser', 'area').annotate(
+                    raiser      = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+                    contact     = F("hog_raiser__contact_no"),
+                    farm_area   = F("area__area_name"))
+
+    farmRef = techFarmQry.values(
+        "id",
+        "raiser",
+        "contact",
+        "directly_manage",
+        "farm_address",
+        "farm_area",
+        "roof_height",
+        "wh_length", 
+        "wh_width",
+        "total_pigs",
+        "feed_trough",
+        "bldg_cap",
+        "medic_tank",
+        "bldg_curtain",
+        "road_access",
+    ).first()
+
+    # get reference data (health)
+    start_weight = 0.0
+    end_weight   = 0.0
+
+    # get latest version of Pigpen
+    latestPP = Pigpen_Group.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).order_by("-date_added").first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPP.id).order_by("id")
+    
+    # get current starter and fattener weights acc. to current Pigpen
+    s_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").first()
+    e_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("final_weight").first()
+
+    # assign values for start and end weight
+    if s_weightQry.start_weight is not None:
+        start_weight = s_weightQry.start_weight.ave_weight
+
+    if e_weightQry.final_weight is not None:
+        end_weight = e_weightQry.final_weight.ave_weight
+
+    # compute for mortality rate (borrowed from comp_MortRate function)
+    total_pigs = 0
+    for pen in pigpenQry:
+        total_pigs += pen.num_heads
+
+    # Get latest Mortality record of the Farm (w Pigpen filter)
+    mortQry = Mortality.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
+
+    mortality_rate = 0
+    toDate = 0
+
+    if mortQry is not None:
+        for m in mortQry:
+            toDate += m.num_today
+
+        mortality_rate = (toDate / total_pigs) * 100
+
+    # count total number of cases reported
+    total_incidents = Hog_Symptoms.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).filter(pigpen_grp_id=latestPP.id).count()
+
+    # count total number of active cases
+    total_active = Hog_Symptoms.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
+
+    healthRef = {
+        "ave_startWeight":  start_weight,
+        "ave_endWeight":    end_weight,
+        "mortality_rate":   round(mortality_rate, 2),
+        "total_incidents":  total_incidents,
+        "total_active":     total_active,
+    }
+
+    return render(request, 'farmstemp/selected-activity-form.html', {'activityForm' : ActivityForm(), 'activities' : actList, 'latest' : latestForm, 'healthRef' : healthRef,
+                                                                    'formStatus' : status, 'actForm' : actFormQuery, 'actFormList' : versionList, 'farmRef' : farmRef})
 
 def approveActivityForm(request, activityFormID):
     """
@@ -2085,24 +2292,24 @@ def memAnnouncements(request):
     return render(request, 'farmstemp/mem-announce.html', context)
 
 def sendAnnouncement(bindings, body):
-    ACCOUNT_SID = getenv('TWILIO_ACCOUNT_SID')
-    AUTH_TOKEN = getenv('TWILIO_AUTH_TOKEN')
-    NOTIFY_SERVICE_SID = getenv('TWILIO_NOTIFY_SERVICE_SID')
+    # ACCOUNT_SID = getenv('TWILIO_ACCOUNT_SID')
+    # AUTH_TOKEN = getenv('TWILIO_AUTH_TOKEN')
+    # NOTIFY_SERVICE_SID = getenv('TWILIO_NOTIFY_SERVICE_SID')
 
-    client              = Client(ACCOUNT_SID, AUTH_TOKEN)
+    # client              = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-    print("=====> To Bindings :>", bindings, "<: =====")
-    notification = client.notify.services(NOTIFY_SERVICE_SID).notifications.create(
-        to_binding=bindings,
-        body=body
-    )
+    # print("=====> To Bindings :>", bindings, "<: =====")
+    # notification = client.notify.services(NOTIFY_SERVICE_SID).notifications.create(
+    #     to_binding=bindings,
+    #     body=body
+    # )
     
-    debug(notification.body)
-    # ancmt = {
-    #     'address': address,
-    #     'body': category+ ': '+title+'\n'+message
-    # }
-    # debug(ancmt)
+    # debug(notification.body)
+    ancmt = {
+        'address': bindings,
+        'body': body
+    }
+    debug(ancmt)
 
 def memAnnouncements_Approval(request, decision):
     """
@@ -2128,7 +2335,7 @@ def memAnnouncements_Approval(request, decision):
                 if ancmt[0]['recip_area'] == 'All Raisers':
                     nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
                 else:
-                    nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = ancmt[0]['recip_area']).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                    nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name__in = ancmt[0]['recip_area'].split(', ')).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
                 for address in nums:
                     addressList.append(
                         json.dumps({
@@ -2136,8 +2343,6 @@ def memAnnouncements_Approval(request, decision):
                             'address': address['hog_raiser__contact_no']
                         })
                     )
-                debug(addressList)
-                debug(body)
                 if addressList:
                     sendAnnouncement(addressList, body)
 
@@ -2164,39 +2369,45 @@ def createAnnouncement(request):
     """
 
     if request.method == 'POST':
-        autoApprove = ['Assistant Manager']
-        if request.user.groups.all()[0].name in autoApprove:
-            approvalState = True
-            addressList = []
-            body = request.POST.get("category") + ': ' + request.POST.get("title") + '\n' + request.POST.get("mssg") 
-            if request.POST.get("recip_area") == 'All Raisers':
-                nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+        if(request.POST.getlist("recip_area")):
+            autoApprove = ['Assistant Manager']
+            if request.user.groups.all()[0].name in autoApprove:
+                approvalState = True
+                addressList = []
+                body = request.POST.get("category") + ': ' + request.POST.get("title") + '\n' + request.POST.get("mssg") 
+                if request.POST.getlist("recip_area") == ['All Raisers']:
+                    nums = Farm.objects.select_related("hog_raiser").distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                else:
+                    nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name__in = request.POST.getlist("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
+                for address in nums:
+                    addressList.append(
+                            json.dumps({
+                                'binding_type':'sms',
+                                'address': address['hog_raiser__contact_no']
+                            })
+                        )
+                if addressList:
+                        sendAnnouncement(addressList, body)
             else:
-                nums = Farm.objects.select_related("hog_raiser", "area").filter(area__area_name = request.POST.get("recip_area")).distinct("hog_raiser__contact_no").values('hog_raiser__contact_no')
-            for address in nums:
-                addressList.append(
-                        json.dumps({
-                            'binding_type':'sms',
-                            'address': address['hog_raiser__contact_no']
-                        })
-                    )
-            if addressList:
-                    sendAnnouncement(addressList, body)
-        else:
-            approvalState = None
+                approvalState = None
 
-        announcement = Mem_Announcement(
-            title = request.POST.get("title"),
-            category = request.POST.get("category"),
-            recip_area = request.POST.get("recip_area"),
-            mssg = request.POST.get("mssg"),
-            author_id = request.user.id,
-            timestamp = now(),
-            is_approved = approvalState
-        )
-        announcement.save()
-        messages.success(request, "Announcement sent.", extra_tags='announcement')
-        return redirect('/member-announcements')
+            announcement = Mem_Announcement(
+                title = request.POST.get("title"),
+                category = request.POST.get("category"),
+                recip_area = ", ".join(request.POST.getlist("recip_area")),
+                mssg = request.POST.get("mssg"),
+                author_id = request.user.id,
+                timestamp = now(),
+                is_approved = approvalState
+            )
+            announcement.save()
+            messages.success(request, "Announcement sent.", extra_tags='announcement')
+
+            debug(request.POST)
+            debug(request.POST.getlist("recip_area"))
+            debug(Boolean(request.POST.getlist("recip_area") == ['All Raisers']))
+            return redirect('/member-announcements')
+        messages.error(request, "Choose at least one recipient area.", extra_tags='announcement')
 
     announcementForm = MemAnnouncementForm(user=request.user)
     return render(request, 'farmstemp/create-announcement.html', {'announcementForm' : announcementForm})
@@ -3909,6 +4120,7 @@ def dashboard_view(request):
     total_active = 0
     ave_intbio = 0
     ave_extbio = 0
+    ave_mortRate = 0
 
     for f in farmQry:
         # compute int-extbio scores per Farm
@@ -3920,9 +4132,10 @@ def dashboard_view(request):
         ave_intbio += biosec_score[0]
         ave_extbio += biosec_score[1]
 
+        ave_mortRate += compute_MortRate(f["id"], None)
+
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
-        # print(str(f["id"]) + " " + str(bioDateDiff))
         
         if bioDateDiff.days > 7:
             total_needInspect += 1
@@ -3937,11 +4150,11 @@ def dashboard_view(request):
 
     total_farms = len(farmQry)
     # compute for -- total (pigs) and ave columns (intbio, extbio)
-    ave_pigs   = round((total_pigs / len(farmQry)), 2)
-    ave_intbio = round((ave_intbio / len(farmQry)), 2)
-    ave_extbio = round((ave_extbio / len(farmQry)), 2)
+    ave_pigs     = round((total_pigs / len(farmQry)), 2)
+    ave_intbio   = round((ave_intbio / len(farmQry)), 2)
+    ave_extbio   = round((ave_extbio / len(farmQry)), 2)
+    ave_mortRate = round((ave_mortRate / len(farmQry)), 2)
     
-    # debug("total_farms -- " + str(total_farms))
 
     farmStats = {
         "total_farms": total_farms,
@@ -3950,8 +4163,7 @@ def dashboard_view(request):
         "total_active": total_active,
         "ave_intbio": round(ave_intbio, 2),
         "ave_extbio": round(ave_extbio, 2),
-        "rem_intbio": round((100 - ave_intbio), 2),
-        "rem_extbio": round((100 - ave_extbio), 2),
+        "ave_mortRate": round(ave_mortRate, 2),
     }
 
     # return render(request, 'dashboard.html', {"fStats": farmStats})

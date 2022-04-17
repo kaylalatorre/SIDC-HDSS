@@ -16,6 +16,8 @@ urlpatterns = [
     path('technician-assignment', views.techAssignment, name="techAssignment"),
     path('technician-assignment/assign', views.assign_technician, name="assign_technician"),
     path('technician-assignment/savearea', views.save_area, name="save_area"),
+    path('technician-assignment/search-tasks/<str:techID>', views.search_techTasks, name="search_techTasks"),
+
 
     # forms
     path('forms-approval', views.formsApproval, name="formsApproval"),
