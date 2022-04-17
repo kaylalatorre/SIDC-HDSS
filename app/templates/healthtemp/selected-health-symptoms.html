@@ -255,9 +255,13 @@
                                     {% if incident.report_status == 'Resolved' %}
                                         <option value="Resolved"  class="status" selected>Resolved</option>
                                     {% else %}
-                                        <option value="Resolved"  class="status">Resolved</option>
+                                        <option value="Resolved"  class="status" id="repstatus-resolve">Resolved</option>
                                     {% endif %} 
                                 </select>
+                            </div>
+                            <div class="incd-resolved-remarks hide" id="123">
+                                <label class="bold-lbl">Remarks</label> <br>
+                                <input type="text" required class="form-control" id="input-resolved-remarks" placeholder="ex. No new symptoms found">
                             </div>
                         </td>
                         {% if editStat %}
