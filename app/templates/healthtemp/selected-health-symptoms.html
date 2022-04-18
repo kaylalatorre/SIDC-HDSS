@@ -339,9 +339,9 @@
                         <td data-label="Today" style="text-align: right;">{{ mort.num_today }} pigs</td>
                         <td data-label="To Date" style="text-align: right;">{{ mort.num_toDate }} pigs</td>
                         <td data-label="Mortality %" style="text-align: right;">{{ mRate }}%</td>
-                        {% if mort.source == 1 %}
+                        {% if mort.source == 'Incident Case' %}
                         <td data-label="Incident Case">Incident Case {{ mCase }}</td>
-                        {% elif mort.source == 2 %}
+                        {% elif mort.source == 'Disease Case' %}
                         <td data-label="Incident Case">Disease Case {{ mCase }}</td>
                         {% else %}
                         <td data-label="Incident Case">Unknown</td>

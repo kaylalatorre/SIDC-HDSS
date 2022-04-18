@@ -59,7 +59,7 @@
                             <td data-label="To Date"> <p class="num_toDate">-</p> </td>
                             <td data-label="Mortality Rate"> <p class="mortality_rate">-</p> </td>
                             <td data-label="Source" id="source">
-                                <select class="form-select" id="input-source" name="input-case" onchange="switchMortCase(this)">
+                                <select class="form-select" id="input-source" name="source" onchange="switchMortCase(this)">
                                     <option hidden>- - -</option>
                                     <option value="Incident Case">Incident Case</option>
                                     <option value="Disease Case">Disease Case</option>
@@ -78,8 +78,8 @@
                                     <label class="form-check-label" for="src-unknown">Unknown</label>
                                 </div> -->
                             </td>
-                            <td data-label="Case No." id="case_no"> 
-                                <select class="form-select" id="input-case" name="input-case">
+                            <td data-label="Case No." id="case_no" class="case_no" > 
+                                <select class="form-select" id="input-case" name="case">
                                     <option hidden>- - -</option>
                                     {% for icase in incid_cases %}
                                     <option class="incident-case">{{icase.id}}</option>

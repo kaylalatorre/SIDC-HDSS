@@ -968,11 +968,18 @@ function computeMortality(currRow){
   * @param {*} caseVal = value of selected radio button (source) 
  */
 function switchMortCase(caseVal){
-    var incidCase = document.getElementsByClassName("incident-case");
-    var disCase = document.getElementsByClassName("disease-case");
-    var dropDown = document.getElementById("input-case");
+    // var row = caseVal.parentNode.parentNode.parentNode; //get row of radio button set
+    var row = caseVal.parentNode.parentNode; //get row of radio button set
+    // console.log(row);
+    // console.log(row.rowIndex);
+
+
+    var incidCase = row.getElementsByClassName("incident-case");
+    var disCase = row.getElementsByClassName("disease-case");
+    var dropDown = row.getElementsByClassName("case_no").firstElementChild;
 
     // console.log(caseVal.value);
+    // console.log(dropDown);
 
     if(String(caseVal.value) === "Incident Case") {
         for(i = 0; i < disCase.length; i++)
@@ -981,7 +988,7 @@ function switchMortCase(caseVal){
         for(j = 0; j < disCase.length; j++)
             incidCase[j].style.display = "block";
 
-        dropDown.selectedIndex = 0;
+        // dropDown.selectedIndex = 0;
     }
     else if(String(caseVal.value) === "Disease Case") {
         for(i = 0; i < disCase.length; i++)
@@ -990,7 +997,7 @@ function switchMortCase(caseVal){
         for(j = 0; j < disCase.length; j++)
             incidCase[j].style.display = "none";
 
-        dropDown.selectedIndex = 0;
+        // dropDown.selectedIndex = 0;
     }
     else { // chosen source is unknown, hide all cases
         for(i = 0; i < disCase.length; i++)
@@ -999,7 +1006,7 @@ function switchMortCase(caseVal){
         for(j = 0; j < disCase.length; j++)
             incidCase[j].style.display = "none";
 
-        dropDown.selectedIndex = 0;
+        // dropDown.selectedIndex = 0;
     }
     
 }

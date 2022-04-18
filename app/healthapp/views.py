@@ -1086,6 +1086,7 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
+    print(incidQry)
     
     # get all disease cases for the farm
     disCases = []
@@ -1122,61 +1123,76 @@ def addMortality(request, farmID):
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "source" : request.POST.getlist('sourceOptions', default=None)[i],
-                "incident" : request.POST.getlist('input-case', default=None)[i],
-                "disease" : request.POST.getlist('input-case', default=None)[i+1],
+                "source" : request.POST.getlist('source', default=None)[i],
+                "case" : request.POST.getlist('case', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
             mortalityList.append(mortalityObject)
             i += 1
 
-        # if mortalityForm.is_valid():
+        if mortalityForm.is_valid():
 
-        #     # create instance of Mortality Form model
-        #     mortality_form = Mortality_Form.objects.create(
-        #         series = series,
-        #         date_added = datetime.now(timezone.utc),
-        #         ref_farm = farmQuery,
-        #         pigpen_grp = farmVersion
-        #     )
-        #     mortality_form.save()
+            # create instance of Mortality Form model
+            mortality_form = Mortality_Form.objects.create(
+                series = series,
+                date_added = datetime.now(timezone.utc),
+                ref_farm = farmQuery,
+                pigpen_grp = farmVersion
+            )
+            mortality_form.save()
 
-        #     # pass all objects in mortalityList into Mortality model
-        #     x = 0
-        #     toDate = int(mortQry.get("num_toDate"))
+            # pass all objects in mortalityList into Mortality model
+            x = 0
+            for mort in mortalityList:
+                mort = mortalityList[x]
+
+                # assign incident case value
+                if mort['source'] == 'Incident Case' :
+                    incid_case = mort['case']
+
+                elif mort['source'] == 'Disease Case' :
+                    # get FK of disease case selected
+                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').annotate(
+                                 caseID = F('incid_case__id')).values('caseID')
+                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').first()
+                    
+                    print(disQry.incid_case.id)
+
+                    incid_case = disQry.incid_case.id
+
+                else :
+                    incid_case = None
+
+                # create new instance of Mortality model
+                mortality = Mortality.objects.create(
+                    ref_farm = farmQuery,
+                    mortality_date = mort['mortality_date'],
+                    num_begInv = num_begInv,
+                    num_today = mort['num_today'],
+                    num_toDate = latest_toDate + int(mort['num_today']),
+                    source = mort['source'],
+                    remarks = mort['remarks'],
+                    incid_case_id = incid_case,
+                    mortality_form_id = mortality_form.id
+                )
+
+                farmQuery.total_pigs -= int(mort['num_today'])
             
-        #     for mort in mortalityList:
-        #         mort = mortalityList[x]
+                # print(str(mortality))
+                mortality.save()
+                x += 1
+                latest_toDate += int(mort['num_today'])
 
-        #         # create new instance of Mortality model
-        #         mortality = Mortality.objects.create(
-        #             ref_farm = farmQuery,
-        #             mortality_date = mort['mortality_date'],
-        #             num_begInv = num_begInv,
-        #             num_today = mort['num_today'],
-        #             num_toDate = toDate + int(mort['num_today']),
-        #             incid_case_id = mort['incid_case'],
-        #             remarks = mort['remarks'],
-        #             mortality_form_id = mortality_form.id
-        #         )
+            # update last_updated of farm
+            farmQuery.last_updated = datetime.now(timezone.utc)
+            farmQuery.save()
 
-        #         farmQuery.total_pigs -= int(mort['num_today'])
-            
-        #         # print(str(mortality))
-        #         mortality.save()
-        #         x += 1
-        #         toDate += int(mort['num_today'])
+            # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
+            messages.success(request, "Mortality record has been successfully added.", extra_tags='add-mortality')
+            return redirect('/selected-health-symptoms/' + str(farmID))
 
-        #     # update last_updated of farm
-        #     farmQuery.last_updated = datetime.now(timezone.utc)
-        #     farmQuery.save()
-
-        #     # NOTIFY USER (PAIWI MANAGEMENT STAFF) - New Mortality Record has been submitted by Field Technician OR New Mortality Record needs approval
-        #     messages.success(request, "Mortality record has been successfully added.", extra_tags='add-mortality')
-        #     return redirect('/selected-health-symptoms/' + str(farmID))
-
-        # else:
+        else:
             # print("TEST LOG: mortalityForm is not valid")
             formError = str(mortalityForm.non_field_errors().as_text)
 
