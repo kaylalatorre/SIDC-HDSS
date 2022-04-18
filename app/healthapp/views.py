@@ -1098,7 +1098,7 @@ def addMortality(request, farmID):
 
 
     # get last mortality record
-    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).last()
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
 
     latest_toDate = 0
     
