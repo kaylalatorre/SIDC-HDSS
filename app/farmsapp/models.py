@@ -163,7 +163,7 @@ class Farm(models.Model):
                             ('Trough', 'Trough')]
 
     feed_trough         = models.CharField(max_length=20, choices=FEED_CHOICES, default='Semi-automatic')
-    bldg_cap            = models.IntegerField(unique=True)
+    bldg_cap            = models.IntegerField()
 
     MED_TANK_CHOICES    = [('25 GAL', '25 GAL'),
                             ('50 GAL', '50 GAL')]

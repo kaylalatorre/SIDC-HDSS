@@ -1590,6 +1590,6 @@ def weightRange(request):
                                 [count_ceil, list(farm_ceilDict.items())]
                                 ])
 
-        debug(weightSeries)
+        # debug(weightSeries)
 
     return JsonResponse(weightSeries, safe=False)

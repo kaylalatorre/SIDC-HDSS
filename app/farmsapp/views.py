@@ -2456,7 +2456,7 @@ def initNotifIDList(request):
         userID = request.session['_auth_user_id']
         notifIDList.extend(User.objects.get(id=userID).accountdata.data['notifIDList'])
     except:
-        debug('no items obtained from database')
+        debug('no notifs obtained from database')
     return notifIDList
 
 def getNotifIDs(request):

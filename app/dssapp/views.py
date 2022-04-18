@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row, Activity)
+    Pigpen_Group, Pigpen_Row, Activity,
+    Disease_Case)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -667,15 +668,17 @@ def dashboard_SusCases():
     }
 
     diseaseInfo = {
-        'ASF':  {'farms': [],'hogs': 0,'symptoms': []},
-        'CSF':  {'farms': [],'hogs': 0,'symptoms': []},
-        'IAVS': {'farms': [],'hogs': 0,'symptoms': []},
-        'ADV':  {'farms': [],'hogs': 0,'symptoms': []},
-        'PRRS': {'farms': [],'hogs': 0,'symptoms': []},
-        'PED':  {'farms': [],'hogs': 0,'symptoms': []},
+        'ASF':  {'diseaseList': [], 'hogs_total': 0},
+        'CSF':  {'diseaseList': [], 'hogs_total': 0},
+        'IAVS': {'diseaseList': [], 'hogs_total': 0},
+        'ADV':  {'diseaseList': [], 'hogs_total': 0},
+        'PRRS': {'diseaseList': [], 'hogs_total': 0},
+        'PED':  {'diseaseList': [], 'hogs_total': 0},
     }
 
-    cases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
+
+    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
+        'id'                ,
         'ref_farm_id'       ,
         'num_pigs_affected' ,
         'high_fever'        ,
@@ -702,60 +705,165 @@ def dashboard_SusCases():
         'conjunctivitis'
     )
     
-    for case in cases:
-        currCase = [key for key, val in case.items() if val and key != 'ref_farm_id' and key != 'num_pigs_affected']
+
+    # get Disease Cases with status "1" (Negative) or "2" (Pending)
+    diseaseCases = Disease_Case.objects.filter(~Q(lab_result=0)).filter(date_updated__range=(now()-timedelta(days=120), now())).annotate(
+        high_fever          =F('incid_case__high_fever')        ,
+        loss_appetite       =F('incid_case__loss_appetite')     ,
+        depression          =F('incid_case__depression')        ,
+        lethargic           =F('incid_case__lethargic')         ,
+        constipation        =F('incid_case__constipation')      ,
+        vomit_diarrhea      =F('incid_case__vomit_diarrhea')    ,
+        colored_pigs        =F('incid_case__colored_pigs')      ,
+        skin_lesions        =F('incid_case__skin_lesions')      ,
+        hemorrhages         =F('incid_case__hemorrhages')       ,
+        abn_breathing       =F('incid_case__abn_breathing')     ,
+        discharge_eyesnose  =F('incid_case__discharge_eyesnose'),
+        death_isDays        =F('incid_case__death_isDays')      ,
+        death_isWeek        =F('incid_case__death_isWeek')      ,
+        cough               =F('incid_case__cough')             ,
+        sneeze              =F('incid_case__sneeze')            ,
+        runny_nose          =F('incid_case__runny_nose')        ,
+        waste               =F('incid_case__waste')             ,
+        boar_dec_libido     =F('incid_case__boar_dec_libido')   ,
+        farrow_miscarriage  =F('incid_case__farrow_miscarriage'),
+        weight_loss         =F('incid_case__weight_loss')       ,
+        trembling           =F('incid_case__trembling')         ,
+        conjunctivitis      =F('incid_case__conjunctivitis')
+    ).values(
+        'incid_case__id'        ,
+        'incid_case__ref_farm_id'       ,
+        'incid_case__num_pigs_affected' ,
+        'lab_result'        ,
+        'lab_ref_no'        ,
+        'high_fever'        ,
+        'loss_appetite'     ,
+        'depression'        ,
+        'lethargic'         ,
+        'constipation'      ,
+        'vomit_diarrhea'    ,
+        'colored_pigs'      ,
+        'skin_lesions'      ,
+        'hemorrhages'       ,
+        'abn_breathing'     ,
+        'discharge_eyesnose',
+        'death_isDays'      ,
+        'death_isWeek'      ,
+        'cough'             ,
+        'sneeze'            ,
+        'runny_nose'        ,
+        'waste'             ,
+        'boar_dec_libido'   ,
+        'farrow_miscarriage',
+        'weight_loss'       ,
+        'trembling'         ,
+        'conjunctivitis'
+    )
+
+
+    # testQry = Hog_Symptoms.objects.values(
+    #     'ref_farm__num_pens'
+    # ).filter(id=1)
+
+    # debug(diseaseQry)
+
+    for case in incidCases:
+        currCase = [key for key, val in case.items() if val and key not in ['id', 'ref_farm_id', 'num_pigs_affected']]
 
         if len(list(set(diseaseSymptoms['ASF'])-set(currCase))) == 0:
-            if case['ref_farm_id'] not in diseaseInfo['ASF']['farms']:
-                diseaseInfo['ASF']['farms'].append(case['ref_farm_id'])
-            diseaseInfo['ASF']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['ASF']['symptoms'].extend(
-                list(set(diseaseInfo['ASF']['symptoms'])-set(diseaseSymptoms['ASF']).intersection(currCase)) + 
-                list(set(diseaseSymptoms['ASF']).intersection(currCase)-set(diseaseInfo['ASF']['symptoms']))
-            )
+            diseaseInfo['ASF']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            diseaseInfo['ASF']['hogs_total'] += case['num_pigs_affected']
 
         if len(list(set(diseaseSymptoms['CSF'])-set(currCase))) == 0:
-            if case['ref_farm_id'] not in diseaseInfo['CSF']['farms']:
-                diseaseInfo['CSF']['farms'].append(case['ref_farm_id'])
-            diseaseInfo['CSF']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['CSF']['symptoms'].extend(
-                list(set(diseaseInfo['CSF']['symptoms'])-set(diseaseSymptoms['CSF']).intersection(currCase)) + 
-                list(set(diseaseSymptoms['CSF']).intersection(currCase)-set(diseaseInfo['CSF']['symptoms']))
-            )
+            diseaseInfo['CSF']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            diseaseInfo['CSF']['hogs_total'] += case['num_pigs_affected']
 
         if len(list(set(diseaseSymptoms['IAVS'])-set(currCase))) == 0:
-            if case['ref_farm_id'] not in diseaseInfo['IAVS']['farms']:
-                diseaseInfo['IAVS']['farms'].append(case['ref_farm_id'])
-            diseaseInfo['IAVS']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['IAVS']['symptoms'].extend(
-                list(set(diseaseInfo['IAVS']['symptoms'])-set(diseaseSymptoms['IAVS']).intersection(currCase)) + 
-                list(set(diseaseSymptoms['IAVS']).intersection(currCase)-set(diseaseInfo['IAVS']['symptoms']))
-            )
+            diseaseInfo['IAVS']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            diseaseInfo['IAVS']['hogs_total'] += case['num_pigs_affected']
         
         if len(list(set(diseaseSymptoms['ADV'])-set(currCase))) == 0:
-            if case['ref_farm_id'] not in diseaseInfo['ADV']['farms']:
-                diseaseInfo['ADV']['farms'].append(case['ref_farm_id'])
-            diseaseInfo['ADV']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['ADV']['symptoms'].extend(
-                list(set(diseaseInfo['ADV']['symptoms'])-set(diseaseSymptoms['ADV']).intersection(currCase)) + 
-                list(set(diseaseSymptoms['ADV']).intersection(currCase)-set(diseaseInfo['ADV']['symptoms']))
-            )
+            diseaseInfo['ADV']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            diseaseInfo['ADV']['hogs_total'] += case['num_pigs_affected']
+
         if len(list(set(diseaseSymptoms['PRRS'])-set(currCase))) == 0:
-            if case['ref_farm_id'] not in diseaseInfo['PRRS']['farms']:
-                diseaseInfo['PRRS']['farms'].append(case['ref_farm_id'])
-            diseaseInfo['PRRS']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['PRRS']['symptoms'].extend(
-                list(set(diseaseInfo['PRRS']['symptoms'])-set(diseaseSymptoms['PRRS']).intersection(currCase)) + 
-                list(set(diseaseSymptoms['PRRS']).intersection(currCase)-set(diseaseInfo['PRRS']['symptoms']))
-            )
+            diseaseInfo['PRRS']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            diseaseInfo['PRRS']['hogs_total'] += case['num_pigs_affected']
 
         if len(list(set(diseaseSymptoms['PED'])-set(currCase))) == 0:
-            if case['ref_farm_id'] not in diseaseInfo['PED']['farms']:
-                diseaseInfo['PED']['farms'].append(case['ref_farm_id'])
-            diseaseInfo['PED']['hogs'] += case['num_pigs_affected']
-            diseaseInfo['PED']['symptoms'].extend(
-                list(set(diseaseInfo['PED']['symptoms'])-set(diseaseSymptoms['PED']).intersection(currCase)) + 
-                list(set(diseaseSymptoms['PED']).intersection(currCase)-set(diseaseInfo['PED']['symptoms']))
-            )
+            diseaseInfo['PED']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            diseaseInfo['PED']['hogs_total'] += case['num_pigs_affected']
     
+
+    for dcase in diseaseCases:
+        dcurrCase = [key for key, val in dcase.items() if val and key not in ['incid_case__id', 'incid_case__ref_farm_id', 'incid_case__num_pigs_affected', 'lab_result', 'lab_ref_no']]
+
+        if len(list(set(diseaseSymptoms['ASF'])-set(dcurrCase))) == 0:
+            diseaseInfo['ASF']['diseaseList'].append({
+                'incid_id': dcase['incid_case__id'], 
+                'farm_id': dcase['incid_case__ref_farm_id'], 
+                'hogs_affect': dcase['incid_case__num_pigs_affected'], 
+                'symptoms': dcurrCase,
+                'lab_result': dcase['lab_result'], 
+                'lab_ref': dcase['lab_ref_no']
+                })
+            diseaseInfo['ASF']['hogs_total'] += dcase['incid_case__num_pigs_affected']
+
+        if len(list(set(diseaseSymptoms['CSF'])-set(dcurrCase))) == 0:
+            diseaseInfo['CSF']['diseaseList'].append({
+                'incid_id': dcase['incid_case__id'], 
+                'farm_id': dcase['incid_case__ref_farm_id'], 
+                'hogs_affect': dcase['incid_case__num_pigs_affected'], 
+                'symptoms': dcurrCase,
+                'lab_result': dcase['lab_result'], 
+                'lab_ref': dcase['lab_ref_no']
+                })
+            diseaseInfo['CSF']['hogs_total'] += dcase['incid_case__num_pigs_affected']
+
+        if len(list(set(diseaseSymptoms['IAVS'])-set(dcurrCase))) == 0:
+            diseaseInfo['IAVS']['diseaseList'].append({
+                'incid_id': dcase['incid_case__id'], 
+                'farm_id': dcase['incid_case__ref_farm_id'], 
+                'hogs_affect': dcase['incid_case__num_pigs_affected'], 
+                'symptoms': dcurrCase,
+                'lab_result': dcase['lab_result'], 
+                'lab_ref': dcase['lab_ref_no']
+                })
+            diseaseInfo['IAVS']['hogs_total'] += dcase['incid_case__num_pigs_affected']
+
+        if len(list(set(diseaseSymptoms['ADV'])-set(dcurrCase))) == 0:
+            diseaseInfo['ADV']['diseaseList'].append({
+                'incid_id': dcase['incid_case__id'], 
+                'farm_id': dcase['incid_case__ref_farm_id'], 
+                'hogs_affect': dcase['incid_case__num_pigs_affected'], 
+                'symptoms': dcurrCase,
+                'lab_result': dcase['lab_result'], 
+                'lab_ref': dcase['lab_ref_no']
+                })
+            diseaseInfo['ADV']['hogs_total'] += dcase['incid_case__num_pigs_affected']
+
+        if len(list(set(diseaseSymptoms['PRRS'])-set(dcurrCase))) == 0:
+            diseaseInfo['PRRS']['diseaseList'].append({
+                'incid_id': dcase['incid_case__id'], 
+                'farm_id': dcase['incid_case__ref_farm_id'], 
+                'hogs_affect': dcase['incid_case__num_pigs_affected'], 
+                'symptoms': dcurrCase,
+                'lab_result': dcase['lab_result'], 
+                'lab_ref': dcase['lab_ref_no']
+                })
+            diseaseInfo['PRRS']['hogs_total'] += dcase['incid_case__num_pigs_affected']
+
+        if len(list(set(diseaseSymptoms['PED'])-set(dcurrCase))) == 0:
+            diseaseInfo['PED']['diseaseList'].append({
+                'incid_id': dcase['incid_case__id'], 
+                'farm_id': dcase['incid_case__ref_farm_id'], 
+                'hogs_affect': dcase['incid_case__num_pigs_affected'], 
+                'symptoms': dcurrCase,
+                'lab_result': dcase['lab_result'], 
+                'lab_ref': dcase['lab_ref_no']
+                })
+            diseaseInfo['PED']['hogs_total'] += dcase['incid_case__num_pigs_affected']
+
+    debug(diseaseInfo)
+
     return diseaseInfo
