@@ -909,11 +909,11 @@ function computeMortality(currRow){
     var toDate = row.getElementsByClassName('num_toDate')[0];
 
     // console.log("begInv: " + String(begInv));
-    console.log("today: " + String(today));
-    console.log(latest_toDate);
+    // console.log("today: " + String(today));
+    // console.log(latest_toDate);
 
     var newTotal = parseInt(today) + parseInt(latest_toDate); 
-    console.log(newTotal);    
+    // console.log(newTotal);    
 
     toDate.innerHTML = String(newTotal);
     // console.log("toDate: " + String(toDate));
@@ -962,34 +962,44 @@ function computeMortality(currRow){
     averageVal.innerText = average.toFixed(2);
 }
 
+/**
+ *  Switches the options in add-mortality cases depending on selected source
+ *  Will hide and display the corresponding incident or diseases cases
+  * @param {*} caseVal = value of selected radio button (source) 
+ */
 function switchMortCase(caseVal){
-    var incidCase = document.getElementById("incident-case");
-    var disCase = document.getElementById("disease-case");
+    var incidCase = document.getElementsByClassName("incident-case");
+    var disCase = document.getElementsByClassName("disease-case");
+    var dropDown = document.getElementById("input-case");
 
-    console.log(caseVal.value);
+    // console.log(caseVal.value);
 
-    if(String(caseVal.value) === "Incident Case") { // chosen source is an incident
-        console.log("hey it's an Incident Case");
+    if(String(caseVal.value) === "Incident Case") {
+        for(i = 0; i < disCase.length; i++)
+            disCase[i].style.display = "none";
+    
+        for(j = 0; j < disCase.length; j++)
+            incidCase[j].style.display = "block";
 
-        // hide disease cases
-        disCase.style.display = "none";
-
-        // display incident cases
-        incidCase.style.display = "block";
+        dropDown.selectedIndex = 0;
     }
-    else if(String(caseVal.value) === "Disease Case") { // chosen source is a disease
-        console.log("hey it's a Disease Case");
+    else if(String(caseVal.value) === "Disease Case") {
+        for(i = 0; i < disCase.length; i++)
+            disCase[i].style.display = "block";
+    
+        for(j = 0; j < disCase.length; j++)
+            incidCase[j].style.display = "none";
 
-        // hide incident cases
-        incidCase.style.display = "none";
-
-        // show disease cases
-        disCase.style.display = "block";
+        dropDown.selectedIndex = 0;
     }
     else { // chosen source is unknown, hide all cases
-        disCase.style.display = "none"; 
+        for(i = 0; i < disCase.length; i++)
+            disCase[i].style.display = "none";
+    
+        for(j = 0; j < disCase.length; j++)
+            incidCase[j].style.display = "none";
 
-        incidCase.style.display = "none";
+        dropDown.selectedIndex = 0;
     }
     
 }
