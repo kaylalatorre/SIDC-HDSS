@@ -26,50 +26,74 @@
                         <button class="nav-link active" id="v-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-asf" type="button" role="tab" aria-controls="v-pills-asf" aria-selected="true">
                             <div class="disease-info">
                                 <p class="di-disease">African swine fever (ASF)</p>
-                                <h3 class="di-no-affected {% if susCases.ASF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.ASF.hogs }}</h3>
                             </div>
                         </button>
                         <button class="nav-link" id="v-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-csf" type="button" role="tab" aria-controls="v-pills-csf" aria-selected="false">
                             <div class="disease-info">
                                 <p class="di-disease">Clinical swine fever (CSF)</p>
-                                <h3 class="di-no-affected {% if susCases.CSF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.CSF.hogs }}</h3>
                             </div>
                         </button>
                         <button class="nav-link" id="v-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#v-pills-iav" type="button" role="tab" aria-controls="v-pills-iav" aria-selected="false">
                             <div class="disease-info">
                                 <p class="di-disease">Swine influenza (IAV-S)</p>
-                                <h3 class="di-no-affected {% if susCases.IAVS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.IAVS.hogs }}</h3>
                             </div>
                         </button>
                         <button class="nav-link" id="v-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#v-pills-adv" type="button" role="tab" aria-controls="v-pills-adv" aria-selected="false">
                             <div class="disease-info">
                                 <p class="di-disease">Pseudorabies (ADV)</p>
-                                <h3 class="di-no-affected {% if susCases.ADV.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.ADV.hogs }}</h3>
                             </div>
                         </button>
                         <button class="nav-link" id="v-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prrs" type="button" role="tab" aria-controls="v-pills-prrs" aria-selected="false">
                             <div class="disease-info">
                                 <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
-                                <h3 class="di-no-affected {% if susCases.PRRS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PRRS.hogs }}</h3>
                             </div>
                         </button>
                         <button class="nav-link" id="v-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ped" type="button" role="tab" aria-controls="v-pills-ped" aria-selected="false">
                             <div class="disease-info">
                                 <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
-                                <h3 class="di-no-affected {% if susCases.PED.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs }}</h3>
                             </div>
                         </button>
                     </div>
                     <!-- Tab Content -->
                     <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
-                        <h3>Set Parameters</h3>
-                        <div>
-                            // INPUT THINGIES HERE
+                        <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
+                            <h3>Set Parameters</h3>
+                            <div>
+                                <!-- Inputs -->
+                                <div class="flex">
+                                    <label for="customRange1" class="flex-item form-label" style="width: 30%">Disease Incubation Period (days)</label>                             
+                                    <input type="range" class="flex-item form-range" name="ageInputName" id="ageInputId" value="24" min="1" max="100" oninput="ageOutputId.value = ageInputId.value">
+                                    <output name="ageOutputName" id="ageOutputId">24</output>
+                                </div>
+                                <div class="flex">
+                                    <label for="customRange1" class="flex-item form-label" style="width: 30%">Basic Reproduction No.</label>                             
+                                    <input type="range" class="flex-item form-range" name="ageInputName" id="ageInputId" value="24" min="1" max="100" oninput="ageOutputId.value = ageInputId.value">
+                                    <output name="ageOutputName" id="ageOutputId">24</output>
+                                </div>
+                                <div class="flex">
+                                    <label for="customRange1" class="flex-item form-label" style="width: 30%">No. of Days Disease can Spread</label>                             
+                                    <input type="range" class="flex-item form-range" name="ageInputName" id="ageInputId" value="24" min="1" max="100" oninput="ageOutputId.value = ageInputId.value">
+                                    <output name="ageOutputName" id="ageOutputId">24</output>
+                                </div>
+                                <div class="flex">
+                                    <label for="customRange1" class="flex-item form-label" style="width: 30%">Fatality Rate</label>                             
+                                    <input type="range" class="flex-item form-range" name="ageInputName" id="ageInputId" value="24" min="1" max="100" oninput="ageOutputId.value = ageInputId.value">
+                                    <output name="ageOutputName" id="ageOutputId">24</output>
+                                </div>
+                                <div class="flex">
+                                    <label for="customRange1" class="flex-item form-label" style="width: 30%">No. of Days until Death</label>                             
+                                    <input type="range" class="flex-item form-range" name="ageInputName" id="ageInputId" value="24" min="1" max="100" oninput="ageOutputId.value = ageInputId.value">
+                                    <output name="ageOutputName" id="ageOutputId">24</output>
+                                </div>
+                            </div>
+                            <hr>
+                            <!-- SEIRD Chart -->
+                            <div class="box-style-chart" id="dm-seird-asf" style="width: 100%; height: 400px;">
+                                
+                            </div>
                         </div>
-                        <hr>
-                        // SEIRD CHART
                         <div>
-
+                            
                         </div>
                     </div>
                 </div>
