@@ -674,6 +674,8 @@ def dashboard_SusCases():
         'ADV':  {'diseaseList': [], 'hogs_total': 0},
         'PRRS': {'diseaseList': [], 'hogs_total': 0},
         'PED':  {'diseaseList': [], 'hogs_total': 0},
+        'Others':  {'diseaseList': [], 'hogs_total': 0},
+
     }
 
 
@@ -710,32 +712,53 @@ def dashboard_SusCases():
         'weight_loss'                   ,        'trembling'                     ,        'conjunctivitis'
     )
 
+
+    none_ctr = 0 # counter for no detected exact disease given the symptoms
+
     for case in incidCases:
         currCase = [key for key, val in case.items() if val and key not in ['id', 'ref_farm_id', 'num_pigs_affected']]
 
         if len(list(set(diseaseSymptoms['ASF'])-set(currCase))) == 0:
             diseaseInfo['ASF']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['ASF']['hogs_total'] += case['num_pigs_affected']
+        else:
+            none_ctr += 1
 
         if len(list(set(diseaseSymptoms['CSF'])-set(currCase))) == 0:
             diseaseInfo['CSF']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['CSF']['hogs_total'] += case['num_pigs_affected']
+        else:
+            none_ctr += 1
 
         if len(list(set(diseaseSymptoms['IAVS'])-set(currCase))) == 0:
             diseaseInfo['IAVS']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['IAVS']['hogs_total'] += case['num_pigs_affected']
-        
+        else:
+            none_ctr += 1
+
         if len(list(set(diseaseSymptoms['ADV'])-set(currCase))) == 0:
             diseaseInfo['ADV']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['ADV']['hogs_total'] += case['num_pigs_affected']
+        else:
+            none_ctr += 1
 
         if len(list(set(diseaseSymptoms['PRRS'])-set(currCase))) == 0:
             diseaseInfo['PRRS']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['PRRS']['hogs_total'] += case['num_pigs_affected']
+        else:
+            none_ctr += 1
 
         if len(list(set(diseaseSymptoms['PED'])-set(currCase))) == 0:
             diseaseInfo['PED']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['PED']['hogs_total'] += case['num_pigs_affected']
+        else:
+            none_ctr += 1
+
+        
+        # check for cases with no exact disease diagnosis
+        if none_ctr == 6:
+             diseaseInfo['Others']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
+            
     
     # debug(diseaseInfo)
 
@@ -808,7 +831,7 @@ def dashboard_SusCases():
                 })
             diseaseInfo['PED']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
-    # debug(diseaseInfo)
+    debug(diseaseInfo)
 
     return diseaseInfo
 
