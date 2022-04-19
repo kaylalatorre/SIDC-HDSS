@@ -1289,3 +1289,43 @@ function addCase(farmID) {
 
     searchTechTasks(techID);
  });
+
+/** 
+*  Function for submitting lab result for an incident case (Dashboard > Tentative Diagnosis > Input Result).
+*/
+$('.submit-reference').on('click', function(){
+    // Split ID to <disease name> and <incid_id> and assign to variables
+    let [d_name, incid_id] = $(this)[0].id.split(':');
+    
+    // then assign the other variables
+    let lab_ref = $(`#input-reference_${incid_id}`).val();
+    let lab_result = $(`input[name="inlineRadioOptions_${incid_id}"]:checked`).val() // 0 == positive, 1 == negative
+
+    // check if inputs are valid
+    if(!Number(incid_id) || !Number(lab_ref) || ![0,1,2].includes(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED"].includes(d_name)){
+        console.log(!Number(incid_id));
+        console.log(!Number(lab_ref));
+        console.log(![0,1,2].includes(Number(lab_result)));
+        console.log(!["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED"].includes(d_name));
+        console.log("Invalid parameters were sent");
+        return false;
+    }
+        
+    // POST data to url: /submit-lab-report/<lab_ref_no>
+    $.ajax({
+        type: 'POST',
+        url: '/submit-lab-report/' + lab_ref,
+        data: {
+            "disease_name": d_name,
+            "incid_id": incid_id,
+            "lab_result": lab_result
+        },
+        success: function (response) {
+            location.href = "/home";
+        },
+        error: function (res) {
+            console.log(res.responseJSON.error);
+        }
+    });
+
+});

@@ -677,95 +677,38 @@ def dashboard_SusCases():
     }
 
 
-    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
-        'id'                ,
-        'ref_farm_id'       ,
-        'num_pigs_affected' ,
-        'high_fever'        ,
-        'loss_appetite'     ,
-        'depression'        ,
-        'lethargic'         ,
-        'constipation'      ,
-        'vomit_diarrhea'    ,
-        'colored_pigs'      ,
-        'skin_lesions'      ,
-        'hemorrhages'       ,
-        'abn_breathing'     ,
-        'discharge_eyesnose',
-        'death_isDays'      ,
-        'death_isWeek'      ,
-        'cough'             ,
-        'sneeze'            ,
-        'runny_nose'        ,
-        'waste'             ,
-        'boar_dec_libido'   ,
-        'farrow_miscarriage',
-        'weight_loss'       ,
-        'trembling'         ,
-        'conjunctivitis'
+    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=1200), now())).values(
+        'id'                ,       'ref_farm_id'       ,       'num_pigs_affected' ,       'high_fever'        ,       'loss_appetite'     ,
+        'depression'        ,       'lethargic'         ,       'constipation'      ,       'vomit_diarrhea'    ,       'colored_pigs'      ,       
+        'skin_lesions'      ,       'hemorrhages'       ,       'abn_breathing'     ,       'discharge_eyesnose',       'death_isDays'      ,
+        'death_isWeek'      ,       'cough'             ,       'sneeze'            ,       'runny_nose'        ,       'waste'             ,       
+        'boar_dec_libido'   ,       'farrow_miscarriage',       'weight_loss'       ,       'trembling'         ,       'conjunctivitis'
     )
     
+    # debug(incidCases)
 
     # get Disease Cases with status "1" (Negative) or "2" (Pending)
     diseaseCases = Disease_Case.objects.filter(~Q(lab_result=0)).filter(date_updated__range=(now()-timedelta(days=120), now())).annotate(
-        high_fever          =F('incid_case__high_fever')        ,
-        loss_appetite       =F('incid_case__loss_appetite')     ,
-        depression          =F('incid_case__depression')        ,
-        lethargic           =F('incid_case__lethargic')         ,
-        constipation        =F('incid_case__constipation')      ,
-        vomit_diarrhea      =F('incid_case__vomit_diarrhea')    ,
-        colored_pigs        =F('incid_case__colored_pigs')      ,
-        skin_lesions        =F('incid_case__skin_lesions')      ,
-        hemorrhages         =F('incid_case__hemorrhages')       ,
-        abn_breathing       =F('incid_case__abn_breathing')     ,
-        discharge_eyesnose  =F('incid_case__discharge_eyesnose'),
-        death_isDays        =F('incid_case__death_isDays')      ,
-        death_isWeek        =F('incid_case__death_isWeek')      ,
-        cough               =F('incid_case__cough')             ,
-        sneeze              =F('incid_case__sneeze')            ,
-        runny_nose          =F('incid_case__runny_nose')        ,
-        waste               =F('incid_case__waste')             ,
-        boar_dec_libido     =F('incid_case__boar_dec_libido')   ,
-        farrow_miscarriage  =F('incid_case__farrow_miscarriage'),
-        weight_loss         =F('incid_case__weight_loss')       ,
-        trembling           =F('incid_case__trembling')         ,
-        conjunctivitis      =F('incid_case__conjunctivitis')
+        high_fever          =F('incid_case__high_fever')        ,       loss_appetite       =F('incid_case__loss_appetite')     ,
+        depression          =F('incid_case__depression')        ,       lethargic           =F('incid_case__lethargic')         ,
+        constipation        =F('incid_case__constipation')      ,       vomit_diarrhea      =F('incid_case__vomit_diarrhea')    ,
+        colored_pigs        =F('incid_case__colored_pigs')      ,       skin_lesions        =F('incid_case__skin_lesions')      ,
+        hemorrhages         =F('incid_case__hemorrhages')       ,       abn_breathing       =F('incid_case__abn_breathing')     ,
+        discharge_eyesnose  =F('incid_case__discharge_eyesnose'),       death_isDays        =F('incid_case__death_isDays')      ,
+        death_isWeek        =F('incid_case__death_isWeek')      ,       cough               =F('incid_case__cough')             ,
+        sneeze              =F('incid_case__sneeze')            ,       runny_nose          =F('incid_case__runny_nose')        ,
+        waste               =F('incid_case__waste')             ,       boar_dec_libido     =F('incid_case__boar_dec_libido')   ,
+        farrow_miscarriage  =F('incid_case__farrow_miscarriage'),       weight_loss         =F('incid_case__weight_loss')       ,
+        trembling           =F('incid_case__trembling')         ,       conjunctivitis      =F('incid_case__conjunctivitis')
     ).values(
-        'incid_case__id'        ,
-        'incid_case__ref_farm_id'       ,
-        'incid_case__num_pigs_affected' ,
-        'lab_result'        ,
-        'lab_ref_no'        ,
-        'high_fever'        ,
-        'loss_appetite'     ,
-        'depression'        ,
-        'lethargic'         ,
-        'constipation'      ,
-        'vomit_diarrhea'    ,
-        'colored_pigs'      ,
-        'skin_lesions'      ,
-        'hemorrhages'       ,
-        'abn_breathing'     ,
-        'discharge_eyesnose',
-        'death_isDays'      ,
-        'death_isWeek'      ,
-        'cough'             ,
-        'sneeze'            ,
-        'runny_nose'        ,
-        'waste'             ,
-        'boar_dec_libido'   ,
-        'farrow_miscarriage',
-        'weight_loss'       ,
-        'trembling'         ,
-        'conjunctivitis'
+        'incid_case__id'                ,        'incid_case__ref_farm_id'       ,        'incid_case__num_pigs_affected' ,        'lab_result'                    ,        
+        'lab_ref_no'                    ,        'high_fever'                    ,        'loss_appetite'                 ,        'depression'                    ,        
+        'lethargic'                     ,        'constipation'                  ,        'vomit_diarrhea'                ,        'colored_pigs'                  ,        
+        'skin_lesions'                  ,        'hemorrhages'                   ,        'abn_breathing'                 ,        'discharge_eyesnose'            ,        
+        'death_isDays'                  ,        'death_isWeek'                  ,        'cough'                         ,        'sneeze'                        ,        
+        'runny_nose'                    ,        'waste'                         ,        'boar_dec_libido'               ,        'farrow_miscarriage'            ,        
+        'weight_loss'                   ,        'trembling'                     ,        'conjunctivitis'
     )
-
-
-    # testQry = Hog_Symptoms.objects.values(
-    #     'ref_farm__num_pens'
-    # ).filter(id=1)
-
-    # debug(diseaseQry)
 
     for case in incidCases:
         currCase = [key for key, val in case.items() if val and key not in ['id', 'ref_farm_id', 'num_pigs_affected']]
@@ -794,6 +737,7 @@ def dashboard_SusCases():
             diseaseInfo['PED']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
             diseaseInfo['PED']['hogs_total'] += case['num_pigs_affected']
     
+    # debug(diseaseInfo)
 
     for dcase in diseaseCases:
         dcurrCase = [key for key, val in dcase.items() if val and key not in ['incid_case__id', 'incid_case__ref_farm_id', 'incid_case__num_pigs_affected', 'lab_result', 'lab_ref_no']]
@@ -864,6 +808,39 @@ def dashboard_SusCases():
                 })
             diseaseInfo['PED']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
-    debug(diseaseInfo)
+    # debug(diseaseInfo)
 
     return diseaseInfo
+
+def submitLabReport(request, lab_ref):
+    """
+    AJAX POST. Accept inputs to create a disease case from an incident case
+    """
+
+    if request.method == 'POST':
+        debug(request.POST)
+        lab_ref_no = lab_ref
+        diseaase_name = request.POST.get("disease_name")
+        incid_id = request.POST.get("incid_id")
+        lab_result = request.POST.get("lab_result")
+        date_updated = datetime.now(timezone.utc)
+        
+        try:
+            # save disease case
+            Disease_Case(
+                disease_name    = diseaase_name,
+                lab_result      = lab_result,
+                lab_ref_no      = lab_ref_no,
+                date_updated    = date_updated,
+                incid_case_id   = incid_id 
+            ).save()
+            # resolve incident case
+            Hog_Symptoms.objects.filter(id=incid_id).update(report_status="Resolved")
+            # success response
+            return HttpResponse(status=200)
+        except:
+            # error response
+            return HttpResponse(status=500)
+
+
+        
