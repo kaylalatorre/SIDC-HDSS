@@ -259,9 +259,9 @@ class Mortality(models.Model):
                             ('Unknown', 'Unknown')]
     
     source              = models.CharField(null=True, blank=True, max_length=50, choices=SOURCE_CHOICES)
+    case_no             = models.IntegerField(null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
-    incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     mortality_form      = models.ForeignKey('Mortality_Form', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
 
 
