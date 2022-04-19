@@ -19,6 +19,15 @@ $(document).ready(async function () {
                 },
             })
         }
+
+        // SERID for ASF
+        if($('#dm-seird-asf').length) {
+            Highcharts.chart('dm-seird-asf', {
+                chart: {
+                    type: 'spline'
+                },
+            })
+        }
         
     }
 })
