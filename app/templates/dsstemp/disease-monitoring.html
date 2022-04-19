@@ -1,0 +1,79 @@
+<section>
+    <div class="flex">
+        <!-- Other Charts -->
+        <div class="container-scroll flex-item" style="margin-right: 16px; width: 30%!important">
+            <section>
+                <h3>Confirmed cases per Disease</h3>
+                <div class="box-style-chart" id="dm-confirmed-per" style="width: 100%; height: 300px">
+                    <!-- Data handled in disease-monitoring.js -->
+                </div>
+            </section>
+            <section>
+                <h3>Mortalities per Disease</h3>
+                <div class="box-style-chart" id="dm-mortality-per" style="width: 100%; height: 300px;">
+                    <!-- Data handled in disease-monitoring.js -->
+                </div>
+            </section>
+        </div>
+        <!-- SEIRD Output -->
+        <div class="flex-item">
+            <h3>SEIRD Output</h3>
+            <div class="box-style">
+                <!-- SERID Chart -->
+                <div class="d-flex align-items-start">
+                    <!-- Disease Tabs -->
+                    <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="width: 30%">
+                        <button class="nav-link active" id="v-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-asf" type="button" role="tab" aria-controls="v-pills-asf" aria-selected="true">
+                            <div class="disease-info">
+                                <p class="di-disease">African swine fever (ASF)</p>
+                                <h3 class="di-no-affected {% if susCases.ASF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.ASF.hogs }}</h3>
+                            </div>
+                        </button>
+                        <button class="nav-link" id="v-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-csf" type="button" role="tab" aria-controls="v-pills-csf" aria-selected="false">
+                            <div class="disease-info">
+                                <p class="di-disease">Clinical swine fever (CSF)</p>
+                                <h3 class="di-no-affected {% if susCases.CSF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.CSF.hogs }}</h3>
+                            </div>
+                        </button>
+                        <button class="nav-link" id="v-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#v-pills-iav" type="button" role="tab" aria-controls="v-pills-iav" aria-selected="false">
+                            <div class="disease-info">
+                                <p class="di-disease">Swine influenza (IAV-S)</p>
+                                <h3 class="di-no-affected {% if susCases.IAVS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.IAVS.hogs }}</h3>
+                            </div>
+                        </button>
+                        <button class="nav-link" id="v-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#v-pills-adv" type="button" role="tab" aria-controls="v-pills-adv" aria-selected="false">
+                            <div class="disease-info">
+                                <p class="di-disease">Pseudorabies (ADV)</p>
+                                <h3 class="di-no-affected {% if susCases.ADV.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.ADV.hogs }}</h3>
+                            </div>
+                        </button>
+                        <button class="nav-link" id="v-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prrs" type="button" role="tab" aria-controls="v-pills-prrs" aria-selected="false">
+                            <div class="disease-info">
+                                <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
+                                <h3 class="di-no-affected {% if susCases.PRRS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PRRS.hogs }}</h3>
+                            </div>
+                        </button>
+                        <button class="nav-link" id="v-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ped" type="button" role="tab" aria-controls="v-pills-ped" aria-selected="false">
+                            <div class="disease-info">
+                                <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
+                                <h3 class="di-no-affected {% if susCases.PED.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs }}</h3>
+                            </div>
+                        </button>
+                    </div>
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
+                        <h3>Set Parameters</h3>
+                        <div>
+                            // INPUT THINGIES HERE
+                        </div>
+                        <hr>
+                        // SEIRD CHART
+                        <div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

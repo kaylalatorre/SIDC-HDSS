@@ -1,120 +1,8 @@
 <!-- Active Incidents, Mortality, Symptoms Observed -->
 <section>
     <div class="flex">
-         
-         <div class="flex-item">
-             <!-- Tentative Diagnosis --> 
-            <div class="flex">
-                <h3 style="padding-right: 8px">Tentative Diagnosis</h3><p style="margin-bottom: 8px;">(Suspected disease cases based on reported symptoms only.)</p>
-            </div>
-            <div class="d-flex align-items-start box-style">
-                <!-- Disease Tabs -->
-                <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="width: 30%">
-                    <button class="nav-link active" id="v-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-asf" type="button" role="tab" aria-controls="v-pills-asf" aria-selected="true">
-                        <div class="disease-info">
-                            <p class="di-disease">African swine fever (ASF)</p>
-                            <h3 class="di-no-affected {% if susCases.ASF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.ASF.hogs }}</h3>
-                        </div>
-                    </button>
-                    <button class="nav-link" id="v-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-csf" type="button" role="tab" aria-controls="v-pills-csf" aria-selected="false">
-                        <div class="disease-info">
-                            <p class="di-disease">Clinical swine fever (CSF)</p>
-                            <h3 class="di-no-affected {% if susCases.CSF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.CSF.hogs }}</h3>
-                        </div>
-                    </button>
-                    <button class="nav-link" id="v-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#v-pills-iav" type="button" role="tab" aria-controls="v-pills-iav" aria-selected="false">
-                        <div class="disease-info">
-                            <p class="di-disease">Swine influenza (IAV-S)</p>
-                            <h3 class="di-no-affected {% if susCases.IAVS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.IAVS.hogs }}</h3>
-                        </div>
-                    </button>
-                    <button class="nav-link" id="v-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#v-pills-adv" type="button" role="tab" aria-controls="v-pills-adv" aria-selected="false">
-                        <div class="disease-info">
-                            <p class="di-disease">Pseudorabies (ADV)</p>
-                            <h3 class="di-no-affected {% if susCases.ADV.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.ADV.hogs }}</h3>
-                        </div>
-                    </button>
-                    <button class="nav-link" id="v-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prrs" type="button" role="tab" aria-controls="v-pills-prrs" aria-selected="false">
-                        <div class="disease-info">
-                            <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
-                            <h3 class="di-no-affected {% if susCases.PRRS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PRRS.hogs }}</h3>
-                        </div>
-                    </button>
-                    <button class="nav-link" id="v-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ped" type="button" role="tab" aria-controls="v-pills-ped" aria-selected="false">
-                        <div class="disease-info">
-                            <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
-                            <h3 class="di-no-affected {% if susCases.PED.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs }}</h3>
-                        </div>
-                    </button>
-                </div>
-                <!-- Tab Content -->
-                <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Incident Involved</th>
-                                <th>Farm Affected</th>
-                                <th>No. of Pigs Affected</th>
-                                <th width="20%">Symptoms</th>
-                                <th width="25%">Result</th> 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td data-label="Incident Involved"> 002 </td>
-                                <td data-label="Farm Affected"> 008 </td>
-                                <td data-label="No. of Pigs Affected"> 7 </td>
-                                <td data-label="Symptoms"> 
-                                    <ul class="ul-symptoms">
-                                        <li class="li-symptoms"> symptom 1 </li>
-                                    </ul>
-                                </td>
-                                <td data-label="Confirmed">
-                                    <!-- default - input button -->
-                                    <div class="flex">
-                                        <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
-                                    </div>
-                                    
-                                    <!-- hidden result display -->
-                                    <div class="hide">
-                                        <p>Result: Negative</p> 
-                                        <p>Laboratory Reference: 01293829</p> 
-                                    </div>
-                                    
-                                    <!-- hidden reference form -->
-                                    <div class="box-style diagnosis-result-ref hide">
-                                        <form>
-                                            <label class="bold-lbl">Laboratory Result</label> <br>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                                                <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                                                <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                            </div>
-                                            
-                                            <label class="bold-lbl">Laboratory Reference</label> <br>
-                                            <input type="text" required class="form-control" id="input-reference" placeholder="ex. 001232">
-                                    
-                                            <div class="flex" style="margin-top: 8px">
-                                                <button class="secondary-btn" type="submit" id="submit-reference" style="margin-right: 4px">Submit</button>
-                                                <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </td>
-                                
-                            </tr>
-            
-                        </tbody>
-                    </table>
-              
-                </div>
-            </div>
-        </div>
         <!-- Charts -->
-        <div class="flex-item container-scroll" style="width: 35%!important">
+        <div class="flex-item container-scroll" style="margin-right: 16px; width: 30%!important">
             <div class="info-scroll">
                 <section>
                     <h3>Symptoms Reported</h3>
@@ -136,7 +24,117 @@
                 </section>
             </div>                  
         </div>
-       
+        <!-- Tentative Diagnosis --> 
+        <div class="flex-item">
+            <div class="flex">
+                <h3 style="padding-right: 8px">Tentative Diagnosis</h3><p style="margin-bottom: 8px;">(Suspected disease cases based on reported symptoms only.)</p>
+            </div>
+            <div class="d-flex align-items-start box-style">
+               <!-- Disease Tabs -->
+               <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="width: 30%">
+                   <button class="nav-link active" id="v-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-asf" type="button" role="tab" aria-controls="v-pills-asf" aria-selected="true">
+                       <div class="disease-info">
+                           <p class="di-disease">African swine fever (ASF)</p>
+                           <h3 class="di-no-affected {% if susCases.ASF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.ASF.hogs }}</h3>
+                       </div>
+                   </button>
+                   <button class="nav-link" id="v-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#v-pills-csf" type="button" role="tab" aria-controls="v-pills-csf" aria-selected="false">
+                       <div class="disease-info">
+                           <p class="di-disease">Clinical swine fever (CSF)</p>
+                           <h3 class="di-no-affected {% if susCases.CSF.hogs > 0 %} txt-negative {% endif %}">{{ susCases.CSF.hogs }}</h3>
+                       </div>
+                   </button>
+                   <button class="nav-link" id="v-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#v-pills-iav" type="button" role="tab" aria-controls="v-pills-iav" aria-selected="false">
+                       <div class="disease-info">
+                           <p class="di-disease">Swine influenza (IAV-S)</p>
+                           <h3 class="di-no-affected {% if susCases.IAVS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.IAVS.hogs }}</h3>
+                       </div>
+                   </button>
+                   <button class="nav-link" id="v-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#v-pills-adv" type="button" role="tab" aria-controls="v-pills-adv" aria-selected="false">
+                       <div class="disease-info">
+                           <p class="di-disease">Pseudorabies (ADV)</p>
+                           <h3 class="di-no-affected {% if susCases.ADV.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.ADV.hogs }}</h3>
+                       </div>
+                   </button>
+                   <button class="nav-link" id="v-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#v-pills-prrs" type="button" role="tab" aria-controls="v-pills-prrs" aria-selected="false">
+                       <div class="disease-info">
+                           <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
+                           <h3 class="di-no-affected {% if susCases.PRRS.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PRRS.hogs }}</h3>
+                       </div>
+                   </button>
+                   <button class="nav-link" id="v-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#v-pills-ped" type="button" role="tab" aria-controls="v-pills-ped" aria-selected="false">
+                       <div class="disease-info">
+                           <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
+                           <h3 class="di-no-affected {% if susCases.PED.hogs > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs }}</h3>
+                       </div>
+                   </button>
+               </div>
+               <!-- Tab Content -->
+               <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
+                   <table class="table">
+                       <thead>
+                           <tr>
+                               <th>Incident Involved</th>
+                               <th>Farm Affected</th>
+                               <th>No. of Pigs Affected</th>
+                               <th width="20%">Symptoms</th>
+                               <th width="25%">Result</th> 
+                           </tr>
+                       </thead>
+                       <tbody>
+                           <tr>
+                               <td data-label="Incident Involved"> 002 </td>
+                               <td data-label="Farm Affected"> 008 </td>
+                               <td data-label="No. of Pigs Affected"> 7 </td>
+                               <td data-label="Symptoms"> 
+                                   <ul class="ul-symptoms">
+                                       <li class="li-symptoms"> symptom 1 </li>
+                                   </ul>
+                               </td>
+                               <td data-label="Confirmed">
+                                   <!-- default - input button -->
+                                   <div class="flex">
+                                       <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                   </div>
+                                   
+                                   <!-- hidden result display -->
+                                   <div class="hide">
+                                       <p>Result: Negative</p> 
+                                       <p>Laboratory Reference: 01293829</p> 
+                                   </div>
+                                   
+                                   <!-- hidden reference form -->
+                                   <div class="box-style diagnosis-result-ref hide">
+                                       <form>
+                                           <label class="bold-lbl">Laboratory Result</label> <br>
+                                           <div class="form-check form-check-inline">
+                                               <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                               <label class="form-check-label" for="inlineRadio1">Positive</label>
+                                           </div>
+                                           <div class="form-check form-check-inline">
+                                               <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                               <label class="form-check-label" for="inlineRadio2">Negative</label>
+                                           </div>
+                                           
+                                           <label class="bold-lbl">Laboratory Reference</label> <br>
+                                           <input type="text" required class="form-control" id="input-reference" placeholder="ex. 001232">
+                                   
+                                           <div class="flex" style="margin-top: 8px">
+                                               <button class="secondary-btn" type="submit" id="submit-reference" style="margin-right: 4px">Submit</button>
+                                               <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                           </div>
+                                       </form>
+                                   </div>
+                               </td>
+                               
+                           </tr>
+           
+                       </tbody>
+                   </table>
+             
+               </div>
+           </div>
+        </div>
         
     </div>      
 </section>
