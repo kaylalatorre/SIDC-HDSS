@@ -74,20 +74,14 @@
                     <li class="nav-item" id="nav-ib" onclick="active('nav-ib')"><a href="/int-biosecurity">Internal Biosecurity</a></li>
                     <li class="nav-item" id="nav-eb" onclick="active('nav-eb')"><a href="/ext-biosecurity">External Biosecurity</a></li>
                     <li class="nav-item" id="nav-hw" onclick="active('nav-hw')"><a href="/hogs-mortality">Hogs Mortality</a></li>
+                    <li class="nav-item" id="nav-sm" onclick="active('nav-sm')"><a href="/symptoms-monitoring">Symptoms Monitoring</a></li>
                 </ul>
             </li>
-            <li class="nav-item nav-menu" id="nav-analytics">
-                <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-analyse' ></i>
-                        <span class="link-name">Analytics</span>
-                    </a> 
-                    <i class='bx bx-chevron-down arrow' ></i>
-                </div>
-                <ul class="sub-menu">
-                    <li class="nav-item" id="nav-dm" onclick="active('nav-dm')"><a href="/disease-monitoring">Disease Monitoring</a></li>
-                    <li class="nav-item" id="nav-ar" onclick="active('nav-ar')"><a href="">Action Recommendation</a></li>
-                </ul>
+            <li class="nav-item" id="nav-ar" onclick="active('nav-ar')">
+                <a href="/action-recommendation">
+                    <i class='bx bx-analyse' ></i>
+                    <span class="link-name">Action Recommendation</span>
+                </a>
             </li>
         </ul>
             {% endif %}
