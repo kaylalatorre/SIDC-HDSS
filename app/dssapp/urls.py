@@ -4,7 +4,10 @@ from . import views
 # Disease Monitoring Module URLS
 
 urlpatterns = [
-    # dashboard
+    # dashboard - symptoms monitoring
+    path('submit-lab-report/<int:lab_ref>', views.submitLabReport, name="submitLabReport"),
+
+    # dashboard - disease monitoring
     path('disease-dashboard', views.diseaseDashboard, name="diseaseDashboard"),
     
     # action rec

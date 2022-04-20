@@ -80,23 +80,20 @@ def compute_MortRate(farmID, mortalityID):
             total_pigs += pen.num_heads
 
         # Get latest Mortality record of the Farm (w Pigpen filter)
-        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).order_by('-mortality_date')
+        # mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).values("num_toDate").order_by('-mortality_date').first()
+        mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPP.id).values("num_toDate").last()
 
         mortality_rate = 0
-        toDate = 0
 
         if mortQry is not None:
-            for m in mortQry:
-                toDate += m.num_today
-
-            mortality_rate = (toDate / total_pigs) * 100
+            mortality_rate = (mortQry.get("num_toDate") / total_pigs) * 100
     
     # compute mortality % with the given mortalityID
     if mortalityID is not None:
         mortObj = Mortality.objects.filter(id=mortalityID).first()
 
         if mortObj is not None:
-            mortality_rate = (mortObj.num_today / mortObj.num_begInv) * 100
+            mortality_rate = (mortObj.num_toDate / mortObj.num_begInv) * 100
 
     return round(mortality_rate, 2)
 
@@ -346,7 +343,7 @@ def selectedHogsHealth(request, farmID):
 
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = []
@@ -505,7 +502,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
 
     # (3.1) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -727,7 +724,7 @@ def selectedHealthSymptoms(request, farmID):
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=latestPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -855,7 +852,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
 
     # (2) Mortality Records
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=selectedPigpen.id).select_related(
-                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-mortality_date").all()
+                    'mortality_form').annotate(series=F("mortality_form__series")).order_by("-id").all()
 
     mortality_rate = 0
     mRateList = [] 
@@ -1102,6 +1099,10 @@ def addMortality(request, farmID):
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
 
+    # get last mortality record
+    mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
+    num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
+
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
         # print(request.POST)
@@ -1136,6 +1137,8 @@ def addMortality(request, farmID):
 
             # pass all objects in mortalityList into Mortality model
             x = 0
+            toDate = int(mortQry.get("num_toDate"))
+            
             for mort in mortalityList:
                 mort = mortalityList[x]
 
@@ -1143,9 +1146,9 @@ def addMortality(request, farmID):
                 mortality = Mortality.objects.create(
                     ref_farm = farmQuery,
                     mortality_date = mort['mortality_date'],
-                    num_begInv = farmQuery.total_pigs,
+                    num_begInv = num_begInv,
                     num_today = mort['num_today'],
-                    num_toDate = farmQuery.total_pigs - int(mort['num_today']),
+                    num_toDate = toDate + int(mort['num_today']),
                     incid_case_id = mort['incid_case'],
                     remarks = mort['remarks'],
                     mortality_form_id = mortality_form.id
@@ -1156,6 +1159,7 @@ def addMortality(request, farmID):
                 # print(str(mortality))
                 mortality.save()
                 x += 1
+                toDate += int(mort['num_today'])
 
             # update last_updated of farm
             farmQuery.last_updated = datetime.now(timezone.utc)
@@ -1177,7 +1181,7 @@ def addMortality(request, farmID):
         mortalityForm = MortalityForm()
     
     return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm,
-                                                                'num_begInv' : farmQuery.total_pigs, 'incid_cases' : incidQry})
+                                                                'num_begInv' : num_begInv, 'incid_cases' : incidQry, 'latest_toDate' : mortQry.get("num_toDate")})
 
 
 def addWeight(request, farmID):
@@ -1505,53 +1509,7 @@ def weightRange(request):
     For loading data for Highcharts (weight range)
     """
 
-
-    """
-    kimi's suggestion for formatting data hek or something // logic na 'di sure // i'll delete this when i code again
-
-    NOTE: Suggested this in accordance to how data is formatted dun sa highcharts, as long
-    as nakukuha niyo data, i can format it and loop it properly sa weight-range.js file.
-    
-    NOTE: IF EVER iba naisip niyong process/logic, okay lang, but refer to the weight-range.js file for the data
-    format for the main series and the drilldown series.  
-
-    NOTE: (Question) Dapat ba within the last month 'yung chart? or all time?
-
-    1. declare empty array (dict?) again for series (like weightSeries = [])
-    2. get all areas again
-
-
-    --- main series ---
-    3. gawa ng tatlong array (one for each weight range)
-    4. while looping through each area, count all fattener hogs within range
-            ---> pwede kunin lahat ng hog_weight na connected sa mga farm fattener slips (it FK-ed)
-                    then kunin ang area ? maybe may simpler way hehe
-    5. store data in an array pwedeng ---> weightRange[areaName][count]
-    6. store these three arrays into a mainSeries[] or something like that
-
-
-    --- drilldown series ---
-    NOTE: I think for this one, inevitable na maraming array/object/something pero baka
-    may better way kayong maisip !
-
-    7. loop through each area and count all fattener hogs within range
-            ---> start with lowest range first
-    8. store data in an array, like farmCount[farmID][count]
-    9. store each farmCount array in another array (to collect all farms and their count per area per range)
-            ---> areaRange[] or something
-    10. store areaRange into a drilldownSeries[] or something 
-
-
-    11. append both mainSeries and drilldownSeries into weightSeries[]
-            ---> OR SKIP weightSeries[] altogether and just :
-                    data.append(mainSeries)
-                    data.append(drilldownSeries)
-    """
-
-
     if request.method == 'POST':
-
-        data = []
 
         weightSeries = []
         
@@ -1632,6 +1590,6 @@ def weightRange(request):
                                 [count_ceil, list(farm_ceilDict.items())]
                                 ])
 
-        debug(weightSeries)
+        # debug(weightSeries)
 
-    return JsonResponse(data, safe=False)
+    return JsonResponse(weightSeries, safe=False)
