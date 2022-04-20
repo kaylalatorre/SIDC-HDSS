@@ -78,6 +78,6 @@ textarea {
     }
 }
 
-.activity-input, .mortality-input, .pigpen-input, .weight-input {
+.activity-input, .mortality-input, .pigpen-input, .weight-input, .incident-case, .disease-case {
     display: none;
 }

@@ -237,7 +237,12 @@ class MortalityForm(ModelForm):
             'class' : 'form-control num_today',
             'placeholder' : 'ex. 20',
             'min' : '1',
-        })      
+        })
+        # self.fields['source'].widget.attrs.update({
+        #    'select class' : 'form-select',
+        #    'id' : 'source',
+        #    'style' : 'margin-bottom: 0',
+        # })      
         self.fields['remarks'].widget.attrs.update({
             'type' : 'text', 
             'class' : 'form-control',
