@@ -347,7 +347,7 @@ def selectedHogsHealth(request, farmID):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -503,7 +503,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -722,7 +722,7 @@ def selectedHealthSymptoms(request, farmID):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -850,7 +850,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -1086,7 +1086,7 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
-    print(incidQry)
+    # print(incidQry)
     
     # get all disease cases for the farm
     disCases = []
@@ -1096,6 +1096,8 @@ def addMortality(request, farmID):
         if disQry:
             for dis in disQry:
                 disCases.append(dis['id'])
+        else: 
+            disCases.append(None)
 
 
     # get last mortality record
@@ -1111,7 +1113,7 @@ def addMortality(request, farmID):
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
-        print(request.POST)
+        # print(request.POST)
 
         mortalityForm = MortalityForm(request.POST)
 
@@ -1147,23 +1149,6 @@ def addMortality(request, farmID):
             for mort in mortalityList:
                 mort = mortalityList[x]
 
-                # assign incident case value
-                if mort['source'] == 'Incident Case' :
-                    incid_case = mort['case']
-
-                elif mort['source'] == 'Disease Case' :
-                    # get FK of disease case selected
-                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').annotate(
-                                 caseID = F('incid_case__id')).values('caseID')
-                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').first()
-                    
-                    print(disQry.incid_case.id)
-
-                    incid_case = disQry.incid_case.id
-
-                else :
-                    incid_case = None
-
                 # create new instance of Mortality model
                 mortality = Mortality.objects.create(
                     ref_farm = farmQuery,
@@ -1172,8 +1157,8 @@ def addMortality(request, farmID):
                     num_today = mort['num_today'],
                     num_toDate = latest_toDate + int(mort['num_today']),
                     source = mort['source'],
+                    case_no = mort['case'],
                     remarks = mort['remarks'],
-                    incid_case_id = incid_case,
                     mortality_form_id = mortality_form.id
                 )
 
