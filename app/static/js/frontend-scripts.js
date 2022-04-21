@@ -483,7 +483,7 @@ function addActivityRow() {
     const trip_type = document.getElementById('trip_type').innerHTML;
     const time_arrival = document.getElementById('time_arrival').innerHTML;
     const time_departure = document.getElementById('time_departure').innerHTML;
-    const act_no_pigs = document.getElementById('act_no_pigs').innerHTML;
+    const num_pigs_inv = document.getElementById('num_pigs_inv').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#activity-table").append("<tr> \
@@ -491,7 +491,7 @@ function addActivityRow() {
         <td data-label='Date'> " + date + " </td> \
         <td data-label='Arrival Time'> " + time_arrival + " </td> \
         <td data-label='Departure Time'> " + time_departure + " </td> \
-        <td data-label='No. of Pigs Involved'> " + act_no_pigs + " </td> \
+        <td data-label='Num Pigs Involved'> " + num_pigs_inv + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-activity-row' type='button' onclick='removeActivityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
@@ -938,11 +938,11 @@ function computeMortality(currRow){
     var toDate = row.getElementsByClassName('num_toDate')[0];
 
     // console.log("begInv: " + String(begInv));
-    console.log("today: " + String(today));
-    console.log(latest_toDate);
+    // console.log("today: " + String(today));
+    // console.log(latest_toDate);
 
     var newTotal = parseInt(today) + parseInt(latest_toDate); 
-    console.log(newTotal);    
+    // console.log(newTotal);    
 
     toDate.innerHTML = String(newTotal);
     // console.log("toDate: " + String(toDate));
@@ -989,4 +989,53 @@ function computeMortality(currRow){
 
     totalVal.innerText = total.toFixed(2);
     averageVal.innerText = average.toFixed(2);
+}
+
+/**
+ *  Switches the options in add-mortality cases depending on selected source
+ *  Will hide and display the corresponding incident or diseases cases
+  * @param {*} caseVal = value of selected radio button (source) 
+ */
+function switchMortCase(caseVal){
+    // var row = caseVal.parentNode.parentNode.parentNode; //get row of radio button set
+    var row = caseVal.parentNode.parentNode; //get row of radio button set
+    // console.log(row);
+    // console.log(row.rowIndex);
+
+
+    var incidCase = row.getElementsByClassName("incident-case");
+    var disCase = row.getElementsByClassName("disease-case");
+    var dropDown = row.getElementsByClassName("case_no").firstElementChild;
+
+    // console.log(caseVal.value);
+    // console.log(dropDown);
+
+    if(String(caseVal.value) === "Incident Case") {
+        for(i = 0; i < disCase.length; i++)
+            disCase[i].style.display = "none";
+    
+        for(j = 0; j < disCase.length; j++)
+            incidCase[j].style.display = "block";
+
+        // dropDown.selectedIndex = 0;
+    }
+    else if(String(caseVal.value) === "Disease Case") {
+        for(i = 0; i < disCase.length; i++)
+            disCase[i].style.display = "block";
+    
+        for(j = 0; j < disCase.length; j++)
+            incidCase[j].style.display = "none";
+
+        // dropDown.selectedIndex = 0;
+    }
+    else { // chosen source is unknown, hide all cases
+        for(i = 0; i < disCase.length; i++)
+            disCase[i].style.display = "none";
+    
+        for(j = 0; j < disCase.length; j++)
+            incidCase[j].style.display = "none";
+
+        // dropDown.selectedIndex = 0;
+    }
+    
 }

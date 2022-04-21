@@ -58,26 +58,34 @@
                             <td data-label="Today" id="today" onchange="computeMortality(this)"> {{mortalityForm.num_today}} </td>
                             <td data-label="To Date"> <p class="num_toDate">-</p> </td>
                             <td data-label="Mortality Rate"> <p class="mortality_rate">-</p> </td>
-                            <td data-label="Source" id="source"> 
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case">
+                            <td data-label="Source" id="source">
+                                <select class="form-select" id="input-source" name="source" onchange="switchMortCase(this)">
+                                    <option hidden>- - -</option>
+                                    <option value="Incident Case">Incident Case</option>
+                                    <option value="Disease Case">Disease Case</option>
+                                    <option value="Unknown">Unknown</option>
+                                </select> 
+                                <!-- <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case" onclick="switchMortCase(this)">
                                     <label class="form-check-label" for="src-incident">Incident Case</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case" onclick="switchMortCase(this)">
                                     <label class="form-check-label" for="src-disease">Disease Case</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown">
+                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown" onclick="switchMortCase(this)">
                                     <label class="form-check-label" for="src-unknown">Unknown</label>
-                                </div>
+                                </div> -->
                             </td>
-                            <td data-label="Case No." id="case_no"> 
-                                <!-- Dropdown content will depend on which source is selected -->
-                                <select class="form-select" id="input-case" name="input-case">
-                                    <option></option>
-                                    {% for case in incid_cases %}
-                                    <option>{{case.id}}</option>
+                            <td data-label="Case No." id="case_no" class="case_no" > 
+                                <select class="form-select" id="input-case" name="case">
+                                    <option hidden>- - -</option>
+                                    {% for icase in incid_cases %}
+                                    <option class="incident-case">{{icase.id}}</option>
+                                    {% endfor %}
+                                    {% for dcase in dis_cases %}
+                                    <option class="disease-case">{{dcase}}</option>
                                     {% endfor %}
                                 </select>
                             </td>
