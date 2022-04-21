@@ -369,7 +369,7 @@ def checkDiseaseList(s):
     return diseaseList
 
 
-def diseaseMonitoring(request):
+def symptomsMonitoring(request):
     """
     Gets all Incident (Hog_Symptoms) records within existing dates and all Areas due to no selected filters in dropdown
 
@@ -452,7 +452,7 @@ def diseaseMonitoring(request):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
-    return render(request, 'dsstemp/rep-disease-monitoring.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
+    return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
                                                                     "areaList": areaQry, "incident_symptomsList": incident_symptomsList,
                                                                     "total_pigs_affect": total_pigs_affect})
 
@@ -758,8 +758,7 @@ def dashboard_SusCases():
         # check for cases with no exact disease diagnosis
         if none_ctr == 6:
              diseaseInfo['Others']['diseaseList'].append({'incid_id': case['id'], 'farm_id': case['ref_farm_id'], 'hogs_affect': case['num_pigs_affected'], 'symptoms': currCase})
-            
-    
+
     # debug(diseaseInfo)
 
     for dcase in diseaseCases:
@@ -865,5 +864,5 @@ def submitLabReport(request, lab_ref):
             # error response
             return HttpResponse(status=500)
 
-
-        
+def actionRecommendation(request):
+    return render(request, 'dsstemp/action-rec.html')
