@@ -133,6 +133,7 @@ class Hog_Raiser(models.Model):
     fname               = models.CharField(max_length=50)
     lname               = models.CharField(max_length=50)
     contact_no          = models.CharField(max_length=12)
+    mem_code            = models.IntegerField(null=True, unique=True)
 
 
 # AREA Table

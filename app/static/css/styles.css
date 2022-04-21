@@ -107,12 +107,46 @@ ul .li-symptoms { list-style: circle!important;}
 
 .heading .box-style .input-group { width: 40%!important; }
 
+.grey-container {
+    background-color: #F1f1f1;
+    padding: 16px;
+}
+
+.white-container {
+    background-color: #F9f9f9;
+    padding: 16px;
+}
+
 .container-scroll {
     max-height: 80vh;
-    width: 300px;
+    width: 100%;
     background-color: #F1f1f1;
     padding: 16px;
 
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
+.tab-content-scroll {
+    height: 37vh;
+    width: 100%;
+    
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
+.filter-scroll {
+    max-height: 20vh;
+    width: 200px;
+
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
+.scroll {
     /* Enable scrolling */
     overflow: hidden;
     overflow-y: scroll; 

@@ -55,7 +55,7 @@
                 {% for farm in farmList %}
                 <tr class="health-row">
                     <td data-label="Farm Code">{{ farm.code|stringformat:"03d" }}</td>
-                    <td data-label="Raiser">{{ farm.raiser }}</td>
+                    <td data-label="Raiser">{{ farm.raiser }} ({{ farm.r_mem_code }})</td>
                     <td data-label="Area">{{ farm.area }}</td>
                     <td data-label="No. of Pigs">{{ farm.pigs }}</td>
                     {% if farm.ave_startWeight != 0.0 %}
