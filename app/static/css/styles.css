@@ -128,10 +128,25 @@ ul .li-symptoms { list-style: circle!important;}
     overflow-y: scroll; 
 }
 
+.tab-content-scroll {
+    height: 37vh;
+    width: 100%;
+    
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
 .filter-scroll {
     max-height: 20vh;
     width: 200px;
 
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
+.scroll {
     /* Enable scrolling */
     overflow: hidden;
     overflow-y: scroll; 
