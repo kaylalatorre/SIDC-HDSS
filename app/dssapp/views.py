@@ -352,7 +352,7 @@ def checkDiseaseList(s):
         diseaseList.append("ASF")
 
     if all(symp_CSF):
-        diseaseList.append("ASF")
+        diseaseList.append("CSF")
 
     if all(symp_IAVS):
         diseaseList.append("IAV-S")
@@ -452,13 +452,75 @@ def symptomsMonitoring(request):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
+    diseaseInfo = {
+        'ASF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'CSF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'IAVS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'ADV':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'PRRS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'PED':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'Others':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+    }
+
+    for case,symptoms,diseaseList in incident_symptomsList:
+        none_ctr = 0
+        incidID = case['id']
+        incidID = "{id:03}".format(id = incidID)
+
+        if "ASF" in diseaseList:
+            diseaseInfo['ASF']['num_cases'] += 1
+            diseaseInfo['ASF']['incidList'].append(incidID)
+            diseaseInfo['ASF']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "CSF" in diseaseList:
+            diseaseInfo['CSF']['num_cases'] += 1
+            diseaseInfo['CSF']['incidList'].append(incidID)
+            diseaseInfo['CSF']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "IAV-S" in diseaseList:
+            diseaseInfo['IAVS']['num_cases'] += 1
+            diseaseInfo['IAVS']['incidList'].append(incidID)
+            diseaseInfo['IAVS']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "ADV" in diseaseList:
+            diseaseInfo['ADV']['num_cases'] += 1
+            diseaseInfo['ADV']['incidList'].append(incidID)
+            diseaseInfo['ADV']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "PRRS" in diseaseList:
+            diseaseInfo['PRRS']['num_cases'] += 1
+            diseaseInfo['PRRS']['incidList'].append(incidID)
+            diseaseInfo['PRRS']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "PED" in diseaseList:
+            diseaseInfo['PED']['num_cases'] += 1
+            diseaseInfo['PED']['incidList'].append(incidID)
+            diseaseInfo['PED']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if none_ctr == 6:
+            diseaseInfo['Others']['num_cases'] += 1
+            diseaseInfo['Others']['incidList'].append(incidID)
+            diseaseInfo['Others']['hogs_total'] += case['num_pigs_affected']
+
+
+    # combine the 2 previous queries into 1 temporary list
+    incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
+
+    debug(diseaseInfo)
+
     return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
                                                                     "areaList": areaQry, "incident_symptomsList": incident_symptomsList,
-                                                                    "total_pigs_affect": total_pigs_affect})
+                                                                    "total_pigs_affect": total_pigs_affect, "susCases": diseaseInfo})
 
 
 def filter_incidentRep(request, startDate, endDate, areaName):
-    # debug("TEST LOG: in filter_mortalityRep/n")
+    debug("TEST LOG: in filter_incidentRep/n")
 
     """
     Gets all Incident (Hog_Symptoms) records based on (1) date range and (2) area name.
@@ -509,7 +571,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
 
         if not incidQry.exists(): # (ERROR) No Disease records found.
             messages.error(request, "No Disease records found.", extra_tags="disease-report")
-            return render(request, 'dsstemp/rep-disease-monitoring.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
+            return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
 
 
         incidList = []
@@ -571,7 +633,7 @@ def filter_incidentRep(request, startDate, endDate, areaName):
 
         if not incidQry.exists(): # (ERROR) No Disease records found.
             messages.error(request, "No Disease records found.", extra_tags="disease-report")
-            return render(request, 'dsstemp/rep-disease-monitoring.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
+            return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"areaName": areaName,"isFiltered": isFiltered,'areaList': areaQry,'dateStart': sDate,'dateEnd': truEndDate})
 
         incidList = []
         total_pigs_affect = 0
@@ -624,11 +686,72 @@ def filter_incidentRep(request, startDate, endDate, areaName):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
+    diseaseInfo = {
+        'ASF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'CSF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'IAVS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'ADV':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'PRRS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'PED':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'Others':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+    }
 
-    return render(request, 'dsstemp/rep-disease-monitoring.html', {"isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
+    for case,symptoms,diseaseList in incident_symptomsList:
+        none_ctr = 0
+        incidID = case['id']
+        incidID = "{id:03}".format(id = incidID)
+
+        if "ASF" in diseaseList:
+            diseaseInfo['ASF']['num_cases'] += 1
+            diseaseInfo['ASF']['incidList'].append(incidID)
+            diseaseInfo['ASF']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "CSF" in diseaseList:
+            diseaseInfo['CSF']['num_cases'] += 1
+            diseaseInfo['CSF']['incidList'].append(incidID)
+            diseaseInfo['CSF']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "IAV-S" in diseaseList:
+            diseaseInfo['IAVS']['num_cases'] += 1
+            diseaseInfo['IAVS']['incidList'].append(incidID)
+            diseaseInfo['IAVS']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "ADV" in diseaseList:
+            diseaseInfo['ADV']['num_cases'] += 1
+            diseaseInfo['ADV']['incidList'].append(incidID)
+            diseaseInfo['ADV']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "PRRS" in diseaseList:
+            diseaseInfo['PRRS']['num_cases'] += 1
+            diseaseInfo['PRRS']['incidList'].append(incidID)
+            diseaseInfo['PRRS']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if "PED" in diseaseList:
+            diseaseInfo['PED']['num_cases'] += 1
+            diseaseInfo['PED']['incidList'].append(incidID)
+            diseaseInfo['PED']['hogs_total'] += case['num_pigs_affected']
+        else: none_ctr += 1
+
+        if none_ctr == 6:
+            diseaseInfo['Others']['num_cases'] += 1
+            diseaseInfo['Others']['incidList'].append(incidID)
+            diseaseInfo['Others']['hogs_total'] += case['num_pigs_affected']
+
+
+        # combine the 2 previous queries into 1 temporary list
+        incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
+
+        # debug(diseaseInfo)
+
+    return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
                                                                     "areaList": areaQry, "areaName": areaName,
                                                                     "incident_symptomsList": incident_symptomsList,
-                                                                    "total_pigs_affect": total_pigs_affect})
+                                                                    "total_pigs_affect": total_pigs_affect, "susCases": diseaseInfo})
 
 def dashboard_SusCases():
     """
@@ -690,7 +813,7 @@ def dashboard_SusCases():
     # debug(incidCases)
 
     # get Disease Cases with status "1" (Negative) or "2" (Pending)
-    diseaseCases = Disease_Case.objects.filter(~Q(lab_result=0)).filter(date_updated__range=(now()-timedelta(days=120), now())).annotate(
+    diseaseCases = Disease_Case.objects.filter(~Q(lab_result=True)).filter(date_updated__range=(now()-timedelta(days=120), now())).annotate(
         high_fever          =F('incid_case__high_fever')        ,       loss_appetite       =F('incid_case__loss_appetite')     ,
         depression          =F('incid_case__depression')        ,       lethargic           =F('incid_case__lethargic')         ,
         constipation        =F('incid_case__constipation')      ,       vomit_diarrhea      =F('incid_case__vomit_diarrhea')    ,

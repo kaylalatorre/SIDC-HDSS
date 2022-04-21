@@ -74,7 +74,7 @@
                         <th>Symptoms</th>
                         <th style="text-align: right; width: 15%">No. of Pigs Affected</th>
                         <th style="width: 15%">Status</th>
-                        <th>No. of Tentative Diagnosis</th>
+                        <th>Tentative Diagnosis</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -142,15 +142,73 @@
                 <tbody>
                     <tr>
                         <td>African Swine Fever (ASF)</td>
-                        <td>5</td>
-                        <td>1, 8, 14</td>
-                        <td>6 pigs</td>
+                        <td>{{susCases.ASF.num_cases}}</td>
+                        {% if susCases.ASF.incidList %}
+                            <td>{{susCases.ASF.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.ASF.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Clinical swine fever (CSF)</td>
+                        <td>{{susCases.CSF.num_cases}}</td>
+                        {% if susCases.CSF.incidList %}
+                            <td>{{susCases.CSF.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.CSF.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Swine influenza (IAV-S)</td>
+                        <td>{{susCases.IAVS.num_cases}}</td>
+                        {% if susCases.IAVS.incidList %}
+                            <td>{{susCases.IAVS.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.IAVS.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Pseudorabies (ADV)</td>
+                        <td>{{susCases.ADV.num_cases}}</td>
+                        {% if susCases.ADV.incidList %}
+                            <td>{{susCases.ADV.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.ADV.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Porcine reproductive and respiratory syndrome (PRRS)</td>
+                        <td>{{susCases.PRRS.num_cases}}</td>
+                        {% if susCases.PRRS.incidList %}
+                            <td>{{susCases.PRRS.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.PRRS.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Porcine epidemic diarrhea (PED)</td>
+                        <td>{{susCases.PED.num_cases}}</td>
+                        {% if susCases.PED.incidList %}
+                            <td>{{susCases.PED.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.PED.hogs_total}} pigs</td>
                     </tr>
                     <tr>
                         <td>Unknown/Undetected by System</td>
-                        <td>4</td>
-                        <td>9, 14</td>
-                        <td>16 pigs</td>
+                        <td>{{susCases.Others.num_cases}}</td>
+                        {% if susCases.Others.incidList %}
+                            <td>{{susCases.Others.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.Others.hogs_total}} pigs</td>
                     </tr>
                 </tbody>
             </table>

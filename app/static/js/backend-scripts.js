@@ -1212,7 +1212,7 @@ function addCase(farmID) {
 
     try {
 
-        url = "/disease-monitoring/" + sDate + "/" + eDate + "/" + arName;
+        url = "/symptoms-monitoring/" + sDate + "/" + eDate + "/" + arName;
         // console.log(url);
 
         // for loading report table data
