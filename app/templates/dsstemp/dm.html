@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Disease Monitoring</title>
+{% endblock page_title %}
+
+{% block section %}
+    <div class="main-div">
+        <h1>Disease Monitoring</h1>
+        <div class="flex subheading">
+            <p class="flex-item">Disease monitoring report for viewing and printing.</p>
+            <button class="primary-btn" onclick="printReport('rep-dm')"><i class='bx bx-printer' ></i>Print</button>
+        </div>
+        <div id="rep-dm">
+            <div class="print-header">
+                <h1>SIDC | Hogs Disease Surveillance System</h1>
+                <p>Charts relevant for disease monitoring.</p>
+            </div>
+            {% include 'dsstemp/disease-monitoring.html' %}
+        </div>
+    </div>
+    
+{% endblock section %}
