@@ -107,9 +107,19 @@ ul .li-symptoms { list-style: circle!important;}
 
 .heading .box-style .input-group { width: 40%!important; }
 
+.grey-container {
+    background-color: #F1f1f1;
+    padding: 16px;
+}
+
+.white-container {
+    background-color: #F9f9f9;
+    padding: 16px;
+}
+
 .container-scroll {
     max-height: 80vh;
-    width: 300px;
+    width: 100%;
     background-color: #F1f1f1;
     padding: 16px;
 

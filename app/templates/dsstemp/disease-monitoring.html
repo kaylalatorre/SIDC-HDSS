@@ -1,62 +1,94 @@
 <section>
-    <div class="flex">
-        <!-- Other Charts -->
-        <div class="container-scroll flex-item" style="margin-right: 16px; width: 30%!important">
-            <section>
-                <h3>Confirmed cases per Disease</h3>
-                <div class="box-style-chart" id="dm-confirmed-per" style="width: 100%; height: 300px">
-                    <!-- Data handled in disease-monitoring.js -->
-                </div>
-            </section>
-            <section>
-                <h3>Mortalities per Disease</h3>
-                <div class="box-style-chart" id="dm-mortality-per" style="width: 100%; height: 300px;">
-                    <!-- Data handled in disease-monitoring.js -->
-                </div>
-            </section>
-        </div>
-        <!-- SEIRD Output -->
-        <div class="flex-item">
-            <h3>SEIRD Output</h3>
-            <div class="box-style">
-                <!-- SERID Chart -->
-                <div class="d-flex align-items-start">
-                    <!-- Disease Tabs -->
-                    <div class="nav flex-column nav-pills me-3" id="dm-pills-tab" role="tablist" aria-orientation="vertical" style="width: 25%">
-                        <button class="nav-link active" id="dm-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-asf" type="button" role="tab" aria-controls="dm-pills-asf" aria-selected="true">
-                            <div class="disease-info">
-                                <p class="di-disease">African swine fever (ASF)</p>
-                            </div>
-                        </button>
-                        <button class="nav-link" id="dm-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-csf" type="button" role="tab" aria-controls="dm-pills-csf" aria-selected="false">
-                            <div class="disease-info">
-                                <p class="di-disease">Clinical swine fever (CSF)</p>
-                            </div>
-                        </button>
-                        <button class="nav-link" id="dm-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-iav" type="button" role="tab" aria-controls="dm-pills-iav" aria-selected="false">
-                            <div class="disease-info">
-                                <p class="di-disease">Swine influenza (IAV-S)</p>
-                            </div>
-                        </button>
-                        <button class="nav-link" id="dm-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-adv" type="button" role="tab" aria-controls="dm-pills-adv" aria-selected="false">
-                            <div class="disease-info">
-                                <p class="di-disease">Pseudorabies (ADV)</p>
-                            </div>
-                        </button>
-                        <button class="nav-link" id="dm-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-prrs" type="button" role="tab" aria-controls="dm-pills-prrs" aria-selected="false">
-                            <div class="disease-info">
-                                <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
-                            </div>
-                        </button>
-                        <button class="nav-link" id="dm-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-ped" type="button" role="tab" aria-controls="dm-pills-ped" aria-selected="false">
-                            <div class="disease-info">
-                                <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
-                            </div>
-                        </button>
+    <div class="white-container" style="height: 80vh">
+        <div class="d-flex align-items-start">
+            <!-- Disease Tabs -->
+            <div class="nav flex-column nav-pills me-3" id="dm-pills-tab" role="tablist" aria-orientation="vertical" style="width: 15%">
+                <button class="nav-link active" id="dm-pills-asf-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-asf" type="button" role="tab" aria-controls="dm-pills-asf" aria-selected="true">
+                    <div class="disease-info">
+                        <p class="di-disease">African swine fever (ASF)</p>
                     </div>
-                    <!-- Tab Content -->
-                    <div class="tab-content" id="dm-pills-tabContent" style="width: 70%">
-                        <div class="tab-pane fade show active" id="dm-pills-asf" role="tabpanel" aria-labelledby="dm-pills-asf-tab">
+                </button>
+                <button class="nav-link" id="dm-pills-csf-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-csf" type="button" role="tab" aria-controls="dm-pills-csf" aria-selected="false">
+                    <div class="disease-info">
+                        <p class="di-disease">Clinical swine fever (CSF)</p>
+                    </div>
+                </button>
+                <button class="nav-link" id="dm-pills-iav-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-iav" type="button" role="tab" aria-controls="dm-pills-iav" aria-selected="false">
+                    <div class="disease-info">
+                        <p class="di-disease">Swine influenza (IAV-S)</p>
+                    </div>
+                </button>
+                <button class="nav-link" id="dm-pills-adv-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-adv" type="button" role="tab" aria-controls="dm-pills-adv" aria-selected="false">
+                    <div class="disease-info">
+                        <p class="di-disease">Pseudorabies (ADV)</p>
+                    </div>
+                </button>
+                <button class="nav-link" id="dm-pills-prrs-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-prrs" type="button" role="tab" aria-controls="dm-pills-prrs" aria-selected="false">
+                    <div class="disease-info">
+                        <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
+                    </div>
+                </button>
+                <button class="nav-link" id="dm-pills-ped-tab" data-bs-toggle="pill" data-bs-target="#dm-pills-ped" type="button" role="tab" aria-controls="dm-pills-ped" aria-selected="false">
+                    <div class="disease-info">
+                        <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
+                    </div>
+                </button>
+            </div>
+            <!-- Tab Content -->
+            <div class="tab-content" id="dm-pills-tabContent" style="width: 85%">
+                <div class="tab-pane fade show active" id="dm-pills-asf" role="tabpanel" aria-labelledby="dm-pills-asf-tab">
+                    <div class="flex">
+                        <div class="flex-item">
+                            <div style="margin-right: 16px;">
+                                <!-- Disease Cases Line Chart -->
+                                <div>
+                                    <h3>No. of Cases</h3>
+                                    <div class="box-style-chart" id="dm-confirmed-per" style="width: 100%; height: 300px">
+                                        <!-- Data handled in disease-monitoring.js -->
+                                    </div>
+                                </div>
+                                <!-- Confirmed Cases Table -->
+                                <div class="container-scroll" style="max-height: 40vh!important">
+                                    <h3>Confirmed Cases</h3>
+                                    <div class="box-style">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Incident Involved</th>
+                                                    <th>Farm Affected</th>
+                                                    <th>No. of Pigs Affected</th>
+                                                    <th>Recovered</th>
+                                                    <th>Died</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>001</td>
+                                                    <td>013</td>
+                                                    <td>20</td>
+                                                    <td>
+                                                        <div class="flex">
+                                                            <p class="flex-item">0</p>
+                                                            <button class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                                        </div>                 
+                                                    </td>
+                                                    <td>
+                                                        <div class="flex">
+                                                            <p class="flex-item">0</p>
+                                                            <button class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>                               
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- SERID Chart -->
+                        <div class="flex-item">
+                            <h2>Predicted cases</h2>
+                            <hr>
                             <h3>Set Parameters</h3>
                             <div>
                                 <!-- Inputs --> 
@@ -90,25 +122,27 @@
                             <hr>
                             <!-- SEIRD Chart -->
                             <div class="box-style-chart" id="dm-seird-asf" style="width: 100%; height: 400px;">
-                                
+                                <!-- data handled in disease-monitoring.js -->
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="dm-pills-csf" role="tabpanel" aria-labelledby="dm-pills-csf-tab">
-                            //
-                        </div>
-                        <div class="tab-pane fade" id="dm-pills-iav" role="tabpanel" aria-labelledby="dm-pills-iav-tab">
-                            //
-                        </div>
-                        <div class="tab-pane fade" id="dm-pills-adv" role="tabpanel" aria-labelledby="dm-pills-adv-tab">
-                            //
-                        </div>
-                        <div class="tab-pane fade" id="dm-pills-prrs" role="tabpanel" aria-labelledby="dm-pills-prrs-tab">
-                            //
-                        </div>
-                        <div class="tab-pane fade" id="dm-pills-ped" role="tabpanel" aria-labelledby="dm-pills-ped-tab">
-                            //
-                        </div>
                     </div>
+                    
+                    
+                </div>
+                <div class="tab-pane fade" id="dm-pills-csf" role="tabpanel" aria-labelledby="dm-pills-csf-tab">
+                    //
+                </div>
+                <div class="tab-pane fade" id="dm-pills-iav" role="tabpanel" aria-labelledby="dm-pills-iav-tab">
+                    //
+                </div>
+                <div class="tab-pane fade" id="dm-pills-adv" role="tabpanel" aria-labelledby="dm-pills-adv-tab">
+                    //
+                </div>
+                <div class="tab-pane fade" id="dm-pills-prrs" role="tabpanel" aria-labelledby="dm-pills-prrs-tab">
+                    //
+                </div>
+                <div class="tab-pane fade" id="dm-pills-ped" role="tabpanel" aria-labelledby="dm-pills-ped-tab">
+                    //
                 </div>
             </div>
         </div>
