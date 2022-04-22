@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row, Hog_Weight)
+    Pigpen_Group, Pigpen_Row, Hog_Weight, Disease_Case)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -1098,14 +1098,32 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
+    print(incidQry)
+    
+    # get all disease cases for the farm
+    disCases = []
+    for incid in incidQry:
+        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).values("id").order_by('-id')
+
+        if disQry:
+            for dis in disQry:
+                disCases.append(dis['id'])
+
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
-    num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
+
+    latest_toDate = 0
+    
+    if mortQry :
+        num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
+        latest_toDate = int(mortQry.get("num_toDate"))
+    else:
+        num_begInv = int(farmQuery.total_pigs)
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
-        # print(request.POST)
+        print(request.POST)
 
         mortalityForm = MortalityForm(request.POST)
 
@@ -1117,7 +1135,8 @@ def addMortality(request, farmID):
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "incid_case" : request.POST.getlist('input-case', default=None)[i],
+                "source" : request.POST.getlist('source', default=None)[i],
+                "case" : request.POST.getlist('case', default=None)[i],
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
@@ -1137,10 +1156,25 @@ def addMortality(request, farmID):
 
             # pass all objects in mortalityList into Mortality model
             x = 0
-            toDate = int(mortQry.get("num_toDate"))
-            
             for mort in mortalityList:
                 mort = mortalityList[x]
+
+                # assign incident case value
+                if mort['source'] == 'Incident Case' :
+                    incid_case = mort['case']
+
+                elif mort['source'] == 'Disease Case' :
+                    # get FK of disease case selected
+                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').annotate(
+                                 caseID = F('incid_case__id')).values('caseID')
+                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').first()
+                    
+                    print(disQry.incid_case.id)
+
+                    incid_case = disQry.incid_case.id
+
+                else :
+                    incid_case = None
 
                 # create new instance of Mortality model
                 mortality = Mortality.objects.create(
@@ -1148,9 +1182,10 @@ def addMortality(request, farmID):
                     mortality_date = mort['mortality_date'],
                     num_begInv = num_begInv,
                     num_today = mort['num_today'],
-                    num_toDate = toDate + int(mort['num_today']),
-                    incid_case_id = mort['incid_case'],
+                    num_toDate = latest_toDate + int(mort['num_today']),
+                    source = mort['source'],
                     remarks = mort['remarks'],
+                    incid_case_id = incid_case,
                     mortality_form_id = mortality_form.id
                 )
 
@@ -1159,7 +1194,7 @@ def addMortality(request, farmID):
                 # print(str(mortality))
                 mortality.save()
                 x += 1
-                toDate += int(mort['num_today'])
+                latest_toDate += int(mort['num_today'])
 
             # update last_updated of farm
             farmQuery.last_updated = datetime.now(timezone.utc)
@@ -1180,8 +1215,8 @@ def addMortality(request, farmID):
 
         mortalityForm = MortalityForm()
     
-    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm,
-                                                                'num_begInv' : num_begInv, 'incid_cases' : incidQry, 'latest_toDate' : mortQry.get("num_toDate")})
+    return render(request, 'healthtemp/add-mortality.html', { 'farmID' : farmID, 'series' : series, 'mortalityForm' : mortalityForm, 'dis_cases' : disCases,
+                                                                'num_begInv' : num_begInv, 'incid_cases' : incidQry, 'latest_toDate' : latest_toDate})
 
 
 def addWeight(request, farmID):

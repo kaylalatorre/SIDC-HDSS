@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+{% extends 'base-logged-in.html' %}
+{% load static %}
+
+{% block page_title %}
+    <title>SIDC-HDSS | Disease Monitoring</title>
+{% endblock page_title %}
+
+{% block section %}
+
+{% include 'partials/messages.html' %}
+
+<!-- Disease Monitoring Reports -->
+<div class="table-container main-div" id="disMonitor-container">   
+    <div>
+        <h1>Symptoms Monitoring</h1>
+    </div>
+    <br>
+
+    <!-- Date range, etc -->
+    <div style="max-width: 400px; height: 100%;" class="filters">
+        <div class="mb-3">
+            <label class="form-label bold-lbl">Date Range</label>
+            <div class="input-group">
+                <input type="date" class="form-control input-startDate" id="disease-start-date" value="{{dateStart.date|date:'Y-m-d'}}">
+                <input type="date" class="form-control input-endDate" id="disease-end-date" value="{{dateEnd.date|date:'Y-m-d'}}">
+            </div>
+        </div>
+
+        <div class="mb-3" style="padding-bottom: 8px;">
+            <label class="form-label bold-lbl">Area</label>
+            <select class="form-select" id="disease-area" style="margin-bottom: 0;">
+                <option value="All"> All </option>
+                {% for area in areaList %}
+                <option value="{{area.area_name}}">{{area.area_name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="primary-btn" onclick="filterDiseaseRep()"><i class='bx bx-refresh' style="padding-right: 4px;"></i>Apply Filters</button>
+    </div>
+
+    <hr>
+    <!-- Report description, print button -->
+    <div class="flex subheading diseaserep-subheading">
+        {% if not isFiltered %}
+            <p class="flex-item">All Disease Monitoring Report.</p>
+        {% else %}
+            <p class="flex-item">{{areaName}} Disease Monitoring Report for {{dateStart}} to {{dateEnd}}</p>
+        {% endif %}      
+        <div><button class="primary-btn" onclick="printReport('rep-diseaseMonitor')"><i class='bx bx-printer' ></i>Print</button></div>
+    </div>
+ 
+    <!-- Report content -->
+    <div id="rep-diseaseMonitor">
+        <div class="print-header">
+            <h1>SIDC | Hogs Disease Surveillance System</h1>
+            <!-- <p class="flex-item">All Farms Report for {{dateStart}} to {{dateEnd}} </p> -->
+
+            {% if not isFiltered %}
+                <p class="flex-item">All Disease Monitoring Report.</p>
+            {% else %}
+                <p class="flex-item">{{areaName}} Disease Monitoring Report for {{dateStart}} to {{dateEnd}}</p>
+            {% endif %}          
+        </div>
+        <div class="box-style">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Incident ID</th>
+                        <th style="text-align: center; width: 10%">Farm Code</th>
+                        <th>Area</th>
+                        <th>Date Reported</th>
+                        <th>Symptoms</th>
+                        <th style="text-align: right; width: 15%">No. of Pigs Affected</th>
+                        <th style="width: 15%">Status</th>
+                        <th>Tentative Diagnosis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for incident,symptoms,diseaseList in incident_symptomsList %}
+                    <tr>
+                        <td data-label="Incident ID">{{ incident.id }}</td>
+                        <td data-label="Farm Code" style="text-align: center; width: 15%">{{ incident.farm_code|stringformat:"03d" }}</td>
+                        <td data-label="Area">{{ incident.farm_area }}</td>
+                        <td data-label="Date Reported">{{ incident.date_filed }}</td>
+    
+                        <td data-label="Symptoms"> 
+                            {% load healthapp_extras %}
+                            {% for sKey, sVal in symptoms.items %}
+                            <ul class="ul-symptoms"></ul>
+                                {% if sVal %}
+                                <li class="li-symptoms">{{ sKey|formatField }}</li>
+                                {% endif %}
+                            </ul>
+                            {% endfor %}
+                        </td>
+    
+                        <td data-label="No. of Pigs Affected" style="text-align: right; width: 15%"> {{ incident.num_pigs_affected }} pigs
+                        </td>
+    
+                        <td data-label="Status" style="width: 15%">{{ incident.report_status }}</td>
+    
+                        <td data-label="Diseases"> 
+                            {% if diseaseList %}
+                            {% for disease in diseaseList %}
+                            <ul class="ul-diseases"></ul>
+                                <li class="li-diseases">{{ disease }}</li>
+                            </ul>
+                            {% endfor %}
+                            {% else %}
+                            <p>None</p> 
+                            {% endif %}
+                        </td>
+    
+                        
+                    </tr>
+                    {% endfor %}
+    
+                    <!-- Totals, Averages -->
+                    <tr class="table-total bold-lbl">
+                        <td colspan="5">Total</td>
+                        <td style="text-align: right;">{{ total_pigs_affect }} pigs</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tbody>           
+            </table>
+        </div>
+        <div class="print-header"><br></div> 
+        <h3>Symptoms Monitoring Summary</h3>
+        <div class="print-header"><br></div> 
+        <div class="box-style">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Disease</th>
+                        <th>No. of Cases with Tentative Diagnosis</th>
+                        <th>Incident Cases Involved</th>
+                        <th>No. of Pigs Affected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>African Swine Fever (ASF)</td>
+                        <td>{{susCases.ASF.num_cases}}</td>
+                        {% if susCases.ASF.incidList %}
+                            <td>{{susCases.ASF.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.ASF.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Clinical swine fever (CSF)</td>
+                        <td>{{susCases.CSF.num_cases}}</td>
+                        {% if susCases.CSF.incidList %}
+                            <td>{{susCases.CSF.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.CSF.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Swine influenza (IAV-S)</td>
+                        <td>{{susCases.IAVS.num_cases}}</td>
+                        {% if susCases.IAVS.incidList %}
+                            <td>{{susCases.IAVS.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.IAVS.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Pseudorabies (ADV)</td>
+                        <td>{{susCases.ADV.num_cases}}</td>
+                        {% if susCases.ADV.incidList %}
+                            <td>{{susCases.ADV.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.ADV.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Porcine reproductive and respiratory syndrome (PRRS)</td>
+                        <td>{{susCases.PRRS.num_cases}}</td>
+                        {% if susCases.PRRS.incidList %}
+                            <td>{{susCases.PRRS.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.PRRS.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Porcine epidemic diarrhea (PED)</td>
+                        <td>{{susCases.PED.num_cases}}</td>
+                        {% if susCases.PED.incidList %}
+                            <td>{{susCases.PED.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.PED.hogs_total}} pigs</td>
+                    </tr>
+                    <tr>
+                        <td>Unknown/Undetected by System</td>
+                        <td>{{susCases.Others.num_cases}}</td>
+                        {% if susCases.Others.incidList %}
+                            <td>{{susCases.Others.incidList}}</td>
+                        {% else %}
+                            <td>None</td>
+                        {% endif %}
+                        <td>{{susCases.Others.hogs_total}} pigs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>
+{% endblock section %}

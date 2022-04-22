@@ -776,7 +776,7 @@ function saveActivity(actID, farmID) {
     var trip_type = tripVar.options[tripVar.selectedIndex].text;
     var arrival = row.getElementsByClassName("activity-input")[2].value;
     var departure = row.getElementsByClassName("activity-input")[3].value;
-    var description = row.getElementsByClassName("activity-input")[4].value;
+    var num_pigs_inv = row.getElementsByClassName("activity-input")[4].value;
     var remarks = row.getElementsByClassName("activity-input")[5].value;
 
     // check if date is not later than today
@@ -802,7 +802,7 @@ function saveActivity(actID, farmID) {
                 "trip_type": trip_type,
                 "time_arrival": arrival,
                 "time_departure": departure,
-                "description": description,
+                "num_pigs_inv": num_pigs_inv,
                 "remarks": remarks
             },
 
@@ -834,7 +834,7 @@ function resubmitActivity(actDate, actFormID, farmID) {
     var trip = document.getElementsByClassName("act-trip-type-input");
     var arrival = document.getElementsByClassName("act-arrival-input");
     var departure = document.getElementsByClassName("act-departure-input");
-    var description = document.getElementsByClassName("act-description-input");
+    var num_pigs_inv = document.getElementsByClassName("act-pigs-inv-input");
     var remarks = document.getElementsByClassName("act-remarks-input");
 
     const convertTime = timeStr => {
@@ -864,7 +864,7 @@ function resubmitActivity(actDate, actFormID, farmID) {
                 trip_type: trip[i].value,
                 time_arrival: convertTime(arrival[i].value),
                 time_departure: convertTime(departure[i].value),
-                description: description[i].value,
+                num_pigs_inv: num_pigs_inv[i].value,
                 remarks: remarks[i].value
             };
 
@@ -1212,7 +1212,7 @@ function addCase(farmID) {
 
     try {
 
-        url = "/disease-monitoring/" + sDate + "/" + eDate + "/" + arName;
+        url = "/symptoms-monitoring/" + sDate + "/" + eDate + "/" + arName;
         // console.log(url);
 
         // for loading report table data
