@@ -295,7 +295,7 @@
                             </div>
                             <div class="incd-resolved-remarks hide" id="123">
                                 <label class="bold-lbl">Remarks</label> <br>
-                                <input type="text" required class="form-control" id="input-resolved-remarks" placeholder="ex. No new symptoms found">
+                                <input type="text" onkeyup="EnableIncidRem(this)" class="form-control" id="input-resolved-remarks" placeholder="ex. No new symptoms found">
                             </div>
                         </td>
                         {% if editStat %}

@@ -25,8 +25,8 @@
         <div class="box-style reject-reason hide">
         <form>
             <div class="input-group mb-3" id="new-area">
-                <input name="input-code" type="text" required class="form-control" id="reject-reason" placeholder="Reason for rejection">
-                <button class="secondary-btn-red" type="submit" id="reject-activity" onclick="rejectActivity('{{ actForm.id }}')">Submit</button>
+                <input name="input-code" type="text" required class="form-control" id="reject-reason" onkeyup="EnableRejectSave(this)" placeholder="Reason for rejection">
+                <button class="secondary-btn-red" disabled="disabled" type="submit" id="reject-activity" onclick="rejectActivity('{{ actForm.id }}')">Submit</button>
             </div>
         </form>
         </div>

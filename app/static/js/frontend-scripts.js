@@ -105,6 +105,37 @@ for(var i = 0; i < biosecSave.length; i++) {
 }
 
 /**
+* Enable submit/save button when text is inputted
+*/
+function EnableRejectSave(text) {
+    var btnSubmit = document.getElementById("reject-activity");
+
+    if (text.value.trim() != "") {
+        //enable the TextBox when TextBox has value
+        btnSubmit.disabled = false;
+    } else {
+        //disable the TextBox when TextBox is empty
+        btnSubmit.disabled = true;
+    }
+};
+
+function EnableIncidRem(text) {
+    var row = text.parentNode.parentNode.parentNode;
+    var rowIndex = row.rowIndex - 1;
+
+    var btnSubmit = document.getElementsByClassName("symptomsSave")[rowIndex];
+
+    if (text.value.trim() != "") {
+        //enable the TextBox when TextBox has value
+        btnSubmit.disabled = false;
+    } else {
+        //disable the TextBox when TextBox is empty
+        btnSubmit.disabled = true;
+    }
+};
+
+
+/**
  * Symptoms edit button 
  */
  let symptomsEdit = document.querySelectorAll('.symptomsEdit');
@@ -122,10 +153,15 @@ for(var i = 0; i < biosecSave.length; i++) {
         //  for onchange of incident case dropdown status
          dropdown.addEventListener("change", (e)=> {
             let remarksInput = e.target.parentElement.parentElement.childNodes[4].nextSibling;
+            // console.log(e.target.value);
+            let btnSubmit = document.getElementById("symptomsSave");
+
+
             if (e.target.value == "Resolved") {
                 // console.log(remarksInput);
                 remarksInput.classList.remove("hide");
                 remarksInput.classList.add("show");
+                symptomsSave.disabled = true;
             }
             else {
                 remarksInput.classList.remove("show");
