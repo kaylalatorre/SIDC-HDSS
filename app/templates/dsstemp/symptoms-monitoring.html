@@ -71,6 +71,12 @@
                            <h3 class="di-no-affected {% if susCases.PED.hogs_total > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs_total }}</h3>
                        </div>
                    </button>
+                   <button class="nav-link" id="v-pills-others-tab" data-bs-toggle="pill" data-bs-target="#v-pills-others" type="button" role="tab" aria-controls="v-pills-others" aria-selected="false">
+                    <div class="disease-info">
+                        <p class="di-disease">Unknown/Undetected by System</p>
+                        <h3 class="di-no-affected {% if susCases.Others.hogs_total > 0 %} txt-negative {% endif %} ">{{ susCases.Others.hogs_total }}</h3>
+                    </div>
+                </button>
                </div>
                <!-- Tab Content -->
                <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
@@ -543,6 +549,86 @@
                            </table>
                        {% endif %}
                    </div>
+
+                   
+                   <div class="tab-pane fade" id="v-pills-others" role="tabpanel" aria-labelledby="v-pills-others-tab">
+                    {% if  susCases.Others.hogs_total == 0 %}
+                    <div>
+                        No suspected cases.
+                    </div>
+                    {% else %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Incident Involved</th>
+                                    <th>Farm Affected</th>
+                                    <th>No. of Pigs Affected</th>
+                                    <th width="20%">Symptoms</th>
+                                    <th width="25%">Result</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for disease in susCases.Others.diseaseList %}                        
+                                <tr>
+                                    <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                    <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                    <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                    <td data-label="Symptoms"> 
+                                        <ul class="ul-symptoms">
+                                            {% for symptom in disease.symptoms %}
+                                            <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td data-label="Confirmed">
+                                        <!-- hidden result display -->
+                                        {% if disease.lab_result == False %}
+
+                                        <div>
+                                            <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                            <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
+                                        </div>
+                                        
+                                        {% else %}
+                                        <!-- default - input button -->
+                                        <div class="flex">
+                                            <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                        </div>
+                                        
+                                        <!-- hidden reference form -->
+                                        <div class="box-style diagnosis-result-ref hide">
+                                            <form>
+                                                <label class="bold-lbl">Laboratory Result</label> <br>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
+                                                    <label class="form-check-label" for="inlineRadio1">Positive</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
+                                                    <label class="form-check-label" for="inlineRadio2">Negative</label>
+                                                </div>
+                                                
+                                                <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                        
+                                                <div class="flex" style="margin-top: 8px">
+                                                    <button class="secondary-btn submit-reference" type="submit" id="Others:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                    <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        {% endif %}
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+
                </div>
            </div>
        </div>
