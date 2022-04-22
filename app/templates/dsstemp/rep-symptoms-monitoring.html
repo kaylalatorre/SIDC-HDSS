@@ -144,71 +144,106 @@
                         <td>African Swine Fever (ASF)</td>
                         <td>{{susCases.ASF.num_cases}}</td>
                         {% if susCases.ASF.incidList %}
-                            <td>{{susCases.ASF.incidList}}</td>
+                            <td>{{susCases.ASF.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.ASF.hogs_total > 0 %}
                         <td>{{susCases.ASF.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>Clinical swine fever (CSF)</td>
                         <td>{{susCases.CSF.num_cases}}</td>
                         {% if susCases.CSF.incidList %}
-                            <td>{{susCases.CSF.incidList}}</td>
+                            <td>{{susCases.CSF.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.CSF.hogs_total > 0 %}
                         <td>{{susCases.CSF.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>Swine influenza (IAV-S)</td>
                         <td>{{susCases.IAVS.num_cases}}</td>
                         {% if susCases.IAVS.incidList %}
-                            <td>{{susCases.IAVS.incidList}}</td>
+                            <td>{{susCases.IAVS.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.IAVS.hogs_total > 0 %}
                         <td>{{susCases.IAVS.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>Pseudorabies (ADV)</td>
                         <td>{{susCases.ADV.num_cases}}</td>
                         {% if susCases.ADV.incidList %}
-                            <td>{{susCases.ADV.incidList}}</td>
+                            <td>{{susCases.ADV.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.ADV.hogs_total > 0 %}
                         <td>{{susCases.ADV.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>Porcine reproductive and respiratory syndrome (PRRS)</td>
                         <td>{{susCases.PRRS.num_cases}}</td>
                         {% if susCases.PRRS.incidList %}
-                            <td>{{susCases.PRRS.incidList}}</td>
+                            <td>{{susCases.PRRS.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.PRRS.hogs_total > 0 %}
                         <td>{{susCases.PRRS.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>Porcine epidemic diarrhea (PED)</td>
                         <td>{{susCases.PED.num_cases}}</td>
                         {% if susCases.PED.incidList %}
-                            <td>{{susCases.PED.incidList}}</td>
+                            <td>{{susCases.PED.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.PED.hogs_total > 0 %}
                         <td>{{susCases.PED.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>Unknown/Undetected by System</td>
                         <td>{{susCases.Others.num_cases}}</td>
                         {% if susCases.Others.incidList %}
-                            <td>{{susCases.Others.incidList}}</td>
+                            <td>{{susCases.Others.incidStr}}</td>
                         {% else %}
                             <td>None</td>
                         {% endif %}
+
+                        {% if susCases.Others.hogs_total > 0 %}
                         <td>{{susCases.Others.hogs_total}} pigs</td>
+                        {% else %}
+                        <td>0 pigs</td>
+                        {% endif %}
                     </tr>
                 </tbody>
             </table>

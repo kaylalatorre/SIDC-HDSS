@@ -453,13 +453,13 @@ def symptomsMonitoring(request):
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
     diseaseInfo = {
-        'ASF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'CSF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'IAVS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'ADV':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'PRRS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'PED':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'Others':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'ASF':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'CSF':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'IAVS': {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'ADV':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'PRRS': {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'PED':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'Others':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
     }
 
     for case,symptoms,diseaseList in incident_symptomsList:
@@ -505,9 +505,29 @@ def symptomsMonitoring(request):
 
         if none_ctr == 6:
             diseaseInfo['Others']['num_cases'] += 1
-            diseaseInfo['Others']['incidList'].append(incidID)
+            diseaseInfo['Others']['incidList'].append(str(incidID))
             diseaseInfo['Others']['hogs_total'] += case['num_pigs_affected']
 
+    if diseaseInfo['ASF']['incidList']:
+        diseaseInfo['ASF']['incidStr'] = ', '.join(diseaseInfo['ASF']['incidList'])
+
+    if diseaseInfo['CSF']['incidList']:
+        diseaseInfo['CSF']['incidStr'] = ', '.join(diseaseInfo['CSF']['incidList'])
+
+    if diseaseInfo['IAVS']['incidList']:
+        diseaseInfo['IAVS']['incidStr'] = ', '.join(diseaseInfo['IAVS']['incidList'])
+
+    if diseaseInfo['ADV']['incidList']:
+        diseaseInfo['ADV']['incidStr'] = ', '.join(diseaseInfo['ADV']['incidList'])
+
+    if diseaseInfo['PRRS']['incidList']:
+        diseaseInfo['PRRS']['incidStr'] = ', '.join(diseaseInfo['PRRS']['incidList'])
+
+    if diseaseInfo['PED']['incidList']:
+        diseaseInfo['PED']['incidStr'] = ', '.join(diseaseInfo['PED']['incidList'])
+
+    if diseaseInfo['Others']['incidList']:
+        diseaseInfo['Others']['incidStr'] = ', '.join(diseaseInfo['Others']['incidList'])
 
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
@@ -687,13 +707,13 @@ def filter_incidentRep(request, startDate, endDate, areaName):
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
     diseaseInfo = {
-        'ASF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'CSF':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'IAVS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'ADV':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'PRRS': {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'PED':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
-        'Others':  {'num_cases': 0, 'incidList': [], 'hogs_total': 0},
+        'ASF':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'CSF':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'IAVS': {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'ADV':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'PRRS': {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'PED':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
+        'Others':  {'num_cases': 0, 'incidList': [], 'incidStr': "", 'hogs_total': 0},
     }
 
     for case,symptoms,diseaseList in incident_symptomsList:
@@ -747,6 +767,27 @@ def filter_incidentRep(request, startDate, endDate, areaName):
         incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
         # debug(diseaseInfo)
+
+    if diseaseInfo['ASF']['incidList']:
+        diseaseInfo['ASF']['incidStr'] = ', '.join(diseaseInfo['ASF']['incidList'])
+
+    if diseaseInfo['CSF']['incidList']:
+        diseaseInfo['CSF']['incidStr'] = ', '.join(diseaseInfo['CSF']['incidList'])
+
+    if diseaseInfo['IAVS']['incidList']:
+        diseaseInfo['IAVS']['incidStr'] = ', '.join(diseaseInfo['IAVS']['incidList'])
+
+    if diseaseInfo['ADV']['incidList']:
+        diseaseInfo['ADV']['incidStr'] = ', '.join(diseaseInfo['ADV']['incidList'])
+
+    if diseaseInfo['PRRS']['incidList']:
+        diseaseInfo['PRRS']['incidStr'] = ', '.join(diseaseInfo['PRRS']['incidList'])
+
+    if diseaseInfo['PED']['incidList']:
+        diseaseInfo['PED']['incidStr'] = ', '.join(diseaseInfo['PED']['incidList'])
+
+    if diseaseInfo['Others']['incidList']:
+        diseaseInfo['Others']['incidStr'] = ', '.join(diseaseInfo['Others']['incidList'])
 
     return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"isFiltered": isFiltered, 'dateStart': sDate,'dateEnd': truEndDate,
                                                                     "areaList": areaQry, "areaName": areaName,
