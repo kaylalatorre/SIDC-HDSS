@@ -419,28 +419,13 @@ def symptomsMonitoring(request):
 
     # (3.2) Incidents Reported (symptoms list)
     symptomsList = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).values(
-            'high_fever'        ,
-            'loss_appetite'     ,
-            'depression'        ,
-            'lethargic'         ,
-            'constipation'      ,
-            'vomit_diarrhea'    ,
-            'colored_pigs'      ,
-            'skin_lesions'      ,
-            'hemorrhages'       ,
-            'abn_breathing'     ,
-            'discharge_eyesnose',
-            'death_isDays'      ,
-            'death_isWeek'      ,
-            'cough'             ,
-            'sneeze'            ,
-            'runny_nose'        ,
-            'waste'             ,
-            'boar_dec_libido'   ,
-            'farrow_miscarriage',
-            'weight_loss'       ,
-            'trembling'         ,
-            'conjunctivitis').order_by("date_filed").all()
+            'high_fever'        ,   'loss_appetite'     ,   'depression'        ,   'lethargic'         ,
+            'constipation'      ,   'vomit_diarrhea'    ,   'colored_pigs'      ,   'skin_lesions'      ,
+            'hemorrhages'       ,   'abn_breathing'     ,   'discharge_eyesnose',   'death_isDays'      ,
+            'death_isWeek'      ,   'cough'             ,   'sneeze'            ,   'runny_nose'        ,
+            'waste'             ,   'boar_dec_libido'   ,   'farrow_miscarriage',   'weight_loss'       ,
+            'trembling'         ,   'conjunctivitis'
+            ).order_by("date_filed").all()
 
     sDiseaseList = []
     for sRow in symptomsList:
@@ -612,28 +597,13 @@ def filter_incidentRep(request, startDate, endDate, areaName):
 
         # (3.2) Incidents Reported (symptoms list)
         symptomsList = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(sDate, eDate)).values(
-                'high_fever'        ,
-                'loss_appetite'     ,
-                'depression'        ,
-                'lethargic'         ,
-                'constipation'      ,
-                'vomit_diarrhea'    ,
-                'colored_pigs'      ,
-                'skin_lesions'      ,
-                'hemorrhages'       ,
-                'abn_breathing'     ,
-                'discharge_eyesnose',
-                'death_isDays'      ,
-                'death_isWeek'      ,
-                'cough'             ,
-                'sneeze'            ,
-                'runny_nose'        ,
-                'waste'             ,
-                'boar_dec_libido'   ,
-                'farrow_miscarriage',
-                'weight_loss'       ,
-                'trembling'         ,
-                'conjunctivitis').order_by("date_filed").all()
+            'high_fever'        ,   'loss_appetite'     ,   'depression'        ,   'lethargic'         ,
+            'constipation'      ,   'vomit_diarrhea'    ,   'colored_pigs'      ,   'skin_lesions'      ,
+            'hemorrhages'       ,   'abn_breathing'     ,   'discharge_eyesnose',   'death_isDays'      ,
+            'death_isWeek'      ,   'cough'             ,   'sneeze'            ,   'runny_nose'        ,
+            'waste'             ,   'boar_dec_libido'   ,   'farrow_miscarriage',   'weight_loss'       ,
+            'trembling'         ,   'conjunctivitis'
+            ).order_by("date_filed").all()
         
 
     else: # (CASE 2) search by BOTH date range and areaName
@@ -673,28 +643,13 @@ def filter_incidentRep(request, startDate, endDate, areaName):
 
         # (3.2) Incidents Reported (symptoms list)
         symptomsList = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(sDate, eDate)).filter(ref_farm__area__area_name=areaName).values(
-                'high_fever'        ,
-                'loss_appetite'     ,
-                'depression'        ,
-                'lethargic'         ,
-                'constipation'      ,
-                'vomit_diarrhea'    ,
-                'colored_pigs'      ,
-                'skin_lesions'      ,
-                'hemorrhages'       ,
-                'abn_breathing'     ,
-                'discharge_eyesnose',
-                'death_isDays'      ,
-                'death_isWeek'      ,
-                'cough'             ,
-                'sneeze'            ,
-                'runny_nose'        ,
-                'waste'             ,
-                'boar_dec_libido'   ,
-                'farrow_miscarriage',
-                'weight_loss'       ,
-                'trembling'         ,
-                'conjunctivitis').order_by("date_filed").all()
+            'high_fever'        ,   'loss_appetite'     ,   'depression'        ,   'lethargic'         ,
+            'constipation'      ,   'vomit_diarrhea'    ,   'colored_pigs'      ,   'skin_lesions'      ,
+            'hemorrhages'       ,   'abn_breathing'     ,   'discharge_eyesnose',   'death_isDays'      ,
+            'death_isWeek'      ,   'cough'             ,   'sneeze'            ,   'runny_nose'        ,
+            'waste'             ,   'boar_dec_libido'   ,   'farrow_miscarriage',   'weight_loss'       ,
+            'trembling'         ,   'conjunctivitis'
+            ).order_by("date_filed").all()
         
 
     sDiseaseList = []
