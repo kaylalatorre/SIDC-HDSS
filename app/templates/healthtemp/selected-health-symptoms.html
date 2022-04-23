@@ -13,7 +13,7 @@
 <div class="main-div">
     <div class="flex subheading">
         <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
-        {% if end_weight %}
+        {% if total_pigs == 0 %}
         <div></div>
         {% else %}
         <div class="dropdown">
@@ -31,7 +31,7 @@
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 72%; margin-bottom: 8px;">
             <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
-            {% if end_weight %}
+            {% if total_pigs == 0 %}
             <div></div>
             {% else %}
             <div class="dropdown">

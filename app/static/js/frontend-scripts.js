@@ -727,7 +727,7 @@ $(document).ready(function(){
             resultHtml += ["<li>",
             "<div class='mb3'>", 
             "<label style='font-weight: 600;'>", (i+1), "</label>",
-            '<input type="number" class="form-control fattener-weight" onchange="computeWeight(this)" required name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01>',
+            '<input type="number" class="form-control fattener-weight" onchange="computeWeight(this)" name="input-kls" id="input-kls" placeholder="ex. 100" step=0.01>',
             '</div>',
             '</li>'].join("\n");
         }  
@@ -1001,7 +1001,7 @@ function computeMortality(currRow){
  */
  function computeWeight(){
 
-    var weight = document.getElementsByClassName('fattener-weight');
+    var weight = document.getElementsByClassName('fattener-weight');  
     // console.log(weight);
     var numPigs = parseInt($("#total_pigs").text());
     // console.log(numPigs);
@@ -1010,10 +1010,11 @@ function computeMortality(currRow){
     var average = 0;
 
     for (var i=0; i < weight.length; i++){
-        console.log(weight[i].value);
-
-        total += parseFloat(weight[i].value);
-        average = parseFloat(total)/numPigs
+        // console.log(weight[i].value);
+        if (weight[i].value != ""){
+            total += parseFloat(weight[i].value);
+            average = parseFloat(total)/(i+1)
+        }
     }
 
     console.log(total);

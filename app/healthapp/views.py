@@ -641,6 +641,9 @@ def selectedHealthSymptoms(request, farmID):
     :param farmID: PK of selected farm
     :type farmID: string
     """
+    
+    # get current total_pigs
+    farm = Farm.objects.filter(id=farmID).values("total_pigs").first()
 
     # get current starter and fattener weights acc. to current Pigpen
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
@@ -751,7 +754,7 @@ def selectedHealthSymptoms(request, farmID):
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList})
+                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs")})
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -879,7 +882,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
                                                                         'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList})
+                                                                        "weightList": weightList, 'total_pigs': int(0)})
 
 
 def edit_incidStat(request, incidID):
@@ -1227,11 +1230,11 @@ def addWeight(request, farmID):
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     if latestPigpen.start_weight_id == None:
         weightType = 'starter'
-    elif latestPigpen.final_weight_id == None:
-        weightType = "fattener"
     else:
-        messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
-        return redirect(request.META.get('HTTP_REFERER'))
+        weightType = "fattener"
+    # else:
+        # messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
+        # return redirect(request.META.get('HTTP_REFERER'))
 
     if request.method == 'POST':
         # get latest Pigpen version
@@ -1253,7 +1256,7 @@ def addWeight(request, farmID):
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
-        elif latestPigpen.final_weight_id == None:
+        else:
             weight = Farm_Weight(
                 date_filed = now(),
                 ref_farm_id = farmID,
@@ -1267,15 +1270,19 @@ def addWeight(request, farmID):
             weightList = []
 
             for i in request.POST.getlist('input-kls'):
-                weight.total_kls += float(i)
-                weightList.append(Hog_Weight(
-                    farm_weight = weight,
-                    final_weight = round(float(i), 2)
-                ))
+                if i is not "":
+                    weight.total_kls += float(i)
+                    weightList.append(Hog_Weight(
+                        farm_weight = weight,
+                        final_weight = round(float(i), 2)
+                    ))
+
+                    farm.total_pigs = farm.total_pigs - 1
 
             weight.total_numHeads = len(request.POST.getlist('input-kls'))
             weight.ave_weight = round(weight.total_kls / weight.total_numHeads, 2)
 
+            farm.save()
             weight.save()
             Hog_Weight.objects.bulk_create(weightList)
             latestPigpen.final_weight =  weight
@@ -1284,8 +1291,8 @@ def addWeight(request, farmID):
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
-        else:
-            messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
+        # else:
+        #     messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
 
         
     weightForm = WeightForm()
