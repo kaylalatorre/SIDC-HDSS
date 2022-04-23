@@ -9,7 +9,7 @@ $(document).ready(async function () {
                     type: 'line'
                 },
                 title: {
-                    text: ''
+                    text: 'Title'
                 },
                 xAxis: {
                     title: {
@@ -46,7 +46,7 @@ $(document).ready(async function () {
                     type: 'spline'
                 },
                 title: {
-                    text: ''
+                    text: 'Title'
                 },
                 legend: {
                     layout: 'horizontal',
