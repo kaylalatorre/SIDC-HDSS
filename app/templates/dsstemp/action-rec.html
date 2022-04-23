@@ -7,9 +7,85 @@
 {% endblock page_title %}
 
 {% block section %}
-    <div class="main-div">
+    <div class="main-div table-container">
         <h1>Action Recommendation</h1>
-       
+        <div class="ar-grid">
+            <div class="ar-item-x">
+                <h3>Thresholds</h3>
+                <div class="thresholds-input">
+                    <div class="input-group mb-3">
+                        <span style="width: 36%">Mortality Rate</span>
+                        <input type="text" class="form-control" placeholder="5%" value="5%">
+                        <button class="primary-btn button-small" type="button"><i class='bx bx-edit' ></i></button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span style="width: 36%">Biosecurity Rate</span>
+                        <input type="text" class="form-control" placeholder="5%" value="5%">
+                        <button class="primary-btn button-small" type="button"><i class='bx bx-edit' ></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="ar-item">
+                <label for="ar-mortality-rate">Mortality Rate</label>
+                <p id="ar-mortality-rate" class="h1">4%</p>
+            </div>
+            <div class="ar-item">
+                <label for="ar-internal-rate">Int. Biosecurity Rate</label>
+                <p id="ar-internal-rate" class="h1">94%</p>
+            </div>
+            <div class="ar-item">
+                <label for="ar-external-rate">Ext. Biosecurity Rate</label>
+                <p id="ar-external-rate" class="h1">94%</p>
+            </div>
+            <div class="ar-item">
+                <label for="ar-incid">Active Incidents</label>
+                <p id="ar-incid" class="h1">5</p>
+            </div>
+            <div class="ar-item-x">
+                <label for="ar-disease">Confirmed Disease Cases</label>
+                <p id="ar-disease" class="h1">2</p>
+                <div><a href="/disease-monitoring" class="button secondary-btn">View Disease Monitoring</a></div>
+            </div>
+        </div>
+        <div>
+            <div class="flex subheading">
+                <h3 class="flex-item">Analysis and Recommendations</h3>
+                <button class="primary-btn"><i class='bx bx-printer' ></i>Print</button>
+            </div>
+            <div id="rep-ar">
+                <div class="print-header">
+                    <h1>SIDC | Hogs Disease Surveillance System</h1>
+                    <p>Action Recommendation Report</p>
+                </div>
+                <div class="box-style">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">Item</th>
+                                <th style="width: 40%">Analysis</th>
+                                <th style="width: 40%">Recommendation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mortality Rate</td>
+                                <td>
+                                    <ul class="analysis">
+                                        <li>Bucal, Batangas has the highest mortality rate.</li>
+                                        <li>Mortality rate is 3% higher than standards.</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="rec">
+                                        <li>Recommendations</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     
 {% endblock section %}
