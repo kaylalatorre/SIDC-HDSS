@@ -154,8 +154,7 @@ function EnableIncidRem(text) {
          dropdown.addEventListener("change", (e)=> {
             let remarksInput = e.target.parentElement.parentElement.childNodes[4].nextSibling;
             // console.log(e.target.value);
-            let btnSubmit = document.getElementById("symptomsSave");
-
+            // console.log(remarksInput);
 
             if (e.target.value == "Resolved") {
                 // console.log(remarksInput);

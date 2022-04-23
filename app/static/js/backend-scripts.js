@@ -1074,6 +1074,9 @@ $('.symptomsSave').on('click', function () {
     // Get selected report_status in dropdown
     var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
     var currStat = $("#hidden-status-" + incidID).val();
+    var remarks = $("#input-resolved-remarks-" + incidID).val();
+
+    // console.log(remarks);
 
     if (selectedStat !== currStat) {
         ajaxCSRF();
@@ -1082,14 +1085,23 @@ $('.symptomsSave').on('click', function () {
             type: 'POST',
             url: '/update-incident-status/' + incidID,
             data: {
-                "selectStat": selectedStat
+                "selectStat": selectedStat,
+                "remarks": remarks
             },
             success: function (response) {
 
                 if (response.status_code === "200") {
                     // update selected rep_status in dropdown acc. to returned db value
                     var updatedStat = response.updated_status;
-                    // alert("updatedStat -- " + updatedStat);
+                    // console.log("updatedStat -- " + updatedStat);
+                    if (updatedStat === "Resolved") {
+                        $("#input-remarks-" + incidID).hide();
+                        $("#incd-remarks-" + incidID).show();
+                    }
+                    else {
+                        $("#input-remarks-" + incidID).hide();
+                        $("#incd-remarks-" + incidID).hide();
+                    }
 
                     setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
 

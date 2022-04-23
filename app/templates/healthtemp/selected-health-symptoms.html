@@ -245,7 +245,7 @@
                     <tr>
                         <th>Incident Code</th>
                         <th>Date Reported</th>
-                        <th style="width:30%">No. of Pigs Affected</th>
+                        <th style="width:15%">No. of Pigs Affected</th>
                         <th style="width: 35%">Symptoms Observed</th>
                         <th>Status</th>
                         <th></th>
@@ -293,10 +293,18 @@
                                     {% endif %} 
                                 </select>
                             </div>
-                            <div class="incd-resolved-remarks hide" id="123">
+
+                            <div class="incd-resolved-remarks hide" id="input-remarks-{{incident.id}}">
                                 <label class="bold-lbl">Remarks</label> <br>
-                                <input type="text" onkeyup="EnableIncidRem(this)" class="form-control" id="input-resolved-remarks" placeholder="ex. No new symptoms found">
+                                <input type="text" onkeyup="EnableIncidRem(this)" class="form-control" id="input-resolved-remarks-{{incident.id}}" placeholder="ex. No new symptoms found">
                             </div>
+
+                            {% if incident.report_status == 'Resolved' %}
+                            <div class="incd-remarks show" id="incd-remarks-{{incident.id}}">
+                                <label class="bold-lbl">Remarks</label> <br>
+                                {{incident.remarks}}
+                            </div>
+                            {% endif %} 
                         </td>
                         {% if editStat %}
                         <td class="symptoms-btn-grp">

@@ -895,7 +895,10 @@ def edit_incidStat(request, incidID):
 
         # Get report status from sent AJAX post data
         select_status = request.POST.get("selectStat")
-        debug("select_status -- " + select_status)
+        # debug("select_status -- " + select_status)
+
+        remarks = request.POST.get("remarks")
+        # debug("remarks -- " + remarks)
 
         # search if Incident exists in db
         incidentObj = Hog_Symptoms.objects.filter(id=incidID).first()
@@ -914,6 +917,7 @@ def edit_incidStat(request, incidID):
 
             else: # (SUCCESS) No restrictions, can edit report_status
                 incidentObj.report_status = select_status
+                incidentObj.remarks = remarks
                 incidentObj.save()
 
                 debug("(SUCCESS) Incident status successfully updated.")
