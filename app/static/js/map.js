@@ -29,8 +29,8 @@ function ajaxCSRF() {
 }
 
 $(document).ready(async function () {
-    console.log($('#map-containter').length);
-    if ($('#map-containter').length) {
+    console.log($('#map-container').length);
+    if ($('#map-container').length) {
         /**
          * Initialize map view
          */
@@ -41,7 +41,7 @@ $(document).ready(async function () {
         var zoom = 11;
 
         // initialize map
-        var map = L.map('map-containter').setView([lat, long], zoom);
+        var map = L.map('map-container').setView([lat, long], zoom);
         console.log(map.getZoom());
         // initialize osm tile layer
         var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -208,5 +208,39 @@ $(document).ready(async function () {
 
         
     }
+    
+
+    if ($('#dm-map-container').length) {
+        /**
+         * Initialize map view
+         */
+         console.log("loading dm map...");
+         // set view to batangas
+         var lat = 13.882406389460293;
+         var long = 121.23650234971542;
+         var zoom = 11;
+ 
+         // initialize map
+         var map = L.map('dm-map-container').setView([lat, long], zoom);
+         console.log(map.getZoom());
+         // initialize osm tile layer
+         var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+         }).addTo(map);
+ 
+         var carto = L.tileLayer(
+             'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+             {
+               attribution:
+                 '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+             }
+           ).addTo(map);
+ 
+         console.log("dm map loaded");
+
+         // 
+
+    }
+
     return;
 });
