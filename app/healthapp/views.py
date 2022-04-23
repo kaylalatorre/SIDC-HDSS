@@ -1117,7 +1117,8 @@ def addMortality(request, farmID):
                 disCases.append(dis['id'])
         else: 
             disCases.append(None)
-
+    
+    # print(disCases)
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
@@ -1141,11 +1142,19 @@ def addMortality(request, farmID):
         
         i = 0
         for mortality_date in request.POST.getlist('mortality_date', default=None):
+            sourceOptions = str("sourceOptions-")+str(i)
+            # print(sourceOptions)
+
+            if request.POST.getlist('case', default=None)[i] == '- - -':
+                case_no = None
+            else:
+                case_no = request.POST.getlist('case', default=None)[i]
+
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "source" : request.POST.getlist('source', default=None)[i],
-                "case" : request.POST.getlist('case', default=None)[i],
+                "source" : request.POST.getlist(sourceOptions, default=None)[0],
+                "case" : case_no,
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
@@ -1270,7 +1279,7 @@ def addWeight(request, farmID):
             weightList = []
 
             for i in request.POST.getlist('input-kls'):
-                if i is not "":
+                if i != "":
                     weight.total_kls += float(i)
                     weightList.append(Hog_Weight(
                         farm_weight = weight,

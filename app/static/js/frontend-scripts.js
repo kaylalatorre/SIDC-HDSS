@@ -554,10 +554,14 @@ function removeMortalityRow(currRow){
 *   activity-table = table body that the row will be appended to
 */
 function addMortalityRow() {
+
+    const table = document.getElementById('mortTable');
+    var rowNum = table.tBodies[0].rows.length;
+    // console.log(rowNum);
+    
     const mortality_date = document.getElementById('mortality_date').innerHTML;
     const num_begInv = document.getElementById('begInv').innerHTML;
     const num_today = document.getElementById('today').innerHTML;
-    const source = document.getElementById('source').innerHTML;
     const case_no = document.getElementById('case_no').innerHTML;
     const remarks = document.getElementById('remarks').innerHTML;
 
@@ -567,7 +571,15 @@ function addMortalityRow() {
         <td data-label='Today' id='today' onchange='computeMortality(this)'> " + num_today + " </td> \
         <td data-label='To Date'> <p class='num_toDate'></p> </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> <p class='mortality_rate'></p> </td> \
-        <td data-label='Source'> " + source + " </td> \
+        <td data-label='Source'> <div class='form-check form-check-inline'> \
+                <input class='form-check-input' type='radio' name='sourceOptions-"+rowNum+"' id='src-incident' value='Incident Case' onclick='switchMortCase(this)'> \
+                <label class='form-check-label' for='src-incident'>Incident Case</label> </div> \
+            <div class='form-check form-check-inline'> \
+                <input class='form-check-input' type='radio' name='sourceOptions-"+rowNum+"' id='src-disease' value='Disease Case' onclick='switchMortCase(this)'> \
+                <label class='form-check-label' for='src-disease'>Disease Case</label> </div> \
+            <div class='form-check form-check-inline'> \
+                <input class='form-check-input' type='radio' name='sourceOptions-"+rowNum+"' id='src-unknown' value='Unknown' onclick='switchMortCase(this)'> \
+                <label class='form-check-label' for='src-unknown'>Unknown</label> </div> </td> \
         <td data-label='Case-No'> " + case_no + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
@@ -721,7 +733,7 @@ $(document).ready(function(){
         var rowNum = parseInt($("#total_pigs").text());
         var resultHtml = '';
         
-        console.log($("#total_pigs"));
+        // console.log($("#total_pigs"));
 
         for(var i = 0 ; i < rowNum ; i++) {
             resultHtml += ["<li>",
@@ -1003,8 +1015,6 @@ function computeMortality(currRow){
 
     var weight = document.getElementsByClassName('fattener-weight');  
     // console.log(weight);
-    var numPigs = parseInt($("#total_pigs").text());
-    // console.log(numPigs);
     
     var total = 0;
     var average = 0;
@@ -1033,15 +1043,13 @@ function computeMortality(currRow){
   * @param {*} caseVal = value of selected radio button (source) 
  */
 function switchMortCase(caseVal){
-    // var row = caseVal.parentNode.parentNode.parentNode; //get row of radio button set
-    var row = caseVal.parentNode.parentNode; //get row of radio button set
+    var row = caseVal.parentNode.parentNode.parentNode; //get row of radio button set
     // console.log(row);
     // console.log(row.rowIndex);
 
-
     var incidCase = row.getElementsByClassName("incident-case");
     var disCase = row.getElementsByClassName("disease-case");
-    var dropDown = row.getElementsByClassName("case_no").firstElementChild;
+    var dropDown = row.getElementsByClassName("input-case")[0];
 
     // console.log(caseVal.value);
     // console.log(dropDown);
@@ -1052,26 +1060,24 @@ function switchMortCase(caseVal){
     
         for(j = 0; j < disCase.length; j++)
             incidCase[j].style.display = "block";
-
-        // dropDown.selectedIndex = 0;
+            dropDown.selectedIndex = "0";
     }
     else if(String(caseVal.value) === "Disease Case") {
         for(i = 0; i < disCase.length; i++)
             disCase[i].style.display = "block";
-    
+            dropDown.selectedIndex = "0";
+
         for(j = 0; j < disCase.length; j++)
             incidCase[j].style.display = "none";
-
-        // dropDown.selectedIndex = 0;
     }
     else { // chosen source is unknown, hide all cases
         for(i = 0; i < disCase.length; i++)
             disCase[i].style.display = "none";
     
-        for(j = 0; j < disCase.length; j++)
+        for(j = 0; j < disCase.length; j++){
             incidCase[j].style.display = "none";
-
-        // dropDown.selectedIndex = 0;
+            dropDown.selectedIndex = "0";
+        }
     }
     
 }
