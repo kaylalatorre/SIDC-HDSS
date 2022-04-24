@@ -1592,6 +1592,7 @@ def weightRange(request):
                         farm_baseDict.update({farmID: farm_baseDict.get(farmID) + 1})
                     except:
                         farm_baseDict.update({farmID: 1})
+
                 elif f.final_weight in range(60, 80):
                     count_low += 1
                     try:
@@ -1612,6 +1613,7 @@ def weightRange(request):
                         farm_highDict.update({farmID: farm_highDict.get(farmID) + 1})
                     except:
                         farm_highDict.update({farmID: 1})
+                        
                 elif f.final_weight <= 121:
                     count_ceil += 1
                     try:
