@@ -1343,12 +1343,22 @@ $('.submit-reference').on('click', function(){
 
 });
 
-function getDiseaseInfo(strDisase){
+function getDiseaseInfo(strDisease){
     try {
 
-        url = "/disease-monitoring/" + strDisase;
-        // console.log(url);
+        url = "/disease-monitoring/" + strDisease;
+        console.log(url);
 
+        // onload HTML here ---
+        $.ajax({
+            type: 'POST',
+            url : "/disease-monitoring/" + strDisease + "/",
+            success: function(){
+                console.log("success");
+            }
+        });
+
+        
         // // for loading report table data
         // $('#rep-diseaseMonitor').load(url + ' #rep-diseaseMonitor', function (response) {
         //     $(this).children().unwrap();

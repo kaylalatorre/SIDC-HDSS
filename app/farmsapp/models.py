@@ -130,6 +130,7 @@ class Disease_Case(models.Model):
 
     incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
+    num_pigs_affect     = models.IntegerField(null=True, blank=True)
 
 # DISEASE RECORD Table
 class Disease_Record(models.Model):
@@ -139,6 +140,8 @@ class Disease_Record(models.Model):
 
     ref_disease_case    = models.ForeignKey('Disease_Case', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
+    total_died          = models.IntegerField(null=True, blank=True)
+    total_recovered     = models.IntegerField(null=True, blank=True)
 
 # HOG RAISER Table
 class Hog_Raiser(models.Model):

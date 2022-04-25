@@ -11,7 +11,7 @@ from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
     Pigpen_Group, Pigpen_Row, Activity,
-    Disease_Case)
+    Disease_Case, Disease_Record)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -994,9 +994,34 @@ def submitLabReport(request, lab_ref):
             return HttpResponse(status=500)
             
 # rendering disease-monitoring.html in a different url
-def diseaseMonitoring(request):
+def diseaseMonitoring(request, strDisease):
 
-    
+
+    # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
+
+    # caseQry = Disease_Case.objects.filter(end_date__isnull=True).annotate(
+    #     total_recovered = F("")
+    # )
+
+    if request.method == 'POST':
+        # confrimed cases
+        casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(ref_disease_case__end_date__isnull=True).annotate(
+            lab_ref_no       = F("ref_disease_case__lab_ref_no"),
+            incid_no         = F("ref_disease_case__incid_case"),
+            num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
+        ).values()
+        debug(casesQry)
+
+        diseaseInfo = {
+            'diseaseName':strDisease,
+            'confirmedcases': []
+        }
+        for case in casesQry:
+            diseaseInfo['confirmedcases'] = case
+
+        # Chart
+        # Query all cases of strDisease
+        
 
     return render(request, 'dsstemp/dm.html')
     
