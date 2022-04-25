@@ -995,6 +995,9 @@ def submitLabReport(request, lab_ref):
             
 # rendering disease-monitoring.html in a different url
 def diseaseMonitoring(request):
+
+    
+
     return render(request, 'dsstemp/dm.html')
     
 def actionRecommendation(request):

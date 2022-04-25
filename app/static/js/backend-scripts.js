@@ -1341,3 +1341,7 @@ $('.submit-reference').on('click', function(){
     });
 
 });
+
+function getDiseaseInfo(disease_name){
+    
+}

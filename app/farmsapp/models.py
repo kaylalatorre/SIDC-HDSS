@@ -120,11 +120,24 @@ class Hog_Symptoms(models.Model):
 # DISEASE CASE Table
 class Disease_Case(models.Model):
     disease_name        = models.CharField(max_length=100)
+
     lab_result          = models.BooleanField(null=True, blank=True)
     lab_ref_no          = models.IntegerField(null=True, blank=True)
+
     date_updated        = models.DateTimeField()
+    start_date          = models.DateTimeField(null=True, blank=True)
+    end_date            = models.DateTimeField(null=True, blank=True)
 
     incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
+
+# DISEASE RECORD Table
+class Disease_Record(models.Model):
+    date_filed          = models.DateTimeField()
+    num_recovered       = models.IntegerField(null=True, blank=True)
+    num_died            = models.IntegerField(null=True, blank=True)
+
+    ref_disease_case    = models.ForeignKey('Disease_Case', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
 
 # HOG RAISER Table
