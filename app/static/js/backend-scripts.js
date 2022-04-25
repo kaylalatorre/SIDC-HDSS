@@ -1194,6 +1194,7 @@ function addCase(farmID) {
     }
  }
 
+
 /* function filtering Mortality report based on (1) date range and (2) areaName
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
@@ -1329,3 +1330,31 @@ $('.submit-reference').on('click', function(){
     });
 
 });
+
+function diseaseInfo(strDisase){
+    try {
+
+        url = "/disease-monitoring/" + strDisase;
+        // console.log(url);
+
+        // // for loading report table data
+        // $('#rep-diseaseMonitor').load(url + ' #rep-diseaseMonitor', function (response) {
+        //     $(this).children().unwrap();
+
+        //     // includes the alert div tag            
+        //     var alertHTML = $(response).find('.alert.disease-report');
+        //     // console.log(alertHTML);
+        //     $('#disMonitor-container').prepend(alertHTML);
+
+        // });
+
+        // // for loading report subheader
+        // $('.diseaserep-subheading').load(url + ' .diseaserep-subheading', function () {
+        //     $(this).children().unwrap();
+
+        // });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
