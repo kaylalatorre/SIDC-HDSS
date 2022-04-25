@@ -982,6 +982,10 @@ def submitLabReport(request, lab_ref):
         except:
             # error response
             return HttpResponse(status=500)
-
+            
+# rendering disease-monitoring.html in a different url
+def diseaseMonitoring(request):
+    return render(request, 'dsstemp/dm.html')
+    
 def actionRecommendation(request):
     return render(request, 'dsstemp/action-rec.html')

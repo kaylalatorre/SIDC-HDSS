@@ -49,7 +49,13 @@ ul .li-symptoms { list-style: circle!important;}
     box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
     border-radius: 4px;
     padding: 24px!important;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.map-box {
+    box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
+    border-radius: 4px;
     position: relative;
 }
 
@@ -73,7 +79,7 @@ ul .li-symptoms { list-style: circle!important;}
 .flex-item {
     flex-grow: 1;
     width: 50%;
-    padding-right: 16px;
+    margin-right: 16px;
 }
 
 .flex-item-dropdown {
@@ -107,12 +113,32 @@ ul .li-symptoms { list-style: circle!important;}
 
 .heading .box-style .input-group { width: 40%!important; }
 
+.grey-container {
+    background-color: #F1f1f1;
+    padding: 16px;
+}
+
+.white-container {
+    background-color: #F9f9f9;
+    padding: 16px;
+    height: 100%;
+}
+
 .container-scroll {
     max-height: 80vh;
-    width: 300px;
+    width: 100%;
     background-color: #F1f1f1;
     padding: 16px;
 
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
+.tab-content-scroll {
+    height: 37vh;
+    width: 100%;
+    
     /* Enable scrolling */
     overflow: hidden;
     overflow-y: scroll; 
@@ -122,6 +148,12 @@ ul .li-symptoms { list-style: circle!important;}
     max-height: 20vh;
     width: 200px;
 
+    /* Enable scrolling */
+    overflow: hidden;
+    overflow-y: scroll; 
+}
+
+.scroll {
     /* Enable scrolling */
     overflow: hidden;
     overflow-y: scroll; 
@@ -148,6 +180,10 @@ section {
 .yellow { color: #ffc107!important }
 .hide { display: none; }
 .show { display: block; }
+
+#overviewmap, #symptomsmonitor {
+    margin-top: 16px;
+}
 
 /* Button Styles */
 button, .button {

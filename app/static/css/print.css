@@ -32,4 +32,8 @@
     .second-header th {
         background-color: #006633!important;
     }
+
+    .no-print {
+        display: none;
+    }
 }
