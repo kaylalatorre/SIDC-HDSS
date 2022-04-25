@@ -13,7 +13,7 @@
 <div class="main-div">
     <div class="flex subheading">
         <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
-        {% if end_weight %}
+        {% if total_pigs == 0 %}
         <div></div>
         {% else %}
         <div class="dropdown">
@@ -31,7 +31,7 @@
     <div class="flex mobile-subheading">
         <div class="flex" style="width: 72%; margin-bottom: 8px;">
             <h1 class="heading flex-item"><a href="/health-symptoms">Hogs Health & Symptoms</a> > {{farm_code|stringformat:"03d"}}</h1>
-            {% if end_weight %}
+            {% if total_pigs == 0 %}
             <div></div>
             {% else %}
             <div class="dropdown">
@@ -245,7 +245,7 @@
                     <tr>
                         <th>Incident Code</th>
                         <th>Date Reported</th>
-                        <th style="width:30%">No. of Pigs Affected</th>
+                        <th style="width:15%">No. of Pigs Affected</th>
                         <th style="width: 35%">Symptoms Observed</th>
                         <th>Status</th>
                         <th></th>
@@ -293,10 +293,18 @@
                                     {% endif %} 
                                 </select>
                             </div>
-                            <div class="incd-resolved-remarks hide" id="123">
+
+                            <div class="incd-resolved-remarks hide" id="input-remarks-{{incident.id}}">
                                 <label class="bold-lbl">Remarks</label> <br>
-                                <input type="text" required class="form-control" id="input-resolved-remarks" placeholder="ex. No new symptoms found">
+                                <input type="text" onkeyup="EnableIncidRem(this)" class="form-control" id="input-resolved-remarks-{{incident.id}}" placeholder="ex. No new symptoms found">
                             </div>
+
+                            {% if incident.report_status == 'Resolved' %}
+                            <div class="incd-remarks show" id="incd-remarks-{{incident.id}}">
+                                <label class="bold-lbl">Remarks</label> <br>
+                                {{incident.remarks}}
+                            </div>
+                            {% endif %} 
                         </td>
                         {% if editStat %}
                         <td class="symptoms-btn-grp">
