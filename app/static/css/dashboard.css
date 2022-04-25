@@ -84,10 +84,19 @@
     color: #00a854;
 }
 
-#map-containter {
+#map-container {
     width: 100%;
-    height: 420px;
-    z-index: 1;
+    height: 47vh;
+}
+
+#dm-map-container {
+    width: 100%;
+    height: 40vh;
+}
+
+#dm-seird-asf {
+    width: 100%;
+    height: 42vh;
 }
 
 .disease-info {
@@ -106,7 +115,7 @@
     box-shadow: 0px 4px 16px rgba(51, 51, 51, 0.04);
     border-radius: 4px;
     padding: 8px!important;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     position: relative;
 }
 
@@ -167,18 +176,23 @@
 }
 
 .main-div .nav-tabs .nav-link:hover {
-    background: #00a854 !important;
+    background: #FFF !important;
     border-radius: unset;
-    color:#FFF !important;
+    color:#333 !important;
 }
 
 .nav-pills .nav-link:hover, .nav-pills .nav-link.active {
-    background: #e9ecef !important;
+    background-color: #e9ecef  !important;
     border-radius: unset;
 }
 
 .nav-pills .nav-link {
     text-align: left;
+}
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    background-color: #00a854 !important;
+    color:#FFF !important;
 }
 
 .nav-tabs {
