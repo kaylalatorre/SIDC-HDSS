@@ -1093,7 +1093,7 @@ def diseaseMonitoring(request, strDisease):
                 # move to next date
                 confirmedCtr = d.confirmed_pigs
                 case_currDate = case_nextDate
-
+ 
         dChart['confirmed'].append([case_currDate, confirmedCtr])
 
         # end point of series data
