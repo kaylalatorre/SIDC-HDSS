@@ -1074,6 +1074,9 @@ $('.symptomsSave').on('click', function () {
     // Get selected report_status in dropdown
     var selectedStat = $("#dropdown-repstatus-" + incidID + " option:selected").val();
     var currStat = $("#hidden-status-" + incidID).val();
+    var remarks = $("#input-resolved-remarks-" + incidID).val();
+
+    // console.log(remarks);
 
     if (selectedStat !== currStat) {
         ajaxCSRF();
@@ -1082,14 +1085,23 @@ $('.symptomsSave').on('click', function () {
             type: 'POST',
             url: '/update-incident-status/' + incidID,
             data: {
-                "selectStat": selectedStat
+                "selectStat": selectedStat,
+                "remarks": remarks
             },
             success: function (response) {
 
                 if (response.status_code === "200") {
                     // update selected rep_status in dropdown acc. to returned db value
                     var updatedStat = response.updated_status;
-                    // alert("updatedStat -- " + updatedStat);
+                    // console.log("updatedStat -- " + updatedStat);
+                    if (updatedStat === "Resolved") {
+                        $("#input-remarks-" + incidID).hide();
+                        $("#incd-remarks-" + incidID).show();
+                    }
+                    else {
+                        $("#input-remarks-" + incidID).hide();
+                        $("#incd-remarks-" + incidID).hide();
+                    }
 
                     setSelectedValue("dropdown-repstatus-" + incidID, updatedStat);
 
@@ -1194,6 +1206,7 @@ function addCase(farmID) {
     }
  }
 
+
 /* function filtering Mortality report based on (1) date range and (2) areaName
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
@@ -1212,7 +1225,7 @@ function addCase(farmID) {
 
     try {
 
-        url = "/disease-monitoring/" + sDate + "/" + eDate + "/" + arName;
+        url = "/symptoms-monitoring/" + sDate + "/" + eDate + "/" + arName;
         // console.log(url);
 
         // for loading report table data
@@ -1302,11 +1315,11 @@ $('.submit-reference').on('click', function(){
     let lab_result = $(`input[name="inlineRadioOptions_${incid_id}"]:checked`).val() // 0 == positive, 1 == negative
 
     // check if inputs are valid
-    if(!Number(incid_id) || !Number(lab_ref) || ![0,1,2].includes(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED"].includes(d_name)){
+    if(!Number(incid_id) || !Number(lab_ref) || ![0,1].includes(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)){
         console.log(!Number(incid_id));
         console.log(!Number(lab_ref));
-        console.log(![0,1,2].includes(Number(lab_result)));
-        console.log(!["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED"].includes(d_name));
+        console.log(![0,1].includes(Number(lab_result)));
+        console.log(!["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name));
         console.log("Invalid parameters were sent");
         return false;
     }
@@ -1329,3 +1342,41 @@ $('.submit-reference').on('click', function(){
     });
 
 });
+
+function getDiseaseInfo(strDisease){
+    try {
+
+        url = "/disease-monitoring/" + strDisease;
+        console.log(url);
+
+        // onload HTML here ---
+        $.ajax({
+            type: 'POST',
+            url : "/disease-monitoring/" + strDisease + "/",
+            success: function(){
+                console.log("success");
+            }
+        });
+
+        
+        // // for loading report table data
+        // $('#rep-diseaseMonitor').load(url + ' #rep-diseaseMonitor', function (response) {
+        //     $(this).children().unwrap();
+
+        //     // includes the alert div tag            
+        //     var alertHTML = $(response).find('.alert.disease-report');
+        //     // console.log(alertHTML);
+        //     $('#disMonitor-container').prepend(alertHTML);
+
+        // });
+
+        // // for loading report subheader
+        // $('.diseaserep-subheading').load(url + ' .diseaserep-subheading', function () {
+        //     $(this).children().unwrap();
+
+        // });
+
+    } catch (error) {
+        console.log(error);
+    }
+}

@@ -353,7 +353,7 @@ def selectedHogsHealth(request, farmID):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -512,7 +512,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -641,6 +641,9 @@ def selectedHealthSymptoms(request, farmID):
     :param farmID: PK of selected farm
     :type farmID: string
     """
+    
+    # get current total_pigs
+    farm = Farm.objects.filter(id=farmID).values("total_pigs").first()
 
     # get current starter and fattener weights acc. to current Pigpen
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
@@ -734,7 +737,7 @@ def selectedHealthSymptoms(request, farmID):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -751,7 +754,7 @@ def selectedHealthSymptoms(request, farmID):
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList})
+                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs")})
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -862,7 +865,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         mortality_rate = compute_MortRate(None, m.id)
         mRateList.append(mortality_rate)
 
-        mCaseList.append(m.incid_case_id)
+        mCaseList.append(m.case_no)
 
     # temporarily combine mortality qry w/ computed mortality % in one list
     mortalityList = zip(mortQry, mRateList, mCaseList)
@@ -879,7 +882,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
                                                                         'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList})
+                                                                        "weightList": weightList, 'total_pigs': int(0)})
 
 
 def edit_incidStat(request, incidID):
@@ -895,7 +898,10 @@ def edit_incidStat(request, incidID):
 
         # Get report status from sent AJAX post data
         select_status = request.POST.get("selectStat")
-        debug("select_status -- " + select_status)
+        # debug("select_status -- " + select_status)
+
+        remarks = request.POST.get("remarks")
+        # debug("remarks -- " + remarks)
 
         # search if Incident exists in db
         incidentObj = Hog_Symptoms.objects.filter(id=incidID).first()
@@ -914,6 +920,7 @@ def edit_incidStat(request, incidID):
 
             else: # (SUCCESS) No restrictions, can edit report_status
                 incidentObj.report_status = select_status
+                incidentObj.remarks = remarks
                 incidentObj.save()
 
                 debug("(SUCCESS) Incident status successfully updated.")
@@ -1098,7 +1105,7 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
-    print(incidQry)
+    # print(incidQry)
     
     # get all disease cases for the farm
     disCases = []
@@ -1108,7 +1115,10 @@ def addMortality(request, farmID):
         if disQry:
             for dis in disQry:
                 disCases.append(dis['id'])
-
+        else: 
+            disCases.append(None)
+    
+    # print(disCases)
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
@@ -1123,7 +1133,7 @@ def addMortality(request, farmID):
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
-        print(request.POST)
+        # print(request.POST)
 
         mortalityForm = MortalityForm(request.POST)
 
@@ -1132,11 +1142,19 @@ def addMortality(request, farmID):
         
         i = 0
         for mortality_date in request.POST.getlist('mortality_date', default=None):
+            sourceOptions = str("sourceOptions-")+str(i)
+            # print(sourceOptions)
+
+            if request.POST.getlist('case', default=None)[i] == '- - -':
+                case_no = None
+            else:
+                case_no = request.POST.getlist('case', default=None)[i]
+
             mortalityObject = {
                 "mortality_date" : request.POST.getlist('mortality_date', default=None)[i],
                 "num_today" : request.POST.getlist('num_today', default=None)[i],
-                "source" : request.POST.getlist('source', default=None)[i],
-                "case" : request.POST.getlist('case', default=None)[i],
+                "source" : request.POST.getlist(sourceOptions, default=None)[0],
+                "case" : case_no,
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
@@ -1159,23 +1177,6 @@ def addMortality(request, farmID):
             for mort in mortalityList:
                 mort = mortalityList[x]
 
-                # assign incident case value
-                if mort['source'] == 'Incident Case' :
-                    incid_case = mort['case']
-
-                elif mort['source'] == 'Disease Case' :
-                    # get FK of disease case selected
-                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').annotate(
-                                 caseID = F('incid_case__id')).values('caseID')
-                    disQry = Disease_Case.objects.filter(id=mort['case']).select_related('incid_case').first()
-                    
-                    print(disQry.incid_case.id)
-
-                    incid_case = disQry.incid_case.id
-
-                else :
-                    incid_case = None
-
                 # create new instance of Mortality model
                 mortality = Mortality.objects.create(
                     ref_farm = farmQuery,
@@ -1184,8 +1185,8 @@ def addMortality(request, farmID):
                     num_today = mort['num_today'],
                     num_toDate = latest_toDate + int(mort['num_today']),
                     source = mort['source'],
+                    case_no = mort['case'],
                     remarks = mort['remarks'],
-                    incid_case_id = incid_case,
                     mortality_form_id = mortality_form.id
                 )
 
@@ -1238,11 +1239,11 @@ def addWeight(request, farmID):
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-date_added").first()
     if latestPigpen.start_weight_id == None:
         weightType = 'starter'
-    elif latestPigpen.final_weight_id == None:
-        weightType = "fattener"
     else:
-        messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
-        return redirect(request.META.get('HTTP_REFERER'))
+        weightType = "fattener"
+    # else:
+        # messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
+        # return redirect(request.META.get('HTTP_REFERER'))
 
     if request.method == 'POST':
         # get latest Pigpen version
@@ -1264,7 +1265,7 @@ def addWeight(request, farmID):
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
-        elif latestPigpen.final_weight_id == None:
+        else:
             weight = Farm_Weight(
                 date_filed = now(),
                 ref_farm_id = farmID,
@@ -1278,15 +1279,19 @@ def addWeight(request, farmID):
             weightList = []
 
             for i in request.POST.getlist('input-kls'):
-                weight.total_kls += float(i)
-                weightList.append(Hog_Weight(
-                    farm_weight = weight,
-                    final_weight = round(float(i), 2)
-                ))
+                if i != "":
+                    weight.total_kls += float(i)
+                    weightList.append(Hog_Weight(
+                        farm_weight = weight,
+                        final_weight = round(float(i), 2)
+                    ))
+
+                    farm.total_pigs = farm.total_pigs - 1
 
             weight.total_numHeads = len(request.POST.getlist('input-kls'))
             weight.ave_weight = round(weight.total_kls / weight.total_numHeads, 2)
 
+            farm.save()
             weight.save()
             Hog_Weight.objects.bulk_create(weightList)
             latestPigpen.final_weight =  weight
@@ -1295,8 +1300,8 @@ def addWeight(request, farmID):
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
         
-        else:
-            messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
+        # else:
+        #     messages.error(request, "Current farm already has starter and fattener weight.", extra_tags="add-weight")
 
         
     weightForm = WeightForm()
@@ -1587,6 +1592,7 @@ def weightRange(request):
                         farm_baseDict.update({farmID: farm_baseDict.get(farmID) + 1})
                     except:
                         farm_baseDict.update({farmID: 1})
+
                 elif f.final_weight in range(60, 80):
                     count_low += 1
                     try:
@@ -1607,6 +1613,7 @@ def weightRange(request):
                         farm_highDict.update({farmID: farm_highDict.get(farmID) + 1})
                     except:
                         farm_highDict.update({farmID: 1})
+                        
                 elif f.final_weight <= 121:
                     count_ceil += 1
                     try:

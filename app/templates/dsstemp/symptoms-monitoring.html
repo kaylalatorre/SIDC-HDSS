@@ -76,13 +76,10 @@
                                 <h3 class="di-no-affected {% if susCases.PED.hogs_total > 0 %} txt-negative {% endif %} ">{{ susCases.PED.hogs_total }}</h3>
                             </div>
                         </button>
-                    </div>
-                    <!-- Tab Content -->
-                    <div class="tab-content tab-content-scroll" id="v-pills-tabContent" style="width: 70%">
-                        <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
-                            {% if  susCases.ASF.hogs_total == 0 %}
-                            <div>
-                                No suspected cases.
+                        <button class="nav-link" id="v-pills-others-tab" data-bs-toggle="pill" data-bs-target="#v-pills-others" type="button" role="tab" aria-controls="v-pills-others" aria-selected="false">
+                            <div class="disease-info">
+                                <p class="di-disease">Unknown/Undetected by System</p>
+                                <h3 class="di-no-affected {% if susCases.Others.hogs_total > 0 %} txt-negative {% endif %} ">{{ susCases.Others.hogs_total }}</h3>
                             </div>
                             {% else %}
                                 <table class="table">
@@ -153,39 +150,39 @@
                             {% endif %}
                         </div>
 
-                        <div class="tab-pane fade" id="v-pills-csf" role="tabpanel" aria-labelledby="v-pills-csf-tab">
-                            {% if  susCases.CSF.hogs_total == 0 %}
-                            <div>
-                                No suspected cases.
-                            </div>
-                            {% else %}
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Incident Involved</th>
-                                            <th>Farm Affected</th>
-                                            <th>No. of Pigs Affected</th>
-                                            <th width="20%">Symptoms</th>
-                                            <th width="25%">Result</th> 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for disease in susCases.CSF.diseaseList %}                        
-                                        <tr>
-                                            <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                            <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                            <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                            <td data-label="Symptoms"> 
-                                                <ul class="ul-symptoms">
-                                                    {% for symptom in disease.symptoms %}
-                                                    <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </td>
-                                            <td data-label="Confirmed">
-                                                
-                                                <!-- hidden result display -->
-                                                {% if disease.lab_result %}
+                   <div class="tab-pane fade" id="v-pills-csf" role="tabpanel" aria-labelledby="v-pills-csf-tab">
+                       {% if  susCases.CSF.hogs_total == 0 %}
+                       <div>
+                           No suspected cases.
+                       </div>
+                       {% else %}
+                           <table class="table">
+                               <thead>
+                                   <tr>
+                                       <th>Incident Involved</th>
+                                       <th>Farm Affected</th>
+                                       <th>No. of Pigs Affected</th>
+                                       <th width="20%">Symptoms</th>
+                                       <th width="25%">Result</th> 
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   {% for disease in susCases.CSF.diseaseList %}                        
+                                   <tr>
+                                       <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                       <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                       <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                       <td data-label="Symptoms"> 
+                                           <ul class="ul-symptoms">
+                                               {% for symptom in disease.symptoms %}
+                                               <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                               {% endfor %}
+                                           </ul>
+                                       </td>
+                                       <td data-label="Confirmed">
+                                           
+                                           <!-- hidden result display -->
+                                           {% if disease.lab_result == False %}
 
                                                 <div>
                                                     <label class="bold-lbl">Results</label> 
@@ -488,11 +485,9 @@
                                                     <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
-                                                
-                                                {% else %}
-                                                <!-- default - input button -->
-                                                <div class="flex">
-                                                    <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
+                                                    <label class="form-check-label" for="inlineRadio2">Negative</label>
                                                 </div>
 
                                                 <!-- hidden reference form -->
@@ -511,20 +506,23 @@
                                                         </div>
                                                     </form>
                                                 </div>
+                                            </form>
+                                        </div>
 
-                                                {% endif %}
-                                            </td>
-                                            
-                                        </tr>
-                                        {% endfor %}
-                        
-                                    </tbody>
-                                </table>
-                            {% endif %}
-                        </div>
-                    </div>
+                                        {% endif %}
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                
+                            </tbody>
+                        </table>
+                    {% endif %}
                 </div>
-            </div>
-        </div>        
+
+               </div>
+           </div>
+       </div>
+        
     </div>      
 </section>

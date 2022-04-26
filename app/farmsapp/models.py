@@ -120,12 +120,28 @@ class Hog_Symptoms(models.Model):
 # DISEASE CASE Table
 class Disease_Case(models.Model):
     disease_name        = models.CharField(max_length=100)
+
     lab_result          = models.BooleanField(null=True, blank=True)
     lab_ref_no          = models.IntegerField(null=True, blank=True)
+
     date_updated        = models.DateTimeField()
+    start_date          = models.DateTimeField(null=True, blank=True)
+    end_date            = models.DateTimeField(null=True, blank=True)
 
     incid_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
+    num_pigs_affect     = models.IntegerField(null=True, blank=True)
+
+# DISEASE RECORD Table
+class Disease_Record(models.Model):
+    date_filed          = models.DateTimeField()
+    num_recovered       = models.IntegerField(null=True, blank=True)
+    num_died            = models.IntegerField(null=True, blank=True)
+
+    ref_disease_case    = models.ForeignKey('Disease_Case', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
+    total_died          = models.IntegerField(null=True, blank=True)
+    total_recovered     = models.IntegerField(null=True, blank=True)
 
 # HOG RAISER Table
 class Hog_Raiser(models.Model):
@@ -209,17 +225,18 @@ class Activity(models.Model):
 
     date                = models.DateField()
 
-    TYPE_CHOICES        = [('Delivery of Feeds', 'Delivery of Feeds'),
+    TYPE_CHOICES        = [('Delivery of Veterinary Supplies', 'Delivery of Veterinary Supplies'),
                             ('Delivery of Medicine', 'Delivery of Medicine'),
-                            ('Delivery of Pigs', 'Delivery of Pigs'),
+                            ('Monthly Inventory', 'Monthly Inventory'),
+                            ('Blood Collection', 'Blood Collection'),
                             ('Vaccinations', 'Vaccinations'),
                             ('Inspection', 'Inspection'),
-                            ('Trucking', 'Trucking'),
+                            ('Sold Pigs', 'Sold Pigs'),
                             ('Other', 'Other')]
 
     trip_type           = models.CharField(max_length=50, choices=TYPE_CHOICES)
-    time_departure      = models.TimeField()
     time_arrival        = models.TimeField()
+    time_departure      = models.TimeField()
     num_pigs_inv        = models.IntegerField(null=True, blank=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 

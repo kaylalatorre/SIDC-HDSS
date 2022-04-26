@@ -7,10 +7,10 @@ register = template.Library()
 # for Symptoms Monitoring, Tentative Diagnosis; 0 == Positive, 1 == Negative, 2 == Pending.
 @register.filter
 def labResult(strField):
-    if strField == 0: 
+    if strField == True: 
         return "Positive"
-    if strField == 1:
+    if strField == False:
         return "Negative"
-    if strField == 2: 
-        return "Pending"
+    # if strField == 2: 
+    #     return "Pending"
     

@@ -37,7 +37,7 @@
            </div>
 
             <div class="input-group">
-                <table class="table">
+                <table class="table" id="mortTable">
                     <thead>
                         <tr>
                             <th>Mortality Date</th>
@@ -59,33 +59,36 @@
                             <td data-label="To Date"> <p class="num_toDate">-</p> </td>
                             <td data-label="Mortality Rate"> <p class="mortality_rate">-</p> </td>
                             <td data-label="Source" id="source">
-                                <select class="form-select" id="input-source" name="source" onchange="switchMortCase(this)">
-                                    <option hidden>- - -</option>
-                                    <option value="Incident Case">Incident Case</option>
-                                    <option value="Disease Case">Disease Case</option>
-                                    <option value="Unknown">Unknown</option>
-                                </select> 
-                                <!-- <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-incident" value="Incident Case" onclick="switchMortCase(this)">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sourceOptions-0" id="src-incident" value="Incident Case" onclick="switchMortCase(this)">
                                     <label class="form-check-label" for="src-incident">Incident Case</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-disease" value="Disease Case" onclick="switchMortCase(this)">
+                                    <input class="form-check-input" type="radio" name="sourceOptions-0" id="src-disease" value="Disease Case" onclick="switchMortCase(this)">
                                     <label class="form-check-label" for="src-disease">Disease Case</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="sourceOptions" id="src-unknown" value="Unknown" onclick="switchMortCase(this)">
+                                    <input class="form-check-input" type="radio" name="sourceOptions-0" id="src-unknown" value="Unknown" onclick="switchMortCase(this)">
                                     <label class="form-check-label" for="src-unknown">Unknown</label>
-                                </div> -->
+                                </div>
                             </td>
                             <td data-label="Case No." id="case_no" class="case_no" > 
-                                <select class="form-select" id="input-case" name="case">
+                                <select class="form-select input-case" id="input-case" name="case">
                                     <option hidden>- - -</option>
+                                    <option disabled>- - -</option>
                                     {% for icase in incid_cases %}
-                                    <option class="incident-case">{{icase.id}}</option>
+                                        {% if icase != None %}
+                                        <option class="incident-case">{{icase.id}}</option>
+                                        {% else %}
+                                        <option class="incident-case" hidden>{{icase.id}}</option>
+                                        {% endif %}
                                     {% endfor %}
                                     {% for dcase in dis_cases %}
-                                    <option class="disease-case">{{dcase}}</option>
+                                        {% if dcase != None %}
+                                            <option class="disease-case">{{dcase}}</option>
+                                        {% else %}
+                                            <option class="disease-case" hidden>{{dcase}}</option>
+                                        {% endif %}
                                     {% endfor %}
                                 </select>
                             </td>
