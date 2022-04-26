@@ -106,7 +106,7 @@ ul .li-symptoms { list-style: circle!important;}
     opacity: 0; 
     height: 8px; 
     margin-top: 16px;
-    display: flex;
+    display: hidden;
     max-width: 100%;
     vertical-align: middle;
 }
