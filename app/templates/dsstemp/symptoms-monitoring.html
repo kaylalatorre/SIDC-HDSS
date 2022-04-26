@@ -109,11 +109,13 @@
                                                 </ul>
                                             </td>
                                             <td data-label="Confirmed">
+                                                
                                                 <!-- hidden result display -->
                                                 {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -127,14 +129,8 @@
                                                 <div class="box-style diagnosis-result-ref hide">
                                                     <form>
                                                         <label class="bold-lbl">Laboratory Result</label> <br>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value="0" checked>
-                                                            <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                        </div>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
                                                         
                                                         <label class="bold-lbl">Laboratory Reference</label> <br>
                                                         <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
@@ -192,7 +188,8 @@
                                                 {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -206,14 +203,8 @@
                                                 <div class="box-style diagnosis-result-ref hide">
                                                     <form>
                                                         <label class="bold-lbl">Laboratory Result</label> <br>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value="0" checked>
-                                                            <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                        </div>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
                                                         
                                                         <label class="bold-lbl">Laboratory Reference</label> <br>
                                                         <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
@@ -266,12 +257,13 @@
                                                 </ul>
                                             </td>
                                             <td data-label="Confirmed">
-                                                                                            
+                                                
                                                 <!-- hidden result display -->
                                                 {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -280,19 +272,13 @@
                                                 <div class="flex">
                                                     <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
                                                 </div>
-                                                
+
                                                 <!-- hidden reference form -->
                                                 <div class="box-style diagnosis-result-ref hide">
                                                     <form>
                                                         <label class="bold-lbl">Laboratory Result</label> <br>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value="0" checked>
-                                                            <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                        </div>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
                                                         
                                                         <label class="bold-lbl">Laboratory Reference</label> <br>
                                                         <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
@@ -345,11 +331,13 @@
                                                 </ul>
                                             </td>
                                             <td data-label="Confirmed">
+                                                
                                                 <!-- hidden result display -->
                                                 {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -358,19 +346,13 @@
                                                 <div class="flex">
                                                     <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
                                                 </div>
-                                                
+
                                                 <!-- hidden reference form -->
                                                 <div class="box-style diagnosis-result-ref hide">
                                                     <form>
                                                         <label class="bold-lbl">Laboratory Result</label> <br>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value="0" checked>
-                                                            <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                        </div>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
                                                         
                                                         <label class="bold-lbl">Laboratory Reference</label> <br>
                                                         <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
@@ -423,11 +405,13 @@
                                                 </ul>
                                             </td>
                                             <td data-label="Confirmed">
+                                                
                                                 <!-- hidden result display -->
                                                 {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -436,19 +420,13 @@
                                                 <div class="flex">
                                                     <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
                                                 </div>
-                                                
+
                                                 <!-- hidden reference form -->
                                                 <div class="box-style diagnosis-result-ref hide">
                                                     <form>
                                                         <label class="bold-lbl">Laboratory Result</label> <br>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value="0" checked>
-                                                            <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                        </div>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
                                                         
                                                         <label class="bold-lbl">Laboratory Reference</label> <br>
                                                         <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
@@ -501,11 +479,13 @@
                                                 </ul>
                                             </td>
                                             <td data-label="Confirmed">
+                                                
                                                 <!-- hidden result display -->
                                                 {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -514,22 +494,16 @@
                                                 <div class="flex">
                                                     <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
                                                 </div>
-                                                
+
                                                 <!-- hidden reference form -->
                                                 <div class="box-style diagnosis-result-ref hide">
                                                     <form>
                                                         <label class="bold-lbl">Laboratory Result</label> <br>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value="0" checked>
-                                                            <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value="1">
-                                                            <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                        </div>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
                                                         
                                                         <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                        <input type="number" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
                                                 
                                                         <div class="flex" style="margin-top: 8px">
                                                             <button class="secondary-btn submit-reference" type="submit" id="PED:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
