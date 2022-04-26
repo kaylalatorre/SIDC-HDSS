@@ -1003,27 +1003,111 @@ def diseaseMonitoring(request, strDisease):
     #     total_recovered = F("")
     # )
 
+    data = []
+
     if request.method == 'POST':
         # confrimed cases
-        casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(ref_disease_case__end_date__isnull=True).annotate(
+        casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
             lab_ref_no       = F("ref_disease_case__lab_ref_no"),
             incid_no         = F("ref_disease_case__incid_case"),
             num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
         ).values()
-        debug(casesQry)
+        # debug(casesQry)
 
-        diseaseInfo = {
+        dTable = {
             'diseaseName':strDisease,
             'confirmedcases': []
         }
-        for case in casesQry:
-            diseaseInfo['confirmedcases'] = case
 
-        # Chart
-        # Query all cases of strDisease
+        for case in casesQry:
+            dTable['confirmedcases'] = case
+
+        dChart = {
+            'confirmed': [],
+            'recovered': [],
+            'died': [] }
+
+        # prepare time range of line chart
+        dateToday = datetime.now(timezone.utc)
+        dateMonthsAgo = dateToday - timedelta(30)
         
 
-    return render(request, 'dsstemp/dm.html')
+        # get all disease_record with diseas_name
+        dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
+            date_filed__range=(now()-timedelta(days=30), now())).annotate(
+                confirmed_pigs = F("ref_disease_case__num_pigs_affect")
+            ).order_by("date_filed").all()
+
+        # for each record
+        # 	if date_filed not in Recovered
+        # 		add to Recovered
+        # 	else
+        # 		increase Recovered count
+        confirmedCtr = 0
+        recoveredCtr = 0
+        diedCtr      = 0
+        case_currDate = 0
+        # # NULL case      
+        try:
+            case_currDate = dcasesQry.first().date_filed
+        except:
+            dChart['confirmed'].append([dateMonthsAgo.date(), 0])
+            dChart['confirmed'].append([dateToday.date(), 0])
+            dChart['recovered'].append([dateMonthsAgo.date(), 0])
+            dChart['recovered'].append([dateToday.date(), 0])
+            dChart['died'].append([dateMonthsAgo.date(), 0])
+            dChart['died'].append([dateToday.date(), 0])
+            # mortSeries.append([area.area_name, mortData])
+
+        if case_currDate != dateMonthsAgo.date():
+            # start point of series data
+            dChart['confirmed'].append([dateMonthsAgo.date(), 0])
+            dChart['recovered'].append([dateMonthsAgo.date(), 0])
+            dChart['died'].append([dateMonthsAgo.date(), 0])
+
+
+        for d in dcasesQry:
+            try:
+                case_nextDate = d.date_filed
+            except:
+                continue
+            
+            # for confirmed cases
+            if case_currDate == case_nextDate:
+                
+                confirmedCtr += d.confirmed_pigs
+
+                recoveredCtr += d.num_recovered
+                diedCtr += d.num_died
+                # recovered ctr += 1
+                # died ctr += 0
+            
+            else :
+                # append finalized [date, count]
+                caseObj = [ case_currDate, confirmedCtr ]
+                dChart['confirmed'].append(caseObj)
+
+                dChart['recovered'].append([ case_currDate, recoveredCtr ])
+                dChart['died'].append([ case_currDate, diedCtr ])
+
+                # move to next date
+                confirmedCtr = d.confirmed_pigs
+                case_currDate = case_nextDate
+
+        dChart['confirmed'].append([case_currDate, confirmedCtr])
+
+        # end point of series data
+        if case_currDate != dateToday.date():
+            dChart['confirmed'].append([dateToday.date(), 0])
+
+        debug(dChart)
+        # mortSeries.append([area.area_name, mortData])
+            
+        data.append(dChart)
+
+    return JsonResponse(data, safe=False)
+
+    # return render(request, 'dsstemp/dm.html')
     
 def actionRecommendation(request):
     return render(request, 'dsstemp/action-rec.html')

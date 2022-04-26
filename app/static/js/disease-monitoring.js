@@ -1,7 +1,19 @@
 // DISEASE MONITORING
 $(document).ready(async function () {
     if($('#dm-confirmed-per').length) {
+
+        ajaxCSRF();
+        console.log('here');
+        metadata = await $.ajax({
+            type: 'POST',
+            url: '/disease-monitoring/ASF/', // add disease name
+            success: function(response){
+                return response;
+            }
+        });
         
+        console.log(metadata);
+
         // CASES per disease line chart
         if($('#dm-confirmed-per').length) {
             Highcharts.chart('dm-confirmed-per', {
