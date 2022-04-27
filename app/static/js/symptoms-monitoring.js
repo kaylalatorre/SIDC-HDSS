@@ -30,7 +30,8 @@ $(document).ready(async function () {
 
             var incSeries = [];
             for(var i = 0; i < metadata[0].length; i++){
-
+                // console.log(metadata[0][i][1])
+                
                 incSeries.push({
                     name: metadata[0][i][0],
                     data: metadata[0][i][1].map(function(elem){
@@ -44,6 +45,8 @@ $(document).ready(async function () {
                     })
                 });
             }
+
+            // console.log(incSeries);
 
             Highcharts.chart('dm-active-incid', {
                 title: {
@@ -102,6 +105,8 @@ $(document).ready(async function () {
                 });
             }
 
+            // console.log(mortSeries);
+
             Highcharts.chart('dm-mortality', {
                 title: {
                     text: 'Mortality Reports for the past month'
@@ -151,6 +156,8 @@ $(document).ready(async function () {
                 });
             }
 
+            // console.log(symSeries);
+            
             Highcharts.chart('dm-symptoms-rep', {
                 chart: {
                     type: 'bar'

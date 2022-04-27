@@ -3,7 +3,7 @@ $(document).ready(async function () {
     if($('#dm-confirmed-per').length) {
 
         ajaxCSRF();
-        console.log('here');
+        // console.log('here');
         metadata = await $.ajax({
             type: 'POST',
             url: '/disease-monitoring/ASF/', // add disease name
@@ -13,20 +13,84 @@ $(document).ready(async function () {
         });
         
         console.log(metadata);
+        // console.log(metadata[0]);
+        // console.log(metadata[0]['confirmed'][0]);
+
+
+        var today = new Date();
+        // console.log(today);
+        
+        var dateBefore = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
+        // console.log(dateBefore);
+    
+        var dateToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+        // console.log(dateToday);
 
         // CASES per disease line chart
         if($('#dm-confirmed-per').length) {
+
+            var disSeries = [];
+
+            disSeries.push({
+                name: 'Confirmed',
+                data: metadata[0]['confirmed'].map(function(elem){
+                    try {
+                        var dStr = elem[0].split('-');
+                    } catch{
+                        return metadata[0]['confirmed'];
+                    }
+
+                    return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                })
+            });
+
+            disSeries.push({
+                name: 'Recovered',
+                data: metadata[0]['recovered'].map(function(elem){
+                    try {
+                        var dStr = elem[0].split('-');
+                    } catch{
+                        return metadata[0]['recovered'];
+                    }
+
+                    return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                })
+            });
+
+            disSeries.push({
+                name: 'Died',
+                data: metadata[0]['died'].map(function(elem){
+                    try {
+                        var dStr = elem[0].split('-');
+                    } catch{
+                        return metadata[0]['died'];
+                    }
+
+                    return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
+                })
+            });
+
+            // console.log(disSeries);
+
             Highcharts.chart('dm-confirmed-per', {
                 chart: {
                     type: 'line'
                 },
                 title: {
-                    text: 'Title'
+                    text: 'No. of Cases'
                 },
                 xAxis: {
-                    title: {
-                        text: 'Dates'
-                    },
+                    type: 'datetime',
+                    startOnTick: true,
+                    endOnTick: true,
+                    min: dateBefore,
+                    max: dateToday,
+                    dateTimeLabelFormats: {
+                        week: '%e of %b' },
+                    units: [
+                        [ 'week', [1] ],
+                        [ 'month', [1] ]
+                    ]
                 },
                 yAxis: {
                     title: {
@@ -34,20 +98,7 @@ $(document).ready(async function () {
                     },
                 },
             
-                series: [
-                    {
-                        name: 'Confirmed',
-                        data: [29, 5, 64, 12, 10]
-                    },
-                    {
-                        name: 'Recovered',
-                        data: [9, 75, 14, 12, 14]
-                    },
-                    {
-                        name: 'Died',
-                        data: [29, 75, 64, 12, 100]
-                    }
-                ] 
+                series: disSeries,
             })
         }
 

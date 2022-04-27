@@ -1047,6 +1047,7 @@ def diseaseMonitoring(request, strDisease):
         recoveredCtr = 0
         diedCtr      = 0
         case_currDate = 0
+        
         # # NULL case      
         try:
             case_currDate = dcasesQry.first().date_filed
@@ -1099,6 +1100,9 @@ def diseaseMonitoring(request, strDisease):
         # end point of series data
         if case_currDate != dateToday.date():
             dChart['confirmed'].append([dateToday.date(), 0])
+            dChart['recovered'].append([dateToday.date(), 0])
+            dChart['died'].append([dateToday.date(), 0])
+
 
         debug(dChart)
         # mortSeries.append([area.area_name, mortData])
