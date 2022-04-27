@@ -1047,10 +1047,11 @@ def diseaseMonitoring(request, strDisease):
         recoveredCtr = 0
         diedCtr      = 0
         case_currDate = 0
+        # case_nextDate = 0
         
         # # NULL case      
         try:
-            case_currDate = dcasesQry.first().date_filed
+            case_currDate = dcasesQry.first().date_filed.date()
         except:
             dChart['confirmed'].append([dateMonthsAgo.date(), 0])
             dChart['confirmed'].append([dateToday.date(), 0])
@@ -1067,35 +1068,94 @@ def diseaseMonitoring(request, strDisease):
             dChart['died'].append([dateMonthsAgo.date(), 0])
 
 
-        for d in dcasesQry:
-            try:
-                case_nextDate = d.date_filed
-            except:
-                continue
-            
+        dCaseList = []
+        case_nextDate = case_currDate
+        test = iter(dcasesQry)
+        debug(type(test))
+        next(test, 'end')
+        for d in dcasesQry: #3
+            debug(d)
+            # debug(dIndex)
+            # debug(dElem)
+        # for index, elem in enumerate(a_list):
+
+            # try:
+            #     case_nextDate = dElem.date_filed.date()
+            #     debug("bEnd")
+            # except:
+            #     continue
+            debug("Start")
+            debug(case_currDate)
+            debug(case_nextDate)
+            debug("END")
             # for confirmed cases
             if case_currDate == case_nextDate:
                 
-                confirmedCtr += d.confirmed_pigs
+                if d.ref_disease_case not in dCaseList:
+                    dCaseList.append([d.ref_disease_case])
+
+                    confirmedCtr += d.confirmed_pigs
 
                 recoveredCtr += d.num_recovered
                 diedCtr += d.num_died
-                # recovered ctr += 1
-                # died ctr += 0
-            
+                # debug("Changing Next Date")
+                # if dIndex < len(dcasesQry):
+                # debug(bool(dIndex+1 < len(dcasesQry) and dIndex - 1 >= 0))
+                dNext = next(test, 'end') 
+                if dNext != 'end':
+                    case_nextDate = dNext.date_filed.date()
+                    debug(case_nextDate)
+                # if (dIndex+1 < len(dcasesQry) and dIndex >= 0):
+                # index >= 0 and index < len(list)
+                    # debug("Changed")
+                    
+                    # case_nextDate = dcasesQry[dIndex+1].date_filed.date()
+                    # next_el = str(a_list[index+1])
+                # else:
+                #     debug(dIndex)
+                #     debug(len(dcasesQry))
+                #     debug(bool(dIndex+1 < len(dcasesQry)))
+                #     debug(dIndex - 1)
+                #     debug(bool(dIndex - 1 >= 0))
+
             else :
                 # append finalized [date, count]
-                caseObj = [ case_currDate, confirmedCtr ]
-                dChart['confirmed'].append(caseObj)
+                if confirmedCtr > 0:
+                    # debug(confirmedCtr)
+                    caseObj = [ case_currDate, confirmedCtr ]
+                    dChart['confirmed'].append(caseObj)
 
-                dChart['recovered'].append([ case_currDate, recoveredCtr ])
-                dChart['died'].append([ case_currDate, diedCtr ])
+                if recoveredCtr > 0:
+                    # debug(recoveredCtr)
+                    dChart['recovered'].append([ case_currDate, recoveredCtr ])
+
+                if diedCtr > 0:
+                    # debug(diedCtr)
+                    dChart['died'].append([ case_currDate, diedCtr ])
 
                 # move to next date
-                confirmedCtr = d.confirmed_pigs
+                confirmedCtr = 0
+                recoveredCtr = 0
+                diedCtr = 0
+
                 case_currDate = case_nextDate
  
-        dChart['confirmed'].append([case_currDate, confirmedCtr])
+        # for end points
+        # debug("confirmedEnd")
+        # debug(case_currDate)
+        # debug(confirmedCtr)
+        # debug(recoveredCtr)
+        # debug(diedCtr)
+        
+        if confirmedCtr > 0:
+            # debug("confirmedEndIF")
+            dChart['confirmed'].append([case_currDate, confirmedCtr])
+        if recoveredCtr > 0:
+            # debug("recoveredEndIF")
+            dChart['recovered'].append([ case_currDate, recoveredCtr ])
+        if diedCtr > 0:
+            # debug("diedEndIF")
+            dChart['died'].append([ case_currDate, diedCtr ])
 
         # end point of series data
         if case_currDate != dateToday.date():
