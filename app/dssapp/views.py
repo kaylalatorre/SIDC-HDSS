@@ -1001,7 +1001,7 @@ def diseaseMonitoring(request, strDisease):
 
     data = []
     debug(request.method)
-    
+    print(strDisease)
 
     # confrimed cases
     casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
@@ -1009,7 +1009,6 @@ def diseaseMonitoring(request, strDisease):
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
     ).order_by("-date_filed", "lab_ref_no").values()
-    # ).order_by("date_filed", "lab_ref_no").distinct("lab_ref_no").values()
     # debug(casesQry)
 
     dTable = []
@@ -1107,13 +1106,10 @@ def diseaseMonitoring(request, strDisease):
         dChart['recovered'].append([dateToday.date(), 0])
         dChart['died'].append([dateToday.date(), 0])
 
-    # debug(dCaseList)
     # debug(dTable)
-    # debug(dChart)
 
     # append data to return (table, line chart, map, SEIRD) 
     data.append(dTable)
-    # data.append(dChart)
     # debug(data)
     # debug(data[0].dCases)
     # debug(data[0]['dCases']['lab_ref_no'])
@@ -1126,8 +1122,8 @@ def diseaseMonitoring(request, strDisease):
 def load_diseaseCharts(request, strDisease):
     
     data = []
-    debug(request.method)
-    debug("loading charts")    
+    # debug(request.method)
+    # debug("loading charts")    
 
     dChart = {
         'confirmed': [],
@@ -1215,7 +1211,7 @@ def load_diseaseCharts(request, strDisease):
 
     # append data to return (table, line chart, map, SEIRD) 
     data.append(dChart)
-    debug(data)
+    # debug(data)
 
     return JsonResponse(data, safe=False)
     

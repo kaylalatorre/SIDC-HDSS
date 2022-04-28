@@ -32,23 +32,27 @@
                             </tr>
                         </thead>
                         <tbody>
+
+                            {% for case in disData.0.1 %}
                             <tr>
-                                <td>{{ data.dTable.dCases.lab_ref_no }}</td>
-                                <td>{{ data.dTable.dCases.incid_no }}</td>
-                                <td>{{ data.dTable.dCases.num_pigs_affect }}</td>
+                                <td>{{ case.lab_ref_no }}</td>
+                                <td>{{ case.incid_no }}</td>
+                                <td>{{ case.num_pigs_affect }}</td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">0</p>
+                                        <p class="flex-item">{{ case.total_recovered }}</p>
                                         <button class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
                                     </div>                 
                                 </td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">0</p>
+                                        <p class="flex-item">{{ case.total_died }}</p>
                                         <button class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
                                     </div>
                                 </td>
                             </tr>
+                            {% endfor %}
+
                         </tbody>                               
                     </table>
                 </div>
