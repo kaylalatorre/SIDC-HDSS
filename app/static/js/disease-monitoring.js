@@ -13,7 +13,7 @@ $(document).ready(async function () {
             }
         });
         
-        console.log(metadata);
+        // console.log(metadata);
 
         var today = new Date();
         // console.log(today);

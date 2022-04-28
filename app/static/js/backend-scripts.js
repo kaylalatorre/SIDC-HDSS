@@ -1358,11 +1358,11 @@ function getDiseaseInfo(strDisease){
         //     }
         // });
 
-        // for loading selected disease data
-        $('#dContent'+strDisease).load(url + ' #dContent', function (response) {
-            console.log(response);
-            $(this).children().unwrap();
-        });
+        // // for loading selected disease data
+        // $('#dContent'+strDisease).load(url + ' #dContent', function (response) {
+        //     console.log(response);
+        //     $(this).children().unwrap();
+        // });
 
     } catch (error) {
         console.log(error);

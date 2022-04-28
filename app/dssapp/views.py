@@ -1000,8 +1000,9 @@ def diseaseMonitoring(request, strDisease):
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
 
     data = []
-
+    debug("OUTPOST")
     if request.method == 'POST':
+        debug("INPOST")
         # confrimed cases
         casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
             lab_ref_no       = F("ref_disease_case__lab_ref_no"),
@@ -1010,13 +1011,14 @@ def diseaseMonitoring(request, strDisease):
         ).values()
         # debug(casesQry)
 
-        dTable = {
-            'diseaseName':strDisease,
-            'dCases': []
-        }
+        dTable = []
+        dTable.append(strDisease)
+        # [strDisease, []]
 
+        cases = []
         for case in casesQry:
-            dTable['dCases'] = case
+            cases.append(case)
+        dTable.append(cases)
 
         dChart = {
             'confirmed': [],
@@ -1101,13 +1103,20 @@ def diseaseMonitoring(request, strDisease):
             dChart['died'].append([dateToday.date(), 0])
 
         # debug(dCaseList)
+        # debug(dTable)
         # debug(dChart)
 
         # append data to return (table, line chart, map, SEIRD) 
         data.append(dTable)
         data.append(dChart)
-    
-    return render(request, 'dsstemp/disease-content.html', {"data": data})
+        debug(data)
+        # debug(data[0].dCases)
+        # debug(data[0]['dCases']['lab_ref_no'])
+
+    if request.method == 'POST':
+        return render(request, 'dsstemp/disease-monitoring.html', {"data": data})
+    return data
+    # return render(request, 'dsstemp/disease-monitoring.html', {"dTable": dTable})
 
     # assuming that var disData = data
     # {{disData.dTable.confirmedcases.ref_no}}
