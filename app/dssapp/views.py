@@ -1051,12 +1051,7 @@ def diseaseMonitoring(request, strDisease):
         try:
             case_currDate = dcasesQry.first().date_filed
         except:
-            dChart['confirmed'].append([dateMonthsAgo.date(), 0])
-            dChart['confirmed'].append([dateToday.date(), 0])
-            dChart['recovered'].append([dateMonthsAgo.date(), 0])
-            dChart['recovered'].append([dateToday.date(), 0])
-            dChart['died'].append([dateMonthsAgo.date(), 0])
-            dChart['died'].append([dateToday.date(), 0])
+            pass
             # mortSeries.append([area.area_name, mortData])
 
         if case_currDate != dateMonthsAgo.date():
@@ -1065,36 +1060,49 @@ def diseaseMonitoring(request, strDisease):
             dChart['recovered'].append([dateMonthsAgo.date(), 0])
             dChart['died'].append([dateMonthsAgo.date(), 0])
 
-
+        dCaseList = []
         for d in dcasesQry:
             try:
-                case_nextDate = d.date_filed
+                case_nextDate = d.date_filed.date()
             except:
                 continue
-            
+
             # for confirmed cases
             if case_currDate == case_nextDate:
-                
-                confirmedCtr += d.confirmed_pigs
+                if d.ref_disease_case not in dCaseList:
+                    dCaseList.append([d.ref_disease_case])
+                    confirmedCtr += d.confirmed_pigs
 
                 recoveredCtr += d.num_recovered
                 diedCtr += d.num_died
                 # recovered ctr += 1
                 # died ctr += 0
-            
-            else :
-                # append finalized [date, count]
-                caseObj = [ case_currDate, confirmedCtr ]
-                dChart['confirmed'].append(caseObj)
 
-                dChart['recovered'].append([ case_currDate, recoveredCtr ])
-                dChart['died'].append([ case_currDate, diedCtr ])
+            else :
+                if confirmedCtr > 0:
+                    # append finalized [date, count]
+                    caseObj = [ case_currDate, confirmedCtr ]
+                    dChart['confirmed'].append(caseObj)
+                if recoveredCtr > 0:
+                    dChart['recovered'].append([ case_currDate, recoveredCtr ])
+                if diedCtr > 0:    
+                    dChart['died'].append([ case_currDate, diedCtr ])
 
                 # move to next date
                 confirmedCtr = d.confirmed_pigs
+                recoveredCtr = d.num_recovered
+                diedCtr = d.num_died
                 case_currDate = case_nextDate
- 
-        dChart['confirmed'].append([case_currDate, confirmedCtr])
+
+        if confirmedCtr > 0:
+            # debug("confirmedEndIF")
+            dChart['confirmed'].append([case_currDate, confirmedCtr])
+        if recoveredCtr > 0:
+            # debug("recoveredEndIF")
+            dChart['recovered'].append([ case_currDate, recoveredCtr ])
+        if diedCtr > 0:
+            # debug("diedEndIF")
+            dChart['died'].append([ case_currDate, diedCtr ])
 
         # end point of series data
         if case_currDate != dateToday.date():
