@@ -81,7 +81,15 @@
                                 <p class="di-disease">Unknown/Undetected by System</p>
                                 <h3 class="di-no-affected {% if susCases.Others.hogs_total > 0 %} txt-negative {% endif %} ">{{ susCases.Others.hogs_total }}</h3>
                             </div>
-                            {% else %}
+                <!-- Tab Content -->
+                <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
+                    <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
+                        {% if  susCases.ASF.hogs_total == 0 %}
+                        <div>
+                            No suspected cases.
+                        </div>
+                        {% else %}
+
                                 <table class="table">
                                     <thead>
                                         <tr>
