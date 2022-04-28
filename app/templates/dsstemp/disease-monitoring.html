@@ -50,7 +50,7 @@
         <div class="tab-content" id="dm-pills-tabContent">
             <div class="tab-pane fade show active" id="dm-pills-asf" role="tabpanel" aria-labelledby="dm-pills-asf-tab">
                 <!-- ASF Content -->
-                <div class="flex">
+                <div class="flex" id="dContent" >
                     <div class="flex-item">
                         <h3>No. of Cases</h3>
                         <div class="flex">
@@ -71,6 +71,7 @@
                         <!-- Confirmed Cases Table -->
                         <div class="no-print" style="margin-right: 0!important">
                             <div>
+                                <p>{{ dTable }}</p>
                                 <h3>Confirmed Cases</h3>
                                 <div class="box-style scroll" style="height: 32vh;">
                                     <table class="table">
@@ -84,23 +85,27 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+
+                                            {% for case in data.0.1 %}
                                             <tr>
-                                                <td>1232234</td>
-                                                <td>013</td>
-                                                <td>20</td>
+                                                <td>{{ case.lab_ref_no }}</td>
+                                                <td>{{ case.incid_no }}</td>
+                                                <td>{{ case.num_pigs_affect }}</td>
                                                 <td>
                                                     <div class="flex">
-                                                        <p class="flex-item">0</p>
+                                                        <p class="flex-item">{{ case.total_recovered }}</p>
                                                         <button class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
                                                     </div>                 
                                                 </td>
                                                 <td>
                                                     <div class="flex">
-                                                        <p class="flex-item">0</p>
+                                                        <p class="flex-item">{{ case.total_died }}</p>
                                                         <button class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
                                                     </div>
                                                 </td>
                                             </tr>
+                                            {% endfor %}
+
                                         </tbody>                               
                                     </table>
                                 </div>
@@ -159,11 +164,10 @@
                         </div>
                     </div>
                 </div>
-                
-                
             </div>
             <div class="tab-pane fade" id="dm-pills-csf" role="tabpanel" aria-labelledby="dm-pills-csf-tab">
                 <!-- CSF Content -->
+                <div class="flex" id="dContent" ></div>
             </div>
             <div class="tab-pane fade" id="dm-pills-iav" role="tabpanel" aria-labelledby="dm-pills-iav-tab">
                 <!-- IAV Content -->

@@ -6,16 +6,14 @@ $(document).ready(async function () {
         // console.log('here');
         metadata = await $.ajax({
             type: 'POST',
-            url: '/disease-monitoring/ASF/', // add disease name
+            url: '/disease-monitoring/ASF/',
+            // url: '/disease-monitoring/ASF/', // add disease name
             success: function(response){
                 return response;
             }
         });
         
-        console.log(metadata);
-        // console.log(metadata[0]);
-        // console.log(metadata[0]['confirmed'][0]);
-
+        // console.log(metadata);
 
         var today = new Date();
         // console.log(today);
@@ -33,11 +31,11 @@ $(document).ready(async function () {
 
             disSeries.push({
                 name: 'Confirmed',
-                data: metadata[0]['confirmed'].map(function(elem){
+                data: metadata[1]['confirmed'].map(function(elem){
                     try {
                         var dStr = elem[0].split('-');
                     } catch{
-                        return metadata[0]['confirmed'];
+                        return metadata[1]['confirmed'];
                     }
 
                     return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
@@ -46,11 +44,11 @@ $(document).ready(async function () {
 
             disSeries.push({
                 name: 'Recovered',
-                data: metadata[0]['recovered'].map(function(elem){
+                data: metadata[1]['recovered'].map(function(elem){
                     try {
                         var dStr = elem[0].split('-');
                     } catch{
-                        return metadata[0]['recovered'];
+                        return metadata[1]['recovered'];
                     }
 
                     return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
@@ -59,11 +57,11 @@ $(document).ready(async function () {
 
             disSeries.push({
                 name: 'Died',
-                data: metadata[0]['died'].map(function(elem){
+                data: metadata[1]['died'].map(function(elem){
                     try {
                         var dStr = elem[0].split('-');
                     } catch{
-                        return metadata[0]['died'];
+                        return metadata[1]['died'];
                     }
 
                     return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
