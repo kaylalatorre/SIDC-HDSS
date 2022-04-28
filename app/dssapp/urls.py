@@ -17,4 +17,7 @@ urlpatterns = [
     path('disease-monitoring/<str:strDisease>/', views.diseaseMonitoring, name="diseaseMonitoring"),
     path('symptoms-monitoring', views.symptomsMonitoring, name="symptomsMonitoring"),
     path('symptoms-monitoring/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_incidentRep, name="filter_incidentRep"),
+
+    # chart
+    path('disease-charts/<str:strDisease>/', views.load_diseaseCharts, name="load_diseaseCharts"),
 ]
