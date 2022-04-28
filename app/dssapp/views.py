@@ -999,10 +999,6 @@ def diseaseMonitoring(request, strDisease):
 
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
 
-    # caseQry = Disease_Case.objects.filter(end_date__isnull=True).annotate(
-    #     total_recovered = F("")
-    # )
-
     data = []
 
     if request.method == 'POST':
@@ -1016,11 +1012,11 @@ def diseaseMonitoring(request, strDisease):
 
         dTable = {
             'diseaseName':strDisease,
-            'confirmedcases': []
+            'dCases': []
         }
 
         for case in casesQry:
-            dTable['confirmedcases'] = case
+            dTable['dCases'] = case
 
         dChart = {
             'confirmed': [],
@@ -1030,7 +1026,6 @@ def diseaseMonitoring(request, strDisease):
         # prepare time range of line chart
         dateToday = datetime.now(timezone.utc)
         dateMonthsAgo = dateToday - timedelta(30)
-        
 
         # get all disease_record with diseas_name
         dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
@@ -1038,21 +1033,16 @@ def diseaseMonitoring(request, strDisease):
                 confirmed_pigs = F("ref_disease_case__num_pigs_affect")
             ).order_by("date_filed").all()
 
-        # for each record
-        # 	if date_filed not in Recovered
-        # 		add to Recovered
-        # 	else
-        # 		increase Recovered count
         confirmedCtr = 0
         recoveredCtr = 0
         diedCtr      = 0
         case_currDate = 0
-        # # NULL case      
+
+        # NULL case      
         try:
             case_currDate = dcasesQry.first().date_filed
         except:
             pass
-            # mortSeries.append([area.area_name, mortData])
 
         if case_currDate != dateMonthsAgo.date():
             # start point of series data
@@ -1069,14 +1059,12 @@ def diseaseMonitoring(request, strDisease):
 
             # for confirmed cases
             if case_currDate == case_nextDate:
-                if d.ref_disease_case not in dCaseList:
-                    dCaseList.append([d.ref_disease_case])
+                if d.ref_disease_case_id not in dCaseList:
+                    dCaseList.append(d.ref_disease_case_id)
                     confirmedCtr += d.confirmed_pigs
-
+                
                 recoveredCtr += d.num_recovered
                 diedCtr += d.num_died
-                # recovered ctr += 1
-                # died ctr += 0
 
             else :
                 if confirmedCtr > 0:
@@ -1089,31 +1077,40 @@ def diseaseMonitoring(request, strDisease):
                     dChart['died'].append([ case_currDate, diedCtr ])
 
                 # move to next date
-                confirmedCtr = d.confirmed_pigs
+                if d.ref_disease_case_id not in dCaseList:
+                    dCaseList.append(d.ref_disease_case_id)
+                    confirmedCtr = d.confirmed_pigs
+                else:
+                    confirmedCtr = 0
+
                 recoveredCtr = d.num_recovered
                 diedCtr = d.num_died
                 case_currDate = case_nextDate
 
         if confirmedCtr > 0:
-            # debug("confirmedEndIF")
             dChart['confirmed'].append([case_currDate, confirmedCtr])
         if recoveredCtr > 0:
-            # debug("recoveredEndIF")
             dChart['recovered'].append([ case_currDate, recoveredCtr ])
         if diedCtr > 0:
-            # debug("diedEndIF")
             dChart['died'].append([ case_currDate, diedCtr ])
 
         # end point of series data
         if case_currDate != dateToday.date():
             dChart['confirmed'].append([dateToday.date(), 0])
+            dChart['recovered'].append([dateToday.date(), 0])
+            dChart['died'].append([dateToday.date(), 0])
 
-        debug(dChart)
-        # mortSeries.append([area.area_name, mortData])
-            
+        # debug(dCaseList)
+        # debug(dChart)
+
+        # append data to return (table, line chart, map, SEIRD) 
+        data.append(dTable)
         data.append(dChart)
+    
+    return render(request, 'dsstemp/disease-content.html', {"data": data})
 
-    return JsonResponse(data, safe=False)
+    # assuming that var disData = data
+    # {{disData.dTable.confirmedcases.ref_no}}
 
     # return render(request, 'dsstemp/dm.html')
     
