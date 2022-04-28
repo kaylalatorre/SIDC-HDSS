@@ -1346,7 +1346,7 @@ $('.submit-reference').on('click', function(){
 function getDiseaseInfo(strDisease){
     try {
 
-        url = "/disease-monitoring/" + strDisease;
+        url = "/disease-monitoring/" + strDisease + "/";
         console.log(url);
 
         // onload HTML here ---
