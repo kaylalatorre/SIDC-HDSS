@@ -320,7 +320,7 @@ def checkDiseaseList(s):
 
     symp_ASF = [s["high_fever"], s["loss_appetite"], s["depression"], s["lethargic"],
                 s["vomit_diarrhea"], s["colored_pigs"], s["skin_lesions"], s["hemorrhages"],
-                s["abn_breathing"], s["discharge_eyesnose"], s["death_isDays"], s["cough"],
+                s["abn_breathing"], s["discharge_eyesnose"], s["cough"],
                 s["farrow_miscarriage"], s["trembling"], s["conjunctivitis"]
                ]
 
@@ -335,7 +335,7 @@ def checkDiseaseList(s):
                 ]
 
     symp_ADV = [s["high_fever"], s["loss_appetite"], s["vomit_diarrhea"], s["skin_lesions"],
-                s["death_isDays"], s["sneeze"], s["waste"], s["weight_loss"],
+                s["sneeze"], s["waste"], s["weight_loss"],
                 s["trembling"]
                ]
 
@@ -344,7 +344,7 @@ def checkDiseaseList(s):
                  s["boar_dec_libido"], s["farrow_miscarriage"]
                 ]
 
-    symp_PED = [s["loss_appetite"], s["vomit_diarrhea"], s["death_isWeek"],
+    symp_PED = [s["loss_appetite"], s["vomit_diarrhea"],
                 s["boar_dec_libido"], s["farrow_miscarriage"], s["weight_loss"]
                ]
 
@@ -517,7 +517,7 @@ def symptomsMonitoring(request):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
-    debug(diseaseInfo)
+    # debug(diseaseInfo)
 
     return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
                                                                     "areaList": areaQry, "incident_symptomsList": incident_symptomsList,
@@ -757,7 +757,7 @@ def dashboard_SusCases():
         'ASF': [
             "high_fever", "loss_appetite", "depression", "lethargic",
             "vomit_diarrhea", "colored_pigs", "skin_lesions", "hemorrhages",
-            "abn_breathing", "discharge_eyesnose", "death_isDays", "cough",
+            "abn_breathing", "discharge_eyesnose", "cough",
             "farrow_miscarriage", "trembling", "conjunctivitis"
         ],
         'CSF': [
@@ -772,7 +772,7 @@ def dashboard_SusCases():
         ],
         'ADV': [
             "high_fever", "loss_appetite", "vomit_diarrhea", "skin_lesions",
-            "death_isDays", "sneeze", "waste", "weight_loss",
+            "sneeze", "waste", "weight_loss",
             "trembling"
         ],
         'PRRS': [
@@ -781,7 +781,7 @@ def dashboard_SusCases():
             "boar_dec_libido", "farrow_miscarriage"
         ],
         'PED': [
-            "loss_appetite", "vomit_diarrhea", "death_isWeek",
+            "loss_appetite", "vomit_diarrhea",
             "boar_dec_libido", "farrow_miscarriage", "weight_loss"
         ]
     }
@@ -798,7 +798,7 @@ def dashboard_SusCases():
     }
 
 
-    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=1200), now())).values(
+    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
         'id'                ,       'ref_farm_id'       ,       'num_pigs_affected' ,       'high_fever'        ,       'loss_appetite'     ,
         'depression'        ,       'lethargic'         ,       'constipation'      ,       'vomit_diarrhea'    ,       'colored_pigs'      ,       
         'skin_lesions'      ,       'hemorrhages'       ,       'abn_breathing'     ,       'discharge_eyesnose',       'death_isDays'      ,
@@ -1008,6 +1008,7 @@ def diseaseMonitoring(request, strDisease):
         lab_ref_no       = F("ref_disease_case__lab_ref_no"),
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
+        date_updated     = F("ref_disease_case__date_updated"),
     ).order_by("-date_filed", "lab_ref_no").values()
     # debug(casesQry)
 

@@ -335,6 +335,7 @@
                             <tr>
                                 <th>Disease Name</th>
                                 <th>Lab Reference</th>
+                                <th>Last Updated</th>
                                 <th>Incident Involved</th>
                                 <th>No. of Pigs Affected</th>
                                 <th>Recovered</th>
@@ -346,6 +347,7 @@
                             <tr>
                                 <td>{{ dTable.0 }}</td>
                                 <td>{{ case.lab_ref_no }}</td>
+                                <td>{{ case.date_updated }}</td>
                                 <td>{{ case.incid_no }}</td>
                                 <td>{{ case.num_pigs_affect }}</td>
                                 <td>
@@ -357,7 +359,7 @@
                                 <td>
                                     <div class="flex">
                                         <p class="flex-item">{{ case.total_died }}</p>
-                                        <button id="id="btn-recovered" class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
+                                        <button id="btn-recovered" class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
                                     </div>
                                 </td>
                             </tr>
