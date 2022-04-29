@@ -124,7 +124,7 @@ class Disease_Case(models.Model):
     lab_result          = models.BooleanField(null=True, blank=True)
     lab_ref_no          = models.IntegerField(null=True, blank=True)
 
-    date_updated        = models.DateTimeField()
+    date_updated        = models.DateTimeField(auto_now=True, editable=True)
     start_date          = models.DateTimeField(null=True, blank=True)
     end_date            = models.DateTimeField(null=True, blank=True)
 
@@ -134,7 +134,8 @@ class Disease_Case(models.Model):
 
 # DISEASE RECORD Table
 class Disease_Record(models.Model):
-    date_filed          = models.DateTimeField()
+    date_filed          = models.DateField(default=now)
+
     num_recovered       = models.IntegerField(null=True, blank=True)
     num_died            = models.IntegerField(null=True, blank=True)
 

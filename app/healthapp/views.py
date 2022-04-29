@@ -759,7 +759,7 @@ def selectedHealthSymptoms(request, farmID):
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
         disease_name     = F("ref_disease_case__disease_name"),
-        date_updated     = F("ref_disease_case__date_updated"),
+        date_updated     = F("ref_disease_case__disease_name"),
     ).order_by("-date_filed", "lab_ref_no").values()
     # debug(casesQry)
 
@@ -781,8 +781,7 @@ def selectedHealthSymptoms(request, farmID):
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'dTable': dTable}
-                                                                        )
+                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'dTable': dTable})
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -907,10 +906,35 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
 
     weightList = categHogWeight(f_weightQry)
 
+    # (5) Confirmed Cases table data
+    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__ref_farm=farmID).annotate(
+        lab_ref_no       = F("ref_disease_case__lab_ref_no"),
+        incid_no         = F("ref_disease_case__incid_case"),
+        num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
+        disease_name     = F("ref_disease_case__disease_name"),
+        date_updated     = F("ref_disease_case__disease_name"),
+    ).order_by("-date_filed", "lab_ref_no").values()
+    # debug(casesQry)
+
+    dTable = []
+    if casesQry.exists():
+        dTable.append(casesQry.first()['disease_name'])
+        # [strDisease, []]
+
+        cases = []
+        casesList = []
+        for case in casesQry:
+            if case['lab_ref_no'] not in casesList:
+                casesList.append(case['lab_ref_no'])
+                cases.append(case)
+                debug(casesList)
+        dTable.append(cases)    
+        # debug(dTable)
+
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
                                                                         'selectedPigpen' : selectedPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList, 'total_pigs': int(0)})
+                                                                        "weightList": weightList, 'total_pigs': int(0), 'dTable': dTable})
 
 
 def edit_incidStat(request, incidID):
@@ -1663,3 +1687,40 @@ def weightRange(request):
         # debug(weightSeries)
 
     return JsonResponse(weightSeries, safe=False)
+
+
+def update_diseaseCase(request, dcID):
+    # PSEUDO CODE
+
+    # Note: This function triggered during on-click of Update btn (recovered);
+    # When will this be called for addMortality() / Update btn (died)?
+
+    # get input from Recovered field
+    numRecovered = 0
+    # get Disease Case ID --> dcID
+
+    # for updating Disease Case
+    # 1. Qry for Disease_Case here
+    # 2. update "date_updated" to now()
+
+    # make new Disease_Record
+    dRecord = Disease_Record()
+    dRecord.num_recovered = numRecovered
+    dRecord.num_died = 0
+
+    # 1.1 Qry latest Disease_Record under given (1) dcID
+    # latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
+
+    # add created record to totals
+    dRecord.total_recovered += dRecord.num_recovered
+    dRecord.total_died += dRecord.num_died
+
+    # Qry disease case then FK whole object to disease record
+    # dCase = Disease_Case.objects.filter(id=dcID).first()
+    # dRecord.ref_disease_case = dCase
+
+    # save record
+    dRecord.save()
+
+    # (SUCCESS) Disease record created. Send to client side (js)
+    return JsonResponse({"status_code":"200"}, status=200)
