@@ -1699,25 +1699,25 @@ def update_diseaseCase(request, dcID):
     numRecovered = 0
     # get Disease Case ID --> dcID
 
-    # for updating Disease Case
-    # 1. Qry for Disease_Case here
-    # 2. update "date_updated" to now()
-
     # make new Disease_Record
     dRecord = Disease_Record()
     dRecord.num_recovered = numRecovered
     dRecord.num_died = 0
 
     # 1.1 Qry latest Disease_Record under given (1) dcID
-    # latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
+    latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
 
     # add created record to totals
     dRecord.total_recovered += dRecord.num_recovered
     dRecord.total_died += dRecord.num_died
 
     # Qry disease case then FK whole object to disease record
-    # dCase = Disease_Case.objects.filter(id=dcID).first()
-    # dRecord.ref_disease_case = dCase
+    dCase = Disease_Case.objects.filter(id=dcID).first()
+    dRecord.ref_disease_case = dCase
+
+    # update "date_updated" of Disease Case to now()
+    dCase.date_updated = now()
+    dCase.save()
 
     # save record
     dRecord.save()
