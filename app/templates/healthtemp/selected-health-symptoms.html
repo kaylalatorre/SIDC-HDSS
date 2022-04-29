@@ -333,6 +333,7 @@
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>Disease Name</th>
                                 <th>Lab Reference</th>
                                 <th>Incident Involved</th>
                                 <th>No. of Pigs Affected</th>
@@ -341,23 +342,26 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for case in dTable.1 %}
                             <tr>
-                                <td>1232234</td>
-                                <td>013</td>
-                                <td>20</td>
+                                <td>{{ dTable.0 }}</td>
+                                <td>{{ case.lab_ref_no }}</td>
+                                <td>{{ case.incid_no }}</td>
+                                <td>{{ case.num_pigs_affect }}</td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">0</p>
-                                        <button class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                        <p class="flex-item">{{ case.total_recovered }}</p>
+                                        <button id="btn-recovered" class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
                                     </div>                 
                                 </td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">0</p>
-                                        <button class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
+                                        <p class="flex-item">{{ case.total_died }}</p>
+                                        <button id="id="btn-recovered" class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
                                     </div>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>                               
                     </table>
                 </div>

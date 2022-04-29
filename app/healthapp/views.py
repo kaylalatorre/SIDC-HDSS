@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
-    Pigpen_Group, Pigpen_Row, Hog_Weight, Disease_Case)
+    Pigpen_Group, Pigpen_Row, Hog_Weight, 
+    Disease_Case, Disease_Record)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -751,10 +752,36 @@ def selectedHealthSymptoms(request, farmID):
 
     weightList = categHogWeight(f_weightQry)
 
+
+    # (5) Confirmed Cases table data
+    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__ref_farm=farmID).annotate(
+        lab_ref_no       = F("ref_disease_case__lab_ref_no"),
+        incid_no         = F("ref_disease_case__incid_case"),
+        num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
+        disease_name     = F("ref_disease_case__disease_name"),
+    ).order_by("-date_filed", "lab_ref_no").values()
+    # debug(casesQry)
+
+    dTable = []
+    if casesQry.exists():
+        dTable.append(casesQry.first()['disease_name'])
+        # [strDisease, []]
+
+        cases = []
+        casesList = []
+        for case in casesQry:
+            if case['lab_ref_no'] not in casesList:
+                casesList.append(case['lab_ref_no'])
+                cases.append(case)
+                debug(casesList)
+        dTable.append(cases)    
+        # debug(dTable)
+
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs")})
+                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'dTable': dTable}
+                                                                        )
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
