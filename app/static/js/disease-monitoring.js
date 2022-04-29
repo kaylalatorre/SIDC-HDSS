@@ -1,11 +1,11 @@
 // DISEASE MONITORING
-$(document).ready(async function () {
+// $(document).ready(async function () {
     // onclick disease -- render specific disease
     async function diseaseChart(strdisease) {
 
         ajaxCSRF();
-        console.log('here');
-        console.log('disease: ' + strdisease);
+        // console.log('here');
+        // console.log('disease: ' + strdisease);
         metadata = await $.ajax({
             type: 'POST',
             url: '/disease-charts/' + strdisease + '/',
@@ -151,13 +151,12 @@ $(document).ready(async function () {
         
     };
 
-    // const tab = $('#diseasemonitor');
-    // console.log("tab");
-    // console.log(tab.hasClass('show'));
+    // const tab = $('#diseasemonitor-tab');
+    // console.log(tab);
     // console.log(tab.hasClass('active'));
 
-    // if(tab.hasClass('show') && (tab.hasClass('active'))){
+    // if((tab.hasClass('active'))){
     //     console.log("!!!!!!!!!!!!!!!!!!!!!");
-    //     diseaseChart('ASF');
+        
     // }
-})
+// })
