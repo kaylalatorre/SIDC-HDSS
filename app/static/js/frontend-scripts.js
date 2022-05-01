@@ -123,16 +123,14 @@ function EnableRejectSave(text) {
 * Enable save button when text is inputted for selected-health-symptoms
 */
 function EnableRecSave(text) {
-    var btnSave = document.getElementById("save-recovered");
-    // console.log(text);
+    var row = text.parentNode.parentNode.parentNode;
+    var btnSave = row.getElementsByClassName("secondary-btn showDisInput")[0];
+    // console.log(row);
+    // console.log(btnSave);
 
-    if (text.value.trim() > 0) {
-        //enable the TextBox when TextBox has value
+    if (text.value.trim() > 0)
         btnSave.disabled = false;
-    } else {
-        //disable the TextBox when TextBox is empty
-        btnSave.disabled = true;
-    }
+    else btnSave.disabled = true;
 };
 
 function EnableIncidRem(text) {
@@ -154,23 +152,37 @@ function EnableIncidRem(text) {
 *   - Hide text and update button
 *   - Show input and save button
 **/ 
-function UpdateTotalRec(){
+function UpdateTotalRec(btnHTML){
 
-    var row = text.parentNode.parentNode.parentNode;
+    var row = btnHTML.parentNode.parentNode.parentNode;
 
     console.log(row);
 
-    var hideText = row.getElementsByClassName('display-total-rec')[0];
-    var hideBtn = row.getElementsByClassName('update-total-rec')[0];
+    var toHide = row.getElementsByClassName('hideDisInfo');
+    var toShow = row.getElementsByClassName('showDisInput');
 
-    var showInput = row.getElementsByClassName('input-total-rec')[0];
-    var showBtn = row.getElementsByClassName('save-total-rec')[0];
+    // console.log(toHide);
+    // console.log(toShow);
 
-    hideText.style.display = "none";
-    hideBtn.style.display = "none";
+    for(i = 0; i < toHide.length; i++)
+        toHide[i].style.display = "none";
+    
+    for(j = 0; j < toShow.length; j++)
+        toShow[j].style.display = "block";
+}
 
-    showInput.style.display = "block";
-    showBtn.style.display = "block";
+function CancelRecSave(btnHTML){
+
+    var row = btnHTML.parentNode.parentNode.parentNode;
+
+    var toShow = row.getElementsByClassName('hideDisInfo');
+    var toHide = row.getElementsByClassName('showDisInput');
+
+    for(i = 0; i < toHide.length; i++)
+        toHide[i].style.display = "none";
+    
+    for(j = 0; j < toShow.length; j++)
+        toShow[j].style.display = "block";
 }
 
 /**

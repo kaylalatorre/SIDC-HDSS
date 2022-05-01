@@ -1688,45 +1688,53 @@ def weightRange(request):
 
 
 def update_diseaseCase(request, dcID):
-    # PSEUDO CODE
+    """
+    (POST-AJAX) For updating total and no. of recovered pigs of a Disease Case
 
-    # Note: This function triggered during on-click of Update btn (recovered);
-    # When will this be called for addMortality() / Update btn (died)?
+    :param dcID: PK of selected Disease Case
+    :type dcID: string
+    """
+
+    debug("in update_diseaseCase()/n")
 
     if request.method == 'POST':
         dateToday = datetime.now(timezone.utc)
 
         # get input from Recovered field
-        numRecovered = request.POST.get("total_rec")
+        numRecovered = int(request.POST.get("total_rec"))
         
         debug(numRecovered)
         debug(dcID)
 
-        # 1.1 Qry latest Disease_Record under given (1) dcID
+        # Qry latest Disease_Record under given (1) dcID
         latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
-
+        updateDC = Disease_Case.objects.filter(id=dcID).first()
+        
         if (latestDR.date_filed.date() == dateToday.date()):
             latestDR.num_recovered = numRecovered
             # latestDR.num_died = 0
             latestDR.total_recovered += numRecovered
             latestDR.save()
 
+            # update "date_updated" of Disease Case to date-time today
+            updateDC.date_updated = dateToday
+            updateDC.save()
+
         else: # make new Disease Record for the Case if none exists today
             dRecord = Disease_Record()
             dRecord.num_recovered = numRecovered
-            # dRecord.num_died = 0
+            dRecord.num_died = 0
 
             # add created record to totals
-            dRecord.total_recovered += dRecord.num_recovered
-            # dRecord.total_died += dRecord.num_died
+            dRecord.total_recovered = (numRecovered + latestDR.total_recovered)
+            dRecord.total_died = latestDR.total_died
 
             # Qry disease case then FK whole object to disease record
-            dCase = Disease_Case.objects.filter(id=dcID).first()
-            dRecord.ref_disease_case = dCase
+            dRecord.ref_disease_case = updateDC
 
             # update "date_updated" of Disease Case to date today
-            dCase.date_updated = dateToday
-            dCase.save()
+            updateDC.date_updated = dateToday
+            updateDC.save()
 
             # save new Disease record
             dRecord.save()
@@ -1734,35 +1742,5 @@ def update_diseaseCase(request, dcID):
         # (SUCCESS) Disease record created. Send to client side (js)
         return JsonResponse({"status_code":"200"}, status=200)
 
-#--------------------------------
-    # ASSUMPTION: Only 1 DR is can be edited for the day
-
-
-    # # make new Disease Record for the Case if none exists today
-
-    # if (latestDR.date_filed.date() == dateToday.date()):
-    #     # c['dis_record_id'] = case['id']
-    # else:
-    #     currDR = Disease_Record()
-
-    #     dcQry = Disease_Case.objects.filter(id=c['ref_disease_case_id']).first()
-    #     currDR.ref_disease_case = dcQry
-    #     currDR.total_died = c['total_died']
-    #     currDR.total_recovered = c['total_recovered']
-
-    #     # for updating pk counter of Disease_Record, for avoiding duplicate PK error
-    #     query = "SELECT setval('farmsapp_disease_record_id_seq', (SELECT MAX(id) from farmsapp_disease_record))"
-    #     cursor = connections['default'].cursor()
-    #     cursor.execute(query) 
-    #     row = cursor.fetchone()
-
-    #     currDR.save()
-
-    #     c['dis_record_id'] = currDR.id
-
-    #     # update "date_updated" of Disease Case to date today
-    #     dcQry.date_updated = dateToday
-    #     dcQry.save()
-     
 
     return JsonResponse({"error": "not an AJAX post request"}, status=400)

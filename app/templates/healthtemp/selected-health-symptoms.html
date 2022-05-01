@@ -348,22 +348,24 @@
                                 <td>{{ case.disease_name }}</td>
                                 <td>{{ case.lab_ref_no }}</td>
                                 <td>{{ case.date_updated }}</td>
-                                <td>{{ case.incid_no }}</td>
+                                <td>{{ case.incid_no|stringformat:'03d' }}</td>
                                 <td>{{ case.num_pigs_affect }}</td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item" class="display-total-rec">{{ case.total_recovered }}</p>
-                                        <button onclick="UpdateTotalRec()" class="secondary-btn update-total-rec" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                        <p class="flex-item hideDisInfo">{{ case.total_recovered }}</p>
+                                        <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
 
-                                        <input type="number" required class="form-control input-total-rec" min=1 max="{{case.num_pigs_affect}}" onkeyup="EnableRecSave(this)" placeholder="{{ case.total_recovered }}">
+                                        <input type="number" required class="form-control showDisInput" style="display:none;" min=1 max="{{case.num_pigs_affect}}" onchange="EnableRecSave(this)" placeholder=0>
                                         <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
-                                        <button class="secondary-btn save-total-rec" style="margin-bottom: 8px">Save</button>
+                                        <input type="hidden" class="hidden-farmID" name="farmID" value="{{farm_code|stringformat:'03d'}}">
+                                        <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-bottom: 8px; display: none;">Save</button>
+                                        <button class="secondary-btn-red showDisInput btn-cancel-recovered" onclick="CancelRecSave(this)">Cancel</button> 
                                     </div>  
                                 </td>
                                 <td>
                                     <div class="flex">
                                         <p class="flex-item">{{ case.total_died }}</p>
-                                        <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-recovered">Update</button> <!-- redirect to add-mortality -->
+                                        <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-died">Update</button> <!-- redirect to add-mortality -->
                                     </div>
                                 </td>
                             </tr>

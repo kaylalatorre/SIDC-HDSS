@@ -1375,12 +1375,13 @@ function getDiseaseInfo(strDisease){
  * @param drID string ID of Disease Record
 */
 
-$('.save-total-rec').on('click', function () {
+$('.btn-save-recovered').on('click', function () {
     var total_rec = $(this).siblings(":eq(2)").val();
     var discaseID = $(this).siblings(":eq(3)").val();
+    var farmID = $(this).siblings(":eq(4)").val();
 
     console.log(total_rec);
-    console.log(discaseID)
+    console.log(discaseID);
     
 
     ajaxCSRF();
@@ -1392,7 +1393,7 @@ $('.save-total-rec').on('click', function () {
         success: function (response) {
             
             if (response.status_code === "200"){
-                url = '/update-disease-case/' + discaseID;
+                url = '/selected-health-symptoms/' + farmID;
                 location.href = url;          
             } 
             else {
