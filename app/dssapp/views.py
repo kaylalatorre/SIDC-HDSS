@@ -320,7 +320,7 @@ def checkDiseaseList(s):
 
     symp_ASF = [s["high_fever"], s["loss_appetite"], s["depression"], s["lethargic"],
                 s["vomit_diarrhea"], s["colored_pigs"], s["skin_lesions"], s["hemorrhages"],
-                s["abn_breathing"], s["discharge_eyesnose"], s["death_isDays"], s["cough"],
+                s["abn_breathing"], s["discharge_eyesnose"], s["cough"],
                 s["farrow_miscarriage"], s["trembling"], s["conjunctivitis"]
                ]
 
@@ -335,7 +335,7 @@ def checkDiseaseList(s):
                 ]
 
     symp_ADV = [s["high_fever"], s["loss_appetite"], s["vomit_diarrhea"], s["skin_lesions"],
-                s["death_isDays"], s["sneeze"], s["waste"], s["weight_loss"],
+                s["sneeze"], s["waste"], s["weight_loss"],
                 s["trembling"]
                ]
 
@@ -344,7 +344,7 @@ def checkDiseaseList(s):
                  s["boar_dec_libido"], s["farrow_miscarriage"]
                 ]
 
-    symp_PED = [s["loss_appetite"], s["vomit_diarrhea"], s["death_isWeek"],
+    symp_PED = [s["loss_appetite"], s["vomit_diarrhea"],
                 s["boar_dec_libido"], s["farrow_miscarriage"], s["weight_loss"]
                ]
 
@@ -517,7 +517,7 @@ def symptomsMonitoring(request):
     # combine the 2 previous queries into 1 temporary list
     incident_symptomsList = zip(incidList, symptomsList, sDiseaseList)
 
-    debug(diseaseInfo)
+    # debug(diseaseInfo)
 
     return render(request, 'dsstemp/rep-symptoms-monitoring.html', {"isFiltered": isFiltered, 'dateStart': dateToday,'dateEnd': dateToday,
                                                                     "areaList": areaQry, "incident_symptomsList": incident_symptomsList,
@@ -757,7 +757,7 @@ def dashboard_SusCases():
         'ASF': [
             "high_fever", "loss_appetite", "depression", "lethargic",
             "vomit_diarrhea", "colored_pigs", "skin_lesions", "hemorrhages",
-            "abn_breathing", "discharge_eyesnose", "death_isDays", "cough",
+            "abn_breathing", "discharge_eyesnose", "cough",
             "farrow_miscarriage", "trembling", "conjunctivitis"
         ],
         'CSF': [
@@ -772,7 +772,7 @@ def dashboard_SusCases():
         ],
         'ADV': [
             "high_fever", "loss_appetite", "vomit_diarrhea", "skin_lesions",
-            "death_isDays", "sneeze", "waste", "weight_loss",
+            "sneeze", "waste", "weight_loss",
             "trembling"
         ],
         'PRRS': [
@@ -781,7 +781,7 @@ def dashboard_SusCases():
             "boar_dec_libido", "farrow_miscarriage"
         ],
         'PED': [
-            "loss_appetite", "vomit_diarrhea", "death_isWeek",
+            "loss_appetite", "vomit_diarrhea",
             "boar_dec_libido", "farrow_miscarriage", "weight_loss"
         ]
     }
@@ -798,7 +798,7 @@ def dashboard_SusCases():
     }
 
 
-    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=1200), now())).values(
+    incidCases = Hog_Symptoms.objects.filter(~Q(report_status="Resolved")).filter(date_filed__range=(now()-timedelta(days=120), now())).values(
         'id'                ,       'ref_farm_id'       ,       'num_pigs_affected' ,       'high_fever'        ,       'loss_appetite'     ,
         'depression'        ,       'lethargic'         ,       'constipation'      ,       'vomit_diarrhea'    ,       'colored_pigs'      ,       
         'skin_lesions'      ,       'hemorrhages'       ,       'abn_breathing'     ,       'discharge_eyesnose',       'death_isDays'      ,
@@ -999,179 +999,222 @@ def diseaseMonitoring(request, strDisease):
 
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
 
-    # caseQry = Disease_Case.objects.filter(end_date__isnull=True).annotate(
-    #     total_recovered = F("")
-    # )
-
     data = []
+    debug(request.method)
+    print(strDisease)
 
-    if request.method == 'POST':
-        # confrimed cases
-        casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
-            lab_ref_no       = F("ref_disease_case__lab_ref_no"),
-            incid_no         = F("ref_disease_case__incid_case"),
-            num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
-        ).values()
-        # debug(casesQry)
+    # confrimed cases
+    casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
+        lab_ref_no       = F("ref_disease_case__lab_ref_no"),
+        incid_no         = F("ref_disease_case__incid_case"),
+        num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
+        date_updated     = F("ref_disease_case__date_updated"),
+    ).order_by("-date_filed", "lab_ref_no").values()
+    # debug(casesQry)
 
-        dTable = {
-            'diseaseName':strDisease,
-            'confirmedcases': []
-        }
+    dTable = []
+    dTable.append(strDisease)
+    # [strDisease, []]
 
-        for case in casesQry:
-            dTable['confirmedcases'] = case
+    cases = []
+    casesList = []
+    for case in casesQry:
+        if case['lab_ref_no'] not in casesList:
+            casesList.append(case['lab_ref_no'])
+            cases.append(case)
+            debug(casesList)
+    dTable.append(cases)
 
-        dChart = {
-            'confirmed': [],
-            'recovered': [],
-            'died': [] }
+    dChart = {
+        'confirmed': [],
+        'recovered': [],
+        'died': [] }
 
-        # prepare time range of line chart
-        dateToday = datetime.now(timezone.utc)
-        dateMonthsAgo = dateToday - timedelta(30)
-        
+    # prepare time range of line chart
+    dateToday = datetime.now(timezone.utc)
+    dateMonthsAgo = dateToday - timedelta(30)
 
-        # get all disease_record with diseas_name
-        dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
-            date_filed__range=(now()-timedelta(days=30), now())).annotate(
-                confirmed_pigs = F("ref_disease_case__num_pigs_affect")
-            ).order_by("date_filed").all()
+    # get all disease_record with diseas_name
+    dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
+        date_filed__range=(now()-timedelta(days=30), now())).annotate(
+            confirmed_pigs = F("ref_disease_case__num_pigs_affect")
+        ).order_by("date_filed").all()
 
-        # for each record
-        # 	if date_filed not in Recovered
-        # 		add to Recovered
-        # 	else
-        # 		increase Recovered count
-        confirmedCtr = 0
-        recoveredCtr = 0
-        diedCtr      = 0
-        case_currDate = 0
-        # case_nextDate = 0
-        
-        # # NULL case      
+    confirmedCtr = 0
+    recoveredCtr = 0
+    diedCtr      = 0
+    case_currDate = 0
+
+    # NULL case      
+    try:
+        case_currDate = dcasesQry.first().date_filed.date()
+    except:
+        pass
+
+    if case_currDate != dateMonthsAgo.date():
+        # start point of series data
+        dChart['confirmed'].append([dateMonthsAgo.date(), 0])
+        dChart['recovered'].append([dateMonthsAgo.date(), 0])
+        dChart['died'].append([dateMonthsAgo.date(), 0])
+
+    dCaseList = []
+    for d in dcasesQry:
         try:
-            case_currDate = dcasesQry.first().date_filed.date()
+            case_nextDate = d.date_filed.date()
         except:
-            dChart['confirmed'].append([dateMonthsAgo.date(), 0])
-            dChart['confirmed'].append([dateToday.date(), 0])
-            dChart['recovered'].append([dateMonthsAgo.date(), 0])
-            dChart['recovered'].append([dateToday.date(), 0])
-            dChart['died'].append([dateMonthsAgo.date(), 0])
-            dChart['died'].append([dateToday.date(), 0])
-            # mortSeries.append([area.area_name, mortData])
+            continue
 
-        if case_currDate != dateMonthsAgo.date():
-            # start point of series data
-            dChart['confirmed'].append([dateMonthsAgo.date(), 0])
-            dChart['recovered'].append([dateMonthsAgo.date(), 0])
-            dChart['died'].append([dateMonthsAgo.date(), 0])
-
-
-        dCaseList = []
-        case_nextDate = case_currDate
-        test = iter(dcasesQry)
-        debug(type(test))
-        next(test, 'end')
-        for d in dcasesQry: #3
-            debug(d)
-            # debug(dIndex)
-            # debug(dElem)
-        # for index, elem in enumerate(a_list):
-
-            # try:
-            #     case_nextDate = dElem.date_filed.date()
-            #     debug("bEnd")
-            # except:
-            #     continue
-            debug("Start")
-            debug(case_currDate)
-            debug(case_nextDate)
-            debug("END")
-            # for confirmed cases
-            if case_currDate == case_nextDate:
-                
-                if d.ref_disease_case not in dCaseList:
-                    dCaseList.append([d.ref_disease_case])
-
-                    confirmedCtr += d.confirmed_pigs
-
-                recoveredCtr += d.num_recovered
-                diedCtr += d.num_died
-                # debug("Changing Next Date")
-                # if dIndex < len(dcasesQry):
-                # debug(bool(dIndex+1 < len(dcasesQry) and dIndex - 1 >= 0))
-                dNext = next(test, 'end') 
-                if dNext != 'end':
-                    case_nextDate = dNext.date_filed.date()
-                    debug(case_nextDate)
-                # if (dIndex+1 < len(dcasesQry) and dIndex >= 0):
-                # index >= 0 and index < len(list)
-                    # debug("Changed")
-                    
-                    # case_nextDate = dcasesQry[dIndex+1].date_filed.date()
-                    # next_el = str(a_list[index+1])
-                # else:
-                #     debug(dIndex)
-                #     debug(len(dcasesQry))
-                #     debug(bool(dIndex+1 < len(dcasesQry)))
-                #     debug(dIndex - 1)
-                #     debug(bool(dIndex - 1 >= 0))
-
-            else :
-                # append finalized [date, count]
-                if confirmedCtr > 0:
-                    # debug(confirmedCtr)
-                    caseObj = [ case_currDate, confirmedCtr ]
-                    dChart['confirmed'].append(caseObj)
-
-                if recoveredCtr > 0:
-                    # debug(recoveredCtr)
-                    dChart['recovered'].append([ case_currDate, recoveredCtr ])
-
-                if diedCtr > 0:
-                    # debug(diedCtr)
-                    dChart['died'].append([ case_currDate, diedCtr ])
-
-                # move to next date
-                confirmedCtr = 0
-                recoveredCtr = 0
-                diedCtr = 0
-
-                case_currDate = case_nextDate
- 
-        # for end points
-        # debug("confirmedEnd")
-        # debug(case_currDate)
-        # debug(confirmedCtr)
-        # debug(recoveredCtr)
-        # debug(diedCtr)
-        
-        if confirmedCtr > 0:
-            # debug("confirmedEndIF")
-            dChart['confirmed'].append([case_currDate, confirmedCtr])
-        if recoveredCtr > 0:
-            # debug("recoveredEndIF")
-            dChart['recovered'].append([ case_currDate, recoveredCtr ])
-        if diedCtr > 0:
-            # debug("diedEndIF")
-            dChart['died'].append([ case_currDate, diedCtr ])
-
-        # end point of series data
-        if case_currDate != dateToday.date():
-            dChart['confirmed'].append([dateToday.date(), 0])
-            dChart['recovered'].append([dateToday.date(), 0])
-            dChart['died'].append([dateToday.date(), 0])
-
-
-        debug(dChart)
-        # mortSeries.append([area.area_name, mortData])
+        # for confirmed cases
+        if case_currDate == case_nextDate:
+            if d.ref_disease_case_id not in dCaseList:
+                dCaseList.append(d.ref_disease_case_id)
+                confirmedCtr += d.confirmed_pigs
             
-        data.append(dChart)
+            recoveredCtr += d.num_recovered
+            diedCtr += d.num_died
+
+        else :
+            if confirmedCtr > 0:
+                # append finalized [date, count]
+                caseObj = [ case_currDate, confirmedCtr ]
+                dChart['confirmed'].append(caseObj)
+            if recoveredCtr > 0:
+                dChart['recovered'].append([ case_currDate, recoveredCtr ])
+            if diedCtr > 0:    
+                dChart['died'].append([ case_currDate, diedCtr ])
+
+            # move to next date
+            if d.ref_disease_case_id not in dCaseList:
+                dCaseList.append(d.ref_disease_case_id)
+                confirmedCtr = d.confirmed_pigs
+            else:
+                confirmedCtr = 0
+
+            recoveredCtr = d.num_recovered
+            diedCtr = d.num_died
+            case_currDate = case_nextDate
+
+    if confirmedCtr > 0:
+        dChart['confirmed'].append([case_currDate, confirmedCtr])
+    if recoveredCtr > 0:
+        dChart['recovered'].append([ case_currDate, recoveredCtr ])
+    if diedCtr > 0:
+        dChart['died'].append([ case_currDate, diedCtr ])
+
+    # end point of series data
+    if case_currDate != dateToday.date():
+        dChart['confirmed'].append([dateToday.date(), 0])
+        dChart['recovered'].append([dateToday.date(), 0])
+        dChart['died'].append([dateToday.date(), 0])
+
+    # debug(dTable)
+
+    # append data to return (table, line chart, map, SEIRD) 
+    data.append(dTable)
+    # debug(data)
+    # debug(data[0].dCases)
+    # debug(data[0]['dCases']['lab_ref_no'])
+
+    if request.method == 'POST': # for disease table contents
+        return render(request, 'dsstemp/disease-monitoring.html', {"data": data})
+    return data # for disease monitoring dashboard contents
+
+
+def load_diseaseCharts(request, strDisease):
+    
+    data = []
+    # debug(request.method)
+    # debug("loading charts")    
+
+    dChart = {
+        'confirmed': [],
+        'recovered': [],
+        'died': [] }
+
+    # prepare time range of line chart
+    dateToday = datetime.now(timezone.utc)
+    dateMonthsAgo = dateToday - timedelta(30)
+
+    # get all disease_record with diseas_name
+    dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
+        date_filed__range=(now()-timedelta(days=30), now())).annotate(
+            confirmed_pigs = F("ref_disease_case__num_pigs_affect")
+        ).order_by("date_filed").all()
+
+    confirmedCtr = 0
+    recoveredCtr = 0
+    diedCtr      = 0
+    case_currDate = 0
+
+    # NULL case      
+    try:
+        case_currDate = dcasesQry.first().date_filed.date()
+    except:
+        pass
+
+    if case_currDate != dateMonthsAgo.date():
+        # start point of series data
+        dChart['confirmed'].append([dateMonthsAgo.date(), 0])
+        dChart['recovered'].append([dateMonthsAgo.date(), 0])
+        dChart['died'].append([dateMonthsAgo.date(), 0])
+
+    dCaseList = []
+    for d in dcasesQry:
+        try:
+            case_nextDate = d.date_filed.date()
+        except:
+            continue
+
+        # for confirmed cases
+        if case_currDate == case_nextDate:
+            if d.ref_disease_case_id not in dCaseList:
+                dCaseList.append(d.ref_disease_case_id)
+                confirmedCtr += d.confirmed_pigs
+            
+            recoveredCtr += d.num_recovered
+            diedCtr += d.num_died
+
+        else :
+            if confirmedCtr > 0:
+                # append finalized [date, count]
+                caseObj = [ case_currDate, confirmedCtr ]
+                dChart['confirmed'].append(caseObj)
+            if recoveredCtr > 0:
+                dChart['recovered'].append([ case_currDate, recoveredCtr ])
+            if diedCtr > 0:    
+                dChart['died'].append([ case_currDate, diedCtr ])
+
+            # move to next date
+            if d.ref_disease_case_id not in dCaseList:
+                dCaseList.append(d.ref_disease_case_id)
+                confirmedCtr = d.confirmed_pigs
+            else:
+                confirmedCtr = 0
+
+            recoveredCtr = d.num_recovered
+            diedCtr = d.num_died
+            case_currDate = case_nextDate
+
+    if confirmedCtr > 0:
+        dChart['confirmed'].append([case_currDate, confirmedCtr])
+    if recoveredCtr > 0:
+        dChart['recovered'].append([ case_currDate, recoveredCtr ])
+    if diedCtr > 0:
+        dChart['died'].append([ case_currDate, diedCtr ])
+
+    # end point of series data
+    if case_currDate != dateToday.date():
+        dChart['confirmed'].append([dateToday.date(), 0])
+        dChart['recovered'].append([dateToday.date(), 0])
+        dChart['died'].append([dateToday.date(), 0])
+
+    # debug(dChart)
+
+    # append data to return (table, line chart, map, SEIRD) 
+    data.append(dChart)
+    # debug(data)
 
     return JsonResponse(data, safe=False)
-
-    # return render(request, 'dsstemp/dm.html')
     
 def actionRecommendation(request):
     return render(request, 'dsstemp/action-rec.html')

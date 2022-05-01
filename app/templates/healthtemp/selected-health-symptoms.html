@@ -91,283 +91,328 @@
     </div>
     <hr>
     <section class="health-symptoms">
-        <div class="flex">
-            <div class="flex-item">
-                <h2>Weight Slip Details (Starter)</h2>
-                <div class="box-style">
-                    {% if start_weight %}
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th>Date Filed</td>
-                                <td data-label="Date Filed">{{ start_weight.date_filed }}</td>
-                            </tr>
-                            <tr>
-                                <th>Ave. Starter Weight</td>
-                                <td data-label="Ave. Starter Weight">{{ start_weight.ave_weight }} kg</td>
-                            </tr>
-                            <tr>
-                                <th>Total No. of Heads</td>
-                                <td data-label="Total No. of Heads">{{ start_weight.total_numHeads }} heads</td>
-                            </tr>
-                            <tr>
-                                <th>Total Kls</td>
-                                <td data-label="Total Kls">{{ start_weight.total_kls }} kls</td>
-                            </tr>
-                           
-                            <tr>
-                                <th>Remarks</td>
-                                {% if start_weight.remarks %}
-                                <td data-label="Remarks">{{ start_weight.remarks }}</td>
-                                {% else%}
-                                <td data-label="Remarks">-</td>
-                                {% endif %}
-                            </tr>
-                            
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p>No Starter Weight Slip yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="flex-item">
-                <h2>Weight Slip Details (Fattener)</h2>
-                <div class="box-style">
-                    {% if end_weight %}
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th>Date Filed</td>
-                                <td data-label="Date Filed">{{ end_weight.date_filed }}</td>
-                            </tr>
-                            <tr>
-                                <th>Ave. Fattener Weight</td>
-                                <td data-label="Ave. Fattener Weight">{{ end_weight.ave_weight }} kg</td>
-                            </tr>
-                            <tr>
-                                <th>Total No. of Heads</td>
-                                <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }} heads</td>
-                            </tr>
-                            <tr>
-                                <th>Total Weight</td>
-                                <td data-label="Total Kls">{{ end_weight.total_kls }} kg</td>
-                            </tr>
-                            <tr>
-                                <th>Remarks</td>
-                                {% if end_weight.remarks %}
-                                <td data-label="Remarks">{{ end_weight.remarks }}</td>
-                                {% else%}
-                                <td data-label="Remarks">-</td>
-                                {% endif %}
-                            </tr>
-                            <tr>
-                                <th>Total Pigs Reached Market Weight</th>
-                                <td>{{ weightList.5 }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p>No Fattener Weight Slip yet.</p>
-                    {% endif %}
-                </div>
-            </div>
-            {% if end_weight %}
-            <div class="flex-item">
-                <h2>Fattener Weight Range</h2>
-                <div class="box-style">
-                    <!-- <div class="box-style-chart" id="wr-hogs-weight" style="width: 100%; height: 250px; ">
-                    </div> -->
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th>Below 59 kg</td>
-                                <td>{{ weightList.0 }}</td>
-                            </tr>
-                            <tr>
-                                <th>60-79 kg</td>
-                                <td>{{ weightList.1 }}</td>
-                            </tr>
-                            <tr>
-                                <th>80-99 kg</td>
-                                <td>{{ weightList.2 }}</td>
-                            </tr>
-                            <tr>
-                                <th>100-120 kg</td>
-                                <td>{{ weightList.3 }}</td>
-                            </tr>
-                            <tr>
-                                <th>Above 120 kg</td>
-                                <td>{{ weightList.4 }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% endif %}
-
-        </div>
-    </section>
-    <section class="health-symptoms">
-        <div class="flex subheading">
-            <h2 class="flex-item">Incidents Reported</h2>
-            <div class="dropdown">
-                <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Filters
-                </button>
-                <ul class="dropdown-menu" style="padding: 8px;">
-                    <label style="font-weight: 600;">Status</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Active" onclick="filterRepStatus()"/>&nbsp;Active</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Pending" onclick="filterRepStatus()"/>&nbsp;Pending</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Resolved" onclick="filterRepStatus()"/>&nbsp;Resolved</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="mobile-subheading" style="width: 72%">
-            <h2 class="flex-item">Incidents Reported</h2>
-            <div class="dropdown">
-                <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Filters
-                </button>
-                <ul class="dropdown-menu" style="padding: 8px;">
-                    <label style="font-weight: 600;">Status</label>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Active" onclick="filterRepStatus()"/>&nbsp;Active</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Pending" onclick="filterRepStatus()"/>&nbsp;Pending</a></li>
-                    <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Resolved" onclick="filterRepStatus()"/>&nbsp;Resolved</a></li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="box-style">
-            {% if total_incidents > 0 %}
-            <table class="table" id="symptoms-reported">
-                <thead>
-                    <tr>
-                        <th>Incident Code</th>
-                        <th>Date Reported</th>
-                        <th style="width:15%">No. of Pigs Affected</th>
-                        <th style="width: 35%">Symptoms Observed</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                     {% for incident,symptoms,editStat in incident_symptomsList %}
-                     <tr class="incident-row">
-                        
-                        <td data-label="Incident Code">{{ incident.id }}</td>
-                        <td data-label="Date Reported">{{ incident.date_filed }} </td>
-                        <td data-label="Pigs Affected">{{ incident.num_pigs_affected }} pigs</td>
-                        <td data-label="Symptoms Observed">  
-                            {% load healthapp_extras %}
-                            {% for sKey, sVal in symptoms.items %}
-                            <ul class="ul-symptoms">
-                                {% if sVal %}
-                                    <li class="li-symptoms">{{ sKey|formatField }}</li>
-                                {% endif %}
-                            </ul>
-                            {% endfor %}
-                        </td>
-
-                        <td data-label="Status">
-                            <input type="hidden" id="hidden-status-{{incident.id}}" value="{{incident.report_status}}">
-
-                            <div class="mb-3">
-                                <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select" disabled=true>
-                                    {% if incident.report_status == 'Active' %}
-                                        <option value="Active" class="status" selected>Active</option>
-                                    {% else %}
-                                        <option value="Active" class="status">Active</option>
+        <div class="flex hogs-health-flex">
+            <div class="section-health-left">
+                <div>
+                    <h2>Weight Slip Details (Starter)</h2>
+                    <div class="box-style">
+                        {% if start_weight %}
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Date Filed</td>
+                                    <td data-label="Date Filed">{{ start_weight.date_filed }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ave. Starter Weight</td>
+                                    <td data-label="Ave. Starter Weight">{{ start_weight.ave_weight }} kg</td>
+                                </tr>
+                                <tr>
+                                    <th>Total No. of Heads</td>
+                                    <td data-label="Total No. of Heads">{{ start_weight.total_numHeads }} heads</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Kls</td>
+                                    <td data-label="Total Kls">{{ start_weight.total_kls }} kls</td>
+                                </tr>
+                               
+                                <tr>
+                                    <th>Remarks</td>
+                                    {% if start_weight.remarks %}
+                                    <td data-label="Remarks">{{ start_weight.remarks }}</td>
+                                    {% else%}
+                                    <td data-label="Remarks">-</td>
                                     {% endif %}
-
-                                    {% if incident.report_status == 'Pending' %}
-                                        <option value="Pending"  class="status" selected>Pending</option>
-                                    {% else %}
-                                        <option value="Pending"  class="status">Pending</option>
-                                    {% endif %} 
-
-                                    {% if incident.report_status == 'Resolved' %}
-                                        <option value="Resolved"  class="status" selected>Resolved</option>
-                                    {% else %}
-                                        <option value="Resolved"  class="status" id="repstatus-resolve">Resolved</option>
-                                    {% endif %} 
-                                </select>
-                            </div>
-
-                            <div class="incd-resolved-remarks hide" id="input-remarks-{{incident.id}}">
-                                <label class="bold-lbl">Remarks</label> <br>
-                                <input type="text" onkeyup="EnableIncidRem(this)" class="form-control" id="input-resolved-remarks-{{incident.id}}" placeholder="ex. No new symptoms found">
-                            </div>
-
-                            {% if incident.report_status == 'Resolved' %}
-                            <div class="incd-remarks show" id="incd-remarks-{{incident.id}}">
-                                <label class="bold-lbl">Remarks</label> <br>
-                                {{incident.remarks}}
-                            </div>
-                            {% endif %} 
-                        </td>
-                        {% if editStat %}
-                        <td class="symptoms-btn-grp">
-                            <div class="btn-group" style="justify-content: end; padding: 0;">
-                                <button class="secondary-btn symptomsEdit" id="edit-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
-                                <button class="secondary-btn symptomsSave" id="save-{{incident.id}}"><span class="material-icons md-18">save</span>Save</button>
-                            </div>
-                        </td>
-                        {% endif%}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div>
-                <p>No incidents to display.</p>
-            </div>
-            {% endif %}
-        </div>
-    </section>
-    <section>
-        <h2>Mortality Records</h2>
-        <div class="box-style">
-            {% if total_mortalities > 0 %}
-            <table class="table" id="mortality-records">
-                <thead>
-                    <tr>
-                        <th width="5%">Series</th>
-                        <th width="10%">Mortality Date</th>
-                        <th style="text-align: right;">Beg. Inv.</th>
-                        <th style="text-align: right;">Today</th>
-                        <th style="text-align: right;">To Date</th>
-                        <th width="10%"style="text-align: right;">Mortality %</th>
-                        <th width="15%">Case Reference</th>
-                        <th>Remarks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for mort, mRate, mCase in mortalityList %}
-                    <tr>
-                        <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
-                        <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
-                        <td data-label="Beg. Inv." style="text-align: right;">{{ mort.num_begInv }} pigs</td>
-                        <td data-label="Today" style="text-align: right;">{{ mort.num_today }} pigs</td>
-                        <td data-label="To Date" style="text-align: right;">{{ mort.num_toDate }} pigs</td>
-                        <td data-label="Mortality %" style="text-align: right;">{{ mRate }}%</td>
-                        {% if mort.source == 'Incident Case' %}
-                        <td data-label="Incident Case">Incident Case {{ mCase }}</td>
-                        {% elif mort.source == 'Disease Case' %}
-                        <td data-label="Incident Case">Disease Case {{ mCase }}</td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
                         {% else %}
-                        <td data-label="Incident Case">Unknown</td>
+                        <p>No Starter Weight Slip yet.</p>
                         {% endif %}
-                        <td data-label="Remarks">{{ mort.remarks }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div>
-                <p>No mortality records to display.</p>
+                    </div>
+                </div>
+                <div>
+                    <h2>Weight Slip Details (Fattener)</h2>
+                    <div class="box-style">
+                        {% if end_weight %}
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Date Filed</td>
+                                    <td data-label="Date Filed">{{ end_weight.date_filed }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ave. Fattener Weight</td>
+                                    <td data-label="Ave. Fattener Weight">{{ end_weight.ave_weight }} kg</td>
+                                </tr>
+                                <tr>
+                                    <th>Total No. of Heads</td>
+                                    <td data-label="Total No. of Heads">{{ end_weight.total_numHeads }} heads</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Weight</td>
+                                    <td data-label="Total Kls">{{ end_weight.total_kls }} kg</td>
+                                </tr>
+                                <tr>
+                                    <th>Remarks</td>
+                                    {% if end_weight.remarks %}
+                                    <td data-label="Remarks">{{ end_weight.remarks }}</td>
+                                    {% else%}
+                                    <td data-label="Remarks">-</td>
+                                    {% endif %}
+                                </tr>
+                                <tr>
+                                    <th>Total Pigs Reached Market Weight</th>
+                                    <td>{{ weightList.5 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p>No Fattener Weight Slip yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if end_weight %}
+                <div>
+                    <h2>Fattener Weight Range</h2>
+                    <div class="box-style">
+                        <!-- <div class="box-style-chart" id="wr-hogs-weight" style="width: 100%; height: 250px; ">
+                        </div> -->
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Below 59 kg</td>
+                                    <td>{{ weightList.0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th>60-79 kg</td>
+                                    <td>{{ weightList.1 }}</td>
+                                </tr>
+                                <tr>
+                                    <th>80-99 kg</td>
+                                    <td>{{ weightList.2 }}</td>
+                                </tr>
+                                <tr>
+                                    <th>100-120 kg</td>
+                                    <td>{{ weightList.3 }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Above 120 kg</td>
+                                    <td>{{ weightList.4 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
+            <div class="flex-item">
+                <!-- Incidents Reported -->
+                <div>
+                    <div class="flex subheading">
+                        <h2 class="flex-item">Incidents Reported</h2>
+                        <div class="dropdown">
+                            <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Filters
+                            </button>
+                            <ul class="dropdown-menu" style="padding: 8px;">
+                                <label style="font-weight: 600;">Status</label>
+                                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Active" onclick="filterRepStatus()"/>&nbsp;Active</a></li>
+                                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Pending" onclick="filterRepStatus()"/>&nbsp;Pending</a></li>
+                                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Resolved" onclick="filterRepStatus()"/>&nbsp;Resolved</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mobile-subheading" style="width: 72%">
+                        <h2 class="flex-item">Incidents Reported</h2>
+                        <div class="dropdown">
+                            <button class="btn primary-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Filters
+                            </button>
+                            <ul class="dropdown-menu" style="padding: 8px;">
+                                <label style="font-weight: 600;">Status</label>
+                                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Active" onclick="filterRepStatus()"/>&nbsp;Active</a></li>
+                                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Pending" onclick="filterRepStatus()"/>&nbsp;Pending</a></li>
+                                <li><a class="dropdown-item" href="#"><input type="checkbox" class="ch_stat" id="Resolved" onclick="filterRepStatus()"/>&nbsp;Resolved</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="box-style">
+                        {% if total_incidents > 0 %}
+                        <table class="table" id="symptoms-reported">
+                            <thead>
+                                <tr>
+                                    <th>Incident Code</th>
+                                    <th>Date Reported</th>
+                                    <th style="width:15%">No. of Pigs Affected</th>
+                                    <th style="width: 35%">Symptoms Observed</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for incident,symptoms,editStat in incident_symptomsList %}
+                                <tr class="incident-row">
+                                    
+                                    <td data-label="Incident Code">{{ incident.id }}</td>
+                                    <td data-label="Date Reported">{{ incident.date_filed }} </td>
+                                    <td data-label="Pigs Affected">{{ incident.num_pigs_affected }} pigs</td>
+                                    <td data-label="Symptoms Observed">  
+                                        {% load healthapp_extras %}
+                                        {% for sKey, sVal in symptoms.items %}
+                                        <ul class="ul-symptoms">
+                                            {% if sVal %}
+                                                <li class="li-symptoms">{{ sKey|formatField }}</li>
+                                            {% endif %}
+                                        </ul>
+                                        {% endfor %}
+                                    </td>
+            
+                                    <td data-label="Status">
+                                        <input type="hidden" id="hidden-status-{{incident.id}}" value="{{incident.report_status}}">
+            
+                                        <div class="mb-3">
+                                            <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select" disabled=true>
+                                                {% if incident.report_status == 'Active' %}
+                                                    <option value="Active" class="status" selected>Active</option>
+                                                {% else %}
+                                                    <option value="Active" class="status">Active</option>
+                                                {% endif %}
+            
+                                                {% if incident.report_status == 'Pending' %}
+                                                    <option value="Pending"  class="status" selected>Pending</option>
+                                                {% else %}
+                                                    <option value="Pending"  class="status">Pending</option>
+                                                {% endif %} 
+            
+                                                {% if incident.report_status == 'Resolved' %}
+                                                    <option value="Resolved"  class="status" selected>Resolved</option>
+                                                {% else %}
+                                                    <option value="Resolved"  class="status" id="repstatus-resolve">Resolved</option>
+                                                {% endif %} 
+                                            </select>
+                                        </div>
+            
+                                        <div class="incd-resolved-remarks hide" id="input-remarks-{{incident.id}}">
+                                            <label class="bold-lbl">Remarks</label> <br>
+                                            <input type="text" onkeyup="EnableIncidRem(this)" class="form-control" id="input-resolved-remarks-{{incident.id}}" placeholder="ex. No new symptoms found">
+                                        </div>
+            
+                                        {% if incident.report_status == 'Resolved' %}
+                                        <div class="incd-remarks show" id="incd-remarks-{{incident.id}}">
+                                            <label class="bold-lbl">Remarks</label> <br>
+                                            {{incident.remarks}}
+                                        </div>
+                                        {% endif %} 
+                                    </td>
+                                    {% if editStat %}
+                                    <td class="symptoms-btn-grp">
+                                        <div class="btn-group" style="justify-content: end; padding: 0;">
+                                            <button class="secondary-btn symptomsEdit" id="edit-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
+                                            <button class="secondary-btn symptomsSave" id="save-{{incident.id}}"><span class="material-icons md-18">save</span>Save</button>
+                                        </div>
+                                    </td>
+                                    {% endif%}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div>
+                            <p>No incidents to display.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Confirmed Cases -->
+                <h2>Confirmed Cases</h2>
+                <div class="box-style scroll" style="height: 32vh;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Disease Name</th>
+                                <th>Lab Reference</th>
+                                <th>Last Updated</th>
+                                <th>Incident Involved</th>
+                                <th>No. of Pigs Affected</th>
+                                <th>Recovered</th>
+                                <th>Died</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for case in dTable.1 %}
+                            <tr>
+                                <td>{{ dTable.0 }}</td>
+                                <td>{{ case.lab_ref_no }}</td>
+                                <td>{{ case.date_updated }}</td>
+                                <td>{{ case.incid_no }}</td>
+                                <td>{{ case.num_pigs_affect }}</td>
+                                <td>
+                                    <div class="flex">
+                                        <p class="flex-item">{{ case.total_recovered }}</p>
+                                        <button id="btn-recovered" class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                    </div>                 
+                                </td>
+                                <td>
+                                    <div class="flex">
+                                        <p class="flex-item">{{ case.total_died }}</p>
+                                        <button id="btn-recovered" class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>                               
+                    </table>
+                </div>
+                
+                <!-- Mortality Records -->
+                <h2>Mortality Records</h2>
+                <div class="box-style">
+                    {% if total_mortalities > 0 %}
+                    <table class="table" id="mortality-records">
+                        <thead>
+                            <tr>
+                                <th width="5%">Series</th>
+                                <th width="10%">Mortality Date</th>
+                                <th style="text-align: right;">Beg. Inv.</th>
+                                <th style="text-align: right;">Today</th>
+                                <th style="text-align: right;">To Date</th>
+                                <th width="10%"style="text-align: right;">Mortality %</th>
+                                <th width="15%">Case Reference</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mort, mRate, mCase in mortalityList %}
+                            <tr>
+                                <td data-label="Series">{{ mort.series|stringformat:"03d" }}</td>
+                                <td data-label="Mortality Date">{{ mort.mortality_date }}</td>
+                                <td data-label="Beg. Inv." style="text-align: right;">{{ mort.num_begInv }} pigs</td>
+                                <td data-label="Today" style="text-align: right;">{{ mort.num_today }} pigs</td>
+                                <td data-label="To Date" style="text-align: right;">{{ mort.num_toDate }} pigs</td>
+                                <td data-label="Mortality %" style="text-align: right;">{{ mRate }}%</td>
+                                {% if mort.source == 'Incident Case' %}
+                                <td data-label="Incident Case">Incident Case {{ mCase }}</td>
+                                {% elif mort.source == 'Disease Case' %}
+                                <td data-label="Incident Case">Disease Case {{ mCase }}</td>
+                                {% else %}
+                                <td data-label="Incident Case">Unknown</td>
+                                {% endif %}
+                                <td data-label="Remarks">{{ mort.remarks }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div>
+                        <p>No mortality records to display.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </section>
 </div>

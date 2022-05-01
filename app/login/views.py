@@ -15,7 +15,7 @@ from django.contrib.auth import logout
 
 # TEST: importing views from cross-app folder
 from farmsapp.views import dashboard_view, techFarms
-from dssapp.views import dashboard_SusCases
+from dssapp.views import dashboard_SusCases, diseaseMonitoring
 def debug(m):
     print("------------------------[DEBUG]------------------------")
     print(m)
@@ -103,9 +103,11 @@ def home_view(request):
 
         # if userGroup == "Assistant Manager" or userGroup == "Extension Veterinarian" or userGroup == "Livestock Operation Specialist":
         else :
-            farmStats = dashboard_view(request)
-            susCases = dashboard_SusCases()
-            return render(request, 'home.html', {"farmStats": farmStats, 'susCases': susCases})
+            farmStats = dashboard_view(request)               # data for general Farms overview
+            susCases = dashboard_SusCases()                   # data for Symptoms Monitoring tab
+            disData = diseaseMonitoring(request, "ASF")       # data for Disease Monitoring tab
+            # debug(disData)
+            return render(request, 'home.html', {"farmStats": farmStats, 'susCases': susCases, 'disData': disData})
 
         
     else :

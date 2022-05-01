@@ -3,42 +3,42 @@
         <!-- Disease Tabs -->
         <ul class="nav nav-tabs no-print" id="dm-pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="dm-pills-asf-tab" onclick="getDiseaseInfo('ASF')" data-bs-toggle="pill" data-bs-target="#dm-pills-asf" type="button" role="tab" aria-controls="dm-pills-asf" aria-selected="true">
+                <button class="nav-link active" id="dm-pills-asf-tab" onclick="getDiseaseInfo('ASF');diseaseChart('ASF');" data-bs-toggle="pill" data-bs-target="#dm-pills-asf" type="button" role="tab" aria-controls="dm-pills-asf" aria-selected="true">
                     <div class="disease-info">
                         <p class="di-disease">African swine fever (ASF)</p>
                     </div>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="dm-pills-csf-tab" onclick="getDiseaseInfo('CSF')" data-bs-toggle="pill" data-bs-target="#dm-pills-csf" type="button" role="tab" aria-controls="dm-pills-csf" aria-selected="false">
+                <button class="nav-link" id="dm-pills-csf-tab" onclick="getDiseaseInfo('CSF');diseaseChart('CSF');" data-bs-toggle="pill" data-bs-target="#dm-pills-csf" type="button" role="tab" aria-controls="dm-pills-csf" aria-selected="false">
                     <div class="disease-info">
                         <p class="di-disease">Clinical swine fever (CSF)</p>
                     </div>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="dm-pills-iav-tab" onclick="getDiseaseInfo('IAVS')" data-bs-toggle="pill" data-bs-target="#dm-pills-iav" type="button" role="tab" aria-controls="dm-pills-iav" aria-selected="false">
+                <button class="nav-link" id="dm-pills-iav-tab" onclick="getDiseaseInfo('IAVS');diseaseChart('IAVS');" data-bs-toggle="pill" data-bs-target="#dm-pills-iav" type="button" role="tab" aria-controls="dm-pills-iav" aria-selected="false">
                     <div class="disease-info">
                         <p class="di-disease">Swine influenza (IAV-S)</p>
                     </div>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="dm-pills-adv-tab" onclick="getDiseaseInfo('ADV')" data-bs-toggle="pill" data-bs-target="#dm-pills-adv" type="button" role="tab" aria-controls="dm-pills-adv" aria-selected="false">
+                <button class="nav-link" id="dm-pills-adv-tab" onclick="getDiseaseInfo('ADV');diseaseChart('ADV');" data-bs-toggle="pill" data-bs-target="#dm-pills-adv" type="button" role="tab" aria-controls="dm-pills-adv" aria-selected="false">
                     <div class="disease-info">
                         <p class="di-disease">Pseudorabies (ADV)</p>
                     </div>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="dm-pills-prrs-tab" onclick="getDiseaseInfo('PRRS')" data-bs-toggle="pill" data-bs-target="#dm-pills-prrs" type="button" role="tab" aria-controls="dm-pills-prrs" aria-selected="false">
+                <button class="nav-link" id="dm-pills-prrs-tab" onclick="getDiseaseInfo('PRRS');diseaseChart('PRRS');" data-bs-toggle="pill" data-bs-target="#dm-pills-prrs" type="button" role="tab" aria-controls="dm-pills-prrs" aria-selected="false">
                     <div class="disease-info">
                         <p class="di-disease">Porcine reproductive and respiratory syndrome (PRRS)</p>
                     </div>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="dm-pills-ped-tab" onclick="getDiseaseInfo('PED')" data-bs-toggle="pill" data-bs-target="#dm-pills-ped" type="button" role="tab" aria-controls="dm-pills-ped" aria-selected="false">
+                <button class="nav-link" id="dm-pills-ped-tab" onclick="getDiseaseInfo('PED');diseaseChart('PED');" data-bs-toggle="pill" data-bs-target="#dm-pills-ped" type="button" role="tab" aria-controls="dm-pills-ped" aria-selected="false">
                     <div class="disease-info">
                         <p class="di-disease">Porcine epidemic diarrhea (PED)</p>
                     </div>
@@ -50,132 +50,27 @@
         <div class="tab-content" id="dm-pills-tabContent">
             <div class="tab-pane fade show active" id="dm-pills-asf" role="tabpanel" aria-labelledby="dm-pills-asf-tab">
                 <!-- ASF Content -->
-                <div class="flex">
-                    <div class="flex-item">
-                        <h3>No. of Cases</h3>
-                        <div class="flex">
-                            <!-- Disease Cases Line Chart -->
-                            <div class="flex-item" style="width: 40%; margin-right: 16px">
-                                <div class="box-style-chart" id="dm-confirmed-per" style="width: 100%; height: 40vh;">
-                                    <!-- Data handled in disease-monitoring.js -->
-                                </div>
-                            </div>
-                         
-                            <!-- Disease Cases Map -->
-                            <div class="flex-item" style="margin-right: 0!important">
-                                <div class="map-box" id="dm-map-container">
-                                    <!-- Data handled in map.js -->
-                                </div>
-                            </div>  
-                        </div>
-                        <!-- Confirmed Cases Table -->
-                        <div class="no-print" style="margin-right: 0!important">
-                            <div>
-                                <h3>Confirmed Cases</h3>
-                                <div class="box-style scroll" style="height: 32vh;">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Lab Reference</th>
-                                                <th>Incident Involved</th>
-                                                <th>No. of Pigs Affected</th>
-                                                <th>Recovered</th>
-                                                <th>Died</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1232234</td>
-                                                <td>013</td>
-                                                <td>20</td>
-                                                <td>
-                                                    <div class="flex">
-                                                        <p class="flex-item">0</p>
-                                                        <button class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
-                                                    </div>                 
-                                                </td>
-                                                <td>
-                                                    <div class="flex">
-                                                        <p class="flex-item">0</p>
-                                                        <button class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>                               
-                                    </table>
-                                </div>
-                            </div>
-                        </div> 
-                    </div>
-                    <!-- SERID Chart -->
-                    <div class="flex-item white-container" style="width: 30%;">
-                        <h2>Predicted cases</h2>                            
-                        <div class="no-print">
-                            <hr>
-                            <h3>Set Parameters</h3>
-                            <!-- Inputs --> 
-                                <!-- NOTE for backend ppl: set min, max, and default value -->
-                            <div>
-                                <div class="flex">
-                                    <label for="rangeIncubDays" class="flex-item form-label" style="width: 30%">Disease Incubation Period (days)</label>                             
-                                    <input type="range" class="flex-item form-range" id="rangeIncubDays" value="24" min="1" max="100" oninput="outputIncubDays.value = rangeIncubDays.value">
-                                    <output id="outputIncubDays">24</output>
-                                </div>
-                                <div class="flex">
-                                    <label for="rangeReproNo" class="flex-item form-label" style="width: 30%">Basic Reproduction No.</label>                             
-                                    <input type="range" class="flex-item form-range" id="rangeReproNo" value="24" min="1" max="100" oninput="outputReproNo.value = rangeReproNo.value">
-                                    <output id="outputReproNo">24</output>
-                                </div>
-                                <div class="flex">
-                                    <label for="rangeDiseaseSpread" class="flex-item form-label" style="width: 30%">No. of Days Disease can Spread</label>                             
-                                    <input type="range" class="flex-item form-range" id="rangeDiseaseSpread" value="24" min="1" max="100" oninput="outputDiseaseSpread.value = rangeDiseaseSpread.value">
-                                    <output id="outputDiseaseSpread">24</output>
-                                </div>
-                                <div class="flex">
-                                    <label for="rangeFatality" class="flex-item form-label" style="width: 30%">Fatality Rate</label>                             
-                                    <input type="range" class="flex-item form-range" id="rangeFatality" value="24" min="1" max="100" oninput="outputFatality.value = rangeFatality.value">
-                                    <output id="outputFatality">24</output>
-                                </div>
-                                <div class="flex">
-                                    <label for="rangeDeathDays" class="flex-item form-label" style="width: 30%">No. of Days until Death</label>                             
-                                    <input type="range" class="flex-item form-range" id="rangeDeathDays" value="24" min="1" max="100" oninput="outputDeathDays.value = rangeDeathDays.value">
-                                    <output id="outputDeathDays">24</output>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <!-- SEIRD Chart -->
-                        <div class="box-style-chart" id="dm-seird-asf" style="margin: 0!important">
-                            <!-- data handled in disease-monitoring.js -->
-                        </div>
-                        <br>
-                        <div id="seird-other-info">
-                            <div class="flex">
-                                <label for="seird-r"><strong>R</strong> =</label><p id="seird-r">sumn</p>
-                            </div> 
-                            <div class="flex">
-                                <label for="seird-t"><strong>T</strong> =</label><p id="seird-t">sumn</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                
+                {% include 'dsstemp/disease-content.html' %}
             </div>
             <div class="tab-pane fade" id="dm-pills-csf" role="tabpanel" aria-labelledby="dm-pills-csf-tab">
                 <!-- CSF Content -->
+                {% include 'dsstemp/disease-content.html' %}
             </div>
             <div class="tab-pane fade" id="dm-pills-iav" role="tabpanel" aria-labelledby="dm-pills-iav-tab">
                 <!-- IAV Content -->
+                {% include 'dsstemp/disease-content.html' %}
             </div>
             <div class="tab-pane fade" id="dm-pills-adv" role="tabpanel" aria-labelledby="dm-pills-adv-tab">
                 <!-- ADV Content -->
+                {% include 'dsstemp/disease-content.html' %}
             </div>
             <div class="tab-pane fade" id="dm-pills-prrs" role="tabpanel" aria-labelledby="dm-pills-prrs-tab">
                 <!-- PRRS Content -->
+                {% include 'dsstemp/disease-content.html' %}
             </div>
             <div class="tab-pane fade" id="dm-pills-ped" role="tabpanel" aria-labelledby="dm-pills-ped-tab">
                 <!-- PED Content -->
+                {% include 'dsstemp/disease-content.html' %}
             </div>
         </div>
     </div>

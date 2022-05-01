@@ -1,21 +1,20 @@
 // DISEASE MONITORING
-$(document).ready(async function () {
-    if($('#dm-confirmed-per').length) {
+// $(document).ready(async function () {
+    // onclick disease -- render specific disease
+    async function diseaseChart(strdisease) {
 
         ajaxCSRF();
         // console.log('here');
+        // console.log('disease: ' + strdisease);
         metadata = await $.ajax({
             type: 'POST',
-            url: '/disease-monitoring/ASF/', // add disease name
+            url: '/disease-charts/' + strdisease + '/',
             success: function(response){
                 return response;
             }
         });
         
         console.log(metadata);
-        // console.log(metadata[0]);
-        // console.log(metadata[0]['confirmed'][0]);
-
 
         var today = new Date();
         // console.log(today);
@@ -150,5 +149,14 @@ $(document).ready(async function () {
             })
         }
         
-    }
-})
+    };
+
+    // const tab = $('#diseasemonitor-tab');
+    // console.log(tab);
+    // console.log(tab.hasClass('active'));
+
+    // if((tab.hasClass('active'))){
+    //     console.log("!!!!!!!!!!!!!!!!!!!!!");
+        
+    // }
+// })

@@ -24,7 +24,7 @@ body {
 }
 
 /* Typography Styles */
-h1, h1 a { font-size: 2rem; font-family: 'Public Sans'; font-weight: 600; }
+h1, h1 a, .h1 { font-size: 2rem; font-family: 'Public Sans'; font-weight: 600; }
 h1 a .bx-chevron-left { font-size: 2.5rem!important; vertical-align: text-bottom; margin-bottom: -4px; }
 h2 { font-size: 1.5rem; font-family: 'Public Sans'; font-weight: 600; }
 h3 { font-size: 1rem; font-family: 'Public Sans'; font-weight: 600; }
@@ -106,7 +106,7 @@ ul .li-symptoms { list-style: circle!important;}
     opacity: 0; 
     height: 8px; 
     margin-top: 16px;
-    display: flex;
+    display: hidden;
     max-width: 100%;
     vertical-align: middle;
 }
@@ -201,6 +201,12 @@ button, .button {
 .button {
     display: table;
     max-width: 208px;
+    text-decoration: none;
+}
+
+.button-small {
+    display: table;
+    max-height: 34px;
     text-decoration: none;
 }
 

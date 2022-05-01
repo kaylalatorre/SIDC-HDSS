@@ -81,47 +81,46 @@
                                 <p class="di-disease">Unknown/Undetected by System</p>
                                 <h3 class="di-no-affected {% if susCases.Others.hogs_total > 0 %} txt-negative {% endif %} ">{{ susCases.Others.hogs_total }}</h3>
                             </div>
-                        </button>
-                    </div>
-                </button>
-               </div>
-               <!-- Tab Content -->
-               <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
-                   <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
-                       {% if  susCases.ASF.hogs_total == 0 %}
-                       <div>
-                           No suspected cases.
-                       </div>
-                       {% else %}
-                           <table class="table">
-                               <thead>
-                                   <tr>
-                                       <th>Incident Involved</th>
-                                       <th>Farm Affected</th>
-                                       <th>No. of Pigs Affected</th>
-                                       <th width="20%">Symptoms</th>
-                                       <th width="25%">Result</th> 
-                                   </tr>
-                               </thead>
-                               <tbody>
-                                   {% for disease in susCases.ASF.diseaseList %}                        
-                                   <tr>
-                                       <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                       <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                       <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                       <td data-label="Symptoms"> 
-                                           <ul class="ul-symptoms">
-                                               {% for symptom in disease.symptoms %}
-                                               <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                               {% endfor %}
-                                           </ul>
-                                       </td>
-                                       <td data-label="Confirmed">
-                                           <!-- hidden result display -->
-                                           {% if disease.lab_result == False %}
+                <!-- Tab Content -->
+                <div class="tab-content" id="v-pills-tabContent" style="width: 70%">
+                    <div class="tab-pane fade show active" id="v-pills-asf" role="tabpanel" aria-labelledby="v-pills-asf-tab">
+                        {% if  susCases.ASF.hogs_total == 0 %}
+                        <div>
+                            No suspected cases.
+                        </div>
+                        {% else %}
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Incident Involved</th>
+                                            <th>Farm Affected</th>
+                                            <th>No. of Pigs Affected</th>
+                                            <th width="20%">Symptoms</th>
+                                            <th width="25%">Result</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for disease in susCases.ASF.diseaseList %}                        
+                                        <tr>
+                                            <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                            <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                            <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                            <td data-label="Symptoms"> 
+                                                <ul class="ul-symptoms">
+                                                    {% for symptom in disease.symptoms %}
+                                                    <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                            <td data-label="Confirmed">
+                                                
+                                                <!-- hidden result display -->
+                                                {% if disease.lab_result %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -131,28 +130,22 @@
                                                     <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
                                                 </div>
 
-                                           <!-- hidden reference form -->
-                                           <div class="box-style diagnosis-result-ref hide">
-                                               <form>
-                                                   <label class="bold-lbl">Laboratory Result</label> <br>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                       <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                   </div>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
-                                                       <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                   </div>
-                                                   
-                                                   <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                   <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                           
-                                                   <div class="flex" style="margin-top: 8px">
-                                                       <button class="secondary-btn submit-reference" type="submit" id="ASF:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                       <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
-                                                   </div>
-                                               </form>
-                                           </div>
+                                                <!-- hidden reference form -->
+                                                <div class="box-style diagnosis-result-ref hide">
+                                                    <form>
+                                                        <label class="bold-lbl">Laboratory Result</label> <br>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
+                                                        
+                                                        <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                                
+                                                        <div class="flex" style="margin-top: 8px">
+                                                            <button class="secondary-btn submit-reference" type="submit" id="ASF:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                            <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
 
                                                 {% endif %}
                                             </td>
@@ -200,7 +193,8 @@
                                            {% if disease.lab_result == False %}
 
                                                 <div>
-                                                    <p>Result: {{ disease.lab_result|labResult }}</p> 
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
                                                     <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 
@@ -210,107 +204,96 @@
                                                     <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
                                                 </div>
 
-                                           <!-- hidden reference form -->
-                                           <div class="box-style diagnosis-result-ref hide">
-                                               <form>
-                                                   <label class="bold-lbl">Laboratory Result</label> <br>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                       <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                   </div>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
-                                                       <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                   </div>
-                                                   
-                                                   <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                   <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                           
-                                                   <div class="flex" style="margin-top: 8px">
-                                                       <button class="secondary-btn submit-reference" type="submit" id="CSF:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                       <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
-                                                   </div>
-                                               </form>
-                                           </div>
+                                                <!-- hidden reference form -->
+                                                <div class="box-style diagnosis-result-ref hide">
+                                                    <form>
+                                                        <label class="bold-lbl">Laboratory Result</label> <br>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
+                                                        
+                                                        <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                                
+                                                        <div class="flex" style="margin-top: 8px">
+                                                            <button class="secondary-btn submit-reference" type="submit" id="CSF:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                            <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
 
-                                           {% endif %}
-                                       </td>
-                                       
-                                   </tr>
-                                   {% endfor %}
-                   
-                               </tbody>
-                           </table>
-                       {% endif %}
-                   </div>
-                   
-                   <div class="tab-pane fade" id="v-pills-iav" role="tabpanel" aria-labelledby="v-pills-iav-tab">
-                       {% if  susCases.IAVS.hogs_total == 0 %}
-                       <div>
-                           No suspected cases.
-                       </div>
-                       {% else %}
-                           <table class="table">
-                               <thead>
-                                   <tr>
-                                       <th>Incident Involved</th>
-                                       <th>Farm Affected</th>
-                                       <th>No. of Pigs Affected</th>
-                                       <th width="20%">Symptoms</th>
-                                       <th width="25%">Result</th> 
-                                   </tr>
-                               </thead>
-                               <tbody>
-                                   {% for disease in susCases.IAVS.diseaseList %}                        
-                                   <tr>
-                                       <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                       <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                       <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                       <td data-label="Symptoms"> 
-                                           <ul class="ul-symptoms">
-                                               {% for symptom in disease.symptoms %}
-                                               <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                               {% endfor %}
-                                           </ul>
-                                       </td>
-                                       <td data-label="Confirmed">
-                                                                                     
-                                           <!-- hidden result display -->
-                                           {% if disease.lab_result == False %}
+                                                {% endif %}
+                                            </td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                        
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="tab-pane fade" id="v-pills-iav" role="tabpanel" aria-labelledby="v-pills-iav-tab">
+                            {% if  susCases.IAVS.hogs_total == 0 %}
+                            <div>
+                                No suspected cases.
+                            </div>
+                            {% else %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Incident Involved</th>
+                                            <th>Farm Affected</th>
+                                            <th>No. of Pigs Affected</th>
+                                            <th width="20%">Symptoms</th>
+                                            <th width="25%">Result</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for disease in susCases.IAVS.diseaseList %}                        
+                                        <tr>
+                                            <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                            <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                            <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                            <td data-label="Symptoms"> 
+                                                <ul class="ul-symptoms">
+                                                    {% for symptom in disease.symptoms %}
+                                                    <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                            <td data-label="Confirmed">
+                                                
+                                                <!-- hidden result display -->
+                                                {% if disease.lab_result %}
 
-                                           <div>
-                                               <p>Result: {{ disease.lab_result|labResult }}</p> 
-                                               <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
-                                           </div>
-                                           
-                                           {% else %}
-                                           <!-- default - input button -->
-                                           <div class="flex">
-                                               <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
-                                           </div>
-                                           
-                                           <!-- hidden reference form -->
-                                           <div class="box-style diagnosis-result-ref hide">
-                                               <form>
-                                                   <label class="bold-lbl">Laboratory Result</label> <br>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                       <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                   </div>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
-                                                       <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                   </div>
-                                                   
-                                                   <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                   <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                           
-                                                   <div class="flex" style="margin-top: 8px">
-                                                       <button class="secondary-btn submit-reference" type="submit" id="IAVS:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                       <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
-                                                   </div>
-                                               </form>
-                                           </div>
+                                                <div>
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
+                                                    <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
+                                                </div>
+                                                
+                                                {% else %}
+                                                <!-- default - input button -->
+                                                <div class="flex">
+                                                    <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                                </div>
+
+                                                <!-- hidden reference form -->
+                                                <div class="box-style diagnosis-result-ref hide">
+                                                    <form>
+                                                        <label class="bold-lbl">Laboratory Result</label> <br>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
+                                                        
+                                                        <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                                
+                                                        <div class="flex" style="margin-top: 8px">
+                                                            <button class="secondary-btn submit-reference" type="submit" id="IAVS:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                            <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
 
                                                 {% endif %}
                                             </td>
@@ -323,72 +306,68 @@
                             {% endif %}
                         </div>
 
-                   <div class="tab-pane fade" id="v-pills-adv" role="tabpanel" aria-labelledby="v-pills-adv-tab">
-                       {% if  susCases.ADV.hogs_total == 0 %}
-                       <div>
-                           No suspected cases.
-                       </div>
-                       {% else %}
-                           <table class="table">
-                               <thead>
-                                   <tr>
-                                       <th>Incident Involved</th>
-                                       <th>Farm Affected</th>
-                                       <th>No. of Pigs Affected</th>
-                                       <th width="20%">Symptoms</th>
-                                       <th width="25%">Result</th> 
-                                   </tr>
-                               </thead>
-                               <tbody>
-                                   {% for disease in susCases.ADV.diseaseList %}                        
-                                   <tr>
-                                       <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                       <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                       <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                       <td data-label="Symptoms"> 
-                                           <ul class="ul-symptoms">
-                                               {% for symptom in disease.symptoms %}
-                                               <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                               {% endfor %}
-                                           </ul>
-                                       </td>
-                                       <td data-label="Confirmed">
-                                           <!-- hidden result display -->
-                                           {% if disease.lab_result%}
+                        <div class="tab-pane fade" id="v-pills-adv" role="tabpanel" aria-labelledby="v-pills-adv-tab">
+                            {% if  susCases.ADV.hogs_total == 0 %}
+                            <div>
+                                No suspected cases.
+                            </div>
+                            {% else %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Incident Involved</th>
+                                            <th>Farm Affected</th>
+                                            <th>No. of Pigs Affected</th>
+                                            <th width="20%">Symptoms</th>
+                                            <th width="25%">Result</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for disease in susCases.ADV.diseaseList %}                        
+                                        <tr>
+                                            <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                            <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                            <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                            <td data-label="Symptoms"> 
+                                                <ul class="ul-symptoms">
+                                                    {% for symptom in disease.symptoms %}
+                                                    <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                            <td data-label="Confirmed">
+                                                
+                                                <!-- hidden result display -->
+                                                {% if disease.lab_result %}
 
-                                           <div>
-                                               <p>Result: {{ disease.lab_result|labResult }}</p> 
-                                               <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
-                                           </div>
-                                           
-                                           {% else %}
-                                           <!-- default - input button -->
-                                           <div class="flex">
-                                               <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
-                                           </div>
-                                           
-                                           <!-- hidden reference form -->
-                                           <div class="box-style diagnosis-result-ref hide">
-                                               <form>
-                                                   <label class="bold-lbl">Laboratory Result</label> <br>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                       <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                   </div>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
-                                                       <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                   </div>
-                                                   
-                                                   <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                   <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                           
-                                                   <div class="flex" style="margin-top: 8px">
-                                                       <button class="secondary-btn submit-reference" type="submit" id="ADV:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                       <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
-                                                   </div>
-                                               </form>
-                                           </div>
+                                                <div>
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
+                                                    <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
+                                                </div>
+                                                
+                                                {% else %}
+                                                <!-- default - input button -->
+                                                <div class="flex">
+                                                    <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                                </div>
+
+                                                <!-- hidden reference form -->
+                                                <div class="box-style diagnosis-result-ref hide">
+                                                    <form>
+                                                        <label class="bold-lbl">Laboratory Result</label> <br>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
+                                                        
+                                                        <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                                
+                                                        <div class="flex" style="margin-top: 8px">
+                                                            <button class="secondary-btn submit-reference" type="submit" id="ADV:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                            <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
 
                                                 {% endif %}
                                             </td>
@@ -401,72 +380,68 @@
                             {% endif %}
                         </div>
 
-                   <div class="tab-pane fade" id="v-pills-prrs" role="tabpanel" aria-labelledby="v-pills-prrs-tab">
-                       {% if  susCases.PRRS.hogs_total == 0 %}
-                       <div>
-                           No suspected cases.
-                       </div>
-                       {% else %}
-                           <table class="table">
-                               <thead>
-                                   <tr>
-                                       <th>Incident Involved</th>
-                                       <th>Farm Affected</th>
-                                       <th>No. of Pigs Affected</th>
-                                       <th width="20%">Symptoms</th>
-                                       <th width="25%">Result</th> 
-                                   </tr>
-                               </thead>
-                               <tbody>
-                                   {% for disease in susCases.PRRS.diseaseList %}                        
-                                   <tr>
-                                       <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                       <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                       <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                       <td data-label="Symptoms"> 
-                                           <ul class="ul-symptoms">
-                                               {% for symptom in disease.symptoms %}
-                                               <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                               {% endfor %}
-                                           </ul>
-                                       </td>
-                                       <td data-label="Confirmed">
-                                           <!-- hidden result display -->
-                                           {% if disease.lab_result == False %}
+                        <div class="tab-pane fade" id="v-pills-prrs" role="tabpanel" aria-labelledby="v-pills-prrs-tab">
+                            {% if  susCases.PRRS.hogs_total == 0 %}
+                            <div>
+                                No suspected cases.
+                            </div>
+                            {% else %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Incident Involved</th>
+                                            <th>Farm Affected</th>
+                                            <th>No. of Pigs Affected</th>
+                                            <th width="20%">Symptoms</th>
+                                            <th width="25%">Result</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for disease in susCases.PRRS.diseaseList %}                        
+                                        <tr>
+                                            <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                            <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                            <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                            <td data-label="Symptoms"> 
+                                                <ul class="ul-symptoms">
+                                                    {% for symptom in disease.symptoms %}
+                                                    <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                            <td data-label="Confirmed">
+                                                
+                                                <!-- hidden result display -->
+                                                {% if disease.lab_result %}
 
-                                           <div>
-                                               <p>Result: {{ disease.lab_result|labResult }}</p> 
-                                               <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
-                                           </div>
-                                           
-                                           {% else %}
-                                           <!-- default - input button -->
-                                           <div class="flex">
-                                               <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
-                                           </div>
-                                           
-                                           <!-- hidden reference form -->
-                                           <div class="box-style diagnosis-result-ref hide">
-                                               <form>
-                                                   <label class="bold-lbl">Laboratory Result</label> <br>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                       <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                   </div>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
-                                                       <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                   </div>
-                                                   
-                                                   <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                   <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                           
-                                                   <div class="flex" style="margin-top: 8px">
-                                                       <button class="secondary-btn submit-reference" type="submit" id="PRRS:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                       <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
-                                                   </div>
-                                               </form>
-                                           </div>
+                                                <div>
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
+                                                    <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
+                                                </div>
+                                                
+                                                {% else %}
+                                                <!-- default - input button -->
+                                                <div class="flex">
+                                                    <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
+                                                </div>
+
+                                                <!-- hidden reference form -->
+                                                <div class="box-style diagnosis-result-ref hide">
+                                                    <form>
+                                                        <label class="bold-lbl">Laboratory Result</label> <br>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
+                                                        
+                                                        <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
+                                                
+                                                        <div class="flex" style="margin-top: 8px">
+                                                            <button class="secondary-btn submit-reference" type="submit" id="PRRS:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                            <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
 
                                                 {% endif %}
                                             </td>
@@ -479,148 +454,65 @@
                             {% endif %}
                         </div>
 
-                   <div class="tab-pane fade" id="v-pills-ped" role="tabpanel" aria-labelledby="v-pills-ped-tab">
-                       {% if  susCases.PED.hogs_total == 0 %}
-                       <div>
-                           No suspected cases.
-                       </div>
-                       {% else %}
-                           <table class="table">
-                               <thead>
-                                   <tr>
-                                       <th>Incident Involved</th>
-                                       <th>Farm Affected</th>
-                                       <th>No. of Pigs Affected</th>
-                                       <th width="20%">Symptoms</th>
-                                       <th width="25%">Result</th> 
-                                   </tr>
-                               </thead>
-                               <tbody>
-                                   {% for disease in susCases.PED.diseaseList %}                        
-                                   <tr>
-                                       <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                       <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                       <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                       <td data-label="Symptoms"> 
-                                           <ul class="ul-symptoms">
-                                               {% for symptom in disease.symptoms %}
-                                               <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                               {% endfor %}
-                                           </ul>
-                                       </td>
-                                       <td data-label="Confirmed">
-                                           <!-- hidden result display -->
-                                           {% if disease.lab_result == False %}
+                        <div class="tab-pane fade" id="v-pills-ped" role="tabpanel" aria-labelledby="v-pills-ped-tab">
+                            {% if  susCases.PED.hogs_total == 0 %}
+                            <div>
+                                No suspected cases.
+                            </div>
+                            {% else %}
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Incident Involved</th>
+                                            <th>Farm Affected</th>
+                                            <th>No. of Pigs Affected</th>
+                                            <th width="20%">Symptoms</th>
+                                            <th width="25%">Result</th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for disease in susCases.PED.diseaseList %}                        
+                                        <tr>
+                                            <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
+                                            <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
+                                            <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
+                                            <td data-label="Symptoms"> 
+                                                <ul class="ul-symptoms">
+                                                    {% for symptom in disease.symptoms %}
+                                                    <li class="li-symptoms"> {{symptom|formatField}} </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </td>
+                                            <td data-label="Confirmed">
+                                                
+                                                <!-- hidden result display -->
+                                                {% if disease.lab_result %}
 
-                                           <div>
-                                               <p>Result: {{ disease.lab_result|labResult }}</p> 
-                                               <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
-                                           </div>
-                                           
-                                           {% else %}
-                                           <!-- default - input button -->
-                                           <div class="flex">
-                                               <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
-                                           </div>
-                                           
-                                           <!-- hidden reference form -->
-                                           <div class="box-style diagnosis-result-ref hide">
-                                               <form>
-                                                   <label class="bold-lbl">Laboratory Result</label> <br>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                       <label class="form-check-label" for="inlineRadio1">Positive</label>
-                                                   </div>
-                                                   <div class="form-check form-check-inline">
-                                                       <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
-                                                       <label class="form-check-label" for="inlineRadio2">Negative</label>
-                                                   </div>
-                                                   
-                                                   <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                   <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                           
-                                                   <div class="flex" style="margin-top: 8px">
-                                                       <button class="secondary-btn submit-reference" type="submit" id="PED:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                       <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
-                                                   </div>
-                                               </form>
-                                           </div>
-
-                                           {% endif %}
-                                       </td>
-                                       
-                                   </tr>
-                                   {% endfor %}
-                   
-                               </tbody>
-                           </table>
-                       {% endif %}
-                   </div>
-
-                   
-                   <div class="tab-pane fade" id="v-pills-others" role="tabpanel" aria-labelledby="v-pills-others-tab">
-                    {% if  susCases.Others.hogs_total == 0 %}
-                    <div>
-                        No suspected cases.
-                    </div>
-                    {% else %}
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Incident Involved</th>
-                                    <th>Farm Affected</th>
-                                    <th>No. of Pigs Affected</th>
-                                    <th width="20%">Symptoms</th>
-                                    <th width="25%">Result</th> 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for disease in susCases.Others.diseaseList %}                        
-                                <tr>
-                                    <td data-label="Incident Involved"> {{disease.incid_id|stringformat:"03d"}} </td>
-                                    <td data-label="Farm Affected"> {{disease.farm_id|stringformat:"03d"}} </td>
-                                    <td data-label="No. of Pigs Affected"> {{disease.hogs_affect}} </td>
-                                    <td data-label="Symptoms"> 
-                                        <ul class="ul-symptoms">
-                                            {% for symptom in disease.symptoms %}
-                                            <li class="li-symptoms"> {{symptom|formatField}} </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </td>
-                                    <td data-label="Confirmed">
-                                        <!-- hidden result display -->
-                                        {% if disease.lab_result == False %}
-
-                                        <div>
-                                            <p>Result: {{ disease.lab_result|labResult }}</p> 
-                                            <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
-                                        </div>
-                                        
-                                        {% else %}
-                                        <!-- default - input button -->
-                                        <div class="flex">
-                                            <button class="primary-btn result-ref-btn" style="margin-right: 4px;">Input Result</button>
-                                        </div>
-                                        
-                                        <!-- hidden reference form -->
-                                        <div class="box-style diagnosis-result-ref hide">
-                                            <form>
-                                                <label class="bold-lbl">Laboratory Result</label> <br>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio1" value=1 checked>
-                                                    <label class="form-check-label" for="inlineRadio1">Positive</label>
+                                                <div>
+                                                    <label class="bold-lbl">Results</label> 
+                                                    <p>Negative: 5 pigs </p> 
+                                                    <p>Laboratory Reference: {{ disease.lab_ref }}</p> 
                                                 </div>
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="radio" name="inlineRadioOptions_{{ disease.incid_id }}" id="inlineRadio2" value=0>
                                                     <label class="form-check-label" for="inlineRadio2">Negative</label>
                                                 </div>
+
+                                                <!-- hidden reference form -->
+                                                <div class="box-style diagnosis-result-ref hide">
+                                                    <form>
+                                                        <label class="bold-lbl">Laboratory Result</label> <br>
+                                                        <label class="bold-lbl">No. of Positive Pigs</label> <br>
+                                                        <input type="number" required class="form-control" id="" placeholder="ex. 1">
+                                                        
+                                                        <label class="bold-lbl">Laboratory Reference</label> <br>
+                                                        <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
                                                 
-                                                <label class="bold-lbl">Laboratory Reference</label> <br>
-                                                <input type="text" required class="form-control" id="input-reference_{{ disease.incid_id }}" placeholder="ex. 001232">
-                                        
-                                                <div class="flex" style="margin-top: 8px">
-                                                    <button class="secondary-btn submit-reference" type="submit" id="Others:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
-                                                    <button class="secondary-btn-red cancel-ref-btn" type="button">Cancel</button>
+                                                        <div class="flex" style="margin-top: 8px">
+                                                            <button class="secondary-btn submit-reference" type="submit" id="PED:{{ disease.incid_id }}" style="margin-right: 4px">Submit</button>
+                                                            <button class="secondary-btn-red cancel-ref-btn" type="submit">Cancel</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
                                             </form>
                                         </div>
