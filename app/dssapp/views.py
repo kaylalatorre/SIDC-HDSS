@@ -243,18 +243,26 @@ def diseaseDashboard(request):
             symSeries.append(symData)
 
         
-        # get all activity type
-        activityTypeQry = Activity.objects.filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).distinct("trip_type")
+        # get all activity types
+        # activityTypeQry = Activity.objects.filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).distinct("trip_type")
+        # print(activityTypeQry)
+
+        actTypes        = ['Delivery of Veterinary Supplies', 'Delivery of Medicine', 'Monthly Inventory', 'Blood Collection',
+                            'Vaccinations', 'Inspection', 'Sold Pigs', 'Other']
+
+        i = 0
 
         # COLLECT ALL ACTIVITIES
-        for actType in activityTypeQry:
+        for actType in actTypes:
             # print("- - " + str(actType.trip_type) + " - -")
+            print("- - " + str(actType) + " - -")
+
             
             # initialize data list per activity; will contain --> [activity date, count]
             actData = []
 
             # collect all activities under specific type
-            activities = Activity.objects.filter(trip_type=actType.trip_type).filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).order_by("date")
+            activities = Activity.objects.filter(trip_type=actType).filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).order_by("date")
             # print(activities)
 
             act_count = 0
@@ -263,7 +271,7 @@ def diseaseDashboard(request):
             except:
                 actData.append([dateMonthsAgo.date(), 0])
                 actData.append([dateToday.date(), 0])
-                actSeries.append([actType.trip_type, actData])
+                actSeries.append([actType, actData])
                 continue
 
             if act_currDate != dateMonthsAgo.date():
@@ -293,12 +301,14 @@ def diseaseDashboard(request):
             if act_currDate != dateToday.date():
                 actData.append([dateToday.date(), 0])
 
-            actSeries.append([actType.trip_type, actData])
+            actSeries.append([actType, actData])
+
+            i += 1
 
         # print(incSeries)
         # print(mortSeries)
         # print(symSeries)
-        # print(actSeries)
+        print(actSeries)
 
         # append each chart series into one data array
         data.append(incSeries)
@@ -525,7 +535,7 @@ def symptomsMonitoring(request):
 
 
 def filter_incidentRep(request, startDate, endDate, areaName):
-    debug("TEST LOG: in filter_incidentRep/n")
+    # debug("TEST LOG: in filter_incidentRep/n")
 
     """
     Gets all Incident (Hog_Symptoms) records based on (1) date range and (2) area name.
@@ -1000,7 +1010,7 @@ def diseaseMonitoring(request, strDisease):
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
 
     data = []
-    debug(request.method)
+    # debug(request.method)
     print(strDisease)
 
     # confrimed cases
@@ -1022,7 +1032,7 @@ def diseaseMonitoring(request, strDisease):
         if case['lab_ref_no'] not in casesList:
             casesList.append(case['lab_ref_no'])
             cases.append(case)
-            debug(casesList)
+            # debug(casesList)
     dTable.append(cases)
 
     dChart = {
