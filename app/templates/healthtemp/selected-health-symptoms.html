@@ -343,23 +343,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for case in dTable.1 %}
+                            {% for case in dTable %}
                             <tr>
-                                <td>{{ dTable.0 }}</td>
+                                <td>{{ case.disease_name }}</td>
                                 <td>{{ case.lab_ref_no }}</td>
                                 <td>{{ case.date_updated }}</td>
                                 <td>{{ case.incid_no }}</td>
                                 <td>{{ case.num_pigs_affect }}</td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">{{ case.total_recovered }}</p>
-                                        <button id="btn-recovered" class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
-                                    </div>                 
+                                        <p class="flex-item" class="display-total-rec">{{ case.total_recovered }}</p>
+                                        <button onclick="UpdateTotalRec()" class="secondary-btn update-total-rec" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+
+                                        <input type="number" required class="form-control input-total-rec" min=1 max="{{case.num_pigs_affect}}" onkeyup="EnableRecSave(this)" placeholder="{{ case.total_recovered }}">
+                                        <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
+                                        <button class="secondary-btn save-total-rec" style="margin-bottom: 8px">Save</button>
+                                    </div>  
                                 </td>
                                 <td>
                                     <div class="flex">
                                         <p class="flex-item">{{ case.total_died }}</p>
-                                        <button id="btn-recovered" class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
+                                        <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-recovered">Update</button> <!-- redirect to add-mortality -->
                                     </div>
                                 </td>
                             </tr>

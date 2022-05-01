@@ -105,7 +105,7 @@ for(var i = 0; i < biosecSave.length; i++) {
 }
 
 /**
-* Enable submit/save button when text is inputted
+* Enable submit button when text is inputted for selected-activity
 */
 function EnableRejectSave(text) {
     var btnSubmit = document.getElementById("reject-activity");
@@ -116,6 +116,22 @@ function EnableRejectSave(text) {
     } else {
         //disable the TextBox when TextBox is empty
         btnSubmit.disabled = true;
+    }
+};
+
+/**
+* Enable save button when text is inputted for selected-health-symptoms
+*/
+function EnableRecSave(text) {
+    var btnSave = document.getElementById("save-recovered");
+    // console.log(text);
+
+    if (text.value.trim() > 0) {
+        //enable the TextBox when TextBox has value
+        btnSave.disabled = false;
+    } else {
+        //disable the TextBox when TextBox is empty
+        btnSave.disabled = true;
     }
 };
 
@@ -134,6 +150,28 @@ function EnableIncidRem(text) {
     }
 };
 
+/**
+*   - Hide text and update button
+*   - Show input and save button
+**/ 
+function UpdateTotalRec(){
+
+    var row = text.parentNode.parentNode.parentNode;
+
+    console.log(row);
+
+    var hideText = row.getElementsByClassName('display-total-rec')[0];
+    var hideBtn = row.getElementsByClassName('update-total-rec')[0];
+
+    var showInput = row.getElementsByClassName('input-total-rec')[0];
+    var showBtn = row.getElementsByClassName('save-total-rec')[0];
+
+    hideText.style.display = "none";
+    hideBtn.style.display = "none";
+
+    showInput.style.display = "block";
+    showBtn.style.display = "block";
+}
 
 /**
  * Symptoms edit button 

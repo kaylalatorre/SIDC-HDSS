@@ -1368,3 +1368,72 @@ function getDiseaseInfo(strDisease){
         console.log(error);
     }
 }
+
+
+/** 
+ * on-click POST AJAX function for updating Disease Case and adding a Disease Record.
+ * @param drID string ID of Disease Record
+*/
+
+$('.save-total-rec').on('click', function () {
+    var total_rec = $(this).siblings(":eq(2)").val();
+    var discaseID = $(this).siblings(":eq(3)").val();
+
+    console.log(total_rec);
+    console.log(discaseID)
+    
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/update-disease-case/' + discaseID, 
+        data: {"total_rec": total_rec}, 
+        success: function (response) {
+            
+            if (response.status_code === "200"){
+                url = '/update-disease-case/' + discaseID;
+                location.href = url;          
+            } 
+            else {
+                console.log("ERROR [" + response.status_code + "]: " + response.error);
+            }
+
+        },
+        error: function (res){
+            console.log("ERROR [" + res.status_code + "]: " +  res.error);
+        }
+    });
+
+});
+
+// function updateDRCase(elem, drID) {
+
+//     // get no. of pigs (input field in recovered)
+//     var total_rec = $("input.input-total-rec").val();
+
+    
+
+//     ajaxCSRF();
+
+//     $.ajax({
+//         type: 'POST',
+//         url: '/post-addCase/' + farmID, 
+//         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
+//         success: function (response) {
+            
+//             if (response.status_code === "200"){
+//                 url = "/selected-health-symptoms/" + farmID;
+//                 location.href = url;          
+//             } 
+//             else {
+//                 console.log("ERROR [" + response.status_code + "]: " + response.error);
+//             }
+
+//         },
+//         error: function (res){
+//             console.log("ERROR [" + res.status_code + "]: " +  res.error);
+//         }
+//     });
+// }
+

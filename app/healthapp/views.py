@@ -754,19 +754,17 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (5) Confirmed Cases table data
-    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__ref_farm=farmID).annotate(
+    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__ref_farm=farmID).select_related('ref_disease_case').annotate(
         lab_ref_no       = F("ref_disease_case__lab_ref_no"),
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
         disease_name     = F("ref_disease_case__disease_name"),
-        date_updated     = F("ref_disease_case__disease_name"),
+        date_updated     = F("ref_disease_case__date_updated"),
     ).order_by("-date_filed", "lab_ref_no").values()
     # debug(casesQry)
 
-    dTable = []
+    dateToday = datetime.now(timezone.utc)
     if casesQry.exists():
-        dTable.append(casesQry.first()['disease_name'])
-        # [strDisease, []]
 
         cases = []
         casesList = []
@@ -774,14 +772,14 @@ def selectedHealthSymptoms(request, farmID):
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
                 cases.append(case)
-                debug(casesList)
-        dTable.append(cases)    
-        # debug(dTable)
+                # debug(casesList)
+    
+    debug(cases)
 
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": pigpenQry.start_weight, "end_weight": pigpenQry.final_weight,
-                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'dTable': dTable})
+                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'dTable': cases})
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -1695,32 +1693,76 @@ def update_diseaseCase(request, dcID):
     # Note: This function triggered during on-click of Update btn (recovered);
     # When will this be called for addMortality() / Update btn (died)?
 
-    # get input from Recovered field
-    numRecovered = 0
-    # get Disease Case ID --> dcID
+    if request.method == 'POST':
+        dateToday = datetime.now(timezone.utc)
 
-    # make new Disease_Record
-    dRecord = Disease_Record()
-    dRecord.num_recovered = numRecovered
-    dRecord.num_died = 0
+        # get input from Recovered field
+        numRecovered = request.POST.get("total_rec")
+        
+        debug(numRecovered)
+        debug(dcID)
 
-    # 1.1 Qry latest Disease_Record under given (1) dcID
-    latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
+        # 1.1 Qry latest Disease_Record under given (1) dcID
+        latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
 
-    # add created record to totals
-    dRecord.total_recovered += dRecord.num_recovered
-    dRecord.total_died += dRecord.num_died
+        if (latestDR.date_filed.date() == dateToday.date()):
+            latestDR.num_recovered = numRecovered
+            # latestDR.num_died = 0
+            latestDR.total_recovered += numRecovered
+            latestDR.save()
 
-    # Qry disease case then FK whole object to disease record
-    dCase = Disease_Case.objects.filter(id=dcID).first()
-    dRecord.ref_disease_case = dCase
+        else: # make new Disease Record for the Case if none exists today
+            dRecord = Disease_Record()
+            dRecord.num_recovered = numRecovered
+            # dRecord.num_died = 0
 
-    # update "date_updated" of Disease Case to now()
-    dCase.date_updated = now()
-    dCase.save()
+            # add created record to totals
+            dRecord.total_recovered += dRecord.num_recovered
+            # dRecord.total_died += dRecord.num_died
 
-    # save record
-    dRecord.save()
+            # Qry disease case then FK whole object to disease record
+            dCase = Disease_Case.objects.filter(id=dcID).first()
+            dRecord.ref_disease_case = dCase
 
-    # (SUCCESS) Disease record created. Send to client side (js)
-    return JsonResponse({"status_code":"200"}, status=200)
+            # update "date_updated" of Disease Case to date today
+            dCase.date_updated = dateToday
+            dCase.save()
+
+            # save new Disease record
+            dRecord.save()
+
+        # (SUCCESS) Disease record created. Send to client side (js)
+        return JsonResponse({"status_code":"200"}, status=200)
+
+#--------------------------------
+    # ASSUMPTION: Only 1 DR is can be edited for the day
+
+
+    # # make new Disease Record for the Case if none exists today
+
+    # if (latestDR.date_filed.date() == dateToday.date()):
+    #     # c['dis_record_id'] = case['id']
+    # else:
+    #     currDR = Disease_Record()
+
+    #     dcQry = Disease_Case.objects.filter(id=c['ref_disease_case_id']).first()
+    #     currDR.ref_disease_case = dcQry
+    #     currDR.total_died = c['total_died']
+    #     currDR.total_recovered = c['total_recovered']
+
+    #     # for updating pk counter of Disease_Record, for avoiding duplicate PK error
+    #     query = "SELECT setval('farmsapp_disease_record_id_seq', (SELECT MAX(id) from farmsapp_disease_record))"
+    #     cursor = connections['default'].cursor()
+    #     cursor.execute(query) 
+    #     row = cursor.fetchone()
+
+    #     currDR.save()
+
+    #     c['dis_record_id'] = currDR.id
+
+    #     # update "date_updated" of Disease Case to date today
+    #     dcQry.date_updated = dateToday
+    #     dcQry.save()
+     
+
+    return JsonResponse({"error": "not an AJAX post request"}, status=400)

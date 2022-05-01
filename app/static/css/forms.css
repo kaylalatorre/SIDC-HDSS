@@ -78,6 +78,7 @@ textarea {
     }
 }
 
-.activity-input, .mortality-input, .pigpen-input, .weight-input, .incident-case, .disease-case {
+.activity-input, .mortality-input, .pigpen-input, .weight-input, .incident-case, .disease-case,
+#input-total-rec, #save-total-rec {
     display: none;
 }
