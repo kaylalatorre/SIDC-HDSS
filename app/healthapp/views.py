@@ -1712,7 +1712,6 @@ def update_diseaseCase(request, dcID):
         
         if (latestDR.date_filed.date() == dateToday.date()):
             latestDR.num_recovered = numRecovered
-            # latestDR.num_died = 0
             latestDR.total_recovered += numRecovered
             latestDR.save()
 
@@ -1721,23 +1720,23 @@ def update_diseaseCase(request, dcID):
             updateDC.save()
 
         else: # make new Disease Record for the Case if none exists today
-            dRecord = Disease_Record()
-            dRecord.num_recovered = numRecovered
-            dRecord.num_died = 0
+            newDR = Disease_Record()
+            newDR.num_recovered = numRecovered
+            newDR.num_died = 0
 
             # add created record to totals
-            dRecord.total_recovered = (numRecovered + latestDR.total_recovered)
-            dRecord.total_died = latestDR.total_died
+            newDR.total_recovered = (numRecovered + latestDR.total_recovered)
+            newDR.total_died = latestDR.total_died
 
             # Qry disease case then FK whole object to disease record
-            dRecord.ref_disease_case = updateDC
+            newDR.ref_disease_case = updateDC
 
             # update "date_updated" of Disease Case to date today
             updateDC.date_updated = dateToday
             updateDC.save()
 
             # save new Disease record
-            dRecord.save()
+            newDR.save()
 
         # (SUCCESS) Disease record created. Send to client side (js)
         return JsonResponse({"status_code":"200"}, status=200)
