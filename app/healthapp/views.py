@@ -1711,8 +1711,9 @@ def update_diseaseCase(request, dcID):
         updateDC = Disease_Case.objects.filter(id=dcID).first()
         
         if (latestDR.date_filed.date() == dateToday.date()):
+            # BUG: may mali d2 d q pa mafigure out
             latestDR.num_recovered = numRecovered
-            latestDR.total_recovered += numRecovered
+            latestDR.total_recovered += (numRecovered + latestDR.total_recovered)
             latestDR.save()
 
             # update "date_updated" of Disease Case to date-time today
