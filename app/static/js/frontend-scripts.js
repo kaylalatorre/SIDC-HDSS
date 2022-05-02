@@ -156,7 +156,7 @@ function UpdateTotalRec(btnHTML){
 
     var row = btnHTML.parentNode.parentNode.parentNode;
 
-    console.log(row);
+    // console.log(row);
 
     var toHide = row.getElementsByClassName('hideDisInfo');
     var toShow = row.getElementsByClassName('showDisInput');
@@ -1029,16 +1029,11 @@ $('#health-symptoms-version-mobile').change(function () {
  */
 function computeTotalRec(currRow){
     var row = currRow.parentNode; //get row of clicked button
+    // console.log("in computeTotalRec()/n");
 
     var num_rec = row.getElementsByClassName('input-num-rec')[0].value;
-    var total_rec = row.getElementsByClassName('display-total-rec')[0].innerHTML;
+    var total_rec = row.getElementsByClassName('total-rec')[0].innerHTML;
     var displayRec = row.getElementsByClassName('display-total-rec')[0];
-
-    var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
-    var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
-    console.log("in computeTotalRec()/n");
-    // console.log(num_pigs_affect);
-    // console.log(total_died);
     // console.log(num_rec);
     // console.log(total_rec);
 
@@ -1047,6 +1042,17 @@ function computeTotalRec(currRow){
 
     displayRec.innerHTML = String(new_total_rec);
 
+    // setting input max
+    // var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
+    // var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
+    // // console.log(num_pigs_affect);
+    // // console.log(total_died);
+
+    // var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
+
+    // $(".input-num-rec"). attr({
+    //     "max" : maxInput, 
+    //     });
 }
 
 

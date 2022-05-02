@@ -844,10 +844,10 @@ def selectedHealthSymptoms(request, farmID):
     ).order_by("-date_filed", "lab_ref_no").values()
     # debug(casesQry)
 
+    cases = []
     dateToday = datetime.now(timezone.utc)
     if casesQry.exists():
 
-        cases = []
         casesList = []
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:

@@ -1377,12 +1377,13 @@ function getDiseaseInfo(strDisease){
 
 $('.btn-save-recovered').on('click', function () {
     var num_rec = $(this).siblings(":eq(2)").val();
-    var discaseID = $(this).siblings(":eq(4)").val();
-    var farmID = $(this).siblings(":eq(5)").val();
+    var discaseID = $(this).siblings(":eq(3)").val();
+    var farmID = $(this).siblings(":eq(4)").val();
 
-    console.log(num_rec);
-    console.log(discaseID);
-    
+    // console.log(num_rec);
+    // console.log(discaseID);
+    // console.log(farmID);
+
 
     ajaxCSRF();
 

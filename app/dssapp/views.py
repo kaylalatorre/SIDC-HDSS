@@ -244,9 +244,6 @@ def diseaseDashboard(request):
 
         
         # get all activity types
-        # activityTypeQry = Activity.objects.filter(is_approved=True).filter(date__range=(now()-timedelta(days=30), now())).distinct("trip_type")
-        # print(activityTypeQry)
-
         actTypes        = ['Delivery of Veterinary Supplies', 'Delivery of Medicine', 'Monthly Inventory', 'Blood Collection',
                             'Vaccinations', 'Inspection', 'Sold Pigs', 'Other']
 
@@ -254,10 +251,8 @@ def diseaseDashboard(request):
 
         # COLLECT ALL ACTIVITIES
         for actType in actTypes:
-            # print("- - " + str(actType.trip_type) + " - -")
-            print("- - " + str(actType) + " - -")
+            # print("- - " + str(actType) + " - -")
 
-            
             # initialize data list per activity; will contain --> [activity date, count]
             actData = []
 
@@ -308,7 +303,7 @@ def diseaseDashboard(request):
         # print(incSeries)
         # print(mortSeries)
         # print(symSeries)
-        print(actSeries)
+        # print(actSeries)
 
         # append each chart series into one data array
         data.append(incSeries)
