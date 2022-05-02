@@ -353,9 +353,10 @@
                                 <td>
                                     <div class="flex">
                                         <p class="flex-item hideDisInfo">{{ case.total_recovered }}</p>
-                                        <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
-
-                                        <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 max="{{case.num_pigs_affect}}" onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
+                                        {% if case.max_recovered > 0 %}
+                                            <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                        {% endif %}
+                                        <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 max="{{case.max_recovered}}" onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
                                         <!-- for computing total_recovered -->
                                         <p class="display-total-rec showDisInput"> {{ case.total_recovered }} </p>
                                         <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
@@ -367,7 +368,9 @@
                                 <td>
                                     <div class="flex">
                                         <p class="flex-item display-total-died">{{ case.total_died }}</p>
+                                        {% if case.max_recovered > 0 %}
                                         <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-died">Update</button> <!-- redirect to add-mortality -->
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>

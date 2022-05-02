@@ -1045,12 +1045,8 @@ function computeTotalRec(currRow){
     var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
     // console.log(new_total_rec);
 
-    if (parseInt(new_total_rec) >= parseInt(num_pigs_affect))
-        displayRec.innerHTML = String(num_pigs_affect);
-    else
-        displayRec.innerHTML = String(new_total_rec);
+    displayRec.innerHTML = String(new_total_rec);
 
-    // set max attrib of input num_rec to (num_pigs_affect - total_died)
 }
 
 
