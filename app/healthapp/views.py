@@ -771,6 +771,7 @@ def selectedHealthSymptoms(request, farmID):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
+                # case['max_recovered'] = int(case['num_pigs_affect']) - int(case['num_died'])
                 cases.append(case)
                 # debug(casesList)
     
@@ -1701,7 +1702,7 @@ def update_diseaseCase(request, dcID):
         dateToday = datetime.now(timezone.utc)
 
         # get input from Recovered field
-        numRecovered = int(request.POST.get("total_rec"))
+        numRecovered = int(request.POST.get("num_rec"))
         
         debug(numRecovered)
         debug(dcID)
@@ -1711,7 +1712,7 @@ def update_diseaseCase(request, dcID):
         updateDC = Disease_Case.objects.filter(id=dcID).first()
         
         if (latestDR.date_filed.date() == dateToday.date()):
-            # BUG: may mali d2 d q pa mafigure out
+            # BUG: may mali d2 d q pa mafigure out --> might be UI problem
             latestDR.num_recovered = numRecovered
             latestDR.total_recovered += (numRecovered + latestDR.total_recovered)
             latestDR.save()

@@ -1376,11 +1376,11 @@ function getDiseaseInfo(strDisease){
 */
 
 $('.btn-save-recovered').on('click', function () {
-    var total_rec = $(this).siblings(":eq(2)").val();
-    var discaseID = $(this).siblings(":eq(3)").val();
-    var farmID = $(this).siblings(":eq(4)").val();
+    var num_rec = $(this).siblings(":eq(2)").val();
+    var discaseID = $(this).siblings(":eq(4)").val();
+    var farmID = $(this).siblings(":eq(5)").val();
 
-    console.log(total_rec);
+    console.log(num_rec);
     console.log(discaseID);
     
 
@@ -1389,7 +1389,7 @@ $('.btn-save-recovered').on('click', function () {
     $.ajax({
         type: 'POST',
         url: '/update-disease-case/' + discaseID, 
-        data: {"total_rec": total_rec}, 
+        data: {"num_rec": num_rec}, 
         success: function (response) {
             
             if (response.status_code === "200"){

@@ -1023,6 +1023,36 @@ $('#health-symptoms-version-mobile').change(function () {
     }
 })
 
+/**
+ * Compute for total recovered pigs given a num_recovered input
+ * @param {*} currRow 
+ */
+function computeTotalRec(currRow){
+    var row = currRow.parentNode; //get row of clicked button
+
+    var num_rec = row.getElementsByClassName('input-num-rec')[0].value;
+    var total_rec = row.getElementsByClassName('display-total-rec')[0].innerHTML;
+    var displayRec = row.getElementsByClassName('display-total-rec')[0];
+
+    var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
+    var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
+    console.log("in computeTotalRec()/n");
+    // console.log(num_pigs_affect);
+    // console.log(total_died);
+    // console.log(num_rec);
+    // console.log(total_rec);
+
+    var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
+    // console.log(new_total_rec);
+
+    if (parseInt(new_total_rec) >= parseInt(num_pigs_affect))
+        displayRec.innerHTML = String(num_pigs_affect);
+    else
+        displayRec.innerHTML = String(new_total_rec);
+
+    // set max attrib of input num_rec to (num_pigs_affect - total_died)
+}
+
 
 /**
  * Compute for the toDate and mortality rate
