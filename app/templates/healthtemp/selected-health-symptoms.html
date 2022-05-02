@@ -343,23 +343,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for case in dTable.1 %}
+                            {% for case in dTable %}
                             <tr>
-                                <td>{{ dTable.0 }}</td>
+                                <td>{{ case.disease_name }}</td>
                                 <td>{{ case.lab_ref_no }}</td>
                                 <td>{{ case.date_updated }}</td>
-                                <td>{{ case.incid_no }}</td>
-                                <td>{{ case.num_pigs_affect }}</td>
+                                <td>{{ case.incid_no|stringformat:'03d' }}</td>
+                                <td class="td-num-affect">{{ case.num_pigs_affect }}</td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">{{ case.total_recovered }}</p>
-                                        <button id="btn-recovered" class="secondary-btn" style="margin-bottom: 8px">Update</button> <!-- popup input -->
-                                    </div>                 
+                                        <p class="flex-item hideDisInfo">{{ case.total_recovered }}</p>
+                                        {% if case.max_recovered > 0 %}
+                                            <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                        {% endif %}
+                                        <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 max="{{case.max_recovered}}" onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
+                                        <!-- for computing total_recovered -->
+                                        <p class="display-total-rec showDisInput"> {{ case.total_recovered }} </p>
+                                        <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
+                                        <input type="hidden" class="hidden-farmID" name="farmID" value="{{farm_code|stringformat:'03d'}}">
+                                        <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-bottom: 8px; display: none;">Save</button>
+                                        <button class="secondary-btn-red showDisInput btn-cancel-recovered" onclick="CancelRecSave(this)">Cancel</button> 
+                                    </div>  
                                 </td>
                                 <td>
                                     <div class="flex">
-                                        <p class="flex-item">{{ case.total_died }}</p>
-                                        <button id="btn-recovered" class="secondary-btn">Update</button> <!-- redirect to add-mortality -->
+                                        <p class="flex-item display-total-died">{{ case.total_died }}</p>
+                                        {% if case.max_recovered > 0 %}
+                                        <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-died">Update</button> <!-- redirect to add-mortality -->
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
