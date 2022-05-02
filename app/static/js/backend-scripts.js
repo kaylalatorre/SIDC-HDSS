@@ -1312,13 +1312,13 @@ $('.submit-reference').on('click', function(){
     
     // then assign the other variables
     let lab_ref = $(`#input-reference_${incid_id}`).val();
-    let lab_result = $(`input[name="inlineRadioOptions_${incid_id}"]:checked`).val() // 0 == positive, 1 == negative
+    let lab_result = $(`#input-positive_${incid_id}`).val() // 0 == positive, 1 == negative
 
     // check if inputs are valid
-    if(!Number(incid_id) || !Number(lab_ref) || ![0,1].includes(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)){
+    if(!Number(incid_id) || !Number(lab_ref) || !Number(lab_result) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)){
         console.log(!Number(incid_id));
         console.log(!Number(lab_ref));
-        console.log(![0,1].includes(Number(lab_result)));
+        console.log(!Number(lab_result));
         console.log(!["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name));
         console.log("Invalid parameters were sent");
         return false;
@@ -1333,7 +1333,7 @@ $('.submit-reference').on('click', function(){
             "incid_id": incid_id,
             "lab_result": lab_result
         },
-        success: function (response) {
+        success: function () {
             location.href = "/home";
         },
         error: function (res) {
