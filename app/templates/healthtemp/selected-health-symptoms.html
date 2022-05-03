@@ -360,7 +360,7 @@
                                             <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
                                         {% endif %}
                                                                          
-                                        <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 max="{{case.max_recovered}}" onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
+                                        <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
                                         <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
                                         <input type="hidden" class="hidden-farmID" name="farmID" value="{{farm_code|stringformat:'03d'}}">
                                         <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-bottom: 8px; display: none;">Save</button>

@@ -1043,16 +1043,16 @@ function computeTotalRec(currRow){
     displayRec.innerHTML = String(new_total_rec);
 
     // setting input max
-    // var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
-    // var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
-    // // console.log(num_pigs_affect);
-    // // console.log(total_died);
+    var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
+    var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
+    // console.log(num_pigs_affect);
+    // console.log(total_died);
 
-    // var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
+    var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
 
-    // $(".input-num-rec"). attr({
-    //     "max" : maxInput, 
-    //     });
+    $(".input-num-rec"). attr({
+        "max" : maxInput, 
+        });
 }
 
 
