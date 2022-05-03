@@ -15,7 +15,7 @@ from farmsapp.models import (
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
-from django.db.models import Q
+from django.db.models import (Q, Sum)
 # from django.forms.formsets import formset_factory
 from django.db import connections
 
@@ -1130,7 +1130,7 @@ def diseaseMonitoring(request, strDisease):
 
 
 def load_diseaseChart(request, strDisease):
-    
+
     data = []
     # debug(request.method)
     # debug("loading charts")    
@@ -1232,28 +1232,42 @@ def actionRecommendation(request):
 
 def load_diseaseSeird(request):
 
-
-    N = # SIDC population
+    # compute for total SIDC pig population
+    farmQry = Farm.objects.aggregate(Sum("total_pigs"))
+    N = farmQry["total_pigs__sum"]
 
     # get initial parameters from frontend inputs
-    seirdParam = # POST array from frontend where (?)
+    sParam = request.POST.getlist("values[]")
+    values = []
+            # sList = request.POST.getlist("symptomsArr[]")
+            # symptomsArr = []
 
-    D = 4.0 # infections lasts four days
+    # NOTE: CODE BASIS
+    # D = 4.0 # infections lasts four days
+    # gamma = 1.0 / D
+    # delta = 1.0 / 5.0  # incubation period of five days
+    # R_0 = 5.0
+    # beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    # alpha = 0.2  # 20% death rate
+    # rho = 1/9  # 9 days from infection until death
+    # S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+
+    # NOTE: REVISED CODE
+    D = sParam[2] # infections lasts four days
     gamma = 1.0 / D
-    delta = 1.0 / 5.0  # incubation period of five days
-    R_0 = 5.0
+    delta = 1.0 / sParam[0]  # incubation period of five days
+    R_0 = sParam[1]
     beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
-    alpha = 0.2  # 20% death rate
-    rho = 1/9  # 9 days from infection until death
+    alpha = sParam[3]  # 20% death rate
+    rho = 1/sParam[4]  # 9 days from infection until death
     S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
 
-
     # ----------------------
-    # Disease Incubation Period (days) -- delta
-    # Basic Reproduction No.           -- beta = R_0 * gamma
-    # No. of Days Disease can Spread   -- D
-    # Fatality Rate                    -- alpha
-    # No. of Days until Death          -- 1 / rho
+    # Disease Incubation Period (days) -- [0] delta
+    # Basic Reproduction No.           -- [1] beta = R_0 * gamma
+    # No. of Days Disease can Spread   -- [2] D 
+    # Fatality Rate                    -- [3] alpha
+    # No. of Days until Death          -- [4] 1 / rho
     # ----------------------
 
 
