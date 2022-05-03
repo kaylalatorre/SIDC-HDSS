@@ -18,6 +18,7 @@ urlpatterns = [
     path('symptoms-monitoring', views.symptomsMonitoring, name="symptomsMonitoring"),
     path('symptoms-monitoring/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_incidentRep, name="filter_incidentRep"),
 
-    # chart
-    path('disease-charts/<str:strDisease>/', views.load_diseaseCharts, name="load_diseaseCharts"),
+    # charts
+    path('disease-chart/<str:strDisease>/', views.load_diseaseChart, name="load_diseaseChart"),
+    # path('disease-seird/<str:strDisease>/', views.diseaseSeird, name="load_diseaseSeird"),
 ]
