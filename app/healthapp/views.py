@@ -1012,7 +1012,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
         disease_name     = F("ref_disease_case__disease_name"),
-        date_updated     = F("ref_disease_case__disease_name"),
+        date_updated     = F("ref_disease_case__date_updated"),
     ).order_by("-date_filed", "lab_ref_no").values()
     # debug(casesQry)
 
