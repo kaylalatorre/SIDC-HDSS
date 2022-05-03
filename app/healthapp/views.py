@@ -852,7 +852,7 @@ def selectedHealthSymptoms(request, farmID):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
-                case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+                # case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
                 cases.append(case)
                 # debug(casesList)
     
