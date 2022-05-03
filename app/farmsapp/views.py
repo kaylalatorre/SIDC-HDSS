@@ -1707,6 +1707,8 @@ def search_techTasks(request, techID):
     # (4) Get Mem Announcements
     memQry = Mem_Announcement.objects.filter(author_id=int(techID)).filter(is_approved=True).order_by("-timestamp")    
 
+    debug(techName)
+
     return render(request, 'farmstemp/assignment.html', {"techName": techName, "farmBioList": farmsData,
                                                                                 "incidList":  incidData,
                                                                                 "announceList": memQry})

@@ -40,6 +40,10 @@ from django.utils.timezone import (
     localtime # for getting date today
 ) 
 
+# for seird implementation
+from scipy.integrate import odeint
+import numpy as np
+
 def debug(m):
     """
     For debugging purposes
@@ -1153,8 +1157,8 @@ def diseaseMonitoring(request, strDisease):
     return data # for disease monitoring dashboard contents
 
 
-def load_diseaseCharts(request, strDisease):
-    
+def load_diseaseChart(request, strDisease):
+
     data = []
     # debug(request.method)
     # debug("loading charts")    
@@ -1249,5 +1253,70 @@ def load_diseaseCharts(request, strDisease):
 
     return JsonResponse(data, safe=False)
     
+
 def actionRecommendation(request):
     return render(request, 'dsstemp/action-rec.html')
+
+
+def load_diseaseSeird(request):
+
+    # compute for total SIDC pig population
+    farmQry = Farm.objects.aggregate(Sum("total_pigs"))
+    N = farmQry["total_pigs__sum"]
+
+    # get initial parameters from frontend inputs
+    sParam = request.POST.getlist("values[]")
+    values = []
+            # sList = request.POST.getlist("symptomsArr[]")
+            # symptomsArr = []
+
+    # NOTE: CODE BASIS
+    # D = 4.0 # infections lasts four days
+    # gamma = 1.0 / D
+    # delta = 1.0 / 5.0  # incubation period of five days
+    # R_0 = 5.0
+    # beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    # alpha = 0.2  # 20% death rate
+    # rho = 1/9  # 9 days from infection until death
+    # S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+
+    # NOTE: REVISED CODE
+    D = sParam[2] # infections lasts four days
+    gamma = 1.0 / D
+    delta = 1.0 / sParam[0]  # incubation period of five days
+    R_0 = sParam[1]
+    beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    alpha = sParam[3]  # 20% death rate
+    rho = 1/sParam[4]  # 9 days from infection until death
+    S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+
+    # ----------------------
+    # Disease Incubation Period (days) -- [0] delta
+    # Basic Reproduction No.           -- [1] beta = R_0 * gamma
+    # No. of Days Disease can Spread   -- [2] D 
+    # Fatality Rate                    -- [3] alpha
+    # No. of Days until Death          -- [4] 1 / rho
+    # ----------------------
+
+
+
+    modelData = []
+
+    return modelData
+
+
+def deriv(y, t, N, beta, gamma, delta, alpha, rho):
+    """
+        implementation of model grabbed from: 
+        https://github.com/henrifroese/infectious_disease_modelling/blob/master/part_two.ipynb
+    """
+
+    S, E, I, R, D = y
+    dSdt = -beta * S * I / N
+    dEdt = beta * S * I / N - delta * E
+    dIdt = delta * E - (1 - alpha) * gamma * I - alpha * rho * I
+    dRdt = (1 - alpha) * gamma * I
+    dDdt = alpha * rho * I
+    
+    return dSdt, dEdt, dIdt, dRdt, dDdts
+

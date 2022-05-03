@@ -1439,3 +1439,16 @@ $('.btn-save-recovered').on('click', function () {
 //     });
 // }
 
+/*
+    something
+*/
+function getSEIRDInput(input){
+    // console.log(input.value);
+
+    var values = {};
+    $(input).parent().parent().children().each(function(){
+        let curr = $(this).children("output[name='SEIRDOutput']");
+        values[curr.attr("id")] = curr.val();
+    });
+    console.log(values);
+}
