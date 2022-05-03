@@ -15,7 +15,7 @@ from farmsapp.models import (
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
-from django.db.models import Q
+from django.db.models import (Q, Sum)
 # from django.forms.formsets import formset_factory
 from django.db import connections
 
@@ -825,7 +825,8 @@ def dashboard_SusCases():
         sneeze              =F('incid_case__sneeze')            ,       runny_nose          =F('incid_case__runny_nose')        ,
         waste               =F('incid_case__waste')             ,       boar_dec_libido     =F('incid_case__boar_dec_libido')   ,
         farrow_miscarriage  =F('incid_case__farrow_miscarriage'),       weight_loss         =F('incid_case__weight_loss')       ,
-        trembling           =F('incid_case__trembling')         ,       conjunctivitis      =F('incid_case__conjunctivitis')
+        trembling           =F('incid_case__trembling')         ,       conjunctivitis      =F('incid_case__conjunctivitis')    ,
+        num_negative        =F('incid_case__num_pigs_affected') - F('num_pigs_affect')
     ).values(
         'incid_case__id'                ,        'incid_case__ref_farm_id'       ,        'incid_case__num_pigs_affected' ,        'lab_result'                    ,        
         'lab_ref_no'                    ,        'high_fever'                    ,        'loss_appetite'                 ,        'depression'                    ,        
@@ -834,6 +835,7 @@ def dashboard_SusCases():
         'death_isDays'                  ,        'death_isWeek'                  ,        'cough'                         ,        'sneeze'                        ,        
         'runny_nose'                    ,        'waste'                         ,        'boar_dec_libido'               ,        'farrow_miscarriage'            ,        
         'weight_loss'                   ,        'trembling'                     ,        'conjunctivitis'                ,        'disease_name'                  ,
+        'num_negative'
     )
 
     for case in incidCases:
@@ -884,7 +886,7 @@ def dashboard_SusCases():
 
     for dcase in diseaseCases:
         # debug(dcase)
-        dcurrCase = [key for key, val in dcase.items() if val and key not in ['incid_case__id', 'incid_case__ref_farm_id', 'incid_case__num_pigs_affected', 'lab_result', 'lab_ref_no', 'disease_name']]
+        dcurrCase = [key for key, val in dcase.items() if val and key not in ['incid_case__id', 'incid_case__ref_farm_id', 'incid_case__num_pigs_affected', 'lab_result', 'lab_ref_no', 'disease_name', 'num_negative']]
         dname = dcase['disease_name']
         
         if dname == 'ASF':
@@ -894,7 +896,8 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['ASF']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
@@ -905,7 +908,8 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['CSF']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
@@ -916,7 +920,8 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['IAVS']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
@@ -927,7 +932,8 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['ADV']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
@@ -938,7 +944,8 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['PRRS']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
@@ -949,7 +956,8 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['PED']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
@@ -960,11 +968,12 @@ def dashboard_SusCases():
                 'hogs_affect': dcase['incid_case__num_pigs_affected'], 
                 'symptoms': dcurrCase,
                 'lab_result': dcase['lab_result'], 
-                'lab_ref': dcase['lab_ref_no']
+                'lab_ref': dcase['lab_ref_no'],
+                'negative': dcase['num_negative']
                 })
             diseaseInfo['Others']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
-    # debug(diseaseInfo)
+    debug(diseaseInfo)
 
     return diseaseInfo
 
@@ -978,17 +987,36 @@ def submitLabReport(request, lab_ref):
         lab_ref_no = lab_ref
         diseaase_name = request.POST.get("disease_name")
         incid_id = request.POST.get("incid_id")
-        lab_result = request.POST.get("lab_result")
+        num_pigs_affect = request.POST.get("lab_result")
         date_updated = datetime.now(timezone.utc)
+        lab_result = False
+        if int(num_pigs_affect) > 0:
+            lab_result = True
         
         try:
             # save disease case
-            Disease_Case(
+            dCase = Disease_Case(
                 disease_name    = diseaase_name,
                 lab_result      = lab_result,
                 lab_ref_no      = lab_ref_no,
                 date_updated    = date_updated,
-                incid_case_id   = incid_id 
+                incid_case_id   = incid_id,
+                start_date      = date_updated,
+                num_pigs_affect = num_pigs_affect 
+            )
+            dCase.save()
+            # get mortalities
+            total_died = Mortality.objects.filter(case_no=incid_id, source="incident").aggregate(Sum('num_today'))['num_today__sum']
+            # create disease record
+            debug("DCASE")
+            debug(dCase)
+            Disease_Record(
+                date_filed          = date_updated,
+                num_recovered       = 0,
+                num_died            = total_died,
+                ref_disease_case    = dCase,
+                total_died          = total_died,
+                total_recovered     = 0
             ).save()
             # resolve incident case
             Hog_Symptoms.objects.filter(id=incid_id).update(report_status="Resolved")
