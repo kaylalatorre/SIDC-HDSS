@@ -835,7 +835,8 @@ def selectedHealthSymptoms(request, farmID):
 
 
     # (5) Confirmed Cases table data
-    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__ref_farm=farmID).select_related('ref_disease_case').annotate(
+    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__pigpen_grp=latestPigpen.id).filter(ref_disease_case__incid_case__ref_farm=farmID).select_related('ref_disease_case').annotate(
+        case_code        = F("ref_disease_case__id"),
         lab_ref_no       = F("ref_disease_case__lab_ref_no"),
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
@@ -845,7 +846,6 @@ def selectedHealthSymptoms(request, farmID):
     # debug(casesQry)
 
     cases = []
-    dateToday = datetime.now(timezone.utc)
     if casesQry.exists():
 
         casesList = []
@@ -855,13 +855,12 @@ def selectedHealthSymptoms(request, farmID):
                 case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
                 cases.append(case)
                 # debug(casesList)
-    
-    debug(cases)
+    # debug(cases)
 
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
                                                                         'selectedPigpen' : latestPigpen, "start_weight": start_weight, "end_weight": end_weight,
-                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'dTable': cases})
+                                                                        "weightList": weightList, 'total_pigs': farm.get("total_pigs"), 'total_disease' : len(cases), 'dTable': cases })
 
 
 def selectedHealthSymptomsVersion(request, farmID, farmVersion):
@@ -1007,7 +1006,8 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     weightList = categHogWeight(f_weightQry)
 
     # (5) Confirmed Cases table data
-    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__ref_farm=farmID).annotate(
+    casesQry = Disease_Record.objects.filter(ref_disease_case__incid_case__pigpen_grp=selectedPigpen.id).filter(ref_disease_case__incid_case__ref_farm=farmID).annotate(
+        case_code        = F("ref_disease_case__id"),
         lab_ref_no       = F("ref_disease_case__lab_ref_no"),
         incid_no         = F("ref_disease_case__incid_case"),
         num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
@@ -1016,25 +1016,21 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     ).order_by("-date_filed", "lab_ref_no").values()
     # debug(casesQry)
 
-    dTable = []
+    cases = []
     if casesQry.exists():
-        dTable.append(casesQry.first()['disease_name'])
-        # [strDisease, []]
 
-        cases = []
         casesList = []
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
+                case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
                 cases.append(case)
-                debug(casesList)
-        dTable.append(cases)    
-        # debug(dTable)
+    # debug(cases)
 
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
                                                                         "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
                                                                         'selectedPigpen' : selectedPigpen, "start_weight": start_weight, "end_weight": end_weight,
-                                                                        "weightList": weightList, 'total_pigs': int(0)})
+                                                                        "weightList": weightList, 'total_pigs': int(0), 'total_disease' : len(cases), 'dTable': cases })
 
 
 def edit_incidStat(request, incidID):
@@ -1314,7 +1310,7 @@ def addMortality(request, farmID):
             i += 1
 
         if mortalityForm.is_valid():
-
+            
             # create instance of Mortality Form model
             mortality_form = Mortality_Form.objects.create(
                 series = series,
@@ -1348,6 +1344,47 @@ def addMortality(request, farmID):
                 mortality.save()
                 x += 1
                 latest_toDate += int(mort['num_today'])
+
+                # update or create disease record (if source == disease)
+                if mort['source'] == "Disease Case":
+                    
+                    # get latest disease record of selected disease case
+                    latestDR = Disease_Record.objects.filter(ref_disease_case=mort['case']).order_by("-date_filed").first()
+                    updateDC = Disease_Case.objects.filter(id=mort['case']).first()
+
+                    # print(latestDR.date_filed.date())
+                    # print(mort['mortality_date'])
+                    
+                    if (str(latestDR.date_filed.date()) == str(mort['mortality_date'])):
+                        # print("update record")
+                        latestDR.num_died = (int(mort['num_today']) + latestDR.num_died)
+                        latestDR.total_died = (int(mort['num_today']) + latestDR.total_died)
+                        latestDR.save()
+
+                        # update "date_updated" of Disease Case to date-time today
+                        updateDC.date_updated =  datetime.now(timezone.utc)
+                        updateDC.save()
+
+                    else: # make new Disease Record for the Case if none exists today
+                        # print("new record")
+                        newDR = Disease_Record()
+                        newDR.date_filed = datetime.strptime(str(mort['mortality_date']), '%Y-%m-%d')
+                        newDR.num_recovered = 0
+                        newDR.num_died = int(mort['num_today'])
+
+                        # add created record to totals
+                        newDR.total_recovered = latestDR.total_recovered
+                        newDR.total_died = (int(mort['num_today']) + latestDR.total_died)
+
+                        # Qry disease case then FK whole object to disease record
+                        newDR.ref_disease_case = updateDC
+
+                        # update "date_updated" of Disease Case to date today
+                        updateDC.date_updated =  datetime.now(timezone.utc)
+                        updateDC.save()
+
+                        # save new Disease record
+                        newDR.save()
 
             # update last_updated of farm
             farmQuery.last_updated = datetime.now(timezone.utc)

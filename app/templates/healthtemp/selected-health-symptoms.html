@@ -330,9 +330,11 @@
                 <!-- Confirmed Cases -->
                 <h2>Confirmed Cases</h2>
                 <div class="box-style scroll" style="height: 32vh;">
+                    {% if total_disease > 0 %}
                     <table class="table">
                         <thead>
                             <tr>
+                                <th>Case Code</th>
                                 <th>Disease Name</th>
                                 <th>Lab Reference</th>
                                 <th>Last Updated</th>
@@ -345,6 +347,7 @@
                         <tbody>
                             {% for case in dTable %}
                             <tr>
+                                <td>{{ case.case_code }}</td>
                                 <td>{{ case.disease_name }}</td>
                                 <td>{{ case.lab_ref_no }}</td>
                                 <td>{{ case.date_updated }}</td>
@@ -383,23 +386,28 @@
                             {% endfor %}
                         </tbody>                               
                     </table>
+                    {% else %}
+                    <div>
+                        <p>No disease cases to display.</p>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <!-- Mortality Records -->
                 <h2>Mortality Records</h2>
-                <div class="box-style">
+                <div class="box-style scroll" style="height: 32vh">
                     {% if total_mortalities > 0 %}
                     <table class="table" id="mortality-records">
                         <thead>
                             <tr>
                                 <th width="5%">Series</th>
-                                <th width="10%">Mortality Date</th>
+                                <th width="15%">Mortality Date</th>
                                 <th style="text-align: right;">Beg. Inv.</th>
                                 <th style="text-align: right;">Today</th>
                                 <th style="text-align: right;">To Date</th>
                                 <th width="10%"style="text-align: right;">Mortality %</th>
                                 <th width="15%">Case Reference</th>
-                                <th>Remarks</th>
+                                <th width="30%">Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
