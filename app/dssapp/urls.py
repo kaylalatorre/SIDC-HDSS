@@ -20,5 +20,5 @@ urlpatterns = [
 
     # charts
     path('disease-chart/<str:strDisease>/', views.load_diseaseChart, name="load_diseaseChart"),
-    # path('disease-seird/<str:strDisease>/', views.diseaseSeird, name="load_diseaseSeird"),
+    path('disease-seird/<str:strDisease>/', views.load_diseaseSeird, name="load_diseaseSeird"),
 ]

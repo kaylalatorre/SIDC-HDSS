@@ -162,7 +162,6 @@ $(document).ready(async function () {
 
         }
 
-        console.log(pigData);
         pigData.forEach(function(point){
             pigsPerFarm.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'black' })).addTo(map);
         });

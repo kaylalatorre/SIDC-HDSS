@@ -1223,6 +1223,8 @@ def load_diseaseChart(request, strDisease):
     data.append(dChart)
     # debug(data)
 
+    # load_diseaseSeird()
+
     return JsonResponse(data, safe=False)
     
 
@@ -1230,56 +1232,9 @@ def actionRecommendation(request):
     return render(request, 'dsstemp/action-rec.html')
 
 
-def load_diseaseSeird(request):
-
-    # compute for total SIDC pig population
-    farmQry = Farm.objects.aggregate(Sum("total_pigs"))
-    N = farmQry["total_pigs__sum"]
-
-    # get initial parameters from frontend inputs
-    sParam = request.POST.getlist("values[]")
-    values = []
-            # sList = request.POST.getlist("symptomsArr[]")
-            # symptomsArr = []
-
-    # NOTE: CODE BASIS
-    # D = 4.0 # infections lasts four days
-    # gamma = 1.0 / D
-    # delta = 1.0 / 5.0  # incubation period of five days
-    # R_0 = 5.0
-    # beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
-    # alpha = 0.2  # 20% death rate
-    # rho = 1/9  # 9 days from infection until death
-    # S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
-
-    # NOTE: REVISED CODE
-    D = sParam[2] # infections lasts four days
-    gamma = 1.0 / D
-    delta = 1.0 / sParam[0]  # incubation period of five days
-    R_0 = sParam[1]
-    beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
-    alpha = sParam[3]  # 20% death rate
-    rho = 1/sParam[4]  # 9 days from infection until death
-    S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
-
-    # ----------------------
-    # Disease Incubation Period (days) -- [0] delta
-    # Basic Reproduction No.           -- [1] beta = R_0 * gamma
-    # No. of Days Disease can Spread   -- [2] D 
-    # Fatality Rate                    -- [3] alpha
-    # No. of Days until Death          -- [4] 1 / rho
-    # ----------------------
-
-
-
-    modelData = []
-
-    return modelData
-
-
-def deriv(y, t, N, beta, gamma, delta, alpha, rho):
+def derivSEIRD(y, t, N, beta, gamma, delta, alpha, rho):
     """
-        implementation of model grabbed from: 
+        implementation of model based on: 
         https://github.com/henrifroese/infectious_disease_modelling/blob/master/part_two.ipynb
     """
 
@@ -1290,5 +1245,63 @@ def deriv(y, t, N, beta, gamma, delta, alpha, rho):
     dRdt = (1 - alpha) * gamma * I
     dDdt = alpha * rho * I
     
-    return dSdt, dEdt, dIdt, dRdt, dDdts
+    return dSdt, dEdt, dIdt, dRdt, dDdt
 
+
+def load_diseaseSeird(request, strDisease):
+    """
+    # ----INPUT PARAMETERS ----------------------
+    # Disease Incubation Period (days) -- [0] delta
+    # Basic Reproduction No.           -- [1] beta = R_0 * gamma
+    # No. of Days Disease can Spread   -- [2] D 
+    # Fatality Rate                    -- [3] alpha
+    # No. of Days until Death          -- [4] 1 / rho
+    # ---------------------------------------------
+    """
+    debug(strDisease)
+    # compute for total SIDC pig population
+    farmQry = Farm.objects.aggregate(Sum("total_pigs"))
+    N = farmQry["total_pigs__sum"]
+
+    # get initial parameters from frontend inputs
+    sValues = []
+    sValues = request.POST.getlist("values[]")
+            # sList = request.POST.getlist("symptomsArr[]")
+            # symptomsArr = []
+    sParam = [int(i) for i in sValues]
+    debug(sParam)
+
+    # NOTE: CODE BASIS
+    # D = 4.0 # infections lasts four days
+    # gamma = 1.0 / D
+    # delta = 1.0 / 5.0  # incubation period of five days
+    # R_0 = 5.0
+    # beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    # alpha = 0.2  # 20% death rate
+    # rho = 1/9  # 9 days from infection until death
+    # S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+    
+    
+    # set params in SEIRD var inputs
+    D = sParam[2] # infections lasts four days
+    gamma = 1.0 / D
+    delta = 1.0 / sParam[0]  # incubation period of five days
+    R_0 = sParam[1]
+    beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    alpha = sParam[3]  # 20% death rate
+    rho = 1/sParam[4]  # 9 days from infection until death
+    S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+
+    # t = time (in days)
+    t = np.linspace(0, 99, 100) 
+    y0 = S0, E0, I0, R0, D0 # initialize SEIRD compartments
+
+    # Feed custom SEIRD function into odeint
+    retVal = odeint(derivSEIRD, y0, t, args=(N, beta, gamma, delta, alpha, rho))
+    S, E, I, R, D = retVal.T
+
+    # debug(retVal)
+    # debug(E)
+    totalPigs = [int(farmQry["total_pigs__sum"]) for i in S.tolist()]
+    modelData = [totalPigs, S.tolist(), E.tolist(), I.tolist(), R.tolist(), D.tolist()]
+    return JsonResponse(modelData, safe=False)

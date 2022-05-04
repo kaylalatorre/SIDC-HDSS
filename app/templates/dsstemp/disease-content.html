@@ -63,27 +63,27 @@
                 <form class="flex">
                     <label for="rangeIncubDays" class="flex-item form-label" style="width: 30%">Disease Incubation Period (days)</label>                             
                     <input type="range" class="flex-item form-range" id="rangeIncubDays" onchange="getSEIRDInput(this)" min="1" max="100" oninput="outputIncubDays.value=parseInt(rangeIncubDays.value)">
-                    <output id="outputIncubDays" name="SEIRDOutput"> </output>
+                    <output id="outputIncubDays" name="SEIRDOutput"> 1 </output>
                 </form>
                 <form class="flex">
                     <label for="rangeReproNo" class="flex-item form-label" style="width: 30%">Basic Reproduction No.</label>                             
                     <input type="range" class="flex-item form-range" id="rangeReproNo" onchange="getSEIRDInput(this)" min="1" max="100" oninput="outputReproNo.value=parseInt(rangeReproNo.value)">
-                    <output id="outputReproNo" name="SEIRDOutput"> </output>
+                    <output id="outputReproNo" name="SEIRDOutput"> 1 </output>
                 </form>
                 <form class="flex">
                     <label for="rangeDiseaseSpread" class="flex-item form-label" style="width: 30%">No. of Days Disease can Spread</label>                             
                     <input type="range" class="flex-item form-range" id="rangeDiseaseSpread" onchange="getSEIRDInput(this)" min="1" max="100" oninput="outputDiseaseSpread.value=parseInt(rangeDiseaseSpread.value)">
-                    <output id="outputDiseaseSpread" name="SEIRDOutput"> </output>
+                    <output id="outputDiseaseSpread" name="SEIRDOutput"> 1 </output>
                 </form>
                 <form class="flex">
                     <label for="rangeFatality" class="flex-item form-label" style="width: 30%">Fatality Rate</label>                             
-                    <input type="range" class="flex-item form-range" id="rangeFatality" onchange="getSEIRDInput(this)" min="1" max="100" oninput="outputFatality.value=parseInt(rangeFatality.value)">
-                    <output id="outputFatality" name="SEIRDOutput"> </output>
+                    <input type="range" class="flex-item form-range" id="rangeFatality" onchange="getSEIRDInput(this)" min="1" max="100" step="0.1" oninput="outputFatality.value=parseInt(rangeFatality.value)">
+                    <output id="outputFatality" name="SEIRDOutput"> 1 </output>
                 </form>
                 <form class="flex">
                     <label for="rangeDeathDays" class="flex-item form-label" style="width: 30%">No. of Days until Death</label>                             
                     <input type="range" class="flex-item form-range" id="rangeDeathDays" onchange="getSEIRDInput(this)" min="1" max="100" oninput="outputDeathDays.value=parseInt(rangeDeathDays.value)">
-                    <output id="outputDeathDays" name="SEIRDOutput"> </output>
+                    <output id="outputDeathDays" name="SEIRDOutput"> 1 </output>
                 </form>
             </div>
         </div>
