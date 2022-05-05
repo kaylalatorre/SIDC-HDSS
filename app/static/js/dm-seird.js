@@ -1,17 +1,19 @@
 /*
     something
 */
-function getSEIRDInput(input){
+function getSEIRDInput(input) {
     // console.log(input.value);
 
     var values = [];
-    $(input).parent().parent().children().each(function(){
+    var dname = $(input).attr("dname");
+    $(input).parent().parent().children().each(function () {
         let curr = $(this).children("output[name='SEIRDOutput']");
         values.push(curr.val());
     });
     console.log(values);
+    console.log(dname);
 
-    load_SEIRD(values);
+    load_SEIRD(values, dname);
 
 }
 
@@ -19,21 +21,34 @@ function getSEIRDInput(input){
 $(document).ready(function () {
     // onclick disease -- render specific disease
     // async function diseaseChart(strdisease) {
-    // load_SEIRD()
+    var incub_days = $('#outputIncubDays').val();
+    var repro_no = $('#outputReproNo').val();
+    var disease_spread = $('#outputDiseaseSpread').val();
+    var fatality = $('#outputFatality').val();
+    var death_days = $('#outputDeathDays').val();
 
-        
+    values = [incub_days, repro_no, disease_spread, fatality, death_days];
+
+    console.log(values);
+    load_SEIRD(values, "ASF");
+
+
 });
 
-async function load_SEIRD(values){
-    
+async function load_SEIRD(values, strDisease) {
 
+
+    console.log(strDisease);
     ajaxCSRF();
-
+    
     let metadata = await $.ajax({
         type: 'POST',
-        url: '/disease-seird/ASF/',
-        data: {'values': values},
-        success: function(res){
+        // url: '/disease-seird/ASF/',
+        url: '/disease-seird/' + strDisease + '/',
+        data: {
+            'values': values
+        },
+        success: function (res) {
             console.log(res);
             return res;
         }
@@ -42,7 +57,7 @@ async function load_SEIRD(values){
 
 
     // SERID
-    if($('#dm-seird').length) {
+    if ($('#dm-seird').length) {
         console.log("loading sierd chart")
 
         Highcharts.chart('dm-seird', {

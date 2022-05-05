@@ -11,7 +11,7 @@ from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
     Pigpen_Group, Pigpen_Row, Activity,
-    Disease_Case, Disease_Record)
+    Disease_Case, Disease_Record, SEIRD_Input)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -1033,96 +1033,14 @@ def diseaseMonitoring(request, strDisease):
             cases.append(case)
             # debug(casesList)
     dTable.append(cases)
-
-    dChart = {
-        'confirmed': [],
-        'recovered': [],
-        'died': [] }
-
-    # prepare time range of line chart
-    dateToday = datetime.now(timezone.utc)
-    dateMonthsAgo = dateToday - timedelta(30)
-
-    # get all disease_record with diseas_name
-    dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
-        date_filed__range=(now()-timedelta(days=30), now())).annotate(
-            confirmed_pigs = F("ref_disease_case__num_pigs_affect")
-        ).order_by("date_filed").all()
-
-    confirmedCtr = 0
-    recoveredCtr = 0
-    diedCtr      = 0
-    case_currDate = 0
-
-    # NULL case      
-    try:
-        case_currDate = dcasesQry.first().date_filed.date()
-    except:
-        pass
-
-    if case_currDate != dateMonthsAgo.date():
-        # start point of series data
-        dChart['confirmed'].append([dateMonthsAgo.date(), 0])
-        dChart['recovered'].append([dateMonthsAgo.date(), 0])
-        dChart['died'].append([dateMonthsAgo.date(), 0])
-
-    dCaseList = []
-    for d in dcasesQry:
-        try:
-            case_nextDate = d.date_filed.date()
-        except:
-            continue
-
-        # for confirmed cases
-        if case_currDate == case_nextDate:
-            if d.ref_disease_case_id not in dCaseList:
-                dCaseList.append(d.ref_disease_case_id)
-                confirmedCtr += d.confirmed_pigs
-            
-            recoveredCtr += d.num_recovered
-            diedCtr += d.num_died
-
-        else :
-            if confirmedCtr > 0:
-                # append finalized [date, count]
-                caseObj = [ case_currDate, confirmedCtr ]
-                dChart['confirmed'].append(caseObj)
-            if recoveredCtr > 0:
-                dChart['recovered'].append([ case_currDate, recoveredCtr ])
-            if diedCtr > 0:    
-                dChart['died'].append([ case_currDate, diedCtr ])
-
-            # move to next date
-            if d.ref_disease_case_id not in dCaseList:
-                dCaseList.append(d.ref_disease_case_id)
-                confirmedCtr = d.confirmed_pigs
-            else:
-                confirmedCtr = 0
-
-            recoveredCtr = d.num_recovered
-            diedCtr = d.num_died
-            case_currDate = case_nextDate
-
-    if confirmedCtr > 0:
-        dChart['confirmed'].append([case_currDate, confirmedCtr])
-    if recoveredCtr > 0:
-        dChart['recovered'].append([ case_currDate, recoveredCtr ])
-    if diedCtr > 0:
-        dChart['died'].append([ case_currDate, diedCtr ])
-
-    # end point of series data
-    if case_currDate != dateToday.date():
-        dChart['confirmed'].append([dateToday.date(), 0])
-        dChart['recovered'].append([dateToday.date(), 0])
-        dChart['died'].append([dateToday.date(), 0])
-
     # debug(dTable)
 
-    # append data to return (table, line chart, map, SEIRD) 
+    inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).first()
+
+    # append data to return (table, SEIRD inputs) 
     data.append(dTable)
-    # debug(data)
-    # debug(data[0].dCases)
-    # debug(data[0]['dCases']['lab_ref_no'])
+    data.append(inputQry)
+    debug(data)
 
     if request.method == 'POST': # for disease table contents
         return render(request, 'dsstemp/disease-monitoring.html', {"data": data})
@@ -1268,7 +1186,7 @@ def load_diseaseSeird(request, strDisease):
     sValues = request.POST.getlist("values[]")
             # sList = request.POST.getlist("symptomsArr[]")
             # symptomsArr = []
-    sParam = [int(i) for i in sValues]
+    sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
     debug(sParam)
 
     # NOTE: CODE BASIS
