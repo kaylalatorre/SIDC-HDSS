@@ -26,7 +26,7 @@
         // console.log(dateToday);
 
         // CASES per disease line chart
-        if($('#dm-confirmed-per').length) {
+        if($(`#dm-confirmed-per-${strdisease}`).length) {
 
             var disSeries = [];
 
@@ -71,7 +71,7 @@
 
             // console.log(disSeries);
 
-            Highcharts.chart('dm-confirmed-per', {
+            Highcharts.chart(`dm-confirmed-per-${strdisease}`, {
                 chart: {
                     type: 'line'
                 },

@@ -1,4 +1,5 @@
 # for page redirection, server response
+from django import http
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, response
 
@@ -982,17 +983,36 @@ def submitLabReport(request, lab_ref):
         lab_ref_no = lab_ref
         diseaase_name = request.POST.get("disease_name")
         incid_id = request.POST.get("incid_id")
-        lab_result = request.POST.get("lab_result")
+        num_pigs_affect = request.POST.get("lab_result")
         date_updated = datetime.now(timezone.utc)
+        lab_result = False
+        if int(num_pigs_affect) > 0:
+            lab_result = True
         
         try:
             # save disease case
-            Disease_Case(
+            dCase = Disease_Case(
                 disease_name    = diseaase_name,
                 lab_result      = lab_result,
                 lab_ref_no      = lab_ref_no,
                 date_updated    = date_updated,
-                incid_case_id   = incid_id 
+                incid_case_id   = incid_id,
+                start_date      = date_updated,
+                num_pigs_affect = num_pigs_affect 
+            )
+            dCase.save()
+            # get mortalities
+            total_died = Mortality.objects.filter(case_no=incid_id, source="incident").aggregate(Sum('num_today'))['num_today__sum']
+            # create disease record
+            debug("DCASE")
+            debug(dCase)
+            Disease_Record(
+                date_filed          = date_updated,
+                num_recovered       = 0,
+                num_died            = total_died,
+                ref_disease_case    = dCase,
+                total_died          = total_died,
+                total_recovered     = 0
             ).save()
             # resolve incident case
             Hog_Symptoms.objects.filter(id=incid_id).update(report_status="Resolved")
@@ -1003,7 +1023,7 @@ def submitLabReport(request, lab_ref):
             return HttpResponse(status=500)
             
 # rendering disease-monitoring.html in a different url
-def diseaseMonitoring(request, strDisease):
+def diseaseMonitoring(strDisease):
 
 
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
@@ -1042,10 +1062,13 @@ def diseaseMonitoring(request, strDisease):
     data.append(inputQry)
     debug(data)
 
-    if request.method == 'POST': # for disease table contents
-        return render(request, 'dsstemp/disease-monitoring.html', {"data": data})
     return data # for disease monitoring dashboard contents
 
+def load_ConfirmedCases(request, strDisease):
+    """
+    Used for when calling .load 
+    """
+    return render(request, 'dsstemp/disease-content.html', {"disData": diseaseMonitoring(strDisease)})
 
 def load_diseaseChart(request, strDisease):
 
@@ -1176,6 +1199,7 @@ def load_diseaseSeird(request, strDisease):
     # No. of Days until Death          -- [4] 1 / rho
     # ---------------------------------------------
     """
+    debug("SEIRD")
     debug(strDisease)
     # compute for total SIDC pig population
     farmQry = Farm.objects.aggregate(Sum("total_pigs"))
@@ -1184,10 +1208,18 @@ def load_diseaseSeird(request, strDisease):
     # get initial parameters from frontend inputs
     sValues = []
     sValues = request.POST.getlist("values[]")
-            # sList = request.POST.getlist("symptomsArr[]")
-            # symptomsArr = []
-    sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
-    debug(sParam)
+    if sValues:
+        sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
+        debug(sParam)
+    else:
+        params = SEIRD_Input.objects.filter(disease_name=strDisease).first()
+        sParam = [
+            params.incub_days,
+            params.reproduction_num,
+            params.days_can_spread,
+            params.fatality_rate,
+            params.days_til_death
+        ]
 
     # NOTE: CODE BASIS
     # D = 4.0 # infections lasts four days

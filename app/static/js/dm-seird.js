@@ -57,10 +57,10 @@ async function load_SEIRD(values, strDisease) {
 
 
     // SERID
-    if ($('#dm-seird').length) {
+    if ($(`#dm-seird-${strDisease}`).length) {
         console.log("loading sierd chart")
 
-        Highcharts.chart('dm-seird', {
+        Highcharts.chart(`dm-seird-${strDisease}`, {
             chart: {
                 type: 'spline'
             },
