@@ -305,3 +305,13 @@ class Mem_Announcement(models.Model):
 
     is_approved         = models.BooleanField(default=False, null=True)
     reject_reason       = models.CharField(max_length=500, null=True, blank=True)
+
+
+# SEIRD INPUT Table
+class SEIRD_Input(models.Model):
+    disease_name        = models.CharField(max_length=50)
+    incub_days          = models.IntegerField()
+    reproduction_num    = models.FloatField()
+    days_can_spread     = models.IntegerField()
+    fatality_rate       = models.FloatField()
+    days_til_death      = models.IntegerField()

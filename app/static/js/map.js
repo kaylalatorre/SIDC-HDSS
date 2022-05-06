@@ -2,6 +2,18 @@
  * Helper function to prepare AJAX functions with CSRF middleware tokens.
  * This avoids getting 403 (Forbidden) errors.
  */
+// var osmMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+// }) 
+// var cartoMap = L.tileLayer(
+//     'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+//     {
+//       attribution:
+//         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+//     }
+//   )
+
+
 function ajaxCSRF() {
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -29,6 +41,7 @@ function ajaxCSRF() {
 }
 
 $(document).ready(async function () {
+    diseaseMap("ASF");
     console.log($('#map-container').length);
     if ($('#map-container').length) {
         /**
@@ -162,7 +175,6 @@ $(document).ready(async function () {
 
         }
 
-        console.log(pigData);
         pigData.forEach(function(point){
             pigsPerFarm.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'black' })).addTo(map);
         });
@@ -208,9 +220,15 @@ $(document).ready(async function () {
 
         
     }
-    
 
-    if ($('#dm-map-container').length) {
+    
+    
+    return;
+});
+
+function diseaseMap(strDisease){
+    console.log(`#dm-map-container-${strDisease}`);
+    if ($(`#dm-map-container-${strDisease}`).length) {
         /**
          * Initialize map view
          */
@@ -221,26 +239,26 @@ $(document).ready(async function () {
          var zoom = 11;
  
          // initialize map
-         var map = L.map('dm-map-container').setView([lat, long], zoom);
+         var map = L.map(`dm-map-container-${strDisease}`).setView([lat, long], zoom);
          console.log(map.getZoom());
          // initialize osm tile layer
          var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-         }).addTo(map);
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
  
          var carto = L.tileLayer(
-             'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-             {
-               attribution:
-                 '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-             }
-           ).addTo(map);
+            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            {
+              attribution:
+                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            }
+          ).addTo(map);
  
          console.log("dm map loaded");
 
-         // 
+         // apply map container styling
+         $(`#dm-map-container-${strDisease}`).css("width", "100%");
+         $(`#dm-map-container-${strDisease}`).css("height", "40vh");
 
     }
-
-    return;
-});
+}

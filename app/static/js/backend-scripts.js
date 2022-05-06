@@ -1357,12 +1357,15 @@ function getDiseaseInfo(strDisease){
         //         console.log(response);
         //     }
         // });
-
+        console.log(`LOAD ${strDisease}`);
         // // for loading selected disease data
-        $('#dContent'+strDisease).load(url + ' #dContent', function (response) {
-            console.log(response);
+        $(`#dContent${strDisease}`).load(`/load-confirmed-cases/${strDisease}/ #dContent${strDisease}`, function (response) {
+            diseaseChart(strDisease);
+            diseaseMap(strDisease);
+            load_SEIRD(false, strDisease);
             $(this).children().unwrap();
         });
+        
 
     } catch (error) {
         console.log(error);

@@ -1,4 +1,5 @@
 # for page redirection, server response
+from django import http
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, response
 
@@ -11,7 +12,7 @@ from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
     Pigpen_Group, Pigpen_Row, Activity,
-    Disease_Case, Disease_Record)
+    Disease_Case, Disease_Record, SEIRD_Input)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -39,6 +40,10 @@ from django.utils.timezone import (
     now, # for getting date today
     localtime # for getting date today
 ) 
+
+# for seird implementation
+from scipy.integrate import odeint
+import numpy as np
 
 def debug(m):
     """
@@ -1027,7 +1032,7 @@ def submitLabReport(request, lab_ref):
             return HttpResponse(status=500)
             
 # rendering disease-monitoring.html in a different url
-def diseaseMonitoring(request, strDisease):
+def diseaseMonitoring(strDisease):
 
 
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
@@ -1057,104 +1062,25 @@ def diseaseMonitoring(request, strDisease):
             cases.append(case)
             # debug(casesList)
     dTable.append(cases)
-
-    dChart = {
-        'confirmed': [],
-        'recovered': [],
-        'died': [] }
-
-    # prepare time range of line chart
-    dateToday = datetime.now(timezone.utc)
-    dateMonthsAgo = dateToday - timedelta(30)
-
-    # get all disease_record with diseas_name
-    dcasesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).filter(
-        date_filed__range=(now()-timedelta(days=30), now())).annotate(
-            confirmed_pigs = F("ref_disease_case__num_pigs_affect")
-        ).order_by("date_filed").all()
-
-    confirmedCtr = 0
-    recoveredCtr = 0
-    diedCtr      = 0
-    case_currDate = 0
-
-    # NULL case      
-    try:
-        case_currDate = dcasesQry.first().date_filed.date()
-    except:
-        pass
-
-    if case_currDate != dateMonthsAgo.date():
-        # start point of series data
-        dChart['confirmed'].append([dateMonthsAgo.date(), 0])
-        dChart['recovered'].append([dateMonthsAgo.date(), 0])
-        dChart['died'].append([dateMonthsAgo.date(), 0])
-
-    dCaseList = []
-    for d in dcasesQry:
-        try:
-            case_nextDate = d.date_filed.date()
-        except:
-            continue
-
-        # for confirmed cases
-        if case_currDate == case_nextDate:
-            if d.ref_disease_case_id not in dCaseList:
-                dCaseList.append(d.ref_disease_case_id)
-                confirmedCtr += d.confirmed_pigs
-            
-            recoveredCtr += d.num_recovered
-            diedCtr += d.num_died
-
-        else :
-            if confirmedCtr > 0:
-                # append finalized [date, count]
-                caseObj = [ case_currDate, confirmedCtr ]
-                dChart['confirmed'].append(caseObj)
-            if recoveredCtr > 0:
-                dChart['recovered'].append([ case_currDate, recoveredCtr ])
-            if diedCtr > 0:    
-                dChart['died'].append([ case_currDate, diedCtr ])
-
-            # move to next date
-            if d.ref_disease_case_id not in dCaseList:
-                dCaseList.append(d.ref_disease_case_id)
-                confirmedCtr = d.confirmed_pigs
-            else:
-                confirmedCtr = 0
-
-            recoveredCtr = d.num_recovered
-            diedCtr = d.num_died
-            case_currDate = case_nextDate
-
-    if confirmedCtr > 0:
-        dChart['confirmed'].append([case_currDate, confirmedCtr])
-    if recoveredCtr > 0:
-        dChart['recovered'].append([ case_currDate, recoveredCtr ])
-    if diedCtr > 0:
-        dChart['died'].append([ case_currDate, diedCtr ])
-
-    # end point of series data
-    if case_currDate != dateToday.date():
-        dChart['confirmed'].append([dateToday.date(), 0])
-        dChart['recovered'].append([dateToday.date(), 0])
-        dChart['died'].append([dateToday.date(), 0])
-
     # debug(dTable)
 
-    # append data to return (table, line chart, map, SEIRD) 
-    data.append(dTable)
-    # debug(data)
-    # debug(data[0].dCases)
-    # debug(data[0]['dCases']['lab_ref_no'])
+    inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).first()
 
-    if request.method == 'POST': # for disease table contents
-        return render(request, 'dsstemp/disease-monitoring.html', {"data": data})
+    # append data to return (table, SEIRD inputs) 
+    data.append(dTable)
+    data.append(inputQry)
+    debug(data)
+
     return data # for disease monitoring dashboard contents
 
+def load_ConfirmedCases(request, strDisease):
+    """
+    Used for when calling .load 
+    """
+    return render(request, 'dsstemp/disease-content.html', {"disData": diseaseMonitoring(strDisease)})
 
-def load_diseaseCharts(request, strDisease):
-    
+def load_diseaseChart(request, strDisease):
+
     data = []
     # debug(request.method)
     # debug("loading charts")    
@@ -1247,7 +1173,94 @@ def load_diseaseCharts(request, strDisease):
     data.append(dChart)
     # debug(data)
 
+    # load_diseaseSeird()
+
     return JsonResponse(data, safe=False)
     
+
 def actionRecommendation(request):
     return render(request, 'dsstemp/action-rec.html')
+
+
+def derivSEIRD(y, t, N, beta, gamma, delta, alpha, rho):
+    """
+        implementation of model based on: 
+        https://github.com/henrifroese/infectious_disease_modelling/blob/master/part_two.ipynb
+    """
+
+    S, E, I, R, D = y
+    dSdt = -beta * S * I / N
+    dEdt = beta * S * I / N - delta * E
+    dIdt = delta * E - (1 - alpha) * gamma * I - alpha * rho * I
+    dRdt = (1 - alpha) * gamma * I
+    dDdt = alpha * rho * I
+    
+    return dSdt, dEdt, dIdt, dRdt, dDdt
+
+
+def load_diseaseSeird(request, strDisease):
+    """
+    # ----INPUT PARAMETERS ----------------------
+    # Disease Incubation Period (days) -- [0] delta
+    # Basic Reproduction No.           -- [1] beta = R_0 * gamma
+    # No. of Days Disease can Spread   -- [2] D 
+    # Fatality Rate                    -- [3] alpha
+    # No. of Days until Death          -- [4] 1 / rho
+    # ---------------------------------------------
+    """
+    debug("SEIRD")
+    debug(strDisease)
+    # compute for total SIDC pig population
+    farmQry = Farm.objects.aggregate(Sum("total_pigs"))
+    N = farmQry["total_pigs__sum"]
+
+    # get initial parameters from frontend inputs
+    sValues = []
+    sValues = request.POST.getlist("values[]")
+    if sValues:
+        sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
+        debug(sParam)
+    else:
+        params = SEIRD_Input.objects.filter(disease_name=strDisease).first()
+        sParam = [
+            params.incub_days,
+            params.reproduction_num,
+            params.days_can_spread,
+            params.fatality_rate,
+            params.days_til_death
+        ]
+
+    # NOTE: CODE BASIS
+    # D = 4.0 # infections lasts four days
+    # gamma = 1.0 / D
+    # delta = 1.0 / 5.0  # incubation period of five days
+    # R_0 = 5.0
+    # beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    # alpha = 0.2  # 20% death rate
+    # rho = 1/9  # 9 days from infection until death
+    # S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+    
+    
+    # set params in SEIRD var inputs
+    D = sParam[2] # infections lasts four days
+    gamma = 1.0 / D
+    delta = 1.0 / sParam[0]  # incubation period of five days
+    R_0 = sParam[1]
+    beta = R_0 * gamma  # R_0 = beta / gamma, so beta = R_0 * gamma
+    alpha = sParam[3]  # 20% death rate
+    rho = 1/sParam[4]  # 9 days from infection until death
+    S0, E0, I0, R0, D0 = N-1, 1, 0, 0, 0  # initial conditions: one exposed
+
+    # t = time (in days)
+    t = np.linspace(0, 99, 100) 
+    y0 = S0, E0, I0, R0, D0 # initialize SEIRD compartments
+
+    # Feed custom SEIRD function into odeint
+    retVal = odeint(derivSEIRD, y0, t, args=(N, beta, gamma, delta, alpha, rho))
+    S, E, I, R, D = retVal.T
+
+    # debug(retVal)
+    # debug(E)
+    totalPigs = [int(farmQry["total_pigs__sum"]) for i in S.tolist()]
+    modelData = [totalPigs, S.tolist(), E.tolist(), I.tolist(), R.tolist(), D.tolist()]
+    return JsonResponse(modelData, safe=False)
