@@ -71,6 +71,8 @@ class Farm_Weight(models.Model):
     total_kls           = models.FloatField()
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
+    pigpen_grp          = models.ForeignKey('Pigpen_Group', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
 
 # INVIDUAL HOG FINAL WEIGHT
 class Hog_Weight(models.Model):
@@ -132,6 +134,7 @@ class Disease_Case(models.Model):
 
     num_pigs_affect     = models.IntegerField(null=True, blank=True)
 
+
 # DISEASE RECORD Table
 class Disease_Record(models.Model):
     date_filed          = models.DateField(default=now)
@@ -143,6 +146,7 @@ class Disease_Record(models.Model):
 
     total_died          = models.IntegerField(null=True, blank=True)
     total_recovered     = models.IntegerField(null=True, blank=True)
+
 
 # HOG RAISER Table
 class Hog_Raiser(models.Model):
@@ -206,9 +210,6 @@ class Pigpen_Group(models.Model):
 
     num_pens            = models.IntegerField(null=True, blank=True)
     total_pigs          = models.IntegerField(null=True, blank=True)
-
-    start_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
-    final_weight        = models.ForeignKey('Farm_Weight', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
 
 # PIGPEN MEASURES Table
@@ -304,3 +305,13 @@ class Mem_Announcement(models.Model):
 
     is_approved         = models.BooleanField(default=False, null=True)
     reject_reason       = models.CharField(max_length=500, null=True, blank=True)
+
+
+# SEIRD INPUT Table
+class SEIRD_Input(models.Model):
+    disease_name        = models.CharField(max_length=50)
+    incub_days          = models.IntegerField()
+    reproduction_num    = models.FloatField()
+    days_can_spread     = models.IntegerField()
+    fatality_rate       = models.FloatField()
+    days_til_death      = models.IntegerField()

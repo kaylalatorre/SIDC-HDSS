@@ -105,7 +105,7 @@ for(var i = 0; i < biosecSave.length; i++) {
 }
 
 /**
-* Enable submit/save button when text is inputted
+* Enable submit button when text is inputted for selected-activity
 */
 function EnableRejectSave(text) {
     var btnSubmit = document.getElementById("reject-activity");
@@ -117,6 +117,20 @@ function EnableRejectSave(text) {
         //disable the TextBox when TextBox is empty
         btnSubmit.disabled = true;
     }
+};
+
+/**
+* Enable save button when text is inputted for selected-health-symptoms
+*/
+function EnableRecSave(text) {
+    var row = text.parentNode.parentNode.parentNode;
+    var btnSave = row.getElementsByClassName("secondary-btn showDisInput")[0];
+    // console.log(row);
+    // console.log(btnSave);
+
+    if (text.value.trim() > 0)
+        btnSave.disabled = false;
+    else btnSave.disabled = true;
 };
 
 function EnableIncidRem(text) {
@@ -134,6 +148,42 @@ function EnableIncidRem(text) {
     }
 };
 
+/**
+*   - Hide text and update button
+*   - Show input and save button
+**/ 
+function UpdateTotalRec(btnHTML){
+
+    var row = btnHTML.parentNode.parentNode.parentNode;
+
+    // console.log(row);
+
+    var toHide = row.getElementsByClassName('hideDisInfo');
+    var toShow = row.getElementsByClassName('showDisInput');
+
+    // console.log(toHide);
+    // console.log(toShow);
+
+    for(i = 0; i < toHide.length; i++)
+        toHide[i].style.display = "none";
+    
+    for(j = 0; j < toShow.length; j++)
+        toShow[j].style.display = "block";
+}
+
+function CancelRecSave(btnHTML){
+
+    var row = btnHTML.parentNode.parentNode.parentNode;
+
+    var toShow = row.getElementsByClassName('hideDisInfo');
+    var toHide = row.getElementsByClassName('showDisInput');
+
+    for(i = 0; i < toHide.length; i++)
+        toHide[i].style.display = "none";
+    
+    for(j = 0; j < toShow.length; j++)
+        toShow[j].style.display = "block";
+}
 
 /**
  * Symptoms edit button 
@@ -972,6 +1022,38 @@ $('#health-symptoms-version-mobile').change(function () {
         console.log(error);
     }
 })
+
+/**
+ * Compute for total recovered pigs given a num_recovered input
+ * @param {*} currRow 
+ */
+function computeTotalRec(currRow){
+    var row = currRow.parentNode; //get row of clicked button
+    // console.log("in computeTotalRec()/n");
+
+    var num_rec = row.getElementsByClassName('input-num-rec')[0].value;
+    var total_rec = row.getElementsByClassName('total-rec')[0].innerHTML;
+    var displayRec = row.getElementsByClassName('display-total-rec')[0];
+    // console.log(num_rec);
+    // console.log(total_rec);
+
+    var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
+    // console.log(new_total_rec);
+
+    displayRec.innerHTML = String(new_total_rec);
+
+    // setting input max
+    var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
+    var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
+    // console.log(num_pigs_affect);
+    // console.log(total_died);
+
+    var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
+
+    $(".input-num-rec"). attr({
+        "max" : maxInput, 
+        });
+}
 
 
 /**

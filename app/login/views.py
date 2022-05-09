@@ -88,8 +88,6 @@ def login(request):
 
     return render(request, 'login.html', {})
 
-
-
 def home_view(request):
     print("TEST LOG: in Home view")
 
@@ -105,7 +103,7 @@ def home_view(request):
         else :
             farmStats = dashboard_view(request)               # data for general Farms overview
             susCases = dashboard_SusCases()                   # data for Symptoms Monitoring tab
-            disData = diseaseMonitoring(request, "ASF")       # data for Disease Monitoring tab
+            disData = diseaseMonitoring("ASF")       # data for Disease Monitoring tab
             # debug(disData)
             return render(request, 'home.html', {"farmStats": farmStats, 'susCases': susCases, 'disData': disData})
 

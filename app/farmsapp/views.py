@@ -560,7 +560,9 @@ def techSelectedFarm(request, farmID):
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
     # get current starter and fattener weights acc. to current Pigpen
-    weightSlip = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
+    # weightSlip = Pigpen_Group.objects.filter(id=latestPigpen.id).select_related("start_weight").select_related("final_weight").first()
+    start_weight = Farm_Weight.objects.filter(is_starter=True).filter(pigpen_grp_id=latestPigpen.id).first()
+    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=latestPigpen.id).first()
 
     pen_no = 1
     pigpenList = []
@@ -677,8 +679,8 @@ def techSelectedFarm(request, farmID):
         pigpenRowForm  = PigpenRowForm()
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'starter' : weightSlip.start_weight, 'total_pigs' : total_pigs,
-                                                                'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen, 'fattener' : weightSlip.final_weight})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'starter' : start_weight, 'total_pigs' : total_pigs,
+                                                                'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen, 'fattener' : final_weight})
 
 def techSelectedFarmVersion(request, farmID, farmVersion):
     """
@@ -733,7 +735,9 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
     # get current starter and fattener weights acc. to selected Pigpen
-    weightSlip = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
+    # weightSlip = Pigpen_Group.objects.filter(id=selectedPigpen.id).select_related("start_weight").select_related("final_weight").first()
+    start_weight = Farm_Weight.objects.filter(is_starter=True).filter(pigpen_grp_id=selectedPigpen.id).first()
+    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=selectedPigpen.id).first()
 
     pen_no = 1
     pigpenList = []
@@ -776,8 +780,8 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
         if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
             previous = oldPigpens[i-1].date_added
 
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : versionList, 'starter' : weightSlip.start_weight, 'total_pigs' : total_pigs,
-                                                                'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'fattener' : weightSlip.final_weight, 'prev' : previous})
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : versionList, 'starter' : start_weight, 'total_pigs' : total_pigs,
+                                                                'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'fattener' : final_weight, 'prev' : previous})
 
 def addFarm(request):
     """
@@ -1703,6 +1707,8 @@ def search_techTasks(request, techID):
     # (4) Get Mem Announcements
     memQry = Mem_Announcement.objects.filter(author_id=int(techID)).filter(is_approved=True).order_by("-timestamp")    
 
+    debug(techName)
+
     return render(request, 'farmstemp/assignment.html', {"techName": techName, "farmBioList": farmsData,
                                                                                 "incidList":  incidData,
                                                                                 "announceList": memQry})
@@ -1868,20 +1874,27 @@ def selectedActivityForm(request, activityFormID, activityDate):
     start_weight = 0.0
     end_weight   = 0.0
 
+    end_subtotal = 0.0
+    pigs_sold = 0
+
     # get latest version of Pigpen
     latestPP = Pigpen_Group.objects.filter(ref_farm_id=actFormQuery.ref_farm_id).order_by("-date_added").first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPP.id).order_by("id")
     
     # get current starter and fattener weights acc. to current Pigpen
-    s_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("start_weight").first()
-    e_weightQry = Pigpen_Group.objects.filter(id=latestPP.id).select_related("final_weight").first()
+    s_weightQry = Farm_Weight.objects.filter(pigpen_grp_id=latestPP.id).filter(is_starter=True).first()
+    e_weightQry = Farm_Weight.objects.filter(pigpen_grp_id=latestPP.id).filter(is_starter=False).all()
 
     # assign values for start and end weight
-    if s_weightQry.start_weight is not None:
-        start_weight = s_weightQry.start_weight.ave_weight
+    if s_weightQry is not None:
+        start_weight = s_weightQry.ave_weight
 
-    if e_weightQry.final_weight is not None:
-        end_weight = e_weightQry.final_weight.ave_weight
+    if len(e_weightQry):
+        for e in e_weightQry:
+            end_subtotal += e.total_kls
+            pigs_sold += e.total_numHeads
+
+        end_weight = round(end_subtotal/pigs_sold, 2)
 
     # compute for mortality rate (borrowed from comp_MortRate function)
     total_pigs = 0

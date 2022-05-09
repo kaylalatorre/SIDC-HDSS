@@ -385,7 +385,7 @@
                         <tr>
                             <th>Ave. Starter Weight</th>
                             {% if healthRef.ave_startWeight != 0.0 %}
-                                <td>{{healthRef.ave_startWeight}}</td>
+                                <td>{{healthRef.ave_startWeight}} kg</td>
                             {% else %}
                                 <td>-</td>
                             {% endif %}
@@ -393,14 +393,14 @@
                         <tr>
                             <th>Ave. Fattener Weight</th>
                             {% if healthRef.ave_endWeight != 0.0 %}
-                                <td>{{healthRef.ave_endWeight}}</td>
+                                <td>{{healthRef.ave_endWeight}} kg</td>
                             {% else %}
                                 <td>-</td>
                             {% endif %}
                         </tr>
                         <tr>
                             <th>Mortality Rate</th>
-                            <td>{{healthRef.mortality_rate}}</td>
+                            <td>{{healthRef.mortality_rate}}%</td>
                         </tr>
                        <tr>
                             <th>Incidents Reported</th>

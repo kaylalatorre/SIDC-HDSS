@@ -1358,14 +1358,88 @@ function getDiseaseInfo(strDisease){
         //         console.log(response);
         //     }
         // });
-
+        console.log(`LOAD ${strDisease}`);
         // // for loading selected disease data
-        $('#dContent'+strDisease).load(url + ' #dContent', function (response) {
-            console.log(response);
+        $(`#dContent${strDisease}`).load(`/load-confirmed-cases/${strDisease}/ #dContent${strDisease}`, function (response) {
+            diseaseChart(strDisease);
+            diseaseMap(strDisease);
+            load_SEIRD(false, strDisease);
             $(this).children().unwrap();
         });
+        
 
     } catch (error) {
         console.log(error);
     }
 }
+
+
+/** 
+ * on-click POST AJAX function for updating Disease Case and adding a Disease Record.
+ * @param drID string ID of Disease Record
+*/
+
+$('.btn-save-recovered').on('click', function () {
+    var num_rec = $(this).siblings(":eq(2)").val();
+    var discaseID = $(this).siblings(":eq(3)").val();
+    var farmID = $(this).siblings(":eq(4)").val();
+
+    // console.log(num_rec);
+    // console.log(discaseID);
+    // console.log(farmID);
+
+
+    ajaxCSRF();
+
+    $.ajax({
+        type: 'POST',
+        url: '/update-disease-case/' + discaseID, 
+        data: {"num_rec": num_rec}, 
+        success: function (response) {
+            
+            if (response.status_code === "200"){
+                url = '/selected-health-symptoms/' + farmID;
+                location.href = url;          
+            } 
+            else {
+                console.log("ERROR [" + response.status_code + "]: " + response.error);
+            }
+
+        },
+        error: function (res){
+            console.log("ERROR [" + res.status_code + "]: " +  res.error);
+        }
+    });
+
+});
+
+// function updateDRCase(elem, drID) {
+
+//     // get no. of pigs (input field in recovered)
+//     var total_rec = $("input.input-total-rec").val();
+
+    
+
+//     ajaxCSRF();
+
+//     $.ajax({
+//         type: 'POST',
+//         url: '/post-addCase/' + farmID, 
+//         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
+//         success: function (response) {
+            
+//             if (response.status_code === "200"){
+//                 url = "/selected-health-symptoms/" + farmID;
+//                 location.href = url;          
+//             } 
+//             else {
+//                 console.log("ERROR [" + response.status_code + "]: " + response.error);
+//             }
+
+//         },
+//         error: function (res){
+//             console.log("ERROR [" + res.status_code + "]: " +  res.error);
+//         }
+//     });
+// }
+

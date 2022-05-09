@@ -15,9 +15,11 @@ urlpatterns = [
     
     # reports
     path('disease-monitoring/<str:strDisease>/', views.diseaseMonitoring, name="diseaseMonitoring"),
+    path('load-confirmed-cases/<strDisease>/', views.load_ConfirmedCases, name="loadConfirmedCases"),
     path('symptoms-monitoring', views.symptomsMonitoring, name="symptomsMonitoring"),
     path('symptoms-monitoring/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_incidentRep, name="filter_incidentRep"),
 
-    # chart
-    path('disease-charts/<str:strDisease>/', views.load_diseaseCharts, name="load_diseaseCharts"),
+    # charts
+    path('disease-chart/<str:strDisease>/', views.load_diseaseChart, name="load_diseaseChart"),
+    path('disease-seird/<str:strDisease>/', views.load_diseaseSeird, name="load_diseaseSeird"),
 ]
