@@ -1071,7 +1071,11 @@ def diseaseMonitoring(strDisease):
 
     return data # for disease monitoring dashboard contents
 
-# rendering disease-monitoring.html in a different url
+# rendering disease-content.html in a different url
+def load_diseaseMonitoring(request, strDisease):
+    return render(request, 'dsstemp/dm.html', {"disData": diseaseMonitoring(strDisease)})
+
+# rendering disease-content.html (partial) in a different url
 def load_ConfirmedCases(request, strDisease):
     """
     Used for when calling .load 
@@ -1253,10 +1257,12 @@ def load_diseaseSeird(request, strDisease):
     # get initial parameters from frontend inputs
     sValues = []
     sValues = request.POST.getlist("values[]")
-    if sValues:
+    debug("VALUES")
+    debug(sValues)
+    try:
         sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
         debug(sParam)
-    else:
+    except:
         params = SEIRD_Input.objects.filter(disease_name=strDisease).first()
         sParam = [
             params.incub_days,
@@ -1266,6 +1272,7 @@ def load_diseaseSeird(request, strDisease):
             params.days_til_death
         ]
 
+    debug(sParam)
     # NOTE: CODE BASIS
     # D = 4.0 # infections lasts four days
     # gamma = 1.0 / D
