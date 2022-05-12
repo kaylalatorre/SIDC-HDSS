@@ -87,16 +87,29 @@
                             <h3 class="heading">Alerts</h3>
                             <div class="alerts-content">
                                 <!-- Disease possibility -->
-                                <div class="alerts-item" id="disease-alert">
-                                    <div class="al-icon">
-                                        <i class='bx bx-network-chart' ></i>
+                                <a href="/disease-monitoring">
+                                    <div class="alerts-item">
+                                        <div class="al-icon">
+                                            <i class='bx bxs-virus'></i>
+                                        </div>
+                                        <div class="al-info">
+                                            <h2 id="total-cases"> 5 </h2>
+                                            <label for="total-cases">Confirmed Disease Cases</label>
+                                        </div>
                                     </div>
-                                    <div class="al-info">
-                                        <h2 id="total-farms">0.1%</h2>
-                                        <label for="total-farms">Disease Spread Possibility</label>
-                                    </div>
-                                </div>
+                                </a>
                                 <!-- others -->
+                                <a href="/hogs-health">
+                                    <div class="alerts-item">
+                                        <div class="al-icon">
+                                            <i class='bx bx-first-aid'></i>
+                                        </div>
+                                        <div class="al-info">
+                                            <h2 id="total-incd">{{ fStats.total_active }}</h2>
+                                            <label for="total-incd">New Incidents Reported</label>
+                                        </div>
+                                    </div>
+                                </a>
                                 <a href="/farms">
                                     <div class="alerts-item">
                                         <div class="al-icon">
@@ -105,17 +118,6 @@
                                         <div class="al-info">
                                             <h2 id="total-farms">{{ fStats.total_needInspect }}</h2>
                                             <label for="total-farms">Farms Need Inspection</label>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a href="/hogs-health">
-                                    <div class="alerts-item">
-                                        <div class="al-icon">
-                                            <i class='bx bx-first-aid'></i>
-                                        </div>
-                                        <div class="al-info">
-                                            <h2 id="total-farms">{{ fStats.total_active }}</h2>
-                                            <label for="total-farms">New Incidents Reported</label>
                                         </div>
                                     </div>
                                 </a>
