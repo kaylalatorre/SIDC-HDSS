@@ -1362,8 +1362,8 @@ function getDiseaseInfo(strDisease){
         // // for loading selected disease data
         $(`#dContent${strDisease}`).load(`/load-confirmed-cases/${strDisease}/ #dContent${strDisease}`, function (response) {
             diseaseChart(strDisease);
-            diseaseMap(strDisease);
             load_SEIRD(false, strDisease);
+            load_diseaseMap(strDisease);
             $(this).children().unwrap();
         });
         

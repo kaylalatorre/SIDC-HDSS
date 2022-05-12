@@ -1031,10 +1031,8 @@ def submitLabReport(request, lab_ref):
             # error response
             return HttpResponse(status=500)
             
-# rendering disease-monitoring.html in a different url
+# data required for disease-monitoring.html in a different url
 def diseaseMonitoring(strDisease):
-
-
     # Lab Reference	    Incident Involved   	No. of Pigs Affected	Recovered	Died
 
     data = []
@@ -1063,7 +1061,7 @@ def diseaseMonitoring(strDisease):
             # debug(casesList)
     dTable.append(cases)
     # debug(dTable)
-
+    # Get the parameter values of the disease for the SEIRD model from the database 
     inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).first()
 
     # append data to return (table, SEIRD inputs) 
@@ -1073,11 +1071,49 @@ def diseaseMonitoring(strDisease):
 
     return data # for disease monitoring dashboard contents
 
+# rendering disease-monitoring.html in a different url
 def load_ConfirmedCases(request, strDisease):
     """
     Used for when calling .load 
     """
     return render(request, 'dsstemp/disease-content.html', {"disData": diseaseMonitoring(strDisease)})
+
+def load_diseaseMap(request, strDisease):
+    debug("LOAD DISEASE MAP")
+    # debug(request.method)
+    print(strDisease)
+
+    # confrimed cases
+    casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
+        loc_long       = F("ref_disease_case__incid_case__ref_farm__loc_long"),
+        loc_lat         = F("ref_disease_case__incid_case__ref_farm__loc_lat"),
+        num_pigs_affect  = F("ref_disease_case__num_pigs_affect"),
+        date_updated     = F("ref_disease_case__date_updated")
+    ).order_by("-date_filed", "ref_disease_case_id").values(
+        'ref_disease_case_id',
+        'total_died',
+        'total_recovered',
+        'loc_long',
+        'loc_lat',
+        'num_pigs_affect',
+        'date_updated')
+
+    dTable = []
+    dTable.append(strDisease)
+
+    cases = []
+    casesList = []
+    for case in casesQry:
+        if case['ref_disease_case_id'] not in casesList:
+            casesList.append(case['ref_disease_case_id'])
+            cases.append(case)
+
+
+
+    # append data to return (table, SEIRD inputs)
+    debug(cases)
+
+    return JsonResponse(cases, safe=False) # for disease monitoring dashboard contents
 
 def load_diseaseChart(request, strDisease):
 
