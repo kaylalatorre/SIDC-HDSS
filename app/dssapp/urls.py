@@ -14,7 +14,7 @@ urlpatterns = [
     path('action-recommendation', views.actionRecommendation, name="actionRecommendation"),
     
     # reports
-    path('disease-monitoring/<str:strDisease>/', views.diseaseMonitoring, name="diseaseMonitoring"),
+    path('disease-monitoring/<str:strDisease>/', views.load_diseaseMonitoring, name="diseaseMonitoring"),
     path('load-confirmed-cases/<strDisease>/', views.load_ConfirmedCases, name="loadConfirmedCases"),
     path('symptoms-monitoring', views.symptomsMonitoring, name="symptomsMonitoring"),
     path('symptoms-monitoring/<str:startDate>/<str:endDate>/<str:areaName>/', views.filter_incidentRep, name="filter_incidentRep"),
@@ -22,4 +22,7 @@ urlpatterns = [
     # charts
     path('disease-chart/<str:strDisease>/', views.load_diseaseChart, name="load_diseaseChart"),
     path('disease-seird/<str:strDisease>/', views.load_diseaseSeird, name="load_diseaseSeird"),
+
+    # map
+    path('disease-map/<str:strDisease>', views.load_diseaseMap, name="load_diseaseMap"),
 ]

@@ -41,8 +41,7 @@ function ajaxCSRF() {
 }
 
 $(document).ready(async function () {
-    diseaseMap("ASF");
-    console.log($('#map-container').length);
+    await load_diseaseMap("ASF");
     if ($('#map-container').length) {
         /**
          * Initialize map view
@@ -62,12 +61,10 @@ $(document).ready(async function () {
         }).addTo(map);
 
         var carto = L.tileLayer(
-            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            {
-              attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             }
-          ).addTo(map);
+        ).addTo(map);
 
         console.log("map loaded");
 
@@ -83,7 +80,6 @@ $(document).ready(async function () {
             }
         });
 
-       console.log(metadata);
         // initialize layer groups
         var allFarms = new L.layerGroup();
         var farmsRadius = new L.layerGroup();
@@ -97,7 +93,8 @@ $(document).ready(async function () {
 
         // add markers and popups to layer groups
         for (let i = 0; i < metadata.length; i++) {
-            if(!(metadata[i]['latitude'] && metadata[i]['longitude']))
+            // go to next loop if lat or long is missing
+            if (!(metadata[i]['latitude'] && metadata[i]['longitude']))
                 continue;
 
             let farmLat = metadata[i]['latitude'];
@@ -111,18 +108,18 @@ $(document).ready(async function () {
             // Approximate distance of 100 meteres
             // Approximate Metric Equivalents for Degrees, Minutes, and Seconds: https://www.usna.edu/Users/oceano/pguth/md_help/html/approx_equivalents.htm
             // degRadius = 0.0009;
-            degRadius = 0.0009* 10;
+            degRadius = 0.0009 * 10;
 
             // NumPigs
             let dots = []
-            while(dots.length < numPigs){
+            while (dots.length < numPigs) {
                 let ang = Math.random() * 2 * Math.PI;
                 let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
                 let opp = Math.sin(ang) * hyp;
 
                 let point = [farmLat + opp, farmLong + adj]
-                if (!dots.includes(point)){
+                if (!dots.includes(point)) {
                     pigData.push(point);
                     dots.push(point);
                 }
@@ -130,14 +127,14 @@ $(document).ready(async function () {
 
             // Mortalities
             dots = []
-            while(dots.length < morts){
+            while (dots.length < morts) {
                 let ang = Math.random() * 2 * Math.PI;
                 let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
                 let opp = Math.sin(ang) * hyp;
 
                 let point = [farmLat + opp, farmLong + adj]
-                if (!dots.includes(point)){
+                if (!dots.includes(point)) {
                     mortData.push(point);
                     dots.push(point);
                 }
@@ -145,14 +142,14 @@ $(document).ready(async function () {
 
             // Symptopms Active
             dots = []
-            while(dots.length < sxRept){
+            while (dots.length < sxRept) {
                 let ang = Math.random() * 2 * Math.PI;
                 let hyp = Math.sqrt(Math.random()) * degRadius;
                 let adj = Math.cos(ang) * hyp;
                 let opp = Math.sin(ang) * hyp;
 
                 let point = [farmLat + opp, farmLong + adj]
-                if (!dots.includes(point)){
+                if (!dots.includes(point)) {
                     sxData.push(point);
                     dots.push(point);
                 }
@@ -165,26 +162,38 @@ $(document).ready(async function () {
             })).addTo(map);
 
             allFarms.addLayer(new L.marker([farmLat, farmLong])
-            .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
-                '<label class="bold-lbl">Address:</label>' + metadata[i]['address'] + '<br>' + 
-                '<label class="bold-lbl">No. of pigs: </label>' + numPigs + '<br>' +
-                '<label class="bold-lbl">Mortality Rate:</label> ' + mortRts + ' <br>' +
-                '<label class="bold-lbl">Symptoms Reported:</label> ' + sxRept + ' <br>' +
-                '<label class="bold-lbl">Symptoms Active:</label> ' + sxActv + ' <br>' +
-                '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
+                .bindTooltip('<label class="bold-lbl">Farm Code:</label>' + metadata[i]['code'] + '<br>' +
+                    '<label class="bold-lbl">Address:</label>' + metadata[i]['address'] + '<br>' +
+                    '<label class="bold-lbl">No. of pigs: </label>' + numPigs + '<br>' +
+                    '<label class="bold-lbl">Mortality Rate:</label> ' + mortRts + ' <br>' +
+                    '<label class="bold-lbl">Symptoms Reported:</label> ' + sxRept + ' <br>' +
+                    '<label class="bold-lbl">Symptoms Active:</label> ' + sxActv + ' <br>' +
+                    '<label class="bold-lbl">Last Updated:</label>' + metadata[i]['latest'])).addTo(map);
 
         }
 
-        pigData.forEach(function(point){
-            pigsPerFarm.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'black' })).addTo(map);
+        pigData.forEach(function (point) {
+            pigsPerFarm.addLayer(new L.circleMarker(point, {
+                radius: 1,
+                weight: 1,
+                color: 'black'
+            })).addTo(map);
         });
-        mortData.forEach(function(point){
-            mortalities.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'red' })).addTo(map);
+        mortData.forEach(function (point) {
+            mortalities.addLayer(new L.circleMarker(point, {
+                radius: 1,
+                weight: 1,
+                color: 'red'
+            })).addTo(map);
         });
-        sxData.forEach(function(point){
-            symptoms.addLayer(new L.circleMarker(point, { radius: 1, weight: 1, color: 'orange' })).addTo(map);
+        sxData.forEach(function (point) {
+            symptoms.addLayer(new L.circleMarker(point, {
+                radius: 1,
+                weight: 1,
+                color: 'orange'
+            })).addTo(map);
         });
-        
+
         /**
          * Layer Controls
          */
@@ -192,7 +201,7 @@ $(document).ready(async function () {
         var baseMaps = {
             "OpenStreetMap": osm,
             "CARTO": carto
-        }   
+        }
 
         var overlayMaps = {
             "Farms": allFarms,
@@ -218,47 +227,200 @@ $(document).ready(async function () {
         legend.addTo(map);
         L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-        
+
     }
 
-    
-    
+
+
     return;
 });
 
-function diseaseMap(strDisease){
+async function load_diseaseMap(strDisease) {
     console.log(`#dm-map-container-${strDisease}`);
     if ($(`#dm-map-container-${strDisease}`).length) {
         /**
          * Initialize map view
          */
-         console.log("loading dm map...");
-         // set view to batangas
-         var lat = 13.882406389460293;
-         var long = 121.23650234971542;
-         var zoom = 11;
- 
-         // initialize map
-         var map = L.map(`dm-map-container-${strDisease}`).setView([lat, long], zoom);
-         console.log(map.getZoom());
-         // initialize osm tile layer
-         var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        console.log("loading dm map...");
+        // set view to batangas
+        let lat = 13.882406389460293;
+        let long = 121.23650234971542;
+        let zoom = 11;
+
+        // initialize map
+        let dmap = L.map(`dm-map-container-${strDisease}`).setView([lat, long], zoom);
+        console.log(dmap.getZoom());
+        // initialize osm tile layer
+        let dosm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
- 
-         var carto = L.tileLayer(
-            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            {
-              attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(dmap);
+
+        let dcarto = L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             }
-          ).addTo(map);
- 
-         console.log("dm map loaded");
+        ).addTo(dmap);
 
-         // apply map container styling
-         $(`#dm-map-container-${strDisease}`).css("width", "100%");
-         $(`#dm-map-container-${strDisease}`).css("height", "40vh");
+        console.log("dm map loaded");
 
+        // apply map container styling
+        $(`#dm-map-container-${strDisease}`).css("width", "100%");
+        $(`#dm-map-container-${strDisease}`).css("height", "40vh");
+
+        //  get map data
+        ajaxCSRF();
+        metadata = await $.ajax({
+            type: 'POST',
+            url: `/disease-map/${strDisease}`,
+            success: function (response) {
+                return response;
+            }
+        });
+        console.log(metadata);
+        console.log(metadata.length);
+
+        // initialize layer groups
+        let farmLoc = new L.layerGroup();
+        let farmsRadius = new L.layerGroup();
+        let pigAffect = new L.layerGroup();
+        let pigRecover = new L.layerGroup();
+        let pigDied = new L.layerGroup();
+
+        let affected = [];
+        let recovered = [];
+        let died = [];
+
+        for (let i = 0; i < metadata.length; i++) {
+            console.log(i);
+            if (!(metadata[i]['loc_lat'] && metadata[i]['loc_long'])){
+                console.log(`continue ${i}`);
+                continue;
+            }
+                
+
+            let farmLat = metadata[i]['loc_lat'];
+            let farmLong = metadata[i]['loc_long'];
+            let num_pigs = metadata[i]['num_pigs_affect'];
+            let num_rec = metadata[i]['total_recovered'];
+            let num_died = metadata[i]['total_died'];
+            let date_update = metadata[i]['date_updated'];
+
+            if (!(num_pigs)){
+                num_pigs=0;
+            }
+
+            if (!(num_rec)){
+                num_rec=0;
+            }
+            if (!(num_died)){
+                num_died=0;
+            }
+
+            console.log(farmLat);
+            console.log(farmLong);
+            console.log(num_pigs);
+            console.log(num_rec);
+            console.log(num_died);
+            console.log(date_update);
+
+            degRadius = 0.0009 * 10;
+
+            let dots = []
+            while (dots.length < num_pigs) {
+                let ang = Math.random() * 2 * Math.PI;
+                let hyp = Math.sqrt(Math.random()) * degRadius;
+                let adj = Math.cos(ang) * hyp;
+                let opp = Math.sin(ang) * hyp;
+
+                let point = [farmLat + opp, farmLong + adj]
+                if (!dots.includes(point)) {
+                    affected.push(point);
+                    dots.push(point);
+                }
+            }
+
+            dots = []
+            while (dots.length < num_rec) {
+                let ang = Math.random() * 2 * Math.PI;
+                let hyp = Math.sqrt(Math.random()) * degRadius;
+                let adj = Math.cos(ang) * hyp;
+                let opp = Math.sin(ang) * hyp;
+
+                let point = [farmLat + opp, farmLong + adj]
+                if (!dots.includes(point)) {
+                    recovered.push(point);
+                    dots.push(point);
+                }
+            }
+
+            dots = []
+            while (dots.length < num_died) {
+                let ang = Math.random() * 2 * Math.PI;
+                let hyp = Math.sqrt(Math.random()) * degRadius;
+                let adj = Math.cos(ang) * hyp;
+                let opp = Math.sin(ang) * hyp;
+
+                let point = [farmLat + opp, farmLong + adj]
+                if (!dots.includes(point)) {
+                    died.push(point);
+                    dots.push(point);
+                }
+            }
+
+            farmsRadius.addLayer(new L.circle([farmLat, farmLong], {
+                radius: 1000,
+                color: '#A9A9A9',
+                weight: 0
+            })).addTo(dmap);
+
+            farmLoc.addLayer(new L.marker([farmLat, farmLong])
+                .bindTooltip(
+                    '<label class="bold-lbl">No. of pigs affected: </label>' + num_pigs + '<br>' +
+                    '<label class="bold-lbl">Recovered:</label> ' + num_rec + ' <br>' +
+                    '<label class="bold-lbl">Dead:</label> ' + num_died + ' <br>' +
+                    '<label class="bold-lbl">Last Updated:</label>' + date_update)).addTo(dmap);
+
+        }
+        console.log("affected");
+        console.log(affected);
+        console.log("recovered");
+        console.log(recovered);
+        console.log("died");
+        console.log(died);
+        affected.forEach(function (point) {
+            pigAffect.addLayer(new L.circleMarker(point, {
+                radius: 1,
+                weight: 1,
+                color: 'black'
+            })).addTo(dmap);
+        });
+        recovered.forEach(function (point) {
+            pigRecover.addLayer(new L.circleMarker(point, {
+                radius: 1,
+                weight: 1,
+                color: 'green'
+            })).addTo(dmap);
+        });
+        died.forEach(function (point) {
+            pigDied.addLayer(new L.circleMarker(point, {
+                radius: 1,
+                weight: 1,
+                color: 'red'
+            })).addTo(dmap);
+        });
+
+        let baseMaps = {
+            "OpenStreetMap": dosm,
+            "CARTO": dcarto
+        }
+
+        let overlayMaps = {
+            "Farms": farmLoc,
+            "No. of Pigs per farm": pigAffect,
+            "Recovered": pigRecover,
+            "Dead": pigDied,
+        }
+
+        L.control.layers(baseMaps, overlayMaps).addTo(dmap);
     }
 }

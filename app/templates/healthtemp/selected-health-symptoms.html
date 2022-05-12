@@ -183,23 +183,23 @@
                             <tbody>
                                 <tr>
                                     <th>Below 59 kg</td>
-                                    <td>{{ weightList.0 }}</td>
+                                    <td data-label="Below 59 kg">{{ weightList.0 }}</td>
                                 </tr>
                                 <tr>
                                     <th>60-79 kg</td>
-                                    <td>{{ weightList.1 }}</td>
+                                    <td data-label="60-79 kg">{{ weightList.1 }}</td>
                                 </tr>
                                 <tr>
                                     <th>80-99 kg</td>
-                                    <td>{{ weightList.2 }}</td>
+                                    <td data-label="80-99 kg">{{ weightList.2 }}</td>
                                 </tr>
                                 <tr>
                                     <th>100-120 kg</td>
-                                    <td>{{ weightList.3 }}</td>
+                                    <td data-label="100-120 kg">{{ weightList.3 }}</td>
                                 </tr>
                                 <tr>
                                     <th>Above 120 kg</td>
-                                    <td>{{ weightList.4 }}</td>
+                                    <td data-label="Above 120 kg">{{ weightList.4 }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -340,46 +340,48 @@
                                 <th>Last Updated</th>
                                 <th>Incident Involved</th>
                                 <th>No. of Pigs Affected</th>
-                                <th>Recovered</th>
-                                <th>Died</th>
+                                <th style="width: 12%;">Recovered</th>
+                                <th style="width: 12%;">Died</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for case in dTable %}
                             <tr>
-                                <td>{{ case.case_code }}</td>
-                                <td>{{ case.disease_name }}</td>
-                                <td>{{ case.lab_ref_no }}</td>
-                                <td>{{ case.date_updated }}</td>
-                                <td>{{ case.incid_no|stringformat:'03d' }}</td>
-                                <td class="td-num-affect">{{ case.num_pigs_affect }}</td>
-                                <td>
+                                <td data-label="Case Code">{{ case.case_code }}</td>
+                                <td data-label="Disease Name">{{ case.disease_name }}</td>
+                                <td data-label="Lab Reference">{{ case.lab_ref_no }}</td>
+                                <td data-label="Last Updated">{{ case.date_updated }}</td>
+                                <td data-label="Incident Involved">{{ case.incid_no|stringformat:'03d' }}</td>
+                                <td data-label="No. of Pigs Affected" class="td-num-affect">{{ case.num_pigs_affect }}</td>
+                                <td data-label="Recovered">
                                     <div class="flex">
                                         <p class="flex-item hideDisInfo">{{ case.total_recovered }}</p>
-                                        {% if case.max_recovered > 0 %}
-                                            <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
-                                        {% endif %}
-                                                                         
-                                        <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
-                                        <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
-                                        <input type="hidden" class="hidden-farmID" name="farmID" value="{{farm_code|stringformat:'03d'}}">
-                                        <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-bottom: 8px; display: none;">Save</button>
+                            
+                                        <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                 
+                                    </div>                                    
+                                    <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
+                                    <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
+                                    <input type="hidden" class="hidden-farmID" name="farmID" value="{{farm_code|stringformat:'03d'}}">
+                                    
+                                    <div class="flex" style="margin: 8px 0">
+                                        <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-right: 4px; display: none;">Save</button>
                                         <button class="secondary-btn-red showDisInput btn-cancel-recovered" onclick="CancelRecSave(this)">Cancel</button> 
+                                    </div>
                                     
-                                        <!-- for computing total_recovered -->
-                                        <label class="bold-lbl showDisInput">Total Recovered:</label>
-                                        <p class="flex-item hide total-rec">{{ case.total_recovered }}</p>
-                                        <p class="display-total-rec showDisInput"> </p>
-                                    
-                                    </div>  
+                                
+                                    <!-- for computing total_recovered -->
+                                    <label class="bold-lbl showDisInput">Total Recovered:</label>
+                                    <p class="flex-item hide total-rec">{{ case.total_recovered }}</p>
+                                    <p class="display-total-rec showDisInput"> </p>
 
                                 </td>
-                                <td>
+                                <td data-label="Died">
                                     <div class="flex">
                                         <p class="flex-item display-total-died">{{ case.total_died }}</p>
-                                        {% if case.max_recovered > 0 %}
+                                        
                                         <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-died">Update</button> <!-- redirect to add-mortality -->
-                                        {% endif %}
+                                       
                                     </div>
                                 </td>
                             </tr>

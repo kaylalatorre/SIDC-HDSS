@@ -1313,12 +1313,13 @@ $('.submit-reference').on('click', function(){
     // then assign the other variables
     let lab_ref = $(`#input-reference_${incid_id}`).val();
     let lab_result = $(`#input-positive_${incid_id}`).val() // 0 == positive, 1 == negative
-
+    console.log(lab_result);
+    console.log(Number("lol"));
     // check if inputs are valid
-    if(!Number(incid_id) || !Number(lab_ref) || !Number(lab_result) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)){
+    if(!Number(incid_id) || isNaN(Number(lab_ref)) || isNaN(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)){
         console.log(!Number(incid_id));
-        console.log(!Number(lab_ref));
-        console.log(!Number(lab_result));
+        console.log(isNaN(Number(lab_ref)));
+        console.log(isNaN(Number(lab_result)));
         console.log(!["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name));
         console.log("Invalid parameters were sent");
         return false;
@@ -1361,8 +1362,8 @@ function getDiseaseInfo(strDisease){
         // // for loading selected disease data
         $(`#dContent${strDisease}`).load(`/load-confirmed-cases/${strDisease}/ #dContent${strDisease}`, function (response) {
             diseaseChart(strDisease);
-            diseaseMap(strDisease);
             load_SEIRD(false, strDisease);
+            load_diseaseMap(strDisease);
             $(this).children().unwrap();
         });
         
