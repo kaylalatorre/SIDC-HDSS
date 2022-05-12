@@ -1357,12 +1357,15 @@ function getDiseaseInfo(strDisease){
         //         console.log(response);
         //     }
         // });
-
+        console.log(`LOAD ${strDisease}`);
         // // for loading selected disease data
-        $('#dContent'+strDisease).load(url + ' #dContent', function (response) {
-            console.log(response);
+        $(`#dContent${strDisease}`).load(`/load-confirmed-cases/${strDisease}/ #dContent${strDisease}`, function (response) {
+            diseaseChart(strDisease);
+            diseaseMap(strDisease);
+            load_SEIRD(false, strDisease);
             $(this).children().unwrap();
         });
+        
 
     } catch (error) {
         console.log(error);
@@ -1439,16 +1442,3 @@ $('.btn-save-recovered').on('click', function () {
 //     });
 // }
 
-/*
-    something
-*/
-function getSEIRDInput(input){
-    // console.log(input.value);
-
-    var values = {};
-    $(input).parent().parent().children().each(function(){
-        let curr = $(this).children("output[name='SEIRDOutput']");
-        values[curr.attr("id")] = curr.val();
-    });
-    console.log(values);
-}

@@ -1,76 +1,113 @@
-$(document).ready(async function () {
+/*
+    something
+*/
+function getSEIRDInput(input) {
+    // console.log(input.value);
+
+    var values = [];
+    var dname = $(input).attr("dname");
+    $(input).parent().parent().children().each(function () {
+        let curr = $(this).children("output[name='SEIRDOutput']");
+        values.push(curr.val());
+    });
+    console.log(values);
+    console.log(dname);
+
+    load_SEIRD(values, dname);
+
+}
+
+
+$(document).ready(function () {
     // onclick disease -- render specific disease
     // async function diseaseChart(strdisease) {
+    var incub_days = $('#outputIncubDays').val();
+    var repro_no = $('#outputReproNo').val();
+    var disease_spread = $('#outputDiseaseSpread').val();
+    var fatality = $('#outputFatality').val();
+    var death_days = $('#outputDeathDays').val();
 
-        
-        // console.log(metadata);
+    values = [incub_days, repro_no, disease_spread, fatality, death_days];
+
+    console.log(values);
+    load_SEIRD(values, "ASF");
+
+
+});
+
+async function load_SEIRD(values, strDisease) {
+
+
+    console.log(strDisease);
+    ajaxCSRF();
+    
+    let metadata = await $.ajax({
+        type: 'POST',
+        // url: '/disease-seird/ASF/',
+        url: '/disease-seird/' + strDisease + '/',
+        data: {
+            'values': values
+        },
+        success: function (res) {
+            console.log(res);
+            return res;
+        }
+    });
+    console.log(metadata);
+
+
+    // SERID
+    if ($(`#dm-seird-${strDisease}`).length) {
         console.log("loading sierd chart")
 
-        var today = new Date();
-        // console.log(today);
-        
-        var dateBefore = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
-        // console.log(dateBefore);
-    
-        var dateToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-        // console.log(dateToday);
-
-        // SERID
-        if($('#dm-seird').length) {
-            Highcharts.chart('dm-seird', {
-                chart: {
-                    type: 'spline'
-                },
+        Highcharts.chart(`dm-seird-${strDisease}`, {
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: 'SEIRD Data Chart'
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                verticalAlign: 'bottom',
+                floating: false,
+            },
+            xAxis: {
                 title: {
-                    text: 'Title'
+                    text: ''
                 },
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom',
-                    floating: false,
+            },
+            yAxis: {
+                title: {
+                    text: 'Pig Count'
                 },
-                xAxis: {
-                    title: {
-                        text: ''
-                    },
-                },
-                yAxis: {
-                    title: {
-                        text: ''
-                    },
-                },
-                tooltip: {
-                    shared: true,
-                    valueSuffix: ' units'
-                },
-                series: [{
-                    name: 'Susceptible',
-                    data: [3, 4, 3, 5, 4, 10, 12]
-                }, {
-                    name: 'Exposed',
-                    data: [0, 0, 0, 0, 3, 5, 4]
-                }, {
-                    name: 'Infected',
-                    data: [1, 2, 2, 1, 3, 5, 4]
-                }, {
-                    name: 'Recovered',
-                    data: [5, 4, 10, 9, 2, 1, 1]
-                }, {
-                    name: 'Dead',
-                    data: [2, 2, 3, 4, 4, 0, 4]
-                }]
-            })
-        }
-        
-    // };
-
-    // const tab = $('#diseasemonitor-tab');
-    // console.log(tab);
-    // console.log(tab.hasClass('active'));
-
-    // if((tab.hasClass('active'))){
-    //     console.log("!!!!!!!!!!!!!!!!!!!!!");
-        
-    // }
-});
+            },
+            tooltip: {
+                shared: true,
+                valueSuffix: ' units'
+            },
+            series: [{
+                name: 'Total',
+                data: metadata[0],
+                dashStyle: 'Dash',
+                zIndex: 0
+            }, {
+                name: 'Susceptible',
+                data: metadata[1]
+            }, {
+                name: 'Exposed',
+                data: metadata[2]
+            }, {
+                name: 'Infected',
+                data: metadata[3]
+            }, {
+                name: 'Recovered',
+                data: metadata[4]
+            }, {
+                name: 'Dead',
+                data: metadata[5]
+            }]
+        })
+    }
+}
