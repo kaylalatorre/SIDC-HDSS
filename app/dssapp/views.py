@@ -1100,24 +1100,39 @@ def load_diseaseMap(request, strDisease):
         'loc_long',
         'loc_lat',
         'num_pigs_affect',
-        'date_updated')
+        )
 
-    dTable = []
-    dTable.append(strDisease)
-
-    cases = []
+    cases = {}
     casesList = []
     for case in casesQry:
         if case['ref_disease_case_id'] not in casesList:
             casesList.append(case['ref_disease_case_id'])
-            cases.append(case)
+            try:
+                existingCase = cases[str(
+                        [case['loc_lat'], case['loc_long']]
+                    )]
+                existingCase['caseIDs'].append("{:03d}".format(case['ref_disease_case_id']))
+                existingCase['total_died'] += case['total_died']
+                existingCase['total_recovered'] += case['total_recovered']
+                existingCase['num_pigs_affect'] += case['num_pigs_affect']
+            except:
+                cases[str(
+                        [case['loc_lat'], case['loc_long']]
+                    )]={
+                        'caseIDs':["{:03d}".format(case['ref_disease_case_id'])],
+                        'loc_lat': case['loc_lat'],
+                        'loc_long': case['loc_long'],
+                        'total_died': case['total_died'],
+                        'total_recovered': case['total_recovered'],
+                        'num_pigs_affect': case['num_pigs_affect']
+                    }
+    
 
 
+    # debug(cases)
+    # debug(list(cases.values()))
 
-    # append data to return (table, SEIRD inputs)
-    debug(cases)
-
-    return JsonResponse(cases, safe=False) # for disease monitoring dashboard contents
+    return JsonResponse(list(cases.values()), safe=False) # for disease monitoring dashboard contents
 
 def load_diseaseChart(request, strDisease):
 
