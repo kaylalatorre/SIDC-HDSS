@@ -12,10 +12,10 @@ from django.contrib.auth.models import auth, User, Group
 # for ending User session
 from django.contrib.auth import logout
 
-
-# TEST: importing views from cross-app folder
+# for importing views from cross-app folder
 from farmsapp.views import dashboard_view, techFarms
 from dssapp.views import dashboard_SusCases, diseaseMonitoring
+
 def debug(m):
     print("------------------------[DEBUG]------------------------")
     print(m)

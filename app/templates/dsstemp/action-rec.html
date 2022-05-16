@@ -27,24 +27,24 @@
             </div>
             <div class="ar-item">
                 <label for="ar-mortality-rate">Mortality Rate</label>
-                <p id="ar-mortality-rate" class="h1">4%</p>
+                <p id="ar-mortality-rate" class="h1">{{aStats.ave_mort_rate}}%</p>
             </div>
             <div class="ar-item">
                 <label for="ar-internal-rate">Int. Biosecurity Rate</label>
-                <p id="ar-internal-rate" class="h1">94%</p>
+                <p id="ar-internal-rate" class="h1">{{aStats.ave_intbio}}%</p>
             </div>
             <div class="ar-item">
                 <label for="ar-external-rate">Ext. Biosecurity Rate</label>
-                <p id="ar-external-rate" class="h1">94%</p>
+                <p id="ar-external-rate" class="h1">{{aStats.ave_extbio}}%</p>
             </div>
             <div class="ar-item">
                 <label for="ar-incid">Active Incidents</label>
-                <p id="ar-incid" class="h1">5</p>
+                <p id="ar-incid" class="h1">{{aStats.total_active}}</p>
             </div>
             <div class="ar-item-x">
                 <label for="ar-disease">Confirmed Disease Cases</label>
-                <p id="ar-disease" class="h1">2</p>
-                <div><a href="/disease-monitoring" class="button secondary-btn">View Disease Monitoring</a></div>
+                <p id="ar-disease" class="h1">{{aStats.total_dcases}}</p>
+                <div><a href="/disease-monitoring/ASF" class="button secondary-btn">View Disease Monitoring</a></div>
             </div>
         </div>
         <div>

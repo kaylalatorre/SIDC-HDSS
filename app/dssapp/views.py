@@ -45,6 +45,10 @@ from django.utils.timezone import (
 from scipy.integrate import odeint
 import numpy as np
 
+# for importing function views from cross-app folder
+from farmsapp.views import computeBioscore
+from healthapp.views import compute_MortRate
+
 def debug(m):
     """
     For debugging purposes
@@ -1219,7 +1223,66 @@ def load_diseaseChart(request, strDisease):
     
 
 def actionRecommendation(request):
-    return render(request, 'dsstemp/action-rec.html')
+    """
+    function for Action Recommendation page containing:
+    (1) Farm statistics overview
+        1.1) ave. internal biosec score
+        1.2) ave. external biosec score
+        1.3) ave. mortality rate
+        1.4) total incident cases (active)
+        1.5) total confirmed disease cases
+    (2) Set threshold values
+    (3) Data for analysis and recommendations table
+    """
+
+    # Get Farm details 
+    farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
+        intbioID = F("intbio__id"),
+        extbioID = F("extbio__id"),
+        ).values(
+            "id",
+            "intbioID",
+            "extbioID",
+            ).order_by("id").all()
+
+    if not farmQry.exists(): 
+        messages.error(request, "No farm details found.", extra_tags="action-rec")
+        # return render(request, 'dsstemp/action-rec.html', {})
+
+    ave_intbio = 0
+    ave_extbio = 0
+    ave_mortRate = 0
+    total_active = 0
+    total_dcases = 0
+    for f in farmQry:
+        # (1.1, 1.2) for int and ext biosec scores per Farm (total)
+        biosec_score = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
+
+        ave_intbio += biosec_score[0]
+        ave_extbio += biosec_score[1]
+
+        # (1.3) for mortality rate per Farm (total)
+        ave_mortRate += compute_MortRate(f["id"], None)
+
+        # get latest version of Pigpen
+        latestPP = Pigpen_Group.objects.filter(ref_farm_id=f["id"]).order_by("-date_added").first()
+        # (1.4) for Hog_Symptoms records with "Active" status (total)
+        total_active += Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
+
+        # (1.5) for Confirmed Disease Cases (total) 
+        # TODO: for all diseases or filtered per disease?
+        total_dcases += Disease_Case.objects.filter(incid_case__ref_farm=f["id"]).count()
+
+
+    actionStats = {
+        "ave_intbio": round((ave_intbio / len(farmQry)), 2),
+        "ave_extbio": round((ave_extbio / len(farmQry)), 2),
+        "ave_mort_rate": round((ave_mortRate / len(farmQry)), 2),
+        "total_active": total_active,
+        "total_dcases": total_dcases,
+    }
+
+    return render(request, 'dsstemp/action-rec.html', {"aStats": actionStats})
 
 
 def derivSEIRD(y, t, N, beta, gamma, delta, alpha, rho):
