@@ -810,7 +810,7 @@ def addFarm(request):
     areaQry = Area.objects.filter(tech_id=techID)
 
     if request.method == 'POST':
-        print("TEST LOG: Form has POST method") 
+        print("addFarm: Form has POST method") 
         print(request.POST)
 
         areaName = request.POST.get("input-area", None)
@@ -855,15 +855,17 @@ def addFarm(request):
                         # if empty, new raiser is inputted; validate django hog raiser form
                         if hogRaiserForm.is_valid():
                             hogRaiser = hogRaiserForm.save(commit=False)
-                            hogRaiser.save()
+                            hogRaiser.contact_no = str("63") + str(hogRaiser.contact_no)
+                            # print(hogRaiser.contact_no)
 
-                            print("TEST LOG: Added new raiser")
+                            hogRaiser.save()
+                            print("addFarm: Added new raiser")
 
                             # save raiser ID to farm
                             farm.hog_raiser = hogRaiser
                         
                         else:
-                            print("TEST LOG: Hog Raiser Form not valid")
+                            print("addFarm: Hog Raiser Form not valid. No input added.")
                             print(hogRaiserForm.errors)
 
                             messages.error(request, "Error adding farm. " + str(hogRaiserForm.errors))
@@ -924,7 +926,7 @@ def addFarm(request):
                     farm.id = farmID
 
                     farm.save()
-                    print("TEST LOG: Added new farm")
+                    print("addFarm: Added new farm")
                     messages.success(request, "Farm " + str(farm.id) + " has been successfully added.", extra_tags='add-farm' + str(farm.id))
 
                     # get recently created internal and external biosec IDs and update ref_farm_id
@@ -932,10 +934,7 @@ def addFarm(request):
                     internalBiosec.ref_farm_id = farm
 
                     internalBiosec.save()
-                    print("TEST LOG: Added new internal biosec")
-
                     externalBiosec.save()
-                    print("TEST LOG: Added new external biosec")
 
                     if pigpenRowForm.is_valid():
                         
@@ -995,7 +994,7 @@ def addFarm(request):
                         return redirect('/', {'farm.id': str(farm.id)})
 
                     else:
-                        print("TEST LOG: Pigpen Measures Form not valid")
+                        print("addFarm: Pigpen Measures Form not valid")
                         print(pigpenRowForm.errors)
 
                         messages.error(request, "Error adding farm. " + str(pigpenRowForm.errors))
@@ -1007,13 +1006,13 @@ def addFarm(request):
                 messages.error(request, "Farm location not obtained.")
         
         else:
-            print("TEST LOG: Farm Form not valid")
+            print("addFarm: Farm Form not valid")
             print(farmForm.errors)
 
             messages.error(request, "Error adding farm. " + str(farmForm.errors))
      
     else:
-        print("TEST LOG: Form is not a POST method")
+        print("addFarm: Form is not a POST method")
 
         # if the forms have no input yet, only display empty forms
         hogRaiserForm       = HogRaiserForm()
