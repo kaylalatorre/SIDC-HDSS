@@ -12,7 +12,8 @@ from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
     Pigpen_Group, Pigpen_Row, Activity,
-    Disease_Case, Disease_Record, SEIRD_Input)
+    Disease_Case, Disease_Record, SEIRD_Input,
+    SEIRD_Range, Action_Recommendation, Threshold_Values)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -1061,12 +1062,31 @@ def diseaseMonitoring(strDisease):
             # debug(casesList)
     dTable.append(cases)
     # debug(dTable)
+
     # Get the parameter values of the disease for the SEIRD model from the database 
-    inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).first()
+    inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).select_related('seird_range').annotate(
+        min_incub_days          = F("seird_range__min_incub_days"),
+        max_incub_days          = F("seird_range__max_incub_days"),
+        
+        min_reproduction_num    = F("seird_range__min_reproduction_num"),
+        max_reproduction_num    = F("seird_range__max_reproduction_num"),
+        
+        min_days_can_spread     = F("seird_range__min_days_can_spread"),
+        max_days_can_spread     = F("seird_range__max_days_can_spread"),
+        
+        min_fatality_rate       = F("seird_range__min_fatality_rate"),
+        max_fatality_rate       = F("seird_range__max_fatality_rate"),
+        
+        min_days_til_death      = F("seird_range__min_days_til_death"),
+        max_days_til_death      = F("seird_range__max_days_til_death"),
+
+        ).first()
+    # debug(inputQry)
 
     # append data to return (table, SEIRD inputs) 
     data.append(dTable)
     data.append(inputQry)
+    debug(strDisease + "Data")
     debug(data)
 
     return data # for disease monitoring dashboard contents
@@ -1213,7 +1233,6 @@ def load_diseaseChart(request, strDisease):
     data.append(dChart)
     # debug(data)
 
-    # load_diseaseSeird()
 
     return JsonResponse(data, safe=False)
     
@@ -1248,8 +1267,8 @@ def load_diseaseSeird(request, strDisease):
     # No. of Days until Death          -- [4] 1 / rho
     # ---------------------------------------------
     """
-    debug("SEIRD")
-    debug(strDisease)
+    # debug("SEIRD")
+    # debug(strDisease)
     # compute for total SIDC pig population
     farmQry = Farm.objects.aggregate(Sum("total_pigs"))
     N = farmQry["total_pigs__sum"]
@@ -1257,8 +1276,8 @@ def load_diseaseSeird(request, strDisease):
     # get initial parameters from frontend inputs
     sValues = []
     sValues = request.POST.getlist("values[]")
-    debug("VALUES")
-    debug(sValues)
+    # debug("VALUES")
+    # debug(sValues)
     try:
         sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
         debug(sParam)
@@ -1272,7 +1291,7 @@ def load_diseaseSeird(request, strDisease):
             params.days_til_death
         ]
 
-    debug(sParam)
+    # debug(sParam)
     # NOTE: CODE BASIS
     # D = 4.0 # infections lasts four days
     # gamma = 1.0 / D

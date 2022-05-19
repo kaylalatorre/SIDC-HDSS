@@ -1782,6 +1782,7 @@ def formsApproval(request):
                 activityObject = {
                         "id" : act.id,
                         "date_added" : act.date_added,
+                        "code" : act.code,
                         "status" : status,
                         "prepared_by" : str(request.user.first_name) + " " + str(request.user.last_name),
                         "farmID" : int(act.ref_farm_id) }
@@ -1792,6 +1793,7 @@ def formsApproval(request):
             activityObject = {
                 "id" : act.id,
                 "date_added" : act.date_added,
+                "code" : act.code,
                 "status" : status,
                 "prepared_by" : getTech["name"],
                 "farmID" : int(act.ref_farm_id) }
@@ -2044,7 +2046,7 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
     dateToday = datetime.now(timezone.utc)
 
     if request.method == 'POST':
-        # print(request.POST)
+        # debug(request.POST)
         numActivities = int(len(request.POST)/6)
 
         # pass all values into each of the array activityList
@@ -2059,12 +2061,17 @@ def resubmitActivityForm(request, activityFormID, farmID, activityDate):
             actNumPigsInv = str('activityList[') + str(i) + str('][num_pigs_inv]')
             actRemarks = str('activityList[') + str(i) + str('][remarks]')
 
+            if request.POST.get(actNumPigsInv, default=None) == '':
+                num_pigs_inv = 0
+            else :
+                num_pigs_inv =  request.POST.get(actNumPigsInv, default=None)
+
             activityObject = {
                 "date" : request.POST.get(actDate, default=None),
                 "trip_type" : request.POST.get(actType, default=None),
                 "time_arrival" : request.POST.get(actArrival, default=None),
                 "time_departure" : request.POST.get(actDeparture, default=None),
-                "num_pigs_inv" : request.POST.get(actNumPigsInv, default=None),
+                "num_pigs_inv" : num_pigs_inv,
                 "remarks" : request.POST.get(actRemarks, default=None),
             }
 
@@ -2129,7 +2136,7 @@ def addActivity(request, farmID):
     
     if request.method == 'POST':
         # print("TEST LOG: Add Activity has POST method") 
-        # print(request.POST)
+        # debug(request.POST)
 
         activityForm = ActivityForm(request.POST)
 
@@ -2138,17 +2145,24 @@ def addActivity(request, farmID):
 
         i = 0
         for date in request.POST.getlist('date', default=None):
+            if request.POST.getlist('num_pigs_inv', default=None)[i] == '' :
+                num_pigs_inv = 0
+            else :
+                num_pigs_inv = request.POST.getlist('num_pigs_inv', default=None)[i]
+
             activityObject = {
                 "date" : request.POST.getlist('date', default=None)[i],
                 "trip_type" : request.POST.getlist('trip_type', default=None)[i],
                 "time_arrival" : request.POST.getlist('time_arrival', default=None)[i],
                 "time_departure" : request.POST.getlist('time_departure', default=None)[i],
-                "num_pigs_inv" : request.POST.getlist('num_pigs_inv', default=None)[i],
+                "num_pigs_inv" : num_pigs_inv,
                 "remarks" : request.POST.getlist('remarks', default=None)[i],
             }
             
             activityList.append(activityObject)
             i += 1
+
+        # debug(activityList)
         
         if activityForm.is_valid():
 

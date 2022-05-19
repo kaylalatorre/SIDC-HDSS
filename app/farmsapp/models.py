@@ -310,6 +310,7 @@ class Mem_Announcement(models.Model):
 # SEIRD INPUT Table
 class SEIRD_Input(models.Model):
     disease_name        = models.CharField(max_length=50)
+    seird_range         = models.ForeignKey('SEIRD_Range', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
     
     incub_days          = models.IntegerField()
     reproduction_num    = models.FloatField()
@@ -320,7 +321,6 @@ class SEIRD_Input(models.Model):
 
 # SEIRD RANGE
 class SEIRD_Range(models.Model):
-    seird_input             = models.ForeignKey('SEIRD_Input', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
 
     min_incub_days          = models.IntegerField()
     max_incub_days          = models.IntegerField()
