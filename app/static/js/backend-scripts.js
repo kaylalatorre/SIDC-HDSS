@@ -1144,18 +1144,22 @@ function addCase(farmID) {
         url: '/post-addCase/' + farmID, 
         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
         success: function (response) {
-            
+
             if (response.status_code === "200"){
                 url = "/selected-health-symptoms/" + farmID;
-                location.href = url;          
+                location.href = url;       
             } 
             else {
-                console.log("ERROR [" + response.status_code + "]: " + response.error);
+                console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
+                url = "/add-case/" + farmID;
+                location.href = url;  
             }
 
         },
         error: function (res){
-            console.log("ERROR [" + res.status_code + "]: " +  res.error);
+            console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
+            url = "/add-case/" + farmID;
+            location.href = url;  
         }
     });
 }

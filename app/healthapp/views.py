@@ -1123,14 +1123,9 @@ def post_addCase(request, farmID):
                     symptomsArr.append(True)
                 else:
                     symptomsArr.append(False)
-            
 
             # Array length must be 22 for the fields in Symptoms list.
-            # debug("sympArr len(): " + str(len(symptomsArr)))
-            # debug("num_pigsAffected: " + str(num_pigsAffected))
-
-
-            if len(symptomsArr) > 0 and int(num_pigsAffected) > 0: # (SUCCESS) Symptoms list is complete, proceed to add in db
+            if len(symptomsArr) > 0 and int(num_pigsAffected) > 0 and symptomsArr.count(False) < 22: # (SUCCESS) Symptoms list is complete, proceed to add in db
                 
                 # init Hog_Symptoms and Farm models
                 incidObj = Hog_Symptoms() 
@@ -1212,10 +1207,10 @@ def post_addCase(request, farmID):
                     messages.error(request, "Input only no. of pigs within total hogs of Farm.", extra_tags='add-incidCase')
                     return JsonResponse({"error": "Input only no. of pigs within total hogs of Farm.", "status_code":"400"}, status=400)
             
-            else: # (ERROR) No selected input/s for Incident Case.
-                debug("ERROR: No selected input/s for Incident Case.")
-                messages.error(request, "No selected input/s for Incident Case.", extra_tags='add-incidCase')
-                return JsonResponse({"error": "No selected input/s for Incident Case.", "status_code":"400"}, status=400)
+            else: # (ERROR) No checked symptoms for Incident Case, no. pigs affected is 0
+                debug("ERROR: Incomplete input/s for Incident Case.")
+                messages.error(request, "Incomplete input/s for Incident Case.", extra_tags='add-incidCase')
+                return JsonResponse({"error": "Incomplete input/s for Incident Case.", "status_code":"400"}, status=400)
         
         else: # (ERROR) Invalid farmID
             debug("ERROR: Invalid/None-type farmID from parameter.")
