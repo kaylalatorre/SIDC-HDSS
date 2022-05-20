@@ -1270,7 +1270,6 @@ def actionRecommendation(request):
         total_active += Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(pigpen_grp_id=latestPP.id).filter(report_status="Active").count()
 
         # (1.5) for Confirmed Disease Cases (total) 
-        # TODO: for all diseases or filtered per disease?
         total_dcases += Disease_Case.objects.filter(incid_case__ref_farm=f["id"]).count()
 
 

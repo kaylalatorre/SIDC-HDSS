@@ -1033,21 +1033,22 @@ function computeTotalRec(currRow){
 
     var num_rec = row.getElementsByClassName('input-num-rec')[0].value;
     var total_rec = row.getElementsByClassName('total-rec')[0].innerHTML;
-    var displayRec = row.getElementsByClassName('display-total-rec')[0];
-    // console.log(num_rec);
-    // console.log(total_rec);
+    var displayRec = row.parentNode.nextElementSibling.getElementsByClassName('display-total-rec')[0];
+    // console.log("num_rec: " + num_rec);
+    // console.log("total_rec: " + total_rec);
 
     var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
-    // console.log(new_total_rec);
+    // console.log("new_total_rec: " + new_total_rec);
 
+    // console.log(displayRec);
     displayRec.innerHTML = String(new_total_rec);
 
     // setting input max
-    var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
+    var num_pigs_affect = row.parentNode.childNodes[11].innerHTML;
     var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
-    // console.log(num_pigs_affect);
-    // console.log(total_died);
-
+    // console.log("num_pigs_affect: " + num_pigs_affect);
+    // console.log("total_died: " + total_died);
+    
     var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
 
     $(".input-num-rec"). attr({
