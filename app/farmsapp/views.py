@@ -202,22 +202,67 @@ def selectedFarm(request, farmID):
     :type farmID: integer
     """
 
-    # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
-        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
-        raiser_mem_code=F("hog_raiser__mem_code"),
-        contact=F("hog_raiser__contact_no"),
-        length=F("wh_length"),
-        width=F("wh_width"),
-        farm_area   = F("area__area_name"),
-        waste_mgt   = F("intbio__waste_mgt"),
-        isol_pen    = F("intbio__isol_pen"),
-        bird_proof  = F("extbio__bird_proof"),
-        perim_fence = F("extbio__perim_fence"),
-        foot_dip    = F("intbio__foot_dip"),
-        fiveh_m_dist = F("extbio__fiveh_m_dist"))
+    # collect pigpens
+    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
 
-    # pass all data into an object
+    pen_no = 1
+    pigpenList = []
+    total_pigs = 0
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads
+        }
+        
+        total_pigs += pen.num_heads
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+    # get final weight slip
+    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=latestPigpen.id).last()
+
+
+    # collect activities
+    if final_weight is not None:
+        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
+    
+        # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(latestPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+            raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+            raiser_mem_code = F("hog_raiser__mem_code"),
+            contact         = F("hog_raiser__contact_no"),
+            length          = F("wh_length"),
+            width           = F("wh_width"),
+            farm_area       = F("area__area_name"),
+            waste_mgt       = F("intbio__waste_mgt"),
+            isol_pen        = F("intbio__isol_pen"),
+            bird_proof      = F("extbio__bird_proof"),
+            perim_fence     = F("extbio__perim_fence"),
+            foot_dip        = F("intbio__foot_dip"),
+            fiveh_m_dist    = F("extbio__fiveh_m_dist"))
+    
+    else:
+        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, now())).all().order_by('-date')
+
+        # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(latestPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+            raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+            raiser_mem_code = F("hog_raiser__mem_code"),
+            contact         = F("hog_raiser__contact_no"),
+            length          = F("wh_length"),
+            width           = F("wh_width"),
+            farm_area       = F("area__area_name"),
+            waste_mgt       = F("intbio__waste_mgt"),
+            isol_pen        = F("intbio__isol_pen"),
+            bird_proof      = F("extbio__bird_proof"),
+            perim_fence     = F("extbio__perim_fence"),
+            foot_dip        = F("intbio__foot_dip"),
+            fiveh_m_dist    = F("extbio__fiveh_m_dist"))
+
+    # pass all data from Qry into an object
     selectedFarm = qry.values(
         "id",
         "raiser",
@@ -242,28 +287,6 @@ def selectedFarm(request, farmID):
         "foot_dip",
         "fiveh_m_dist",
     ).first()
-
-    # collect pigpens
-    latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
-    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
-
-    pen_no = 1
-    pigpenList = []
-    total_pigs = 0
-    for pen in pigpenQry:
-        pigpenObj = {
-            'pen_no' : pen_no,
-            'length' : pen.length,
-            'width' : pen.width,
-            'num_heads' : pen.num_heads
-        }
-        
-        total_pigs += pen.num_heads
-        pigpenList.append(pigpenObj)
-        pen_no += 1
-
-    # get final weight slip
-    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=latestPigpen.id).last()
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -291,11 +314,6 @@ def selectedFarm(request, farmID):
         
         versionList.append(verObj)  
 
-    # collect activities
-    if final_weight is not None:
-        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
-    else:
-        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, now())).all().order_by('-date')
 
     actList = []
 
@@ -336,20 +354,66 @@ def selectedFarmVersion(request, farmID, farmVersion):
     :type farmID: integer
     """
 
-    # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-    qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
-        raiser=Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
-        raiser_mem_code=F("hog_raiser__mem_code"), 
-        contact=F("hog_raiser__contact_no"),
-        length=F("wh_length"),
-        width=F("wh_width"),
-        farm_area   = F("area__area_name"),
-        waste_mgt   = F("intbio__waste_mgt"),
-        isol_pen    = F("intbio__isol_pen"),
-        bird_proof  = F("extbio__bird_proof"),
-        perim_fence = F("extbio__perim_fence"),
-        foot_dip    = F("intbio__foot_dip"),
-        fiveh_m_dist = F("extbio__fiveh_m_dist"))
+    # collect pigpens
+    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
+
+    pen_no = 1
+    pigpenList = []
+    total_pigs = 0
+    for pen in pigpenQry:
+        pigpenObj = {
+            'pen_no' : pen_no,
+            'length' : pen.length,
+            'width' : pen.width,
+            'num_heads' : pen.num_heads }
+        
+        total_pigs += pen.num_heads
+        pigpenList.append(pigpenObj)
+        pen_no += 1
+
+
+    # get final weight slip
+    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=selectedPigpen.id).last()
+
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
+
+
+    # collect activities
+    if final_weight is not None:
+        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
+
+        # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(selectedPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+            raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+            raiser_mem_code = F("hog_raiser__mem_code"),
+            contact         = F("hog_raiser__contact_no"),
+            length          = F("wh_length"),
+            width           = F("wh_width"),
+            farm_area       = F("area__area_name"),
+            waste_mgt       = F("intbio__waste_mgt"),
+            isol_pen        = F("intbio__isol_pen"),
+            bird_proof      = F("extbio__bird_proof"),
+            perim_fence     = F("extbio__perim_fence"),
+            foot_dip        = F("intbio__foot_dip"),
+            fiveh_m_dist    = F("extbio__fiveh_m_dist"))
+    else:
+        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, now())).all().order_by('-date')
+
+        # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(selectedPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+            raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
+            raiser_mem_code = F("hog_raiser__mem_code"),
+            contact         = F("hog_raiser__contact_no"),
+            length          = F("wh_length"),
+            width           = F("wh_width"),
+            farm_area       = F("area__area_name"),
+            waste_mgt       = F("intbio__waste_mgt"),
+            isol_pen        = F("intbio__isol_pen"),
+            bird_proof      = F("extbio__bird_proof"),
+            perim_fence     = F("extbio__perim_fence"),
+            foot_dip        = F("intbio__foot_dip"),
+            fiveh_m_dist    = F("extbio__fiveh_m_dist"))
 
     # pass all data into an object
     selectedFarm = qry.values(
@@ -377,29 +441,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         "fiveh_m_dist",
     ).first()
    
-    # collect pigpens
-    selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
-    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
 
-    pen_no = 1
-    pigpenList = []
-    total_pigs = 0
-    for pen in pigpenQry:
-        pigpenObj = {
-            'pen_no' : pen_no,
-            'length' : pen.length,
-            'width' : pen.width,
-            'num_heads' : pen.num_heads }
-        
-        total_pigs += pen.num_heads
-        pigpenList.append(pigpenObj)
-        pen_no += 1
-
-
-    # get final weight slip
-    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=selectedPigpen.id).last()
-
-    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -427,11 +469,6 @@ def selectedFarmVersion(request, farmID, farmVersion):
         
         versionList.append(verObj)  
 
-    # collect activities
-    if final_weight is not None:
-        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
-    else:
-        actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, now())).all().order_by('-date')
 
     actList = []
 
