@@ -224,13 +224,21 @@ def selectedFarm(request, farmID):
     # get final weight slip
     final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=latestPigpen.id).last()
 
+    # convert Date range to datetime type; then to a timezone-aware datetime
+    sDate = make_aware(datetime.combine(latestPigpen.date_added, datetime.min.time()))
+    debug("sDate: " + str(sDate) + " TYPE -- " + str(type(sDate)))
 
     # collect activities
     if final_weight is not None:
+        #--- DEBUG
+        eDate = make_aware(datetime.combine(final_weight.date_filed, datetime.min.time()))
+        debug("eDate: " + str(eDate) + " TYPE -- " + str(type(eDate)))
+        #---
+
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
     
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(latestPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -245,10 +253,12 @@ def selectedFarm(request, farmID):
             fiveh_m_dist    = F("extbio__fiveh_m_dist"))
     
     else:
+
+        eDate = now()
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, now())).all().order_by('-date')
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(latestPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -261,6 +271,8 @@ def selectedFarm(request, farmID):
             perim_fence     = F("extbio__perim_fence"),
             foot_dip        = F("intbio__foot_dip"),
             fiveh_m_dist    = F("extbio__fiveh_m_dist"))
+
+        # debug(str(qry.query))
 
     # pass all data from Qry into an object
     selectedFarm = qry.values(
@@ -287,6 +299,7 @@ def selectedFarm(request, farmID):
         "foot_dip",
         "fiveh_m_dist",
     ).first()
+
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -331,15 +344,13 @@ def selectedFarm(request, farmID):
 
     # collect biosecurity checklists
     # Select Biochecklist with latest date
-    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
-    
+    currbioQuery = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('intbio').select_related('extbio').all()
 
     # Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
 
-
     # Get all biosecID, last_updated in extbio under a Farm
-    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).filter(last_updated__range=(sDate, eDate)).only(
         'last_updated',
     ).order_by('-last_updated')
 
@@ -378,13 +389,18 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
+    sDate = make_aware(datetime.combine(selectedPigpen.date_added, datetime.min.time()))
+    debug("sDate: " + str(sDate) + " TYPE -- " + str(type(sDate)))
 
     # collect activities
     if final_weight is not None:
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
 
+        eDate = make_aware(datetime.combine(final_weight.date_filed, datetime.min.time()))
+        debug("eDate: " + str(eDate) + " TYPE -- " + str(type(eDate)))
+
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(selectedPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -400,8 +416,13 @@ def selectedFarmVersion(request, farmID, farmVersion):
     else:
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, now())).all().order_by('-date')
 
+        #--- DEBUG
+        eDate = now()
+        debug("eDate: " + str(eDate) + " TYPE -- " + str(type(eDate)))
+        #---
+
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(selectedPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -414,6 +435,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
             perim_fence     = F("extbio__perim_fence"),
             foot_dip        = F("intbio__foot_dip"),
             fiveh_m_dist    = F("extbio__fiveh_m_dist"))
+
 
     # pass all data into an object
     selectedFarm = qry.values(
@@ -441,7 +463,6 @@ def selectedFarmVersion(request, farmID, farmVersion):
         "fiveh_m_dist",
     ).first()
    
-
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -486,15 +507,13 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     # collect biosecurity checklists
     # Select Biochecklist with latest date
-    currbioQuery = Farm.objects.filter(id=farmID).select_related('intbio').select_related('extbio').all()
+    currbioQuery = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('intbio').select_related('extbio').all()
     
-
     # Get latest instance of Biochecklist
     currbioObj = currbioQuery.first()
 
-
     # Get all biosecID, last_updated in extbio under a Farm
-    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).only(
+    extQuery = ExternalBiosec.objects.filter(ref_farm_id=farmID).filter(last_updated__range=(sDate, eDate)).only(
         'last_updated',
     ).order_by('-last_updated')
 
