@@ -1147,15 +1147,9 @@ function addCase(farmID) {
         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
         success: function (response) {
 
-            if (response.status_code === "200"){
-                url = "/selected-health-symptoms/" + farmID;
-                location.href = url;       
-            } 
-            else {
-                console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
-                url = "/add-case/" + farmID;
-                location.href = url;  
-            }
+            // console.log("ADD CASE: SUCCESS 200");
+            url = "/selected-health-symptoms/" + farmID;
+            location.href = url;       
 
         },
         error: function (res){

@@ -1227,6 +1227,7 @@ def post_addCase(request, farmID):
                     else:
                         messages.success(request, "New incident report dated " + df + " has been successfully added.", extra_tags='add-incidCase')
                     
+                    debug("BACKEND   -------   ADD CASE: SUCCESS 200")
                     return JsonResponse({"status_code":"200"}, status=200)
                     # return redirect('/selected-health-symptoms/' + str(farmID))
         
