@@ -230,7 +230,7 @@ def selectedFarm(request, farmID):
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
     
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(latestPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(latestPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -248,7 +248,7 @@ def selectedFarm(request, farmID):
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, now())).all().order_by('-date')
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(latestPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(latestPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -384,7 +384,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(selectedPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(selectedPigpen.date_added, final_weight.date_filed)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -401,7 +401,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(selectedPigpen.date_added, now())).all().order_by('-date')
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__date__range=(selectedPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(selectedPigpen.date_added, now())).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),

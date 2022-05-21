@@ -375,9 +375,9 @@
                                 <td data-label="Recovered">
                                     <div class="flex">
                                         <p class="flex-item hideDisInfo">{{ case.total_recovered }}</p>
-                            
-                                        <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
-                                 
+                                        {% if case.max_recovered > 0 %}
+                                            <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
+                                        {% endif %}
                                     </div>                                    
                                     <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
                                     <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
@@ -392,15 +392,15 @@
                                     <!-- for computing total_recovered -->
                                     <label class="bold-lbl showDisInput">Total Recovered:</label>
                                     <p class="flex-item hide total-rec">{{ case.total_recovered }}</p>
-                                    <p class="display-total-rec showDisInput"> </p>
+                                    <p class="display-total-rec"> </p>
 
                                 </td>
                                 <td data-label="Died">
                                     <div class="flex">
                                         <p class="flex-item display-total-died">{{ case.total_died }}</p>
-                                        
-                                        <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-died">Update</button> <!-- redirect to add-mortality -->
-                                       
+                                        {% if case.max_recovered > 0 %}
+                                            <button value="{{farm_code|stringformat:'03d'}}" onclick="addMortalityPage(this)" class="secondary-btn btn-died">Update</button> <!-- redirect to add-mortality -->
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
