@@ -202,6 +202,9 @@ def selectedFarm(request, farmID):
     :type farmID: integer
     """
 
+    # get total num. of pigs in farm
+    farmPigs = Farm.objects.filter(id=farmID).only("total_pigs").first()
+
     # collect pigpens
     latestPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=latestPigpen.id).order_by("id")
@@ -229,7 +232,7 @@ def selectedFarm(request, farmID):
     debug("sDate: " + str(sDate) + " TYPE -- " + str(type(sDate)))
 
     # collect activities
-    if final_weight is not None:
+    if farmPigs.total_pigs == 0:
         #--- DEBUG
         eDate = make_aware(datetime.combine(final_weight.date_filed, datetime.min.time()))
         debug("eDate: " + str(eDate) + " TYPE -- " + str(type(eDate)))
@@ -238,7 +241,7 @@ def selectedFarm(request, farmID):
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, final_weight.date_filed)).all().order_by('-date')
     
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
+        qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -251,14 +254,12 @@ def selectedFarm(request, farmID):
             perim_fence     = F("extbio__perim_fence"),
             foot_dip        = F("intbio__foot_dip"),
             fiveh_m_dist    = F("extbio__fiveh_m_dist"))
-    
     else:
-
         eDate = now()
         actQuery = Activity.objects.filter(ref_farm_id=farmID).filter(is_approved=True).filter(date__range=(latestPigpen.date_added, now())).all().order_by('-date')
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
+        qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'intbio', 'extbio').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -272,7 +273,7 @@ def selectedFarm(request, farmID):
             foot_dip        = F("intbio__foot_dip"),
             fiveh_m_dist    = F("extbio__fiveh_m_dist"))
 
-        # debug(str(qry.query))
+    # debug(qry)
 
     # pass all data from Qry into an object
     selectedFarm = qry.values(
@@ -300,6 +301,7 @@ def selectedFarm(request, farmID):
         "fiveh_m_dist",
     ).first()
 
+    # debug(selectedFarm)
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -309,7 +311,7 @@ def selectedFarm(request, farmID):
         fWeight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=pen.id).last()
         # debug(fWeight.date_filed)
 
-        if latestPigpen.id == pen.id and int(selectedFarm.get('total_pigs')) == 0:
+        if latestPigpen.id == pen.id and farmPigs.total_pigs == 0:
                 verObj = { 'date_added' : pen.date_added,
                             'endDate' : fWeight.date_filed,
                             'id' : pen.id }
@@ -365,6 +367,9 @@ def selectedFarmVersion(request, farmID, farmVersion):
     :type farmID: integer
     """
 
+    # get total num. of pigs in farm
+    farmPigs = Farm.objects.filter(id=farmID).only("total_pigs").first()
+
     # collect pigpens
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
     pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=selectedPigpen.id).order_by("id")
@@ -400,7 +405,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         debug("eDate: " + str(eDate) + " TYPE -- " + str(type(eDate)))
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -422,7 +427,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         #---
 
         # get farm based on farmID; get related data from hog_raisers, extbio, and intbio
-        qry = Farm.objects.filter(id=farmID).filter(intbio__last_updated__range=(sDate, eDate)).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
+        qry = Farm.objects.filter(id=farmID).select_related('hog_raiser', 'area', 'internalbiosec', 'externalbiosec').annotate(
             raiser          = Concat('hog_raiser__fname', Value(' '), 'hog_raiser__lname'),
             raiser_mem_code = F("hog_raiser__mem_code"),
             contact         = F("hog_raiser__contact_no"),
@@ -435,7 +440,8 @@ def selectedFarmVersion(request, farmID, farmVersion):
             perim_fence     = F("extbio__perim_fence"),
             foot_dip        = F("intbio__foot_dip"),
             fiveh_m_dist    = F("extbio__fiveh_m_dist"))
-
+        
+    # debug(qry)
 
     # pass all data into an object
     selectedFarm = qry.values(
@@ -463,6 +469,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         "fiveh_m_dist",
     ).first()
    
+    # debug(selectedFarm)
 
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
@@ -472,7 +479,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
         fWeight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=pen.id).last()
         # debug(fWeight.date_filed)
 
-        if selectedPigpen.id == pen.id and int(selectedFarm.get('total_pigs')) == 0:
+        if selectedPigpen.id == pen.id and farmPigs.total_pigs == 0:
                 verObj = { 'date_added' : pen.date_added,
                             'endDate' : fWeight.date_filed,
                             'id' : pen.id }
