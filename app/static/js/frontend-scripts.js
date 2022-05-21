@@ -1084,17 +1084,18 @@ function computeTotalRec(currRow){
 
     var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
 
-    console.log(displayRec);
     displayRec.innerHTML = String(new_total_rec);
-    console.log("displayRec TOTAL: " + displayRec.innerHTML);
+    // console.log("displayRec TOTAL: " + displayRec.innerHTML);
 
     // setting input max
     var num_pigs_affect = row.parentNode.childNodes[11].innerHTML;
-    var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
-    console.log("num_pigs_affect: " + num_pigs_affect);
+    var total_died = row.parentNode.childNodes[15].getElementsByClassName('display-total-died')[0].innerHTML;
+    // console.log("num_pigs_affect: " + num_pigs_affect);
     // console.log("total_died: " + total_died);
-    
+    // console.log("total_rec: " + total_rec);
+
     var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
+    // console.log("maxInput: " + maxInput);
 
     $(".input-num-rec"). attr({
         "max" : maxInput, 
