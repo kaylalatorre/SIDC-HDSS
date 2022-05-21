@@ -125,7 +125,8 @@ class HogRaiserForm(ModelForm):
             'class' : 'form-control',
             'id' : 'input-contact',
             'name' : 'input-contact',
-            'placeholder' : 'ex. 091512345678'
+            'placeholder' : 'ex. 91512345678',
+            'maxlength' : '10'
         })
             
     class Meta:

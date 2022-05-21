@@ -12,7 +12,8 @@ from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
     Pigpen_Group, Pigpen_Row, Activity,
-    Disease_Case, Disease_Record, SEIRD_Input)
+    Disease_Case, Disease_Record, SEIRD_Input,
+    SEIRD_Range, Action_Recommendation, Threshold_Values)
 
 # for Model CRUD query functions
 from django.db.models.expressions import F, Value
@@ -982,7 +983,7 @@ def dashboard_SusCases():
                 })
             diseaseInfo['Others']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
-    debug(diseaseInfo)
+    # debug(diseaseInfo)
 
     return diseaseInfo
 
@@ -1041,7 +1042,7 @@ def diseaseMonitoring(strDisease):
 
     data = []
     # debug(request.method)
-    print(strDisease)
+    # debug(strDisease + " LOAD DISEASE TABLE")
 
     # confrimed cases
     casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
@@ -1065,13 +1066,32 @@ def diseaseMonitoring(strDisease):
             # debug(casesList)
     dTable.append(cases)
     # debug(dTable)
+
     # Get the parameter values of the disease for the SEIRD model from the database 
-    inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).first()
+    inputQry = SEIRD_Input.objects.filter(disease_name=strDisease).select_related('seird_range').annotate(
+        min_incub_days          = F("seird_range__min_incub_days"),
+        max_incub_days          = F("seird_range__max_incub_days"),
+        
+        min_reproduction_num    = F("seird_range__min_reproduction_num"),
+        max_reproduction_num    = F("seird_range__max_reproduction_num"),
+        
+        min_days_can_spread     = F("seird_range__min_days_can_spread"),
+        max_days_can_spread     = F("seird_range__max_days_can_spread"),
+        
+        min_fatality_rate       = F("seird_range__min_fatality_rate"),
+        max_fatality_rate       = F("seird_range__max_fatality_rate"),
+        
+        min_days_til_death      = F("seird_range__min_days_til_death"),
+        max_days_til_death      = F("seird_range__max_days_til_death"),
+
+        ).first()
+    # debug(inputQry)
 
     # append data to return (table, SEIRD inputs) 
     data.append(dTable)
     data.append(inputQry)
-    debug(data)
+    # debug(strDisease + "Data")
+    # debug(data)
 
     return data # for disease monitoring dashboard contents
 
@@ -1087,9 +1107,8 @@ def load_ConfirmedCases(request, strDisease):
     return render(request, 'dsstemp/disease-content.html', {"disData": diseaseMonitoring(strDisease)})
 
 def load_diseaseMap(request, strDisease):
-    debug("LOAD DISEASE MAP")
+    # debug(strDisease + " LOAD DISEASE MAP")
     # debug(request.method)
-    print(strDisease)
 
     # confrimed cases
     casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
@@ -1116,10 +1135,8 @@ def load_diseaseMap(request, strDisease):
             casesList.append(case['ref_disease_case_id'])
             cases.append(case)
 
-
-
     # append data to return (table, SEIRD inputs)
-    debug(cases)
+    # debug(cases)
 
     return JsonResponse(cases, safe=False) # for disease monitoring dashboard contents
 
@@ -1127,7 +1144,7 @@ def load_diseaseChart(request, strDisease):
 
     data = []
     # debug(request.method)
-    # debug("loading charts")    
+    debug(strDisease + " LOAD DISEASE CHART")    
 
     dChart = {
         'confirmed': [],
@@ -1143,6 +1160,7 @@ def load_diseaseChart(request, strDisease):
         date_filed__range=(now()-timedelta(days=30), now())).annotate(
             confirmed_pigs = F("ref_disease_case__num_pigs_affect")
         ).order_by("date_filed").all()
+    # debug(dcasesQry)
 
     confirmedCtr = 0
     recoveredCtr = 0
@@ -1151,7 +1169,7 @@ def load_diseaseChart(request, strDisease):
 
     # NULL case      
     try:
-        case_currDate = dcasesQry.first().date_filed.date()
+        case_currDate = dcasesQry.first().date_filed
     except:
         pass
 
@@ -1163,12 +1181,15 @@ def load_diseaseChart(request, strDisease):
 
     dCaseList = []
     for d in dcasesQry:
+        # debug(case_currDate)
+        # debug(d.date_filed)
+
         try:
-            case_nextDate = d.date_filed.date()
+            case_nextDate = d.date_filed
         except:
             continue
 
-        # for confirmed cases
+        # for confirmed cases not yet in the
         if case_currDate == case_nextDate:
             if d.ref_disease_case_id not in dCaseList:
                 dCaseList.append(d.ref_disease_case_id)
@@ -1206,18 +1227,24 @@ def load_diseaseChart(request, strDisease):
         dChart['died'].append([ case_currDate, diedCtr ])
 
     # end point of series data
+    debug(case_currDate)
+    debug(dateToday.date())
+
     if case_currDate != dateToday.date():
         dChart['confirmed'].append([dateToday.date(), 0])
         dChart['recovered'].append([dateToday.date(), 0])
         dChart['died'].append([dateToday.date(), 0])
-
-    # debug(dChart)
+    else:
+        dChart['confirmed'].append([case_currDate, confirmedCtr])
+        dChart['recovered'].append([ case_currDate, recoveredCtr ])
+        dChart['died'].append([ case_currDate, diedCtr ])
+        
+    debug(dChart)
 
     # append data to return (table, line chart, map, SEIRD) 
     data.append(dChart)
     # debug(data)
 
-    # load_diseaseSeird()
 
     return JsonResponse(data, safe=False)
     
@@ -1310,8 +1337,8 @@ def load_diseaseSeird(request, strDisease):
     # No. of Days until Death          -- [4] 1 / rho
     # ---------------------------------------------
     """
-    debug("SEIRD")
-    debug(strDisease)
+    # debug("SEIRD")
+    # debug(strDisease)
     # compute for total SIDC pig population
     farmQry = Farm.objects.aggregate(Sum("total_pigs"))
     N = farmQry["total_pigs__sum"]
@@ -1319,11 +1346,11 @@ def load_diseaseSeird(request, strDisease):
     # get initial parameters from frontend inputs
     sValues = []
     sValues = request.POST.getlist("values[]")
-    debug("VALUES")
-    debug(sValues)
+    # debug("VALUES")
+    # debug(sValues)
     try:
         sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
-        debug(sParam)
+        # debug(sParam)
     except:
         params = SEIRD_Input.objects.filter(disease_name=strDisease).first()
         sParam = [
@@ -1334,7 +1361,7 @@ def load_diseaseSeird(request, strDisease):
             params.days_til_death
         ]
 
-    debug(sParam)
+    # debug(sParam)
     # NOTE: CODE BASIS
     # D = 4.0 # infections lasts four days
     # gamma = 1.0 / D

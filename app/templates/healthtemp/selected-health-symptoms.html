@@ -52,14 +52,22 @@
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="health-symptoms-version" id="health-symptoms-version" style="margin-bottom: 0; width: 100px">
                 {% if latest.id == selectedPigpen.id %}
-                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
+                    {% if farm.total_pigs == 0 %}
+                    <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
+                    {% else %}
+                    <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
+                    {% endif %}
                 {% else %}
-                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                <option hidden value="{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
                 {% endif %}
 
                 {% for ver in version %}
                     {% if latest.id == ver.id %}
-                    <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
+                        {% if farm.total_pigs == 0 %}
+                        <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                        {% else %}
+                        <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
+                        {% endif %}
                     {% else %}
                     <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
                     {% endif %}
@@ -73,15 +81,23 @@
         <div class="input-group mb-3">
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="health-symptoms-version" id="health-symptoms-version-mobile" style="margin-bottom: 0; width: 100px">
-                {% if latest.date_added == selectedPigpen.date_added %}
-                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
+                {% if latest.id == selectedPigpen.id %}
+                    {% if farm.total_pigs == 0 %}
+                    <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
+                    {% else %}
+                    <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
+                    {% endif %}
                 {% else %}
-                <option hidden value="{{farm_code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                <option hidden value="{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
                 {% endif %}
 
                 {% for ver in version %}
-                    {% if latest.date_added == ver.date_added %}
-                    <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
+                    {% if latest.id == ver.id %}
+                        {% if farm.total_pigs == 0 %}
+                        <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                        {% else %}
+                        <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
+                        {% endif %}
                     {% else %}
                     <option value="{{farm_code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
                     {% endif %}
@@ -271,10 +287,10 @@
                                     </td>
             
                                     <td data-label="Status">
-                                        <input type="hidden" id="hidden-status-{{incident.id}}" value="{{incident.report_status}}">
+                                        <p id="hidden-status-{{incident.id}}" class="incid-status">{{incident.report_status}}</p>
             
-                                        <div class="mb-3">
-                                            <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select" disabled=true>
+                                        <div class="mb-3 incid-dropdown">
+                                            <select id="dropdown-repstatus-{{incident.id}}" aria-label="Status" class="form-select">
                                                 {% if incident.report_status == 'Active' %}
                                                     <option value="Active" class="status" selected>Active</option>
                                                 {% else %}
@@ -282,15 +298,15 @@
                                                 {% endif %}
             
                                                 {% if incident.report_status == 'Pending' %}
-                                                    <option value="Pending"  class="status" selected>Pending</option>
+                                                    <option value="Pending" class="status" selected>Pending</option>
                                                 {% else %}
-                                                    <option value="Pending"  class="status">Pending</option>
+                                                    <option value="Pending" class="status">Pending</option>
                                                 {% endif %} 
             
                                                 {% if incident.report_status == 'Resolved' %}
-                                                    <option value="Resolved"  class="status" selected>Resolved</option>
+                                                    <option value="Resolved" class="status" selected>Resolved</option>
                                                 {% else %}
-                                                    <option value="Resolved"  class="status" id="repstatus-resolve">Resolved</option>
+                                                    <option value="Resolved" class="status" id="repstatus-resolve">Resolved</option>
                                                 {% endif %} 
                                             </select>
                                         </div>
@@ -312,6 +328,9 @@
                                         <div class="btn-group" style="justify-content: end; padding: 0;">
                                             <button class="secondary-btn symptomsEdit" id="edit-{{incident.id}}"><span class="material-icons md-18">edit</span>Edit</button>
                                             <button class="secondary-btn symptomsSave" id="save-{{incident.id}}"><span class="material-icons md-18">save</span>Save</button>
+                                        </div>
+                                        <div class="btn-group hide cancelRemBtn" style="justify-content: end; padding: 0;">
+                                            <button class="secondary-btn" onclick="CancelRemSave(this,'{{incident.report_status}}')">Cancel</button>
                                         </div>
                                     </td>
                                     {% endif%}

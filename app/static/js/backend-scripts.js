@@ -1109,6 +1109,8 @@ $('.symptomsSave').on('click', function () {
                     $("#hidden-status-" + incidID).val(updatedStat);
 
                     console.log("Status for incident ID [" + incidID + "] has been updated.");
+                    location.reload(true);
+
                 } else {
                     console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);

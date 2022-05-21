@@ -27,7 +27,7 @@
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Form Type</th>
+                    <th>Form Code</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th>Farm Code</th>
@@ -40,7 +40,7 @@
                 {% if act.status == 'Pending' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td data-label="Date Added">{{act.date_added}}</td>
-                    <td data-label="Form Type">Activity Form</td>
+                    <td data-label="Form Code">{{act.code|stringformat:"03d"}}</td>
                     <td data-label="Status" class="status">{{act.status}}</td>
                     <td data-label="Prepared by">{{act.prepared_by}}</td>
                     <td data-label="Farm Code">{{act.farmID|stringformat:"03d"}}</td>
@@ -57,7 +57,7 @@
                 {% if act.status == 'Approved' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td data-label="Date Added">{{act.date_added}}</td>
-                    <td data-label="Form Type">Activity Form</td>
+                    <td data-label="Form Code">{{act.code|stringformat:"03d"}}</td>
                     <td data-label="Status"  class="status">{{act.status}}</td>
                     <td data-label="Prepared by">{{act.prepared_by}}</td>
                     <td data-label="Farm Code">{{act.farmID|stringformat:"03d"}}</td>
@@ -74,7 +74,7 @@
                 {% if act.status == 'Rejected' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td data-label="Date Added">{{act.date_added}}</td>
-                    <td data-label="Form Type">Activity Form</td>
+                    <td data-label="Form Code">{{act.code|stringformat:"03d"}}</td>
                     <td data-label="Status"  class="status">{{act.status}}</td>
                     <td data-label="Prepared by">{{act.prepared_by}}</td>
                     <td data-label="Farm Code">{{act.farmID|stringformat:"03d"}}</td>
@@ -99,7 +99,7 @@
             <thead>
                 <tr>
                     <th>Date Added</th>
-                    <th>Form Type</th>
+                    <th>Form Code</th>
                     <th>Status</th>
                     <th>Prepared by</th>
                     <th>Farm Code</th>
@@ -111,7 +111,7 @@
                 {% if act.status == 'Pending' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td data-label="Date Added">{{act.date_added}}</td>
-                    <td data-label="Form Type">Activity Form</td>
+                    <td data-label="Form Code">{{act.code|stringformat:"03d"}}</td>
                     <td data-label="Status" class="status">{{act.status}}</td>
                     <td data-label="Prepared by">{{act.prepared_by}}</td>
                     <td data-label="Farm Code">{{act.farmID|stringformat:"03d"}}</td>
@@ -127,7 +127,7 @@
                 {% if act.status == 'Approved' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td data-label="Date Added">{{act.date_added}}</td>
-                    <td data-label="Form Type">Activity Form</td>
+                    <td data-label="Form Code">{{act.code|stringformat:"03d"}}</td>
                     <td data-label="Status" class="status">{{act.status}}</td>
                     <td data-label="Prepared by">{{act.prepared_by}}</td>
                     <td data-label="Farm Code">{{act.farmID|stringformat:"03d"}}</td>
@@ -143,7 +143,7 @@
                 {% if act.status == 'Rejected' %}
                 <tr id="{{act.id}}" value="{{ act.id }}">
                     <td data-label="Date Added">{{act.date_added}}</td>
-                    <td data-label="Form Type">Activity Form</td>
+                    <td data-label="Form Code">{{act.code|stringformat:"03d"}}</td>
                     <td data-label="Status"class="status">{{act.status}}</td>
                     <td data-label="Prepared by">{{act.prepared_by}}</td>
                     <td data-label="Farm Code">{{act.farmID|stringformat:"03d"}}</td>
