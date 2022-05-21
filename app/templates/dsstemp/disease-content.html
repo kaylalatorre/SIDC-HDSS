@@ -20,6 +20,7 @@
         <div class="no-print" style="margin-right: 0!important">
             <div>
                 <h3>Confirmed Cases</h3>
+                {% if disData.0.1 %}
                 <div class="box-style scroll" style="height: 32vh;">
                     <table class="table">
                         <thead>
@@ -48,6 +49,11 @@
                         </tbody>                               
                     </table>
                 </div>
+                {% else %}
+                <div class="box-style">
+                    <p>No disease cases to display.</p>
+                </div>
+                {% endif %}
             </div>
         </div> 
     </div>

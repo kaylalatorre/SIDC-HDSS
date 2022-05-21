@@ -1252,13 +1252,13 @@ def addMortality(request, farmID):
     farmVersion = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     # get all active and pending incident cases for the farm
-    incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
+    incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).order_by('-id')
     # print(incidQry)
     
     # get all disease cases for the farm
     disCases = []
     for incid in incidQry:
-        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).values("id").order_by('-id')
+        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).filter(end_date=None).values("id").order_by('-id')
 
         if disQry:
             for dis in disQry:
@@ -1352,10 +1352,10 @@ def addMortality(request, farmID):
                     latestDR = Disease_Record.objects.filter(ref_disease_case=mort['case']).order_by("-date_filed").first()
                     updateDC = Disease_Case.objects.filter(id=mort['case']).first()
 
-                    # print(latestDR.date_filed.date())
-                    # print(mort['mortality_date'])
+                    print(latestDR.date_filed)
+                    print(mort['mortality_date'])
                     
-                    if (str(latestDR.date_filed.date()) == str(mort['mortality_date'])):
+                    if (str(latestDR.date_filed) == str(mort['mortality_date'])):
                         # print("update record")
                         latestDR.num_died = (int(mort['num_today']) + latestDR.num_died)
                         latestDR.total_died = (int(mort['num_today']) + latestDR.total_died)

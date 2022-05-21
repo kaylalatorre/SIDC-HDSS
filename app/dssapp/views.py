@@ -979,7 +979,7 @@ def dashboard_SusCases():
                 })
             diseaseInfo['Others']['hogs_total'] += dcase['incid_case__num_pigs_affected']
 
-    debug(diseaseInfo)
+    # debug(diseaseInfo)
 
     return diseaseInfo
 
@@ -1038,7 +1038,7 @@ def diseaseMonitoring(strDisease):
 
     data = []
     # debug(request.method)
-    print(strDisease)
+    # debug(strDisease + " LOAD DISEASE TABLE")
 
     # confrimed cases
     casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
@@ -1086,8 +1086,8 @@ def diseaseMonitoring(strDisease):
     # append data to return (table, SEIRD inputs) 
     data.append(dTable)
     data.append(inputQry)
-    debug(strDisease + "Data")
-    debug(data)
+    # debug(strDisease + "Data")
+    # debug(data)
 
     return data # for disease monitoring dashboard contents
 
@@ -1103,9 +1103,8 @@ def load_ConfirmedCases(request, strDisease):
     return render(request, 'dsstemp/disease-content.html', {"disData": diseaseMonitoring(strDisease)})
 
 def load_diseaseMap(request, strDisease):
-    debug("LOAD DISEASE MAP")
+    # debug(strDisease + " LOAD DISEASE MAP")
     # debug(request.method)
-    print(strDisease)
 
     # confrimed cases
     casesQry = Disease_Record.objects.filter(ref_disease_case__disease_name=strDisease).annotate(
@@ -1132,10 +1131,8 @@ def load_diseaseMap(request, strDisease):
             casesList.append(case['ref_disease_case_id'])
             cases.append(case)
 
-
-
     # append data to return (table, SEIRD inputs)
-    debug(cases)
+    # debug(cases)
 
     return JsonResponse(cases, safe=False) # for disease monitoring dashboard contents
 
@@ -1143,7 +1140,7 @@ def load_diseaseChart(request, strDisease):
 
     data = []
     # debug(request.method)
-    # debug("loading charts")    
+    debug(strDisease + " LOAD DISEASE CHART")    
 
     dChart = {
         'confirmed': [],
@@ -1159,6 +1156,7 @@ def load_diseaseChart(request, strDisease):
         date_filed__range=(now()-timedelta(days=30), now())).annotate(
             confirmed_pigs = F("ref_disease_case__num_pigs_affect")
         ).order_by("date_filed").all()
+    # debug(dcasesQry)
 
     confirmedCtr = 0
     recoveredCtr = 0
@@ -1167,7 +1165,7 @@ def load_diseaseChart(request, strDisease):
 
     # NULL case      
     try:
-        case_currDate = dcasesQry.first().date_filed.date()
+        case_currDate = dcasesQry.first().date_filed
     except:
         pass
 
@@ -1179,12 +1177,15 @@ def load_diseaseChart(request, strDisease):
 
     dCaseList = []
     for d in dcasesQry:
+        # debug(case_currDate)
+        # debug(d.date_filed)
+
         try:
-            case_nextDate = d.date_filed.date()
+            case_nextDate = d.date_filed
         except:
             continue
 
-        # for confirmed cases
+        # for confirmed cases not yet in the
         if case_currDate == case_nextDate:
             if d.ref_disease_case_id not in dCaseList:
                 dCaseList.append(d.ref_disease_case_id)
@@ -1222,12 +1223,19 @@ def load_diseaseChart(request, strDisease):
         dChart['died'].append([ case_currDate, diedCtr ])
 
     # end point of series data
+    debug(case_currDate)
+    debug(dateToday.date())
+
     if case_currDate != dateToday.date():
         dChart['confirmed'].append([dateToday.date(), 0])
         dChart['recovered'].append([dateToday.date(), 0])
         dChart['died'].append([dateToday.date(), 0])
-
-    # debug(dChart)
+    else:
+        dChart['confirmed'].append([case_currDate, confirmedCtr])
+        dChart['recovered'].append([ case_currDate, recoveredCtr ])
+        dChart['died'].append([ case_currDate, diedCtr ])
+        
+    debug(dChart)
 
     # append data to return (table, line chart, map, SEIRD) 
     data.append(dChart)
@@ -1280,7 +1288,7 @@ def load_diseaseSeird(request, strDisease):
     # debug(sValues)
     try:
         sParam = [int(sValues[0]), float(sValues[1]), int(sValues[2]), float(sValues[3]), int(sValues[4])]
-        debug(sParam)
+        # debug(sParam)
     except:
         params = SEIRD_Input.objects.filter(disease_name=strDisease).first()
         sParam = [
