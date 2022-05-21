@@ -1028,19 +1028,14 @@ $('#health-symptoms-version-mobile').change(function () {
  * @param {*} currRow 
  */
 function computeTotalRec(currRow){
-    var row = currRow.parentNode; //get row of clicked button
-    // console.log("in computeTotalRec()/n");
+    var row = currRow.parentNode; // get row of clicked button
 
     var num_rec = row.getElementsByClassName('input-num-rec')[0].value;
     var total_rec = row.getElementsByClassName('total-rec')[0].innerHTML;
     var displayRec = row.parentNode.nextElementSibling.getElementsByClassName('display-total-rec')[0];
-    // console.log("num_rec: " + num_rec);
-    // console.log("total_rec: " + total_rec);
 
     var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
-    // console.log("new_total_rec: " + new_total_rec);
 
-    // console.log(displayRec);
     displayRec.innerHTML = String(new_total_rec);
 
     // setting input max
