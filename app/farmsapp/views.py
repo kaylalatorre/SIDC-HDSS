@@ -559,7 +559,8 @@ def techFarms(request):
                             "lname", 
                             "contact", 
                             "farm_address",
-                            "last_update").order_by('id')
+                            "last_update", 
+                            "total_pigs").order_by('id')
 
 
         # pass all data into an array
@@ -571,7 +572,8 @@ def techFarms(request):
                 "raiser": " ".join((farm["fname"],farm["lname"])),
                 "contact": farm["contact"],
                 "address": farm["farm_address"],
-                "updated": farm["last_update"] }
+                "updated": farm["last_update"],
+                "pigs" : farm["total_pigs"] }
 
             techFarmsList.append(farmObject)
 

@@ -313,6 +313,7 @@ for(var i = 0; i < rowStatus.length; i++) {
      let farm = farmRow[i];
  
      var lastUpdated = farm.querySelector('.farm-last-update');
+     var totalPigs = farm.querySelector('.farm-total-pigs').innerHTML;
      var date = lastUpdated.innerHTML;
      
      var newDate = new Date(formatDate(date));
@@ -320,7 +321,7 @@ for(var i = 0; i < rowStatus.length; i++) {
      var diffDays = getDiffDays(newDate);
     //  console.log(String(i+1) + " "+ String(diffDays));
 
-     if (diffDays > 8) {
+     if (diffDays > 8 && totalPigs > 0) {
          lastUpdated.parentElement.classList.add("highlight-red");
      }
  }
