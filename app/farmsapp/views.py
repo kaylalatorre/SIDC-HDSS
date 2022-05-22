@@ -211,7 +211,7 @@ def selectedFarm(request, farmID):
 
     pen_no = 1
     pigpenList = []
-    total_pigs = 0
+    total_heads = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
@@ -220,7 +220,7 @@ def selectedFarm(request, farmID):
             'num_heads' : pen.num_heads
         }
         
-        total_pigs += pen.num_heads
+        total_heads += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
@@ -357,7 +357,7 @@ def selectedFarm(request, farmID):
     ).order_by('-last_updated')
 
     return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 'fattener' : final_weight,
-                                                            'bioList': extQuery, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen})
+                                                            'bioList': extQuery, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen, 'total_heads' : total_heads})
 
 def selectedFarmVersion(request, farmID, farmVersion):
     """
@@ -376,7 +376,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
     pen_no = 1
     pigpenList = []
-    total_pigs = 0
+    total_heads = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
@@ -384,7 +384,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
             'width' : pen.width,
             'num_heads' : pen.num_heads }
         
-        total_pigs += pen.num_heads
+        total_heads += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
@@ -526,7 +526,7 @@ def selectedFarmVersion(request, farmID, farmVersion):
 
 
     return render(request, 'farmstemp/selected-farm.html', {'farm' : selectedFarm, 'pigpens' : pigpenList, 'activity' : actList, 'currBio': currbioObj, 'latest' : lastPigpen,
-                                                            'bioList': extQuery, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'fattener' : final_weight})
+                                                            'bioList': extQuery, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'fattener' : final_weight, 'total_heads' : total_heads})
 
 
 def techFarms(request):
@@ -649,7 +649,7 @@ def techSelectedFarm(request, farmID):
 
     pen_no = 1
     pigpenList = []
-    total_pigs = 0
+    total_heads = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
@@ -658,7 +658,7 @@ def techSelectedFarm(request, farmID):
             'num_heads' : pen.num_heads
         }
         
-        total_pigs += pen.num_heads
+        total_heads += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
@@ -767,7 +767,7 @@ def techSelectedFarm(request, farmID):
         pigpenRowForm  = PigpenRowForm()
 
     # pass (1) delected farm + biosecurity details, and (2) pigpen measures object to template   
-    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'starter' : start_weight,
+    return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'pigpenRowForm' : pigpenRowForm, 'starter' : start_weight, 'total_heads' : total_heads,
                                                                 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen, 'fattener' : final_weight})
 
 def techSelectedFarmVersion(request, farmID, farmVersion):
@@ -829,7 +829,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
 
     pen_no = 1
     pigpenList = []
-    total_pigs = 0
+    total_heads = 0
     for pen in pigpenQry:
         pigpenObj = {
             'pen_no' : pen_no,
@@ -837,7 +837,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
             'width' : pen.width,
             'num_heads' : pen.num_heads }
 
-        total_pigs += pen.num_heads
+        total_heads += pen.num_heads
         pigpenList.append(pigpenObj)
         pen_no += 1
 
@@ -869,7 +869,7 @@ def techSelectedFarmVersion(request, farmID, farmVersion):
         versionList.append(verObj)
         
     return render(request, 'farmstemp/tech-selected-farm.html', {'farm' : selTechFarm, 'pigpens' : pigpenList, 'version' : versionList, 'starter' : start_weight,
-                                                                'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'fattener' : final_weight })
+                                                                'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'fattener' : final_weight, 'total_heads' : total_heads })
 
 def addFarm(request):
     """

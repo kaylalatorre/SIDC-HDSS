@@ -138,10 +138,10 @@
                 </table>
                 <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
-                    {% if farm.total_pigs == 0 or farm.total_pigs == Null %}
+                    {% if total_heads == 0 or total_heads == Null %}
                         <p> No pigs </p>
                     {% else %}
-                        <p> {{farm.total_pigs}} pigs </p>
+                        <p> {{total_heads}} pigs </p>
                     {% endif %}
                 </div>
             </div>
