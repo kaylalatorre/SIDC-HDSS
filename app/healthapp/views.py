@@ -288,23 +288,33 @@ def selectedHogsHealth(request, farmID):
     else: 
         end_weight = { }
 
+    # get final weight slip
+    final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=latestPigpen.id).last()
+
     # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
-    count = int(allPigpens.count()) - 1
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     versionList = []
-    i = 0
     for pen in allPigpens:
-        if latestPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added,
-                'id' : pen.id }
+        fWeight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=pen.id).last()
+        # debug(fWeight.date_filed)
+
+        if latestPigpen.id == pen.id and int(selectFarm.get('total_pigs')) == 0:
+                verObj = { 'date_added' : pen.date_added,
+                            'endDate' : fWeight.date_filed,
+                            'id' : pen.id }
         else:
-            verObj = {
-                'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added,
-                'id' : pen.id }
-            i += 1
+            if fWeight is not None:
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : fWeight.date_filed,
+                    'id' : pen.id }
+            else: 
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : None,
+                    'id' : pen.id }
         
         versionList.append(verObj)
 
@@ -399,8 +409,7 @@ def selectedHogsHealth(request, farmID):
     weightList = categHogWeight(f_weightQry)
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen,
-                                                                    "weightList": weightList})
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : latestPigpen, 'latest' : latestPigpen, "weightList": weightList, "fattener": final_weight})
 
 def selectedHogsHealthVersion(request, farmID, farmVersion):
     """
@@ -435,35 +444,38 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
         messages.error(request, "Hogs health record not found.", extra_tags="selected-hogsHealth")
         return render(request, 'healthtemp/selected-hogs-health.html', {})
 
-    # collecting all past and selected pigpens
+    # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
-
-    count = int(allPigpens.count()) - 1
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
     lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
-    previous = None
+    # get final weight slip
+    fattener = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=selectedPigpen.id).last()
+
     versionList = []
-    i = 0
     for pen in allPigpens:
-        if lastPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added,
-                'id' : pen.id }
+        fWeight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=pen.id).last()
+        # debug(fWeight.date_filed)
+
+        if selectedPigpen.id == pen.id and int(selectFarm.get('total_pigs')) == 0:
+                verObj = { 'date_added' : pen.date_added,
+                            'endDate' : fWeight.date_filed,
+                            'id' : pen.id }
         else:
-            verObj = {
-                'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added,
-                'id' : pen.id }
-            i += 1
+            if fWeight is not None:
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : fWeight.date_filed,
+                    'id' : pen.id }
+            else: 
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : None,
+                    'id' : pen.id }
         
         versionList.append(verObj)
 
-        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
-            previous = oldPigpens[i-1].date_added
-
     # get current starter and fattener weights acc. to current Pigpen
-# get current starter and fattener weights acc. to current Pigpen
     start_weight = Farm_Weight.objects.filter(is_starter=True).filter(pigpen_grp_id=selectedPigpen.id).first()
     final_weight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=selectedPigpen.id).all()
     
@@ -580,8 +592,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
     weightList = categHogWeight(f_weightQry)
 
     return render(request, 'healthtemp/selected-hogs-health.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm": farmObject, "incident_symptomsList": incident_symptomsList,
-                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, 'prev' : previous,
-                                                                    "weightList": weightList})
+                                                                    "mortalityList": mortalityList, 'version' : versionList, 'selectedPigpen' : selectedPigpen, 'latest' : lastPigpen, "weightList": weightList, "fattener": fattener})
 
 
 # for Technician view Hogs Health
@@ -736,22 +747,31 @@ def selectedHealthSymptoms(request, farmID):
 
     # collecting all past pigpens (versions)
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
+    lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
-    count = int(allPigpens.count()) - 1
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
+    # get final weight slip
+    fattener = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=latestPigpen.id).last()
 
     versionList = []
-    i = 0
     for pen in allPigpens:
-        if latestPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added,
-                'id' : pen.id }
+        fWeight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=pen.id).last()
+        # debug(fWeight.date_filed)
+
+        if latestPigpen.id == pen.id and int(farm.get('total_pigs')) == 0:
+                verObj = { 'date_added' : pen.date_added,
+                            'endDate' : fWeight.date_filed,
+                            'id' : pen.id }
         else:
-            verObj = {
-                'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added,
-                'id' : pen.id }
-            i += 1
+            if fWeight is not None:
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : fWeight.date_filed,
+                    'id' : pen.id }
+            else: 
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : None,
+                    'id' : pen.id }
         
         versionList.append(verObj)
 
@@ -852,9 +872,10 @@ def selectedHealthSymptoms(request, farmID):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
-                # case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+                case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
                 cases.append(case)
                 # debug(casesList)
+                # debug("case['max_recovered']: " + str(case['max_recovered']))
     # debug(cases)
 
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : latestPigpen,
@@ -874,32 +895,39 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     :type farmVersion: string
     """
 
-    # collecting all past and selected pigpens
+    # get current total_pigs
+    farm = Farm.objects.filter(id=farmID).values("total_pigs").first()
+
+   # collecting all past pigpens
     allPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id").all()
     selectedPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).filter(id=farmVersion).first()
-
-    count = int(allPigpens.count()) - 1
-    oldPigpens = Pigpen_Group.objects.filter(ref_farm_id=farmID).order_by("-id")[:count]
     lastPigpen = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
-    previous = None
+    # get final weight slip
+    fattener = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=selectedPigpen.id).last()
+
     versionList = []
-    i = 0
     for pen in allPigpens:
-        if lastPigpen.id == pen.id:
-            verObj = { 'date_added' : pen.date_added,
-                'id' : pen.id }
+        fWeight = Farm_Weight.objects.filter(is_starter=False).filter(pigpen_grp_id=pen.id).last()
+        # debug(fWeight.date_filed)
+
+        if selectedPigpen.id == pen.id and int(farm.get('total_pigs')) == 0:
+                verObj = { 'date_added' : pen.date_added,
+                            'endDate' : fWeight.date_filed,
+                            'id' : pen.id }
         else:
-            verObj = {
-                'date_added' : pen.date_added,
-                'endDate' : oldPigpens[i].date_added,
-                'id' : pen.id }
-            i += 1
+            if fWeight is not None:
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : fWeight.date_filed,
+                    'id' : pen.id }
+            else: 
+                verObj = {
+                    'date_added' : pen.date_added,
+                    'endDate' : None,
+                    'id' : pen.id }
         
         versionList.append(verObj)
-
-        if str(farmVersion) == str(pen.id) and lastPigpen.id != pen.id:
-            previous = oldPigpens[i-1].date_added
 
     # get current starter and fattener weights acc. to current Pigpen
     start_weight = Farm_Weight.objects.filter(is_starter=True).filter(pigpen_grp_id=selectedPigpen.id).first()
@@ -1028,8 +1056,8 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
     # debug(cases)
 
     return render(request, 'healthtemp/selected-health-symptoms.html', {"total_incidents": total_incidents, "total_mortalities": total_mortalities, "farm_code": int(farmID), 'latest' : lastPigpen,
-                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList, 'prev' : previous,
-                                                                        'selectedPigpen' : selectedPigpen, "start_weight": start_weight, "end_weight": end_weight,
+                                                                        "incident_symptomsList": incident_symptomsList, "mortalityList": mortalityList, 'version' : versionList,
+                                                                        'selectedPigpen' : selectedPigpen, "start_weight": start_weight, "end_weight": end_weight, 'fattener' : fattener,
                                                                         "weightList": weightList, 'total_pigs': int(0), 'total_disease' : len(cases), 'dTable': cases })
 
 
@@ -1123,14 +1151,9 @@ def post_addCase(request, farmID):
                     symptomsArr.append(True)
                 else:
                     symptomsArr.append(False)
-            
 
             # Array length must be 22 for the fields in Symptoms list.
-            # debug("sympArr len(): " + str(len(symptomsArr)))
-            # debug("num_pigsAffected: " + str(num_pigsAffected))
-
-
-            if len(symptomsArr) > 0 and int(num_pigsAffected) > 0: # (SUCCESS) Symptoms list is complete, proceed to add in db
+            if len(symptomsArr) > 0 and int(num_pigsAffected) > 0 and symptomsArr.count(False) < 22: # (SUCCESS) Symptoms list is complete, proceed to add in db
                 
                 # init Hog_Symptoms and Farm models
                 incidObj = Hog_Symptoms() 
@@ -1204,6 +1227,7 @@ def post_addCase(request, farmID):
                     else:
                         messages.success(request, "New incident report dated " + df + " has been successfully added.", extra_tags='add-incidCase')
                     
+                    debug("BACKEND   -------   ADD CASE: SUCCESS 200")
                     return JsonResponse({"status_code":"200"}, status=200)
                     # return redirect('/selected-health-symptoms/' + str(farmID))
         
@@ -1212,10 +1236,10 @@ def post_addCase(request, farmID):
                     messages.error(request, "Input only no. of pigs within total hogs of Farm.", extra_tags='add-incidCase')
                     return JsonResponse({"error": "Input only no. of pigs within total hogs of Farm.", "status_code":"400"}, status=400)
             
-            else: # (ERROR) No selected input/s for Incident Case.
-                debug("ERROR: No selected input/s for Incident Case.")
-                messages.error(request, "No selected input/s for Incident Case.", extra_tags='add-incidCase')
-                return JsonResponse({"error": "No selected input/s for Incident Case.", "status_code":"400"}, status=400)
+            else: # (ERROR) No checked symptoms for Incident Case, no. pigs affected is 0
+                debug("ERROR: Incomplete input/s for Incident Case.")
+                messages.error(request, "Incomplete input/s for Incident Case.", extra_tags='add-incidCase')
+                return JsonResponse({"error": "Incomplete input/s for Incident Case.", "status_code":"400"}, status=400)
         
         else: # (ERROR) Invalid farmID
             debug("ERROR: Invalid/None-type farmID from parameter.")
@@ -1252,13 +1276,13 @@ def addMortality(request, farmID):
     farmVersion = Pigpen_Group.objects.filter(ref_farm_id=farmID).last()
 
     # get all active and pending incident cases for the farm
-    incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).filter(~Q(report_status='Resolved')).order_by('-id')
+    incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).order_by('-id')
     # print(incidQry)
     
     # get all disease cases for the farm
     disCases = []
     for incid in incidQry:
-        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).values("id").order_by('-id')
+        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).filter(end_date=None).values("id").order_by('-id')
 
         if disQry:
             for dis in disQry:
@@ -1352,10 +1376,10 @@ def addMortality(request, farmID):
                     latestDR = Disease_Record.objects.filter(ref_disease_case=mort['case']).order_by("-date_filed").first()
                     updateDC = Disease_Case.objects.filter(id=mort['case']).first()
 
-                    # print(latestDR.date_filed.date())
-                    # print(mort['mortality_date'])
+                    print(latestDR.date_filed)
+                    print(mort['mortality_date'])
                     
-                    if (str(latestDR.date_filed.date()) == str(mort['mortality_date'])):
+                    if (str(latestDR.date_filed) == str(mort['mortality_date'])):
                         # print("update record")
                         latestDR.num_died = (int(mort['num_today']) + latestDR.num_died)
                         latestDR.total_died = (int(mort['num_today']) + latestDR.total_died)
@@ -1844,8 +1868,10 @@ def update_diseaseCase(request, dcID):
         latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
         updateDC = Disease_Case.objects.filter(id=dcID).first()
         
-        if (latestDR.date_filed.date() == dateToday.date()):
-            # BUG: may mali d2 d q pa mafigure out --> might be UI problem
+        debug(latestDR.date_filed);
+
+        if (latestDR.date_filed == dateToday.date()):
+
             latestDR.num_recovered = numRecovered
             latestDR.total_recovered += (numRecovered + latestDR.total_recovered)
             latestDR.save()

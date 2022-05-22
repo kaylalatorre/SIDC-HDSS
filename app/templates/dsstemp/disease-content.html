@@ -20,6 +20,7 @@
         <div class="no-print" style="margin-right: 0!important">
             <div>
                 <h3>Confirmed Cases</h3>
+                {% if disData.0.1 %}
                 <div class="box-style scroll" style="height: 32vh;">
                     <table class="table">
                         <thead>
@@ -48,6 +49,11 @@
                         </tbody>                               
                     </table>
                 </div>
+                {% else %}
+                <div class="box-style">
+                    <p>No disease cases to display.</p>
+                </div>
+                {% endif %}
             </div>
         </div> 
     </div>
@@ -58,31 +64,30 @@
             <hr>
             <h3>Set Parameters</h3>
             <!-- Inputs --> 
-                <!-- NOTE for backend ppl: set min, max, and default value -->
             <div>
                 <form class="flex">
                     <label for="rangeIncubDays" class="flex-item form-label" style="width: 30%">Disease Incubation Period (days)</label>                             
-                    <input type="range" class="flex-item form-range" id="rangeIncubDays" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="1" max="100" value="{{disData.1.incub_days}}" oninput="outputIncubDays.value=parseInt(rangeIncubDays.value)">
+                    <input type="range" class="flex-item form-range" id="rangeIncubDays" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="{{disData.1.min_incub_days}}" max="{{disData.1.max_incub_days}}" value="{{disData.1.incub_days}}" oninput="outputIncubDays.value=parseInt(rangeIncubDays.value)">
                     <output id="outputIncubDays" name="SEIRDOutput"> {{disData.1.incub_days}} </output>
                 </form>
                 <form class="flex">
-                    <label for="rangeReproNo" class="flex-item form-label" style="width: 30%">Basic Reproduction No.</label>                             
-                    <input type="range" class="flex-item form-range" id="rangeReproNo" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="1" max="100" value="{{disData.1.reproduction_num}}" oninput="outputReproNo.value=parseInt(rangeReproNo.value)">
+                    <label for="rangeReproNo" class="flex-item form-label" style="width: 30%">Basic Reproduction No.</label> 
+                    <input type="range" class="flex-item form-range" id="rangeReproNo" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" step="0.01" min="{{disData.1.min_reproduction_num}}" max="{{disData.1.max_reproduction_num}}" value="{{disData.1.reproduction_num}}" oninput="outputReproNo.value=parseInt(rangeReproNo.value)">
                     <output id="outputReproNo" name="SEIRDOutput"> {{disData.1.reproduction_num}} </output>
                 </form>
                 <form class="flex">
                     <label for="rangeDiseaseSpread" class="flex-item form-label" style="width: 30%">No. of Days Disease can Spread</label>                             
-                    <input type="range" class="flex-item form-range" id="rangeDiseaseSpread" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="1" max="100" value="{{disData.1.days_can_spread}}" oninput="outputDiseaseSpread.value=parseInt(rangeDiseaseSpread.value)">
+                    <input type="range" class="flex-item form-range" id="rangeDiseaseSpread" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="{{disData.1.min_days_can_spread}}" max="{{disData.1.max_days_can_spread}}" value="{{disData.1.days_can_spread}}" oninput="outputDiseaseSpread.value=parseInt(rangeDiseaseSpread.value)">
                     <output id="outputDiseaseSpread" name="SEIRDOutput"> {{disData.1.days_can_spread}} </output>
                 </form>
                 <form class="flex">
                     <label for="rangeFatality" class="flex-item form-label" style="width: 30%">Fatality Rate</label>                             
-                    <input type="range" class="flex-item form-range" id="rangeFatality" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="1" max="100" step="0.1" value="{{disData.1.fatality_rate}}" oninput="outputFatality.value=parseInt(rangeFatality.value)">
+                    <input type="range" class="flex-item form-range" id="rangeFatality" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" step="0.01" min="{{disData.1.min_fatality_rate}}" max="{{disData.1.max_fatality_rate}}" value="{{disData.1.fatality_rate}}" oninput="outputFatality.value=parseInt(rangeFatality.value)">
                     <output id="outputFatality" name="SEIRDOutput"> {{disData.1.fatality_rate}} </output>
                 </form>
                 <form class="flex">
                     <label for="rangeDeathDays" class="flex-item form-label" style="width: 30%">No. of Days until Death</label>                             
-                    <input type="range" class="flex-item form-range" id="rangeDeathDays" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="1" max="100" value="{{disData.1.days_til_death}}" oninput="outputDeathDays.value=parseInt(rangeDeathDays.value)">
+                    <input type="range" class="flex-item form-range" id="rangeDeathDays" dname="{{disData.0.0}}" onchange="getSEIRDInput(this)" min="{{disData.1.min_days_til_death}}" max="{{disData.1.max_days_til_death}}" value="{{disData.1.days_til_death}}" oninput="outputDeathDays.value=parseInt(rangeDeathDays.value)">
                     <output id="outputDeathDays" name="SEIRDOutput"> {{disData.1.days_til_death}} </output>
                 </form>
             </div>

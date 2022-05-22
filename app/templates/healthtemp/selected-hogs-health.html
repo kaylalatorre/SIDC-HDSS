@@ -18,14 +18,22 @@
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="hogs-health-version" id="hogs-health-version" style="margin-bottom: 0; width: 100px">
                 {% if latest.id == selectedPigpen.id %}
-                <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
+                    {% if farm.total_pigs == 0 %}
+                    <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
+                    {% else %}
+                    <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
+                    {% endif %}
                 {% else %}
-                <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{prev}}</option>
+                <option hidden value="{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
                 {% endif %}
 
                 {% for ver in version %}
                     {% if latest.id == ver.id %}
-                    <option value="{{farm.code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
+                        {% if farm.total_pigs == 0 %}
+                        <option value="{{farm.code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
+                        {% else %}
+                        <option value="{{farm.code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
+                        {% endif %}
                     {% else %}
                     <option value="{{farm.code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
                     {% endif %}

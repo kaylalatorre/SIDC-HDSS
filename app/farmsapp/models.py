@@ -310,8 +310,41 @@ class Mem_Announcement(models.Model):
 # SEIRD INPUT Table
 class SEIRD_Input(models.Model):
     disease_name        = models.CharField(max_length=50)
+    seird_range         = models.ForeignKey('SEIRD_Range', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+    
     incub_days          = models.IntegerField()
     reproduction_num    = models.FloatField()
     days_can_spread     = models.IntegerField()
     fatality_rate       = models.FloatField()
     days_til_death      = models.IntegerField()
+
+
+# SEIRD RANGE
+class SEIRD_Range(models.Model):
+
+    min_incub_days          = models.IntegerField()
+    max_incub_days          = models.IntegerField()
+    
+    min_reproduction_num    = models.FloatField()
+    max_reproduction_num    = models.FloatField()
+    
+    min_days_can_spread     = models.IntegerField()
+    max_days_can_spread     = models.IntegerField()
+    
+    min_fatality_rate       = models.FloatField()
+    max_fatality_rate       = models.FloatField()
+    
+    min_days_til_death      = models.IntegerField()
+    max_days_til_death      = models.IntegerField()
+
+
+# ACTION RECOMMENDATION
+class Action_Recommendation(models.Model):
+    plan_code           = models.CharField(max_length=20)
+    plan_description    = models.CharField(max_length=1000)
+
+
+# THRESHOLD VALUES
+class Threshold_Values(models.Model):
+    title     = models.CharField(max_length=20)
+    value     = models.IntegerField()

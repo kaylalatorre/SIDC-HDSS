@@ -57,7 +57,9 @@
 
                 <div class="mb-3" id="div-raiser-contact">
                     <label for="input-contact" class="form-label">Contact No.</label>
-                    {{hogRaiserForm.contact_no}}
+                    <div class="flex">
+                        <p class="flex-item">+ 63 </p> {{hogRaiserForm.contact_no}}
+                    </div>
                 </div>
                 <div class="mb-3">
                     {{farmForm.directly_manage}}

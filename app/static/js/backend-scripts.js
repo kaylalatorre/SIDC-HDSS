@@ -1109,6 +1109,8 @@ $('.symptomsSave').on('click', function () {
                     $("#hidden-status-" + incidID).val(updatedStat);
 
                     console.log("Status for incident ID [" + incidID + "] has been updated.");
+                    location.reload(true);
+
                 } else {
                     console.log("ERROR [" + response.status_code + "]: " + response.error);
                     location.reload(true);
@@ -1144,18 +1146,16 @@ function addCase(farmID) {
         url: '/post-addCase/' + farmID, 
         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
         success: function (response) {
-            
-            if (response.status_code === "200"){
-                url = "/selected-health-symptoms/" + farmID;
-                location.href = url;          
-            } 
-            else {
-                console.log("ERROR [" + response.status_code + "]: " + response.error);
-            }
+
+            // console.log("ADD CASE: SUCCESS 200");
+            url = "/selected-health-symptoms/" + farmID;
+            location.href = url;       
 
         },
         error: function (res){
-            console.log("ERROR [" + res.status_code + "]: " +  res.error);
+            console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
+            url = "/add-case/" + farmID;
+            location.href = url;  
         }
     });
 }
@@ -1380,13 +1380,14 @@ function getDiseaseInfo(strDisease){
 */
 
 $('.btn-save-recovered').on('click', function () {
-    var num_rec = $(this).siblings(":eq(2)").val();
-    var discaseID = $(this).siblings(":eq(3)").val();
-    var farmID = $(this).siblings(":eq(4)").val();
+    var num_rec = $(this).parent().siblings(":eq(1)").val();
+    var discaseID = $(this).parent().siblings(":eq(2)").val();
+    var farmID = $(this).parent().siblings(":eq(3)").val();
 
-    // console.log(num_rec);
-    // console.log(discaseID);
-    // console.log(farmID);
+    console.log("num_rec: " + num_rec);
+    // console.log($(this).parent().siblings(":eq(2)"));
+    console.log("discaseID: " + discaseID);
+    console.log("farmID: " + farmID);
 
 
     ajaxCSRF();

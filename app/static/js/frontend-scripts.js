@@ -171,6 +171,7 @@ function UpdateTotalRec(btnHTML){
         toShow[j].style.display = "block";
 }
 
+// cancel edit of recovered for disease case
 function CancelRecSave(btnHTML){
 
     var row = btnHTML.parentNode.parentNode.parentNode;
@@ -185,6 +186,36 @@ function CancelRecSave(btnHTML){
         toShow[j].style.display = "block";
 }
 
+// cancel edit of incident case status
+function CancelRemSave(btnHTML, incidStatus){
+
+    var row = btnHTML.parentNode.parentNode.parentNode;
+
+    var toShow = row.getElementsByClassName('symptomsEdit');
+    var toHide = row.getElementsByClassName('symptomsSave');
+
+    for(i = 0; i < toHide.length; i++)
+        toHide[i].style.display = "none";
+    
+    for(j = 0; j < toShow.length; j++)
+        toShow[j].style.display = "block";
+    
+    var remarksInput = row.getElementsByClassName('incd-resolved-remarks')[0];
+    remarksInput.classList.remove("show");
+    remarksInput.classList.add("hide");
+
+    var cancelBtn = btnHTML.parentNode;
+    cancelBtn.classList.remove("show");
+    cancelBtn.classList.add("hide");
+
+    var dropdown = row.getElementsByClassName('incid-dropdown')[0];
+    // console.log(dropdown.defaultSelected);
+    dropdown.style.display = "none";
+
+    var status = row.getElementsByClassName('incid-status')[0];
+    status.style.display = "block";
+}
+
 /**
  * Symptoms edit button 
  */
@@ -192,15 +223,25 @@ function CancelRecSave(btnHTML){
  for(var i = 0; i < symptomsEdit.length; i++) { 
     symptomsEdit[i].addEventListener("click", (e)=> {
          let editParent = e.target.parentElement.parentElement.parentElement;
-         let dropdown = editParent.querySelector(".form-select");
+         let dropdown = editParent.querySelector(".incid-dropdown")
+        //  console.log(dropdown);
+        dropdown.setAttribute("style", "display: block");
+
          let symptomsSave = editParent.querySelector(".symptomsSave");
          let symptomsEdit = editParent.querySelector(".symptomsEdit");
          
-         dropdown.removeAttribute("disabled");
          symptomsSave.setAttribute("style", "display: block");
          symptomsEdit.setAttribute("style", "display: none");
 
-        //  for onchange of incident case dropdown status
+         let cancelBtn = editParent.querySelector(".cancelRemBtn");
+
+         cancelBtn.classList.remove("hide");
+         cancelBtn.classList.add("show");
+
+         let status = editParent.querySelector(".incid-status")
+         status.setAttribute("style", "display: none");
+
+         //  for onchange of incident case dropdown status
          dropdown.addEventListener("change", (e)=> {
             let remarksInput = e.target.parentElement.parentElement.childNodes[4].nextSibling;
             // console.log(e.target.value);
@@ -215,6 +256,7 @@ function CancelRecSave(btnHTML){
             else {
                 remarksInput.classList.remove("show");
                 remarksInput.classList.add("hide");
+                symptomsSave.disabled = false;
             }
          })
      })
@@ -224,11 +266,17 @@ function CancelRecSave(btnHTML){
  for(var i = 0; i < symptomsSave.length; i++) { 
     symptomsSave[i].addEventListener("click", (e)=> {
          let saveParent = e.target.parentElement.parentElement.parentElement;
-         let dropdown = saveParent.querySelector(".form-select");
+         let dropdown = saveParent.querySelector(".incid-dropdown");
+         let status = saveParent.querySelector(".incid-status");
+         let cancelBtn = saveParent.querySelector(".cancelRemBtn");
+
          let symptomsSave = saveParent.querySelector(".symptomsSave");
          let symptomsEdit = saveParent.querySelector(".symptomsEdit");
  
-         dropdown.setAttribute("disabled", true);
+         dropdown.setAttribute("style", "display: none");
+         status.setAttribute("style", "display: block");
+         cancelBtn.setAttribute("style", "display: none");
+
          symptomsSave.setAttribute("style", "display: none");
          symptomsEdit.setAttribute("style", "display: block");
      })
@@ -625,13 +673,13 @@ function addMortalityRow() {
         <td data-label='To Date'> <p class='num_toDate'></p> </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> <p class='mortality_rate'></p> </td> \
         <td data-label='Source'> <div class='form-check form-check-inline'> \
-                <input class='form-check-input' type='radio' name='sourceOptions-"+rowNum+"' id='src-incident' value='Incident Case' onclick='switchMortCase(this)'> \
+                <input class='form-check-input' type='radio' required name='sourceOptions-"+rowNum+"' id='src-incident' value='Incident Case' onclick='switchMortCase(this)'> \
                 <label class='form-check-label' for='src-incident'>Incident Case</label> </div> \
             <div class='form-check form-check-inline'> \
-                <input class='form-check-input' type='radio' name='sourceOptions-"+rowNum+"' id='src-disease' value='Disease Case' onclick='switchMortCase(this)'> \
+                <input class='form-check-input' type='radio' required name='sourceOptions-"+rowNum+"' id='src-disease' value='Disease Case' onclick='switchMortCase(this)'> \
                 <label class='form-check-label' for='src-disease'>Disease Case</label> </div> \
             <div class='form-check form-check-inline'> \
-                <input class='form-check-input' type='radio' name='sourceOptions-"+rowNum+"' id='src-unknown' value='Unknown' onclick='switchMortCase(this)'> \
+                <input class='form-check-input' type='radio' required name='sourceOptions-"+rowNum+"' id='src-unknown' value='Unknown' onclick='switchMortCase(this)'> \
                 <label class='form-check-label' for='src-unknown'>Unknown</label> </div> </td> \
         <td data-label='Case-No'> " + case_no + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
@@ -1028,27 +1076,26 @@ $('#health-symptoms-version-mobile').change(function () {
  * @param {*} currRow 
  */
 function computeTotalRec(currRow){
-    var row = currRow.parentNode; //get row of clicked button
-    // console.log("in computeTotalRec()/n");
+    var row = currRow.parentNode; // get row of clicked button
 
     var num_rec = row.getElementsByClassName('input-num-rec')[0].value;
     var total_rec = row.getElementsByClassName('total-rec')[0].innerHTML;
     var displayRec = row.getElementsByClassName('display-total-rec')[0];
-    // console.log(num_rec);
-    // console.log(total_rec);
 
     var new_total_rec = parseInt(num_rec) + parseInt(total_rec); 
-    // console.log(new_total_rec);
 
     displayRec.innerHTML = String(new_total_rec);
+    // console.log("displayRec TOTAL: " + displayRec.innerHTML);
 
     // setting input max
-    var num_pigs_affect = row.parentNode.previousElementSibling.innerHTML;
-    var total_died = row.parentNode.nextElementSibling.getElementsByClassName('display-total-died')[0].innerHTML;
-    // console.log(num_pigs_affect);
-    // console.log(total_died);
+    var num_pigs_affect = row.parentNode.childNodes[11].innerHTML;
+    var total_died = row.parentNode.childNodes[15].getElementsByClassName('display-total-died')[0].innerHTML;
+    // console.log("num_pigs_affect: " + num_pigs_affect);
+    // console.log("total_died: " + total_died);
+    // console.log("total_rec: " + total_rec);
 
     var maxInput = parseInt(num_pigs_affect) - (parseInt(total_rec) + parseInt(total_died));
+    // console.log("maxInput: " + maxInput);
 
     $(".input-num-rec"). attr({
         "max" : maxInput, 

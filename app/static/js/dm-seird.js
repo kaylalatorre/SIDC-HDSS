@@ -1,5 +1,5 @@
 /*
-    something
+    Collect SEIRD input from slide rangers
 */
 function getSEIRDInput(input) {
     // console.log(input.value);
@@ -43,7 +43,6 @@ async function load_SEIRD(values, strDisease) {
     
     let metadata = await $.ajax({
         type: 'POST',
-        // url: '/disease-seird/ASF/',
         url: '/disease-seird/' + strDisease + '/',
         data: {
             'values': values
