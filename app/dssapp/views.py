@@ -1144,7 +1144,7 @@ def load_diseaseChart(request, strDisease):
 
     data = []
     # debug(request.method)
-    debug(strDisease + " LOAD DISEASE CHART")    
+    # debug(strDisease + " LOAD DISEASE CHART")    
 
     dChart = {
         'confirmed': [],
@@ -1227,8 +1227,8 @@ def load_diseaseChart(request, strDisease):
         dChart['died'].append([ case_currDate, diedCtr ])
 
     # end point of series data
-    debug(case_currDate)
-    debug(dateToday.date())
+    # debug(case_currDate)
+    # debug(dateToday.date())
 
     if case_currDate != dateToday.date():
         dChart['confirmed'].append([dateToday.date(), 0])
@@ -1239,7 +1239,7 @@ def load_diseaseChart(request, strDisease):
         dChart['recovered'].append([ case_currDate, recoveredCtr ])
         dChart['died'].append([ case_currDate, diedCtr ])
         
-    debug(dChart)
+    # debug(dChart)
 
     # append data to return (table, line chart, map, SEIRD) 
     data.append(dChart)
@@ -1337,8 +1337,7 @@ def load_diseaseSeird(request, strDisease):
     # No. of Days until Death          -- [4] 1 / rho
     # ---------------------------------------------
     """
-    # debug("SEIRD")
-    # debug(strDisease)
+    # debug(strDisease + " LOAD SEIRD")
     # compute for total SIDC pig population
     farmQry = Farm.objects.aggregate(Sum("total_pigs"))
     N = farmQry["total_pigs__sum"]
@@ -1353,6 +1352,7 @@ def load_diseaseSeird(request, strDisease):
         # debug(sParam)
     except:
         params = SEIRD_Input.objects.filter(disease_name=strDisease).first()
+        # debug(params)
         sParam = [
             params.incub_days,
             params.reproduction_num,
@@ -1389,10 +1389,20 @@ def load_diseaseSeird(request, strDisease):
 
     # Feed custom SEIRD function into odeint
     retVal = odeint(derivSEIRD, y0, t, args=(N, beta, gamma, delta, alpha, rho))
-    S, E, I, R, D = retVal.T
-
+    S, E, I, R, D = np.round(retVal.T, 2)
     # debug(retVal)
-    # debug(E)
-    totalPigs = [int(farmQry["total_pigs__sum"]) for i in S.tolist()]
+
+    # compute for N to check correctness of SEIRD
+    x = 0
+    totalPigs = []
+    for s in S.tolist():
+        e = E[x]
+        i = I[x]
+        r = R[x]
+        d = D[x]
+
+        totalPigs.append(round((s + e + i + r + d), 0))
+        x += 1
+
     modelData = [totalPigs, S.tolist(), E.tolist(), I.tolist(), R.tolist(), D.tolist()]
     return JsonResponse(modelData, safe=False)

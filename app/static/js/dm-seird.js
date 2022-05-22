@@ -74,7 +74,7 @@ async function load_SEIRD(values, strDisease) {
             },
             xAxis: {
                 title: {
-                    text: ''
+                    text: 'Days'
                 },
             },
             yAxis: {
@@ -84,28 +84,34 @@ async function load_SEIRD(values, strDisease) {
             },
             tooltip: {
                 shared: true,
-                valueSuffix: ' units'
+                valueSuffix: ' pigs',
             },
             series: [{
                 name: 'Total',
                 data: metadata[0],
                 dashStyle: 'Dash',
-                zIndex: 0
+                zIndex: 0,
+                color: '#404242'
             }, {
                 name: 'Susceptible',
-                data: metadata[1]
+                data: metadata[1],
+                color: '#b4e024'
             }, {
                 name: 'Exposed',
-                data: metadata[2]
+                data: metadata[2],
+                color: '#f0ab16'
             }, {
                 name: 'Infected',
-                data: metadata[3]
+                data: metadata[3],
+                color: '#ed501c'
             }, {
                 name: 'Recovered',
-                data: metadata[4]
+                data: metadata[4],
+                color: '#08cc39'
             }, {
                 name: 'Dead',
-                data: metadata[5]
+                data: metadata[5],
+                color: '#17a4fc'
             }]
         })
     }
