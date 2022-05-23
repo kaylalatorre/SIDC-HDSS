@@ -560,7 +560,7 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_update", 
-                            "total_pigs").order_by('id')
+                            "total_pigs").order_by('last_update','id')
 
 
         # pass all data into an array
@@ -4246,7 +4246,7 @@ def dashboard_view(request):
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
         
-        if bioDateDiff.days > 7:
+        if bioDateDiff.days > 7 and f["total_pigs"] > 0:
             total_needInspect += 1
 
         # for filtering Incidents for latest Farm version

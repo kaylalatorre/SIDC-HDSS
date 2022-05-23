@@ -280,7 +280,7 @@ def selectedHogsHealth(request, farmID):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -493,7 +493,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -737,7 +737,7 @@ def selectedHealthSymptoms(request, farmID):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -947,7 +947,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)

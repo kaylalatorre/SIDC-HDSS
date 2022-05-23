@@ -134,11 +134,7 @@
                                
                                 <tr>
                                     <th>Remarks</td>
-                                    {% if start_weight.remarks %}
                                     <td data-label="Remarks">{{ start_weight.remarks }}</td>
-                                    {% else%}
-                                    <td data-label="Remarks">-</td>
-                                    {% endif %}
                                 </tr>
                                 
                             </tbody>
@@ -172,11 +168,7 @@
                                 </tr>
                                 <tr>
                                     <th>Remarks</td>
-                                    {% if end_weight.remarks %}
                                     <td data-label="Remarks">{{ end_weight.remarks }}</td>
-                                    {% else%}
-                                    <td data-label="Remarks">-</td>
-                                    {% endif %}
                                 </tr>
                                 <tr>
                                     <th>Total Pigs Reached Market Weight</th>
@@ -385,12 +377,12 @@
                                     
                                     <div class="flex" style="margin: 8px 0">
                                         <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-right: 4px; display: none;">Save</button>
-                                        <button class="secondary-btn-red showDisInput btn-cancel-recovered" onclick="CancelRecSave(this)">Cancel</button> 
+                                        <button class="secondary-btn-red showDisInput btn-cancel-recovered" style="display:none;" onclick="CancelRecSave(this)">Cancel</button> 
                                     </div>
                                     
                                 
                                     <!-- for computing total_recovered -->
-                                    <label class="bold-lbl showDisInput">Total Recovered:</label>
+                                    <label class="bold-lbl showDisInput hide">Total Recovered:</label>
                                     <p class="flex-item hide total-rec">{{ case.total_recovered }}</p>
                                     <p class="display-total-rec"> </p>
 
