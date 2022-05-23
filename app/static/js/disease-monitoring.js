@@ -33,7 +33,8 @@ async function diseaseChart(strdisease) {
                 }
 
                 return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
-            })
+            }),
+            color: '#ed501c'
         });
 
         disSeries.push({
@@ -46,7 +47,8 @@ async function diseaseChart(strdisease) {
                 }
 
                 return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
-            })
+            }),
+            color: '#08cc39'
         });
 
         disSeries.push({
@@ -59,7 +61,8 @@ async function diseaseChart(strdisease) {
                 }
 
                 return [Date.UTC(parseInt(dStr[0]), parseInt(dStr[1])-1, parseInt(dStr[2])), elem[1]];
-            })
+            }),
+            color: '#17a4fc'
         });
 
         // console.log(disSeries);

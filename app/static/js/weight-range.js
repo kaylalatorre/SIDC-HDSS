@@ -58,19 +58,24 @@ $(document).ready(async function () {
             // feeding all weight range data to the corresponding categories (main series)
             weightSeries.push({
                 name: '59 kg and below',
-                data: range0
+                data: range0,
+                color: '#ff401f'
             }, {
                 name: '60-79 kg',
-                data: range1
+                data: range1,
+                color: '#ff931f'
             }, {
                 name: '80-99 kg',
-                data: range2
+                data: range2,
+                color: '#ffda1f'
             }, {
                 name: '100-119 kg',
-                data: range3
+                data: range3,
+                color: '#1fff5e'
             }, {
                 name: '120 kg and above',
-                data: range4
+                data: range4,
+                color: '#1cbfff'
             });
 
 
