@@ -8,3 +8,4 @@ init.sh
 app/farmsapp/test.py
 how commit-id
 .env
+seird_init.py
