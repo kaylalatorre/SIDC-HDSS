@@ -303,7 +303,7 @@ async function load_diseaseMap(strDisease) {
             let num_pigs = metadata[i]['num_pigs_affect'];
             let num_rec = metadata[i]['total_recovered'];
             let num_died = metadata[i]['total_died'];
-            let date_update = metadata[i]['date_updated'];
+            let cases = metadata[i]['caseIDs'].sort().join(", ");
 
             if (!(num_pigs)){
                 num_pigs=0;
@@ -321,7 +321,6 @@ async function load_diseaseMap(strDisease) {
             console.log(num_pigs);
             console.log(num_rec);
             console.log(num_died);
-            console.log(date_update);
 
             degRadius = 0.0009 * 10;
 
@@ -375,10 +374,10 @@ async function load_diseaseMap(strDisease) {
 
             farmLoc.addLayer(new L.marker([farmLat, farmLong])
                 .bindTooltip(
+                    '<label class="bold-lbl">Cases: </label>' + cases + '<br>' +
                     '<label class="bold-lbl">No. of pigs affected: </label>' + num_pigs + '<br>' +
                     '<label class="bold-lbl">Recovered:</label> ' + num_rec + ' <br>' +
-                    '<label class="bold-lbl">Dead:</label> ' + num_died + ' <br>' +
-                    '<label class="bold-lbl">Last Updated:</label>' + date_update)).addTo(dmap);
+                    '<label class="bold-lbl">Dead:</label>' + num_died)).addTo(dmap);
 
         }
         console.log("affected");
@@ -422,5 +421,6 @@ async function load_diseaseMap(strDisease) {
         }
 
         L.control.layers(baseMaps, overlayMaps).addTo(dmap);
+        dmap.invalidateSize();
     }
 }

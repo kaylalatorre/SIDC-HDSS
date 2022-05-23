@@ -788,9 +788,9 @@ function filterSearch(){
 
     for(i=0;i<tr.length;i++){    
         raiser=tr[i].getElementsByTagName("td")[1];
-        address=tr[i].getElementsByTagName("td")[3];
-        area = tr[i].getElementsByTagName("td")[4];
-        memcode = tr[i].getElementsByTagName("td")[8];
+        address=tr[i].getElementsByTagName("td")[2];
+        area = tr[i].getElementsByTagName("td")[3];
+        memcode = tr[i].getElementsByTagName("td")[7];
         
         console.log(memcode)
 
