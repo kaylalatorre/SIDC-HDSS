@@ -327,13 +327,6 @@ class WeightForm(ModelForm):
             'min' : 0,
             'step' : 0.01
         })
-        self.fields['total_numHeads'].widget.attrs.update({ 
-            'aria-label' : 'Total No. of Heads', 
-            'type' : 'number',
-            'class' : 'form-control',
-            'placeholder': 'ex. 100',
-            'min' : 0
-        })
         self.fields['total_kls'].widget.attrs.update({ 
             'aria-label' : 'kls', 
             'type' : 'number',
