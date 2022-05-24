@@ -1149,13 +1149,15 @@ function addCase(farmID) {
 
             // console.log("ADD CASE: SUCCESS 200");
             url = "/selected-health-symptoms/" + farmID;
-            location.href = url;       
+            // location.href = url;      
+            window.location = url;       
 
         },
         error: function (res){
             console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
             url = "/add-case/" + farmID;
-            location.href = url;  
+            // location.href = url; 
+            window.location = url; 
         }
     });
 }
