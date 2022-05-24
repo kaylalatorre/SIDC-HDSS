@@ -1227,9 +1227,7 @@ def post_addCase(request, farmID):
                     else:
                         messages.success(request, "New incident report dated " + df + " has been successfully added.", extra_tags='add-incidCase')
                     
-                    debug("BACKEND   -------   ADD CASE: SUCCESS 200")
                     return JsonResponse({"status_code":"200"}, status=200)
-                    # return redirect('/selected-health-symptoms/' + str(farmID))
         
                 else: # (ERROR) User input of num_pigs is not w/in total_pigs range
                     debug("ERROR: Input only no. of pigs within total hogs of Farm.")
