@@ -995,7 +995,7 @@ def submitLabReport(request, lab_ref):
     if request.method == 'POST':
         debug(request.POST)
         lab_ref_no = lab_ref
-        diseaase_name = request.POST.get("disease_name")
+        disease_name = request.POST.get("disease_name")
         incid_id = request.POST.get("incid_id")
         num_pigs_affect = request.POST.get("lab_result")
         date_updated = datetime.now(timezone.utc)
@@ -1006,7 +1006,7 @@ def submitLabReport(request, lab_ref):
         try:
             # save disease case
             dCase = Disease_Case(
-                disease_name    = diseaase_name,
+                disease_name    = disease_name,
                 lab_result      = lab_result,
                 lab_ref_no      = lab_ref_no,
                 date_updated    = date_updated,
@@ -1023,13 +1023,19 @@ def submitLabReport(request, lab_ref):
             Disease_Record(
                 date_filed          = date_updated,
                 num_recovered       = 0,
-                num_died            = total_died,
+                num_died            = 0,
                 ref_disease_case    = dCase,
-                total_died          = total_died,
+                total_died          = 0,
                 total_recovered     = 0
             ).save()
+
             # resolve incident case
-            Hog_Symptoms.objects.filter(id=incid_id).update(report_status="Resolved")
+            remarks = "Tested positive for " + str(disease_name)
+            incid_case = Hog_Symptoms.objects.filter(id=incid_id).first()
+            incid_case.report_status="Resolved"
+            incid_case.remarks = remarks
+            incid_case.save()
+
             # success response
             return HttpResponse(status=200)
         except:
