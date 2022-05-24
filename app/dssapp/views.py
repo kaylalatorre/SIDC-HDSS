@@ -8,6 +8,7 @@ from django.contrib import messages
 
 # for Model imports
 from django.contrib.auth.models import User
+from matplotlib.pyplot import title
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
@@ -1411,3 +1412,29 @@ def load_diseaseSeird(request, strDisease):
     totalPigs = [int(farmQry["total_pigs__sum"]) for i in S.tolist()]
     modelData = [totalPigs, S.tolist(), E.tolist(), I.tolist(), R.tolist(), D.tolist()]
     return JsonResponse(modelData, safe=False)
+
+def saveMortThreshold(request, threshVal):
+    try:
+        mortObj = Threshold_Values.objects.filter(title = "Mortality").first()    
+        mortObj.value = threshVal
+        mortObj.save()
+    except:
+        Threshold_Values(
+            title   = "Mortality",
+            value   = threshVal
+        ).save()
+
+    return HttpResponse(status=200)
+
+def saveBioThreshold(request, threshVal):
+    try:
+        bioObj = Threshold_Values.objects.filter(title = "Biosecurity").first()    
+        bioObj.value = threshVal
+        bioObj.save()
+    except:
+        Threshold_Values(
+            title   = "Biosecurity",
+            value   = threshVal
+        ).save()
+
+    return HttpResponse(status=200)
