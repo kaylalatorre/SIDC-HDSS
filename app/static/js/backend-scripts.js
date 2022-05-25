@@ -1449,18 +1449,19 @@ $('.btn-save-recovered').on('click', function () {
 // }
 
 /** 
-* Saves the threshhold using the corresponding url 
-*/
+ * Saves the threshhold using the corresponding url 
+ */
 function saveThreshold(buttonElem, url) {
     let newVal = $.trim($(buttonElem).siblings('input').val());
     let initVal = $(buttonElem).val();
-    let percentRegex = /^\d+%$/; // RegEx: any integer + '%'
+    let percentRegex = /^\d+(.\d+)*%$/; // RegEx: any float + '%' does not allow decimal point as start
+    // /^(\d*.)?\d+%$/  allows decimal point at start
     let newValNum = /\d+/.exec(newVal)[0];
-    if (percentRegex.test(newVal) && newValNum <= 100) {
+    if (percentRegex.test(newVal) && newValNum <= 100.00) {
         // Only do an AJAX request if there is a change in the value. Ignore otherwise
         if (initVal != newValNum) {
             $.ajax({
-                type:'POST',
+                type: 'POST',
                 url: `${url}${newValNum}`
             });
         }
@@ -1468,9 +1469,11 @@ function saveThreshold(buttonElem, url) {
         $(buttonElem).siblings('input').val(`${initVal}%`);
         console.log('invalid input');
     }
+    return true;
+}
 /** 
-* Toggle threshhold inputting by disabling the input field and changing the button icon.
-*/}
+ * Toggle threshhold inputting by disabling the input field and changing the button icon.
+ */
 function toggleThreshInput(buttonElem) {
     $(buttonElem).children('i').toggleClass('bx-edit bx-save');
     $(buttonElem).siblings('input').prop('disabled', function (idx, oldProp) {
@@ -1485,23 +1488,25 @@ $('#threshold-mortRate').on('click', function () {
     // Save threshold 
     // if user wants to save
     if ($(this).children('i').hasClass('bx-save')) {
-        saveThreshold(this, '/saveThreshold/mortality/');
+        success = saveThreshold(this, '/saveThreshold/mortality/');
     }
     // Toggle from edit to save and vise versa
     toggleThreshInput(this);
-    window.location.reload();
+    if (success)
+        window.location.reload();
 });
 
 /** 
  * Action Recommendation threshold biosecurity.
  */
- $('#threshold-bioRate').on('click', function () {
+$('#threshold-bioRate').on('click', function () {
     // Save threshold 
     // if user wants to save
     if ($(this).children('i').hasClass('bx-save')) {
-        saveThreshold(this, '/saveThreshold/biosecurity/');
+        success = saveThreshold(this, '/saveThreshold/biosecurity/');
     }
     // Toggle from edit to save and vise versa
     toggleThreshInput(this);
-    window.location.reload();
+    if (success)
+        window.location.reload();
 });
