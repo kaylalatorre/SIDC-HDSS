@@ -1124,6 +1124,17 @@ $('.symptomsSave').on('click', function () {
     }
 });
 
+/**
+ * For debugging current URL location.
+ */
+function showLoc() {
+    var oLocation = location, aLog = ["Property (Typeof): Value", "location (" + (typeof oLocation) + "): " + oLocation ];
+    for (var sProp in oLocation){
+    aLog.push(sProp + " (" + (typeof oLocation[sProp]) + "): " + (oLocation[sProp] || "n/a"));
+    }
+    console.log(aLog.join("\n"));
+  }
+
 /** 
  * on-click POST AJAX function for adding an Incident Case.
  * @param farmID string ID of selected Farm record
@@ -1147,17 +1158,22 @@ function addCase(farmID) {
         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
         success: function (response) {
 
+            showLoc();
             // console.log("ADD CASE: SUCCESS 200");
             url = "/selected-health-symptoms/" + farmID;
             // location.href = url;      
-            window.location = url;       
+            // window.location = url;       
+            window.location.replace(url);
 
         },
         error: function (res){
+            showLoc();
+
             console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
             url = "/add-case/" + farmID;
             // location.href = url; 
-            window.location = url; 
+            // window.location = url; 
+            window.location.replace(url);
         }
     });
 }
@@ -1416,33 +1432,4 @@ $('.btn-save-recovered').on('click', function () {
 
 });
 
-// function updateDRCase(elem, drID) {
-
-//     // get no. of pigs (input field in recovered)
-//     var total_rec = $("input.input-total-rec").val();
-
-    
-
-//     ajaxCSRF();
-
-//     $.ajax({
-//         type: 'POST',
-//         url: '/post-addCase/' + farmID, 
-//         data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
-//         success: function (response) {
-            
-//             if (response.status_code === "200"){
-//                 url = "/selected-health-symptoms/" + farmID;
-//                 location.href = url;          
-//             } 
-//             else {
-//                 console.log("ERROR [" + response.status_code + "]: " + response.error);
-//             }
-
-//         },
-//         error: function (res){
-//             console.log("ERROR [" + res.status_code + "]: " +  res.error);
-//         }
-//     });
-// }
 
