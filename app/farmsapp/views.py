@@ -79,7 +79,7 @@ from django.utils.timezone import (
 
 # for list comapare
 from collections import Counter
-
+from pprint import pprint
 def debug(m):
     """
     For debugging purposes
@@ -88,12 +88,20 @@ def debug(m):
     :type m: String
     """
     print("------------------------[DEBUG]------------------------")
+    
+    
     try:
-        print(m)
+        pprint(m)
     except:
-        print("---------------------[Print_ERROR]---------------------")
-    else:     
-        print("--------------------[Print_SUCCESS]--------------------")
+        try:
+            print(m)
+        except:
+            print("---------------------[Print_ERROR]---------------------")
+        else:     
+            print("--------------------[Print_SUCCESS]--------------------")
+        return
+        
+    print("--------------------[Print_SUCCESS]--------------------")
 
 def debugFunc(func, message):
     print("-----------------------------[{}]------------------------START".format(str(message).upper()))
