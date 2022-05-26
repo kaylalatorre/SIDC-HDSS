@@ -585,15 +585,15 @@ $('#save-area').on('click', function () {
     alert("No area name provided");
 });
 
-$('.submutAncmt').on('click', function(){
+$('.submutAncmt').on('click', function () {
     alert($('input[type="checkbox"]').first());
 });
 
-$('input[type="checkbox"][value="All Raisers"]').on('click', function(){
+$('input[type="checkbox"][value="All Raisers"]').on('click', function () {
     $('input[type="checkbox"]:not([value="All Raisers"])').prop("checked", false);
 });
 
-$('input[type="checkbox"]:not([value="All Raisers"])').on('click', function(){
+$('input[type="checkbox"]:not([value="All Raisers"])').on('click', function () {
     $('input[type="checkbox"][value="All Raisers"]').prop("checked", false);
 });
 
@@ -640,11 +640,11 @@ $('#approveChecked.primary-btn').on('click', function () {
     for_approval($(this), 'approve');
 });
 $('#rejectAncmts.primary-btn-red').on('click', function () {
-    if ($('#rejectMessage').val()){
+    if ($('#rejectMessage').val()) {
         for_approval($('#rejectChecked.primary-btn-red'), 'reject');
         return;
     }
-    alert("No reason provided");    
+    alert("No reason provided");
 });
 
 /**
@@ -857,7 +857,7 @@ function resubmitActivity(actDate, actFormID, farmID) {
     var x = 0;
     // pass each row into one object    
     var activityList = [];
-    for (var i = 0; i < date.length; i++){
+    for (var i = 0; i < date.length; i++) {
         if (date[i].value !== '') {
             var activity = {
                 date: formatDate(date[i].value),
@@ -957,7 +957,8 @@ function rejectActivity(actFormID) {
         data: {
             "id": actFormID,
             "is_checked": false,
-            "reason": rejectReason },
+            "reason": rejectReason
+        },
 
         success: function (response) {
             if (response.status == 200) {
@@ -972,7 +973,7 @@ function rejectActivity(actFormID) {
     })
 }
 
-$('.edit_ancmtRow').on("click", function(){
+$('.edit_ancmtRow').on("click", function () {
     $(this).prop('hidden', true);
     $('.edit_ancmtRow').prop('disabled', true);
     $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").prop('hidden', true);
@@ -981,7 +982,7 @@ $('.edit_ancmtRow').on("click", function(){
     $(this).siblings("button.ancmt_edit.cancel_ancmtRow").prop('hidden', false).prop('disabled', false);
 });
 
-$('.cancel_ancmtRow').on("click", function(){
+$('.cancel_ancmtRow').on("click", function () {
     $(this).prop('hidden', true).prop('disabled', true);
     $(this).siblings("button.ancmt_edit.save_ancmtRow").prop('hidden', true).prop('disabled', true);
 
@@ -992,12 +993,12 @@ $('.cancel_ancmtRow').on("click", function(){
     $('.edit_ancmtRow').prop('disabled', false);
 });
 
-$('.save_ancmtRow').on("click", function(){
+$('.save_ancmtRow').on("click", function () {
     $(this).prop('hidden', true).prop('disabled', true);
     $(this).siblings("button.ancmt_edit.cancel_ancmtRow").prop('hidden', true).prop('disabled', true);
 
     $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").text($(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").val())
-    
+
     $(this).parent().parent().siblings("td.ancmt_editSubj").children("p.ancmt_display").prop('hidden', false);
     $(this).parent().parent().siblings("td.ancmt_editSubj").children(".ancmt_edit").prop('hidden', true);
     $(this).siblings("button.ancmt_display.edit_ancmtRow").prop('hidden', false);
@@ -1097,8 +1098,7 @@ $('.symptomsSave').on('click', function () {
                     if (updatedStat === "Resolved") {
                         $("#input-remarks-" + incidID).hide();
                         $("#incd-remarks-" + incidID).show();
-                    }
-                    else {
+                    } else {
                         $("#input-remarks-" + incidID).hide();
                         $("#incd-remarks-" + incidID).hide();
                     }
@@ -1138,7 +1138,7 @@ function showLoc() {
 /** 
  * on-click POST AJAX function for adding an Incident Case.
  * @param farmID string ID of selected Farm record
-*/
+ */
 function addCase(farmID) {
 
     // get no. of pigs affected
@@ -1146,7 +1146,7 @@ function addCase(farmID) {
 
     // get symptoms list based on HTML class of input checkbox tag; put in Array
     var symptomsArr = [];
-    $(".check-symp").each(function() {
+    $(".check-symp").each(function () {
         symptomsArr.push($(this).prop('checked'));
     });
 
@@ -1154,8 +1154,11 @@ function addCase(farmID) {
 
     $.ajax({
         type: 'POST',
-        url: '/post-addCase/' + farmID, 
-        data: {"num_pigsAffected": num_pigs, "symptomsArr": symptomsArr}, 
+        url: '/post-addCase/' + farmID,
+        data: {
+            "num_pigsAffected": num_pigs,
+            "symptomsArr": symptomsArr
+        },
         success: function (response) {
 
             showLoc();
@@ -1184,7 +1187,7 @@ function addCase(farmID) {
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
- function filterMortRep() {
+function filterMortRep() {
 
     var sDate = $("#mort-start-date").val();
     var eDate = $("#mort-end-date").val();
@@ -1222,14 +1225,14 @@ function addCase(farmID) {
     } catch (error) {
         console.log(error);
     }
- }
+}
 
 
 /* function filtering Mortality report based on (1) date range and (2) areaName
  * 
  * Note: also contains an AJAX .load() for updating table contents upon filter.
  */
- function filterDiseaseRep() {
+function filterDiseaseRep() {
 
     var sDate = $("#disease-start-date").val();
     var eDate = $("#disease-end-date").val();
@@ -1266,14 +1269,14 @@ function addCase(farmID) {
     } catch (error) {
         console.log(error);
     }
- }
+}
 
- /**
+/**
  * Search function for retrieving incident, biosecurity, and announcement details based on techID.
  * @param {String} techID 
  * @returns loaded data for incident, biosecurity, and announcement records
  */
- function searchTechTasks(techID) {
+function searchTechTasks(techID) {
     try {
 
         url = '/technician-assignment/search-tasks/' + techID;
@@ -1300,41 +1303,41 @@ function addCase(farmID) {
     } catch (error) {
         console.log(error);
     }
- }
+}
 
- /**
+/**
  * On-click function for Edit button. Calls search searchTechTasks() once triggered.
  */
- $('.assignEdit').on('click', function () {
+$('.assignEdit').on('click', function () {
     var techID = $(this).parent().parent().siblings(":eq(3)").children().children().val();
 
     searchTechTasks(techID);
-    
- });
 
- /**
+});
+
+/**
  * On-change function for technician assigment dropdown. Calls search searchTechTasks() once triggered.
  */
- $('.tech-assign-drop').change(function () {
+$('.tech-assign-drop').change(function () {
     var techID = $(this).val();
 
     searchTechTasks(techID);
- });
+});
 
 /** 
-*  Function for submitting lab result for an incident case (Dashboard > Tentative Diagnosis > Input Result).
-*/
-$('.submit-reference').on('click', function(){
+ *  Function for submitting lab result for an incident case (Dashboard > Tentative Diagnosis > Input Result).
+ */
+$('.submit-reference').on('click', function () {
     // Split ID to <disease name> and <incid_id> and assign to variables
     let [d_name, incid_id] = $(this)[0].id.split(':');
-    
+
     // then assign the other variables
     let lab_ref = $(`#input-reference_${incid_id}`).val();
     let lab_result = $(`#input-positive_${incid_id}`).val() // 0 == positive, 1 == negative
     console.log(lab_result);
     console.log(Number("lol"));
     // check if inputs are valid
-    if(!Number(incid_id) || isNaN(Number(lab_ref)) || isNaN(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)){
+    if (!Number(incid_id) || isNaN(Number(lab_ref)) || isNaN(Number(lab_result)) || !["ASF", "CSF", "IAVS", "ADV", "PRRS", "PED", "Others"].includes(d_name)) {
         console.log(!Number(incid_id));
         console.log(isNaN(Number(lab_ref)));
         console.log(isNaN(Number(lab_result)));
@@ -1342,7 +1345,7 @@ $('.submit-reference').on('click', function(){
         console.log("Invalid parameters were sent");
         return false;
     }
-        
+
     // POST data to url: /submit-lab-report/<lab_ref_no>
     $.ajax({
         type: 'POST',
@@ -1362,7 +1365,7 @@ $('.submit-reference').on('click', function(){
 
 });
 
-function getDiseaseInfo(strDisease){
+function getDiseaseInfo(strDisease) {
     try {
 
         url = "/disease-monitoring/" + strDisease + "/";
@@ -1384,7 +1387,7 @@ function getDiseaseInfo(strDisease){
             load_diseaseMap(strDisease);
             $(this).children().unwrap();
         });
-        
+
 
     } catch (error) {
         console.log(error);
@@ -1395,7 +1398,7 @@ function getDiseaseInfo(strDisease){
 /** 
  * on-click POST AJAX function for updating Disease Case and adding a Disease Record.
  * @param drID string ID of Disease Record
-*/
+ */
 
 $('.btn-save-recovered').on('click', function () {
     var num_rec = $(this).parent().siblings(":eq(1)").val();
@@ -1412,24 +1415,87 @@ $('.btn-save-recovered').on('click', function () {
 
     $.ajax({
         type: 'POST',
-        url: '/update-disease-case/' + discaseID, 
-        data: {"num_rec": num_rec}, 
+        url: '/update-disease-case/' + discaseID,
+        data: {
+            "num_rec": num_rec
+        },
         success: function (response) {
-            
-            if (response.status_code === "200"){
+
+            if (response.status_code === "200") {
                 url = '/selected-health-symptoms/' + farmID;
-                location.href = url;          
-            } 
-            else {
+                location.href = url;
+            } else {
                 console.log("ERROR [" + response.status_code + "]: " + response.error);
             }
 
         },
-        error: function (res){
-            console.log("ERROR [" + res.status_code + "]: " +  res.error);
+        error: function (res) {
+            console.log("ERROR [" + res.status_code + "]: " + res.error);
         }
     });
 
 });
 
 
+/** 
+ * Saves the threshhold using the corresponding url 
+ */
+function saveThreshold(buttonElem, url) {
+    let newVal = $.trim($(buttonElem).siblings('input').val());
+    let initVal = $(buttonElem).val();
+    let percentRegex = /^\d+(.\d+)*%$/; // RegEx: any float + '%' does not allow decimal point as start
+    // /^(\d*.)?\d+%$/  allows decimal point at start
+    let newValNum = /\d+/.exec(newVal)[0];
+    if (percentRegex.test(newVal) && newValNum <= 100.00) {
+        // Only do an AJAX request if there is a change in the value. Ignore otherwise
+        if (initVal != newValNum) {
+            $.ajax({
+                type: 'POST',
+                url: `${url}${newValNum}`
+            });
+        }
+    } else {
+        $(buttonElem).siblings('input').val(`${initVal}%`);
+        console.log('invalid input');
+    }
+    return true;
+}
+/** 
+ * Toggle threshhold inputting by disabling the input field and changing the button icon.
+ */
+function toggleThreshInput(buttonElem) {
+    $(buttonElem).children('i').toggleClass('bx-edit bx-save');
+    $(buttonElem).siblings('input').prop('disabled', function (idx, oldProp) {
+        return !oldProp;
+    });
+}
+
+/** 
+ * Action Recommendation threshold mortality.
+ */
+$('#threshold-mortRate').on('click', function () {
+    // Save threshold 
+    // if user wants to save
+    if ($(this).children('i').hasClass('bx-save')) {
+        success = saveThreshold(this, '/saveThreshold/mortality/');
+    }
+    // Toggle from edit to save and vise versa
+    toggleThreshInput(this);
+    if (success)
+        window.location.reload();
+});
+
+/** 
+ * Action Recommendation threshold biosecurity.
+ */
+$('#threshold-bioRate').on('click', function () {
+    // Save threshold 
+    // if user wants to save
+    if ($(this).children('i').hasClass('bx-save')) {
+        success = saveThreshold(this, '/saveThreshold/biosecurity/');
+    }
+    // Toggle from edit to save and vise versa
+    toggleThreshInput(this);
+    if (success)
+        window.location.reload();
+});
