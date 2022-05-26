@@ -1422,7 +1422,8 @@ def getAxRBio(score, areaFarms):
 
             # recommendations
             aXr['recommendations'].append("- Inspect the following farms: [{}]. Send an announcement to raisers involved.".format(", ".join(needInspection)))
-            aXr['recommendations'].append("- View the biosecurity measures and latest biosecurity checklist of farms: [{}].".format(", ".join( sorted(list(set(lowestExt)-set(lowestInt))+list(set(lowestInt)-set(lowestExt))) )))
+            
+            aXr['recommendations'].append("- View the biosecurity measures and latest biosecurity checklist of farms: [{}].".format(", ".join( sorted(set(list(lowestInt)+list(lowestExt))) )))
 
     return aXr
 
@@ -1586,7 +1587,7 @@ def actionRecommendation(request):
         threshVals[thresh['title']] = thresh['value']
     recommendations = getRecommendations(farmQry, threshVals)
 
-    debug(recommendations)
+    # debug(recommendations)
     ave_intbio = 0
     ave_extbio = 0
     ave_mortRate = 0
