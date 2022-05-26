@@ -79,6 +79,7 @@
                     <tbody>
                         {% if aRecs.values %}
                         {% for rec in aRecs.values %}
+                        {% if rec.item %}
                         <tr>
                             <td>{{rec.item}}</td>
                             <td>
@@ -143,6 +144,7 @@
                                 </ul>
                             </td>
                         </tr>
+                        {% endif %}
                         {% endfor %}
                         {% else %}
                         <div>No thresholds has been set</div>

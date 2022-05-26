@@ -1438,7 +1438,8 @@ def getAnalysisAndRecommend(intBioLvl, extBioLvl, mortRtLvl, mortThresh, areaFar
         bioItem:getAxRBio(bioscore, areaFarms) 
     }
     aXr[mortItem]['item'] = mortItem
-    aXr[bioItem]['item'] = bioItem
+    if bioscore > 0:
+        aXr[bioItem]['item'] = bioItem
     return aXr
 
 def getRecommendations(farmQry, threshVals):
@@ -1585,7 +1586,7 @@ def actionRecommendation(request):
         threshVals[thresh['title']] = thresh['value']
     recommendations = getRecommendations(farmQry, threshVals)
 
-    # debug(recommendations)
+    debug(recommendations)
     ave_intbio = 0
     ave_extbio = 0
     ave_mortRate = 0
