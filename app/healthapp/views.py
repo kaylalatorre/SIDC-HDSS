@@ -1293,13 +1293,17 @@ def addMortality(request, farmID):
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
 
-    latest_toDate = 0
+    # get beginning inventory value
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=farmVersion.id).all()
     
+    num_begInv = 0
+    for pen in pigpenQry:            
+        num_begInv += pen.num_heads
+
+    # get toDate value
+    latest_toDate = 0
     if mortQry :
-        num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
         latest_toDate = int(mortQry.get("num_toDate"))
-    else:
-        num_begInv = int(farmQuery.total_pigs)
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
