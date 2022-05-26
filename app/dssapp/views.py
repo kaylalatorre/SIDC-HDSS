@@ -1370,8 +1370,6 @@ def getAxRMort(score, mortThresh, areaFarms):
         aXr['recommendations'].append(baseRec + inspectRec + resourceRec + reportRec)
         aXr['recommendations'].append(baseRec + inspectRec + resourceRec)
 
-    else:
-        return False
     return aXr
 
 def getAxRBio(score, areaFarms):
@@ -1426,9 +1424,6 @@ def getAxRBio(score, areaFarms):
             aXr['recommendations'].append("- Inspect the following farms: [{}]. Send an announcement to raisers involved.".format(", ".join(needInspection)))
             aXr['recommendations'].append("- View the biosecurity measures and latest biosecurity checklist of farms: [{}].".format(", ".join( sorted(list(set(lowestExt)-set(lowestInt))+list(set(lowestInt)-set(lowestExt))) )))
 
-
-    else:
-        return False
     return aXr
 
 def getAnalysisAndRecommend(intBioLvl, extBioLvl, mortRtLvl, mortThresh, areaFarms, areaName):
