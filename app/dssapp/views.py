@@ -1291,7 +1291,7 @@ def getAxRMort(score, mortThresh, areaFarms):
         'analysis_activities':[],
         'analysis_cases':[],
         'recommendations':[]}
-
+    
     for farm in areaFarms:
         if len(farm.missingActs) != 0:
             aXr['analysis_activities'].append("- Farm {id:03} has not done the following activities in the past week: [{activities}]".format(id=farm.id, activities=', '.join(farm.missingActs)))
@@ -1303,7 +1303,7 @@ def getAxRMort(score, mortThresh, areaFarms):
             if farm.mortalities != 0:
                 aXr['analysis_mortality'].append("- Farm {id:03} has {morts} mortalities to date".format(id=farm.id, morts=farm.mortalities))
             if (now().date() - farm.lastUpdateBiosec).days > 14:
-                needInspect.append["{:03}".format(farm.id)]
+                needInspect.append("{:03}".format(farm.id))
         aXr['recommendations'].append("- Farms [{}] have not been inspected for the past 2 weeks. Inspect accordingly.".format(", ".join(needInspect)))
     
     elif score == 1:
@@ -1443,6 +1443,13 @@ def getAnalysisAndRecommend(intBioLvl, extBioLvl, mortRtLvl, mortThresh, areaFar
 
 def getRecommendations(farmQry, threshVals):
     areaDetails = {}
+    
+    # abort if threshVals is empty
+    try:
+        threshVals['Mortality']
+        threshVals['Biosecurity']
+    except:
+        return "Thresholds has not been set"
 
     actList = ['Inspection', 'Vaccinations', 'Delivery of Medicine', 'Delivery of Veterinary Supplies']
     for f in farmQry:

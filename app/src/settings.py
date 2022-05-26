@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'src.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'db-uat-2',
+        'NAME': 'db-UAT',
         # 'NAME': 'sidcDB',        
         'USER': 'sidcdbuser',
         'PASSWORD': 'sidcdb123',
