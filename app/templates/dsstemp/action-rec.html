@@ -3,94 +3,155 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Action Recommendation</title>
+<title>SIDC-HDSS | Action Recommendation</title>
 {% endblock page_title %}
 
 {% block section %}
-    <div class="main-div table-container">
-        <h1>Action Recommendation</h1>
-        <div class="ar-grid">
-            <div class="ar-item-x">
-                <h3>Thresholds</h3>
-                <div class="thresholds-input">
-                    <div class="input-group mb-3">
-                        <span style="width: 36%">Mortality Rate</span>
-                        <input type="text" class="form-control" placeholder="5%" value="5%">
-                        <button class="primary-btn button-small" type="button"><i class='bx bx-edit' ></i></button>
-                    </div>
-                    <div class="input-group mb-3">
-                        <span style="width: 36%">Biosecurity Rate</span>
-                        <input type="text" class="form-control" placeholder="5%" value="5%">
-                        <button class="primary-btn button-small" type="button"><i class='bx bx-edit' ></i></button>
-                    </div>
+<div class="main-div table-container">
+    <h1>Action Recommendation</h1>
+    <div class="ar-grid">
+        <div class="ar-item-x">
+            <h3>Thresholds</h3>
+            <div class="thresholds-input">
+                <div class="input-group mb-3">
+                    <span style="width: 36%">Mortality Rate</span>
+                    <input type="text" class="form-control" placeholder="{{threshVals.Mortality}}%"
+                        value="{{threshVals.Mortality}}%" disabled>
+                    <button class="primary-btn button-small" type="button" id="threshold-mortRate"
+                        value="{{threshVals.Mortality}}"><i class='bx bx-edit'></i></button>
                 </div>
-            </div>
-            <div class="ar-item">
-                <label for="ar-mortality-rate">Mortality Rate</label>
-                <p id="ar-mortality-rate" class="h1">{{aStats.ave_mort_rate}}%</p>
-            </div>
-            <div class="ar-item">
-                <label for="ar-internal-rate">Int. Biosecurity Rate</label>
-                <p id="ar-internal-rate" class="h1">{{aStats.ave_intbio}}%</p>
-            </div>
-            <div class="ar-item">
-                <label for="ar-external-rate">Ext. Biosecurity Rate</label>
-                <p id="ar-external-rate" class="h1">{{aStats.ave_extbio}}%</p>
-            </div>
-            <div class="ar-item">
-                <label for="ar-incid">New Incidents Reported</label>
-                <p id="ar-incid" class="h1">{{aStats.total_active}}</p>
-            </div>
-            <div class="ar-item-x">
-                <label for="ar-disease">Confirmed Disease Cases</label>
-                <p id="ar-disease" class="h1">{{aStats.total_dcases}}</p>
-                <div><a href="/disease-monitoring/ASF" class="button secondary-btn">View Disease Monitoring</a></div>
+                <div class="input-group mb-3">
+                    <span style="width: 36%">Biosecurity Rate</span>
+                    <input type="text" class="form-control" placeholder="{{threshVals.Biosecurity}}%"
+                        value="{{threshVals.Biosecurity}}%" disabled>
+                    <button class="primary-btn button-small" type="button" id="threshold-bioRate"
+                        value="{{threshVals.Biosecurity}}"><i class='bx bx-edit'></i></button>
+                </div>
             </div>
         </div>
-        <!-- table -->
-        <div>
+        <div class="ar-item">
+            <label for="ar-mortality-rate">Mortality Rate</label>
+            <p id="ar-mortality-rate" class="h1">{{aStats.ave_mort_rate}}%</p>
+        </div>
+        <div class="ar-item">
+            <label for="ar-internal-rate">Int. Biosecurity Rate</label>
+            <p id="ar-internal-rate" class="h1">{{aStats.ave_intbio}}%</p>
+        </div>
+        <div class="ar-item">
+            <label for="ar-external-rate">Ext. Biosecurity Rate</label>
+            <p id="ar-external-rate" class="h1">{{aStats.ave_extbio}}%</p>
+        </div>
+        <div class="ar-item">
+            <label for="ar-incid">New Incidents Reported</label>
+            <p id="ar-incid" class="h1">{{aStats.total_active}}</p>
+        </div>
+        <div class="ar-item-x">
+            <label for="ar-disease">Confirmed Disease Cases</label>
+            <p id="ar-disease" class="h1">{{aStats.total_dcases}}</p>
+            <div><a href="/disease-monitoring/ASF" class="button secondary-btn">View Disease Monitoring</a></div>
+        </div>
+    </div>
+    <!-- table -->
+    <div>
+        <div class="print-header">
+            <h1>SIDC | Hogs Disease Surveillance System</h1>
+            <p>Actions Recommended dated July 1, 2022</p>
+        </div>
+        <div class="flex subheading">
+            <h3 class="flex-item">Analysis and Recommendations</h3>
+            <button class="primary-btn"><i class='bx bx-printer'></i>Print</button>
+        </div>
+        <div id="rep-ar">
             <div class="print-header">
                 <h1>SIDC | Hogs Disease Surveillance System</h1>
-                <p>Actions Recommended dated July 1, 2022</p>
+                <p>Action Recommendation Report</p>
             </div>
-            <div class="flex subheading">
-                <h3 class="flex-item">Analysis and Recommendations</h3>
-                <button class="primary-btn"><i class='bx bx-printer' ></i>Print</button>
-            </div>
-            <div id="rep-ar">
-                <div class="print-header">
-                    <h1>SIDC | Hogs Disease Surveillance System</h1>
-                    <p>Action Recommendation Report</p>
-                </div>
-                <div class="box-style">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th style="width: 20%">Item</th>
-                                <th style="width: 40%">Analysis</th>
-                                <th style="width: 40%">Recommendation</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Mortality Rate</td>
-                                <td>
-                                    <ul class="analysis">
-                                        <li>Bucal, Batangas has the highest mortality rate.</li>
-                                        <li>Mortality rate is 3% higher than standards.</li>
-                                    </ul>
-                                </td>
-                                <td>
-                                    <ul class="rec">
-                                        <li>Recommendations</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="box-style">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">Item</th>
+                            <th style="width: 40%">Analysis</th>
+                            <th style="width: 40%">Recommendation</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if aRecs.values %}
+                        {% for rec in aRecs.values %}
+                        <tr>
+                            <td>{{rec.item}}</td>
+                            <td>
+                                <ul class="analysis">
+                                    {% if rec.analysis_activities %}
+                                    {% for item in rec.analysis_activities %}
+                                    <li>
+                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                    </li>
+                                    {% endfor %}
+                                    <br>
+                                    {% endif %}
+
+                                    {% if rec.analysis_biosec  %}
+                                    {% for item in rec.analysis_biosec %}
+                                    <li>
+                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                    </li>
+                                    {% endfor %}
+                                    <br>
+                                    {% endif %}
+
+                                    {% if rec.analysis_inspection %}
+                                    {% for item in rec.analysis_inspection %}
+                                    <li>
+                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                    </li>
+                                    {% endfor %}
+                                    <br>
+                                    {% endif %}
+
+                                    {% if rec.analysis_cases %}
+                                    {% for item in rec.analysis_cases %}
+                                    <li>
+                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                    </li>
+                                    {% endfor %}
+                                    <br>
+                                    {% endif %}
+
+                                    {% if rec.analysis_mortality %}
+                                    {% for item in rec.analysis_mortality %}
+                                    <li>
+                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                    </li>
+                                    {% endfor %}
+                                    <br>
+                                    {% endif %}
+
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="rec">
+                                    {% if rec.recommendations %}
+                                    {% for item in rec.recommendations %}
+                                    <li>
+                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                    </li>
+                                    {% endfor %}
+                                    <br>
+                                    {% endif %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <div>No thresholds has been set</div>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    
+</div>
+
 {% endblock section %}

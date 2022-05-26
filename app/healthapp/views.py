@@ -1056,7 +1056,12 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
-                case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+
+                if case['total_recovered'] is not None and case['total_died'] is not None:
+                    case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+                else:
+                    case['max_recovered'] = 0
+                    
                 cases.append(case)
     # debug(cases)
 
@@ -1298,13 +1303,17 @@ def addMortality(request, farmID):
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
 
-    latest_toDate = 0
+    # get beginning inventory value
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=farmVersion.id).all()
     
+    num_begInv = 0
+    for pen in pigpenQry:            
+        num_begInv += pen.num_heads
+
+    # get toDate value
+    latest_toDate = 0
     if mortQry :
-        num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
         latest_toDate = int(mortQry.get("num_toDate"))
-    else:
-        num_begInv = int(farmQuery.total_pigs)
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
