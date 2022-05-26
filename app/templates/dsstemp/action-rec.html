@@ -15,13 +15,13 @@
                 <div class="thresholds-input">
                     <div class="input-group mb-3">
                         <span style="width: 36%">Mortality Rate</span>
-                        <input type="text" class="form-control" placeholder="5%" value="5%" disabled>
-                        <button class="primary-btn button-small" type="button" id="threshold-mortRate" value="5"><i class='bx bx-edit' ></i></button>
+                        <input type="text" class="form-control" placeholder="{{threshVals.Mortality}}%" value="{{threshVals.Mortality}}%" disabled>
+                        <button class="primary-btn button-small" type="button" id="threshold-mortRate" value="{{threshVals.Mortality}}"><i class='bx bx-edit' ></i></button>
                     </div>
                     <div class="input-group mb-3">
                         <span style="width: 36%">Biosecurity Rate</span>
-                        <input type="text" class="form-control" placeholder="5%" value="5%" disabled>
-                        <button class="primary-btn button-small" type="button" id="threshold-bioRate" value="5"><i class='bx bx-edit' ></i></button>
+                        <input type="text" class="form-control" placeholder="{{threshVals.Biosecurity}}%" value="{{threshVals.Biosecurity}}%" disabled>
+                        <button class="primary-btn button-small" type="button" id="threshold-bioRate" value="{{threshVals.Biosecurity}}"><i class='bx bx-edit' ></i></button>
                     </div>
                 </div>
             </div>
@@ -71,21 +71,62 @@
                                 <th style="width: 40%">Recommendation</th>
                             </tr>
                         </thead>
+                        
                         <tbody>
+                            {% for rec in aRecs.values %}
                             <tr>
-                                <td>Mortality Rate</td>
+                                <td>{{rec.item}}</td>
                                 <td>
                                     <ul class="analysis">
-                                        <li>Bucal, Batangas has the highest mortality rate.</li>
-                                        <li>Mortality rate is 3% higher than standards.</li>
+                                        {% if rec.analysis_activities %}
+                                            {% for item in rec.analysis_activities %}
+                                                <li>{{item}}</li>
+                                            {% endfor %}
+                                            <br>
+                                        {% endif %}
+                                        
+                                        {% if rec.analysis_biosec  %}
+                                            {% for item in rec.analysis_biosec %}
+                                                <li>{{item}}</li>
+                                            {% endfor %}
+                                            <br>
+                                        {% endif %}
+
+                                        {% if rec.analysis_inspection %}
+                                            {% for item in rec.analysis_inspection %}
+                                                <li>{{item}}</li>
+                                            {% endfor %}
+                                            <br>
+                                        {% endif %}
+
+                                        {% if rec.analysis_cases %}
+                                            {% for item in rec.analysis_cases %}
+                                                <li>{{item}}</li>
+                                            {% endfor %}
+                                            <br>
+                                        {% endif %}
+
+                                        {% if rec.analysis_mortality %}
+                                            {% for item in rec.analysis_mortality %}
+                                                <li>{{item}}</li>
+                                            {% endfor %}
+                                            <br>
+                                        {% endif %}
+                                        
                                     </ul>
                                 </td>
                                 <td>
                                     <ul class="rec">
-                                        <li>Recommendations</li>
+                                        {% if rec.recommendations %}
+                                            {% for item in rec.recommendations %}
+                                                <li>{{item}}</li>
+                                            {% endfor %}
+                                            <br>
+                                        {% endif %}
                                     </ul>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
