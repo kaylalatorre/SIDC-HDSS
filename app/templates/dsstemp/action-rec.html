@@ -80,35 +80,35 @@
                                     <ul class="analysis">
                                         {% if rec.analysis_activities %}
                                             {% for item in rec.analysis_activities %}
-                                                <li>{{item}}</li>
+                                                <li><pre>{{item}}</pre></li>
                                             {% endfor %}
                                             <br>
                                         {% endif %}
                                         
                                         {% if rec.analysis_biosec  %}
                                             {% for item in rec.analysis_biosec %}
-                                                <li>{{item}}</li>
+                                                <li><pre>{{item}}</pre></li>
                                             {% endfor %}
                                             <br>
                                         {% endif %}
 
                                         {% if rec.analysis_inspection %}
                                             {% for item in rec.analysis_inspection %}
-                                                <li>{{item}}</li>
+                                                <li><pre>{{item}}</pre></li>
                                             {% endfor %}
                                             <br>
                                         {% endif %}
 
                                         {% if rec.analysis_cases %}
                                             {% for item in rec.analysis_cases %}
-                                                <li>{{item}}</li>
+                                                <li><pre>{{item}}</pre></li>
                                             {% endfor %}
                                             <br>
                                         {% endif %}
 
                                         {% if rec.analysis_mortality %}
                                             {% for item in rec.analysis_mortality %}
-                                                <li>{{item}}</li>
+                                                <li><pre>{{item}}</pre></li>
                                             {% endfor %}
                                             <br>
                                         {% endif %}
@@ -119,7 +119,7 @@
                                     <ul class="rec">
                                         {% if rec.recommendations %}
                                             {% for item in rec.recommendations %}
-                                                <li>{{item}}</li>
+                                                <li><pre>{{item}}</pre></li>
                                             {% endfor %}
                                             <br>
                                         {% endif %}
