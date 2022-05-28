@@ -59,7 +59,7 @@
         </div>
         <div class="flex subheading">
             <h3 class="flex-item">Analysis and Recommendations</h3>
-            <button class="primary-btn"><i class='bx bx-printer'></i>Print</button>
+            <button class="primary-btn" onclick="printReport('rep-ar')"><i class='bx bx-printer'></i>Print</button>
         </div>
         <div id="rep-ar">
             <div class="print-header">
@@ -86,7 +86,7 @@
                                     {% if rec.analysis_activities %}
                                     {% for item in rec.analysis_activities %}
                                     <li>
-                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                        {{item}}
                                     </li>
                                     {% endfor %}
                                     <br>
@@ -95,7 +95,7 @@
                                     {% if rec.analysis_biosec  %}
                                     {% for item in rec.analysis_biosec %}
                                     <li>
-                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                        {{item}}
                                     </li>
                                     {% endfor %}
                                     <br>
@@ -104,7 +104,7 @@
                                     {% if rec.analysis_inspection %}
                                     {% for item in rec.analysis_inspection %}
                                     <li>
-                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                        {{item}}
                                     </li>
                                     {% endfor %}
                                     <br>
@@ -113,7 +113,7 @@
                                     {% if rec.analysis_cases %}
                                     {% for item in rec.analysis_cases %}
                                     <li>
-                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                        {{item}}
                                     </li>
                                     {% endfor %}
                                     <br>
@@ -122,7 +122,7 @@
                                     {% if rec.analysis_mortality %}
                                     {% for item in rec.analysis_mortality %}
                                     <li>
-                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                        {{item}}
                                     </li>
                                     {% endfor %}
                                     <br>
@@ -135,7 +135,7 @@
                                     {% if rec.recommendations %}
                                     {% for item in rec.recommendations %}
                                     <li>
-                                        <pre style="font-family: Roboto; font-size: 0.875rem;">{{item}}</pre>
+                                        {{item}}
                                     </li>
                                     {% endfor %}
                                     <br>
