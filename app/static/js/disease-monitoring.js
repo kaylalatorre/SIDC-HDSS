@@ -157,12 +157,10 @@ async function diseaseChart(strdisease) {
             },
             xAxis: {
                 type: 'datetime',
-                startOnTick: true,
-                endOnTick: true,
                 min: dateBefore,
                 max: dateToday,
                 dateTimeLabelFormats: {
-                    week: '%e of %b' },
+                    week: '%e %b' },
                 units: [
                     [ 'week', [1] ],
                     [ 'month', [1] ]

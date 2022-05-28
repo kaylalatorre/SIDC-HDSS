@@ -1,4 +1,5 @@
 # for page redirection, server response
+from select import select
 from django import http
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, response
@@ -8,6 +9,7 @@ from django.contrib import messages
 
 # for Model imports
 from django.contrib.auth.models import User
+from matplotlib.pyplot import title
 from farmsapp.models import (
     Farm, Area, Hog_Raiser, Farm_Weight, 
     Mortality, Hog_Symptoms, Mortality_Form, 
@@ -47,19 +49,8 @@ from scipy.integrate import odeint
 import numpy as np
 
 # for importing function views from cross-app folder
-from farmsapp.views import computeBioscore
+from farmsapp.views import computeBioscore, debug, intBiosecurity
 from healthapp.views import compute_MortRate
-
-def debug(m):
-    """
-    For debugging purposes
-
-    :param m: The message
-    :type m: String
-    """
-    print("------------------------[DEBUG]------------------------")
-    print(m)
-    print("-------------------------------------------------------")
 
 # (Module 3) Disease Monitoring view functions
 
@@ -995,7 +986,7 @@ def submitLabReport(request, lab_ref):
     if request.method == 'POST':
         debug(request.POST)
         lab_ref_no = lab_ref
-        diseaase_name = request.POST.get("disease_name")
+        disease_name = request.POST.get("disease_name")
         incid_id = request.POST.get("incid_id")
         num_pigs_affect = request.POST.get("lab_result")
         date_updated = datetime.now(timezone.utc)
@@ -1006,7 +997,7 @@ def submitLabReport(request, lab_ref):
         try:
             # save disease case
             dCase = Disease_Case(
-                disease_name    = diseaase_name,
+                disease_name    = disease_name,
                 lab_result      = lab_result,
                 lab_ref_no      = lab_ref_no,
                 date_updated    = date_updated,
@@ -1023,13 +1014,19 @@ def submitLabReport(request, lab_ref):
             Disease_Record(
                 date_filed          = date_updated,
                 num_recovered       = 0,
-                num_died            = total_died,
+                num_died            = 0,
                 ref_disease_case    = dCase,
-                total_died          = total_died,
+                total_died          = 0,
                 total_recovered     = 0
             ).save()
+
             # resolve incident case
-            Hog_Symptoms.objects.filter(id=incid_id).update(report_status="Resolved")
+            remarks = "Tested positive for " + str(disease_name)
+            incid_case = Hog_Symptoms.objects.filter(id=incid_id).first()
+            incid_case.report_status="Resolved"
+            incid_case.remarks = remarks
+            incid_case.save()
+
             # success response
             return HttpResponse(status=200)
         except:
@@ -1259,10 +1256,299 @@ def load_diseaseChart(request, strDisease):
     # append data to return (table, line chart, map, SEIRD) 
     data.append(dChart)
     # debug(data)
-
-
     return JsonResponse(data, safe=False)
     
+class farmDetails:
+    def __init__(self, id, morts, mortRt, acts, aCases, pCases, oCases, latestBio, intScore, extScore):
+        actList = ['Inspection', 'Vaccinations', 'Delivery of Medicine', 'Delivery of Veterinary Supplies']
+        self.id = id
+        self.mortalities = morts
+        self.mortalityRate = mortRt
+        self.activities = acts
+        self.missingActs = list(set(actList)-set(list(acts)))
+        self.activeCases = aCases
+        self.pendingCases = pCases
+        self.ogDCases = oCases
+        self.lastUpdateBiosec = latestBio
+        self.intbio_score = intScore
+        self.extbio_score = extScore
+    def __str__(self):
+        return str({
+            'id':self.id,
+            'mortalities':self.mortalities,
+            'mortalityRate':self.mortalityRate,
+            'missingActs':self.missingActs,
+            'activeCases':self.activeCases,
+            'pendingCases':self.pendingCases,
+            'ogDCases':self.ogDCases,
+            'lastUpdateBiosec':self.lastUpdateBiosec,
+            'intbio_score':self.intbio_score,
+            'extbio_score':self.extbio_score
+        })
+def getAxRMort(score, mortThresh, areaFarms):
+    aXr = {
+        'analysis_mortality':[],
+        'analysis_activities':[],
+        'analysis_cases':[],
+        'recommendations':[]}
+    
+    for farm in areaFarms:
+        if len(farm.missingActs) != 0:
+            aXr['analysis_activities'].append("- Farm {id:03} has not done the following activities in the past week: [{activities}]".format(id=farm.id, activities=', '.join(farm.missingActs)))
+        if farm.activeCases != 0 or farm.pendingCases != 0 or farm.ogDCases != 0:
+            aXr['analysis_cases'].append("- Farm {id:03} has {aCase} active cases, {pCase} pending cases, and {oCase} on going cases".format(id=farm.id, aCase=farm.activeCases, pCase=farm.pendingCases, oCase=farm.ogDCases))
+    if score == 0:
+        needInspect = []
+        for farm in areaFarms:
+            if farm.mortalities != 0:
+                aXr['analysis_mortality'].append("- Farm {id:03} has {morts} mortalities to date".format(id=farm.id, morts=farm.mortalities))
+            if (now().date() - farm.lastUpdateBiosec).days > 14:
+                needInspect.append("{:03}".format(farm.id))
+        aXr['recommendations'].append("- Farms [{}] have not been inspected for the past 2 weeks. Inspect accordingly.".format(", ".join(needInspect)))
+    
+    elif score == 1:
+        mortRts = {}
+        for farm in areaFarms:
+            mortRts["{:03}".format(farm.id)] = farm.mortalityRate
+        if mortRts:
+            highestMort = list(dict(sorted(mortRts.items(), key=lambda x:x[1], reverse=True)[0: 1]).keys())[0]
+
+            aXr['analysis_mortality'].append("- Farm {} currently has the highest mortality rate in the area".format(highestMort))
+            aXr['recommendations'].append("- Farm {} has the highest mortality rate in the area. Inspect this Farm and nearby farms in the area.".format(highestMort))
+    
+    elif score == 2:
+        mortFarms = []
+        missingActivities = []
+        for farm in areaFarms:
+            missingActivities += farm.missingActs
+            if farm.mortalityRate > mortThresh - 2:
+                mortFarms.append("{:03}".format(farm.id))
+        aXr['analysis_mortality'].append("- These farms currently are around 2% away from the threshold: [{}]".format(", ".join(mortFarms)))
+        baseRec = "- Do the following for each farms in the area:\n"
+        inspectRec="inspect within the week\n"
+        resourceRec=""
+        missingActivities = sorted(set(missingActivities))
+        if len(missingActivities) != 0:
+            resourceRec="allot resources for:\n [{}]".format(", ".join(missingActivities))
+
+        aXr['recommendations'].append(baseRec + inspectRec + resourceRec)
+
+    elif score == 3:
+        mortFarms = []
+        missingActivities = []
+        for farm in areaFarms:
+            missingActivities += farm.missingActs
+            if farm.mortalityRate > mortThresh - 1:
+                mortFarms.append("{:03}".format(farm.id))
+        aXr['analysis_mortality'].append("- These farms currently are around 1% away from the threshold: [{}]".format(", ".join(mortFarms)))
+        baseRec = "- Do the following for each farms in the area:\n"
+        inspectRec="inspect within the week\n"
+        resourceRec=""
+        missingActivities = sorted(set(missingActivities))
+        if len(missingActivities) != 0:
+            resourceRec="allot resources for:\n [{}]".format(", ".join(missingActivities))
+    
+        aXr['recommendations'].append(baseRec + inspectRec + resourceRec)
+    elif score == 4:
+        mortFarms = []
+        missingActivities = []
+        for farm in areaFarms:
+            missingActivities += farm.missingActs
+            if farm.mortalityRate > mortThresh:
+                mortFarms.append("{:03}".format(farm.id))
+        aXr['analysis_mortality'].append("- These farms currently are over the threshold: [{}]".format(", ".join(mortFarms)))
+        baseRec = "- Do the following for each farms in the area:\n"
+        inspectRec="inspect within the week\n"
+        resourceRec=""
+        reportRec="prepare reports on farms and relay to upper management"
+
+        
+        missingActivities = sorted(set(missingActivities))
+        if len(missingActivities) != 0:
+            resourceRec="allot resources for: [{}]\n".format(", ".join(missingActivities))
+
+        aXr['recommendations'].append(baseRec + inspectRec + resourceRec + reportRec)
+        aXr['recommendations'].append(baseRec + inspectRec + resourceRec)
+
+    return aXr
+
+def getAxRBio(score, areaFarms):
+    aXr = {
+        'analysis_biosec':[],
+        'analysis_activities':[],
+        'analysis_inspection':[],
+        'recommendations':[]
+    }   
+    if score == 1:
+        needInspection = []
+        for farm in areaFarms:
+            aXr['analysis_biosec'].append("- The last biosecurity update of farm {id:03} was {days} ago".format(id=farm.id, days=now().date() - farm.lastUpdateBiosec))
+            if farm.missingActs is not None:
+                aXr['analysis_activities'].append("- Farm {id:03} has not done these activities in the past week:\n{acts}".format(id=farm.id, acts='\n'.join(farm.missingActs)))
+            if (now().date() - farm.lastUpdateBiosec).days > 7:
+                needInspection.append("{:03}".format(farm.id))
+            aXr['analysis_biosec'].sort()
+            aXr['analysis_activities'].sort()
+            aXr['analysis_inspection'].sort()
+        aXr['recommendations'].append("- Biosecurity score is at an optimal state. Maintain or increase biosecurity score through inspecting farms not updated for the past week. ")
+        if len(needInspection) != 0:
+            aXr['recommendations'].append("- The following farms have not been inspected for the past week: [{}]. Inform Field Technician to schedule inspections.".format(", ".join(needInspection)))
+    elif score == 2 or score == 3:
+        farmIntBiosec = {}
+        farmExtBiosec = {}
+        needInspection = []
+        for farm in areaFarms:
+            farmIntBiosec["{:03}".format(farm.id)] = farm.intbio_score
+            farmExtBiosec["{:03}".format(farm.id)] = farm.extbio_score
+            farmExtBiosec
+            aXr['analysis_biosec'].append("- Farm {id:03} has a internal biosecurity score of {intbio}% and external biosecurity score of {extbio}%".format(id=farm.id, intbio=farm.intbio_score, extbio=farm.extbio_score))
+            if now().date() - timedelta(days=7) > farm.lastUpdateBiosec:
+                aXr['analysis_biosec'].append("- The last biosecurity update of farm {id:03} was on {date}".format(id=farm.id, date=farm.lastUpdateBiosec))
+            if farm.missingActs is not None:
+                aXr['analysis_activities'].append("- Farm {id:03} has not done these activities in the past week:\n{acts}".format(id=farm.id, acts='\n'.join(farm.missingActs)))
+            if (now().date() - farm.lastUpdateBiosec).days > 7:
+                needInspection.append("{:03}".format(farm.id))
+        
+        aXr['analysis_biosec'].sort()
+        aXr['analysis_activities'].sort()
+        if len(needInspection) != 0:
+            needInspection.sort()
+            aXr['analysis_inspection'].append("These farms have not been inspected in the past week:\n[{}]".format(", ".join(needInspection)))
+            N = int(len(needInspection)/5) or 1
+            lowestInt = dict(sorted(farmIntBiosec.items(), key=lambda x:x[1])[0: N]).keys()
+            lowestExt = dict(sorted(farmExtBiosec.items(), key=lambda x:x[1])[0: N]).keys()
+            aXr['analysis_inspection'].append("- These farms currently have the lowest internal biosecurity score:\n[{}]".format(", ".join(lowestInt)))
+            aXr['analysis_inspection'].append("- These farms currently have the lowest external biosecurity score:\n[{}]".format(", ".join(lowestExt)))
+
+            # recommendations
+            aXr['recommendations'].append("- Inspect the following farms: [{}]. Send an announcement to raisers involved.".format(", ".join(needInspection)))
+            aXr['recommendations'].append("- View the biosecurity measures and latest biosecurity checklist of farms: [{}].".format(", ".join( sorted(list(set(lowestExt)-set(lowestInt))+list(set(lowestInt)-set(lowestExt))) )))
+
+    return aXr
+
+def getAnalysisAndRecommend(intBioLvl, extBioLvl, mortRtLvl, mortThresh, areaFarms, areaName):
+    bioscore = intBioLvl
+    if extBioLvl > intBioLvl:
+        bioscore = extBioLvl
+
+    mortItem = '{}_Mortality'.format(areaName)
+    bioItem='{}_Biosecurity'.format(areaName)
+    aXr = {
+        mortItem:getAxRMort(mortRtLvl, mortThresh, areaFarms),
+        bioItem:getAxRBio(bioscore, areaFarms) 
+    }
+    aXr[mortItem]['item'] = mortItem
+    aXr[bioItem]['item'] = bioItem
+    return aXr
+
+def getRecommendations(farmQry, threshVals):
+    areaDetails = {}
+    
+    # abort if threshVals is empty
+    try:
+        threshVals['Mortality']
+        threshVals['Biosecurity']
+    except:
+        return "Thresholds has not been set"
+
+    actList = ['Inspection', 'Vaccinations', 'Delivery of Medicine', 'Delivery of Veterinary Supplies']
+    for f in farmQry:
+        # pre req data
+        latestPP = Pigpen_Group.objects.filter(ref_farm_id=f["id"]).order_by("-date_added").first()
+        biosec_scores = computeBioscore(f["id"], f["intbioID"], f["extbioID"])
+
+        # get values
+        mortRate = compute_MortRate(f["id"], None)
+        numMortality = Mortality.objects.filter(ref_farm_id=f['id']).filter(mortality_form__pigpen_grp_id=latestPP.id).values_list("num_toDate", flat=True).last()
+        # last_updated__range=(now() - timedelta(days=7), now()),
+        activities = Activity.objects.filter(ref_farm_id=f['id'], trip_type__in=actList).distinct("trip_type").values_list("trip_type", flat=True)
+        incidCases = Hog_Symptoms.objects.filter(ref_farm_id=f["id"]).filter(pigpen_grp_id=latestPP.id)
+        ongoingDCases = Disease_Case.objects.filter(incid_case__ref_farm=f["id"]).filter(end_date__isnull=False).count()
+        
+        currfarm = farmDetails(
+            id = f['id'], 
+            morts = int(numMortality or 0), 
+            mortRt = mortRate, 
+            acts = activities,
+            aCases = incidCases.filter(report_status="Active").count(),
+            pCases = incidCases.filter(report_status="Pending").count(),
+            oCases = ongoingDCases,
+            latestBio = f['extbio__last_updated'].date(),
+            intScore = biosec_scores[0],
+            extScore = biosec_scores[1]
+        )
+        # compile
+        try:
+            farmArea = areaDetails[f['area__area_name']]
+            farmArea['farms'].append(currfarm)
+            farmArea['farmIDs'].append('{:03}'.format(f['id']))
+            farmArea['mortalityRate'] = round(farmArea['mortalityRate'] + mortRate, 2)
+            farmArea['intbio_score'] = round(farmArea['intbio_score'] + biosec_scores[0], 2)
+            farmArea['extbio_score'] = round(farmArea['extbio_score'] + biosec_scores[1], 2)            
+        except:
+            areaDetails[f['area__area_name']] = {
+                'farms':[currfarm],
+                'farmIDs':['{:03}'.format(f['id'])],
+                'mortalityRate': mortRate,
+                'intbio_score': biosec_scores[0],
+                'extbio_score': biosec_scores[1]
+                }
+
+    # make threshold values easier to reference
+    
+
+    recommendations = {}
+    for area_name in areaDetails:
+        """
+        Checks:
+        > MortThresh        lvl 0       under mort thresh
+        > MortThresh - 4    lvl 1       under mort thresh with 4% diff
+        > MortThresh - 2    lvl 2       under mort thresh with 2% diff
+        > MortThresh - 1    lvl 3       under mort thresh with 1% diff
+        > MortThresh        lvl 4       over or equal mort thresh
+
+        >= BioThresh        lvl 0       over or equal biosec thresh
+        < BioThresh         lvl 1       over or equal biosec thresh
+        < BioThresh - 5     lvl 2       under biosec thresh with a 5% diff
+        < BioThresh - 10    lvl 3       under biosec thresh with a 10% diff
+        """
+
+        # underIntBio = False
+        intbioLvl = 0
+        # underExtBio = False
+        extbioLvl = 0
+        # overMortRt = False
+        mortRtLvl = 0
+
+        areaData = areaDetails[area_name]
+        ave_intbio_score = round(areaData['intbio_score'] / len(areaData['farmIDs']), 2)
+        ave_extbio_score = round(areaData['extbio_score'] / len(areaData['farmIDs']), 2)
+        ave_mort_rate = round(areaData['mortalityRate'] / len(areaData['farmIDs']), 2)
+        
+        if  threshVals['Biosecurity'] > ave_intbio_score:
+            intbioLvl = 1
+            if  threshVals['Biosecurity'] - 5 > ave_intbio_score:
+                intbioLvl = 2
+                if  threshVals['Biosecurity'] - 10 > ave_intbio_score:
+                    intbioLvl = 3
+
+        if  threshVals['Biosecurity'] > ave_extbio_score:
+            extbioLvl = 1
+            if  threshVals['Biosecurity'] - 5 > ave_extbio_score:
+                extbioLvl = 2
+                if  threshVals['Biosecurity'] - 10 > ave_extbio_score:
+                    extbioLvl = 3
+        
+        if  ave_mort_rate > threshVals['Mortality'] - 4 :
+            mortRtLvl = 1
+            if  ave_mort_rate > threshVals['Mortality'] - 2 :
+                mortRtLvl = 2
+                if  ave_mort_rate > threshVals['Mortality'] - 1 :
+                    mortRtLvl = 3
+                    if  ave_mort_rate > threshVals['Mortality']:
+                        mortRtLvl = 4
+        recommendations.update(getAnalysisAndRecommend(intBioLvl=intbioLvl, extBioLvl=extbioLvl, mortRtLvl=mortRtLvl, mortThresh=threshVals['Mortality'],  areaFarms=areaData['farms'], areaName=area_name))
+    return recommendations
 
 def actionRecommendation(request):
     """
@@ -1276,21 +1562,30 @@ def actionRecommendation(request):
     (2) Set threshold values
     (3) Data for analysis and recommendations table
     """
-
+    
     # Get Farm details 
     farmQry = Farm.objects.select_related('intbio', 'extbio').annotate(
         intbioID = F("intbio__id"),
         extbioID = F("extbio__id"),
         ).values(
             "id",
+            "area__area_name",
             "intbioID",
             "extbioID",
+            "extbio__last_updated"
             ).order_by("id").all()
 
     if not farmQry.exists(): 
         messages.error(request, "No farm details found.", extra_tags="action-rec")
         # return render(request, 'dsstemp/action-rec.html', {})
 
+    threshQry = Threshold_Values.objects.values('title', 'value')
+    threshVals = {}
+    for thresh in threshQry:
+        threshVals[thresh['title']] = thresh['value']
+    recommendations = getRecommendations(farmQry, threshVals)
+
+    # debug(recommendations)
     ave_intbio = 0
     ave_extbio = 0
     ave_mortRate = 0
@@ -1323,7 +1618,7 @@ def actionRecommendation(request):
         "total_dcases": total_dcases,
     }
 
-    return render(request, 'dsstemp/action-rec.html', {"aStats": actionStats})
+    return render(request, 'dsstemp/action-rec.html', {"aStats": actionStats, "aRecs": recommendations, 'threshVals': threshVals})
 
 
 def derivSEIRD(y, t, N, beta, gamma, delta, alpha, rho):
@@ -1421,3 +1716,31 @@ def load_diseaseSeird(request, strDisease):
 
     modelData = [totalPigs, S.tolist(), E.tolist(), I.tolist(), R.tolist(), D.tolist()]
     return JsonResponse(modelData, safe=False)
+
+def saveMortThreshold(request, threshVal):
+    debug('saveMort')
+    try:
+        mortObj = Threshold_Values.objects.filter(title = "Mortality").first()    
+        mortObj.value = threshVal
+        mortObj.save()
+    except:
+        Threshold_Values(
+            title   = "Mortality",
+            value   = threshVal
+        ).save()
+
+    return HttpResponse(status=200)
+
+def saveBioThreshold(request, threshVal):
+    debug('bio')
+    try:
+        bioObj = Threshold_Values.objects.filter(title = "Biosecurity").first()    
+        bioObj.value = threshVal
+        bioObj.save()
+    except:
+        Threshold_Values(
+            title   = "Biosecurity",
+            value   = threshVal
+        ).save()
+
+    return HttpResponse(status=200)

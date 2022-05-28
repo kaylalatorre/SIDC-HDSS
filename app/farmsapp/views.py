@@ -79,7 +79,7 @@ from django.utils.timezone import (
 
 # for list comapare
 from collections import Counter
-
+from pprint import pprint
 def debug(m):
     """
     For debugging purposes
@@ -88,12 +88,20 @@ def debug(m):
     :type m: String
     """
     print("------------------------[DEBUG]------------------------")
+    
+    
     try:
-        print(m)
+        pprint(m)
     except:
-        print("---------------------[Print_ERROR]---------------------")
-    else:     
-        print("--------------------[Print_SUCCESS]--------------------")
+        try:
+            print(m)
+        except:
+            print("---------------------[Print_ERROR]---------------------")
+        else:     
+            print("--------------------[Print_SUCCESS]--------------------")
+        return
+        
+    print("--------------------[Print_SUCCESS]--------------------")
 
 def debugFunc(func, message):
     print("-----------------------------[{}]------------------------START".format(str(message).upper()))
@@ -560,7 +568,7 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_update", 
-                            "total_pigs").order_by('id')
+                            "total_pigs").order_by('last_update','id')
 
 
         # pass all data into an array
@@ -4246,7 +4254,7 @@ def dashboard_view(request):
         # check if Checklist has not been updated for > 7 days
         bioDateDiff = datetime.now(timezone.utc) - f["last_update"]
         
-        if bioDateDiff.days > 7:
+        if bioDateDiff.days > 7 and f["total_pigs"] > 0:
             total_needInspect += 1
 
         # for filtering Incidents for latest Farm version

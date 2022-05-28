@@ -102,11 +102,7 @@
                             
                             <tr>
                                 <th>Remarks</td>
-                                {% if farm.start_weight.remarks %}
                                 <td>{{ farm.start_weight.remarks }}</td>
-                                {% else %}
-                                <td>-</td>
-                                {% endif %}
                             </tr>
                             
                         </tbody>
@@ -139,11 +135,7 @@
 
                             <tr>
                                 <th>Remarks</td>
-                                {% if farm.end_weight.remarks %}
                                 <td>{{ farm.end_weight.remarks }}</td>
-                                {% else %}
-                                <td>-</td>
-                                {% endif %}
                             </tr>
                             <tr>
                                 <th>Total Pigs Reached Market Weight</th>
@@ -160,8 +152,6 @@
                 {% if farm.end_weight %}
                 <h2>Fattener Weight Range</h2>
                 <div class="box-style">
-                    <!-- <div class="box-style-chart" id="wr-hogs-weight" style="width: 100%; height: 250px; ">
-                    </div> -->
                     <table class="table">
                         <tbody>
                             <tr>
@@ -224,7 +214,15 @@
                                     </ul>
                                     {% endfor %}
                                 </td>
-                                <td data-label="Status" class="status"> {{ incident.report_status }} </td>
+                                <td data-label="Status">
+                                    <p class="status"> {{ incident.report_status }} </p>
+                                    {% if incident.report_status == 'Resolved' %}
+                                    <div class="incd-remarks show" id="incd-remarks-{{incident.id}}">
+                                        <label class="bold-lbl">Remarks</label> <br>
+                                        {{incident.remarks}}
+                                    </div>
+                                    {% endif %} 
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

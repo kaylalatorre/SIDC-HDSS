@@ -1,7 +1,5 @@
 $(document).ready(async function () {
 
-    // SYMPTOMS MONITORING
-
     if($('#dm-active-incid').length || $('#dm-mortality').length || $('#dm-symptoms-rep').length || $('#dm-activities').length){
         ajaxCSRF();
         metadata = await $.ajax({
@@ -16,13 +14,8 @@ $(document).ready(async function () {
 
         
         var today = new Date();
-        // console.log(today);
-        
         var dateBefore = Date.UTC(today.getFullYear(), today.getMonth()-1, today.getDate());
-        // console.log(dateBefore);
-    
         var dateToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-        // console.log(dateToday);
 
         
         // ACTIVE INCIDENTS line chart
@@ -55,12 +48,10 @@ $(document).ready(async function () {
             
                 xAxis: {
                     type: 'datetime',
-                    startOnTick: true,
-                    endOnTick: true,
                     min: dateBefore,
                     max: dateToday,
                     dateTimeLabelFormats: {
-                        week: '%e of %b' },
+                        week: '%e %b' },
                     units: [
                         [ 'week', [1] ],
                         [ 'month', [1] ]
@@ -114,8 +105,6 @@ $(document).ready(async function () {
         
                 xAxis: {
                     type: 'datetime',
-                    startOnTick: true,
-                    endOnTick: true,
                     min: dateBefore,
                     max: dateToday,
                     dateTimeLabelFormats: {
@@ -245,8 +234,6 @@ $(document).ready(async function () {
         
                 xAxis: {
                     type: 'datetime',
-                    startOnTick: true,
-                    endOnTick: true,
                     min: dateBefore,
                     max: dateToday,
                     dateTimeLabelFormats: {
@@ -260,7 +247,7 @@ $(document).ready(async function () {
         
                 yAxis: {
                     title: {
-                        text: 'Number'
+                        text: 'Count'
                     }
                 },
                 

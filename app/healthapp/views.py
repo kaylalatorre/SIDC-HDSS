@@ -112,13 +112,13 @@ def categHogWeight(weight_list):
         # classify given hog weight
         if w.final_weight in range(0, 60):
             ctr_base += 1
-        elif w.final_weight in range(60, 80):
+        elif w.final_weight in range(60, 81):
             ctr_low += 1
-        elif w.final_weight in range(80, 100):
+        elif w.final_weight in range(80, 101):
             ctr_med += 1
         elif w.final_weight in range(100, 121):
             ctr_high += 1
-        elif w.final_weight <= 121:
+        elif w.final_weight > 120:
             ctr_ceil += 1
 
     ctr_marketable = ctr_high + ctr_ceil
@@ -280,7 +280,7 @@ def selectedHogsHealth(request, farmID):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -493,7 +493,7 @@ def selectedHogsHealthVersion(request, farmID, farmVersion):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -737,7 +737,7 @@ def selectedHealthSymptoms(request, farmID):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -872,7 +872,12 @@ def selectedHealthSymptoms(request, farmID):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
-                case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+
+                if case['total_recovered'] is not None and case['total_died'] is not None:
+                    case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+                else:
+                    case['max_recovered'] = 0
+
                 cases.append(case)
                 # debug(casesList)
                 # debug("case['max_recovered']: " + str(case['max_recovered']))
@@ -947,7 +952,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
             'date_filed' : date_filed,
             'ave_weight' : round((total_kls/total_numHeads), 2),
             'total_numHeads' : total_numHeads,
-            'total_kls' : total_kls,
+            'total_kls' : round(total_kls, 2),
             'remarks' : remarks
         }
         # print(end_weight)
@@ -1051,7 +1056,12 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
-                case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+
+                if case['total_recovered'] is not None and case['total_died'] is not None:
+                    case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
+                else:
+                    case['max_recovered'] = 0
+                    
                 cases.append(case)
     # debug(cases)
 
@@ -1293,13 +1303,17 @@ def addMortality(request, farmID):
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
 
-    latest_toDate = 0
+    # get beginning inventory value
+    pigpenQry = Pigpen_Row.objects.filter(pigpen_grp_id=farmVersion.id).all()
     
+    num_begInv = 0
+    for pen in pigpenQry:            
+        num_begInv += pen.num_heads
+
+    # get toDate value
+    latest_toDate = 0
     if mortQry :
-        num_begInv = int(farmQuery.total_pigs) + int(mortQry.get("num_toDate"))
         latest_toDate = int(mortQry.get("num_toDate"))
-    else:
-        num_begInv = int(farmQuery.total_pigs)
 
     if request.method == 'POST':
         # print("TEST LOG: Add Mortality has POST method") 
@@ -1463,7 +1477,7 @@ def addWeight(request, farmID):
                 ref_farm_id = farmID,
                 is_starter = True,
                 ave_weight = request.POST.get('ave_weight'),
-                total_numHeads = request.POST.get('total_numHeads'),
+                total_numHeads = farm.total_pigs,
                 total_kls =  request.POST.get('total_kls'),
                 remarks = request.POST.get('remarks'),
                 pigpen_grp_id = latestPigpen.id
@@ -1485,7 +1499,7 @@ def addWeight(request, farmID):
             )
             
             weightList = []
-
+            pigs_sold = 0
             for i in request.POST.getlist('input-kls'):
                 if i != "":
                     weight.total_kls += float(i)
@@ -1493,10 +1507,11 @@ def addWeight(request, farmID):
                         farm_weight = weight,
                         final_weight = round(float(i), 2)
                     ))
-
+                    
+                    pigs_sold += 1
                     farm.total_pigs = farm.total_pigs - 1
 
-            weight.total_numHeads = len(request.POST.getlist('input-kls'))
+            weight.total_numHeads = pigs_sold
             weight.ave_weight = round(weight.total_kls / weight.total_numHeads, 2)
 
             farm.save()
@@ -1799,28 +1814,28 @@ def weightRange(request):
                     except:
                         farm_baseDict.update({farmID: 1})
 
-                elif f.final_weight in range(60, 80):
+                elif f.final_weight in range(60, 81):
                     count_low += 1
                     try:
                         farm_lowDict.update({farmID: farm_lowDict.get(farmID) + 1})
                     except:
                         farm_lowDict.update({farmID: 1})
 
-                elif f.final_weight in range(80, 100):
+                elif f.final_weight in range(80, 101):
                     count_med += 1
                     try:
                         farm_medDict.update({farmID: farm_medDict.get(farmID) + 1})
                     except:
                         farm_medDict.update({farmID: 1})
 
-                elif f.final_weight in range(100, 121):
+                elif f.final_weight in range(101, 121):
                     count_high += 1
                     try:
                         farm_highDict.update({farmID: farm_highDict.get(farmID) + 1})
                     except:
                         farm_highDict.update({farmID: 1})
                         
-                elif f.final_weight <= 121:
+                elif f.final_weight > 120:
                     count_ceil += 1
                     try:
                         farm_ceilDict.update({farmID: farm_ceilDict.get(farmID) + 1})

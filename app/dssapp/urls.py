@@ -12,6 +12,8 @@ urlpatterns = [
     
     # action rec
     path('action-recommendation', views.actionRecommendation, name="actionRecommendation"),
+    path('saveThreshold/mortality/<int:threshVal>', views.saveMortThreshold, name="saveMortThreshold"),
+    path('saveThreshold/biosecurity/<int:threshVal>', views.saveBioThreshold, name="saveBioThreshold"),
     
     # reports
     path('disease-monitoring/<str:strDisease>/', views.load_diseaseMonitoring, name="diseaseMonitoring"),
