@@ -1285,20 +1285,20 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).order_by('-id')
-    # print(incidQry)
+    # debug(incidQry)
     
     # get all disease cases for the farm
     disCases = []
     for incid in incidQry:
-        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).filter(end_date=None).values("id").order_by('-id')
+        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).filter(end_date=None).values("id", "start_date").order_by('-id')
 
         if disQry:
             for dis in disQry:
-                disCases.append(dis['id'])
-        else: 
+                disCases.append([dis['start_date'], dis['id']])
+        else:
             disCases.append(None)
     
-    # print(disCases)
+    # debug(disCases)
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
