@@ -94,7 +94,7 @@ def compute_MortRate(farmID, mortalityID):
         mortObj = Mortality.objects.filter(id=mortalityID).first()
 
         if mortObj is not None:
-            mortality_rate = (mortObj.num_toDate / mortObj.num_begInv) * 100
+            mortality_rate = (mortObj.num_today / mortObj.num_begInv) * 100
 
     return round(mortality_rate, 2)
 

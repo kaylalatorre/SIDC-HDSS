@@ -1130,12 +1130,12 @@ function computeMortality(currRow){
 
     var mortality_rate = row.getElementsByClassName('mortality_rate')[0];
 
-    if (parseInt(newTotal) == parseInt(begInv))
+    if (parseInt(today) == parseInt(begInv))
         var mortRate = 100;
     else if (parseInt(today) == 0)
         var mortRate = 0;
     else
-        var mortRate = parseInt(newTotal) / parseInt(begInv) * 100
+        var mortRate = parseInt(today) / parseInt(begInv) * 100
 
     mortality_rate.innerText = mortRate.toFixed(2);
     // console.log("mortality_rate: " + String(mortality_rate));
