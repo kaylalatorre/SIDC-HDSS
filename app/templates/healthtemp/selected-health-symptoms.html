@@ -369,12 +369,12 @@
                                             <button onclick="UpdateTotalRec(this)" class="secondary-btn hideDisInfo" style="margin-bottom: 8px">Update</button> <!-- popup input -->
                                         {% endif %}
                                     </div>                                    
-                                    <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 onchange="EnableRecSave(this); computeTotalRec(this);" placeholder=1>
+                                    <input type="number" required class="form-control showDisInput input-num-rec" style="display:none;" min=1 onchange="computeTotalRec(this);" aria-required="" placeholder=1>
                                     <input type="hidden" class="hidden-DR" name="drID" value="{{case.ref_disease_case_id}}">
                                     <input type="hidden" class="hidden-farmID" name="farmID" value="{{farm_code|stringformat:'03d'}}">
                                     
                                     <div class="flex" style="margin: 8px 0">
-                                        <button class="secondary-btn showDisInput btn-save-recovered" disabled style="margin-right: 4px; display: none;">Save</button>
+                                        <button class="secondary-btn showDisInput btn-save-recovered" style="margin-right: 4px; display: none;">Save</button>
                                         <button class="secondary-btn-red showDisInput btn-cancel-recovered" style="display:none;" onclick="CancelRecSave(this)">Cancel</button> 
                                     </div>
                                     
@@ -382,7 +382,7 @@
                                     <!-- for computing total_recovered -->
                                     <label class="bold-lbl showDisInput hide">Total Recovered:</label>
                                     <p class="flex-item hide total-rec">{{ case.total_recovered }}</p>
-                                    <p class="display-total-rec"> </p>
+                                    <p class="display-total-rec showDisInput"> </p>
 
                                 </td>
                                 <td data-label="Died">

@@ -1887,7 +1887,7 @@ def update_diseaseCase(request, dcID):
     :type dcID: string
     """
 
-    debug("in update_diseaseCase()/n")
+    # debug("in update_diseaseCase()/n")
 
     if request.method == 'POST':
         dateToday = datetime.now(timezone.utc)
@@ -1907,7 +1907,7 @@ def update_diseaseCase(request, dcID):
         if (latestDR.date_filed == dateToday.date()):
 
             latestDR.num_recovered = numRecovered
-            latestDR.total_recovered += (numRecovered + latestDR.total_recovered)
+            latestDR.total_recovered = (numRecovered + latestDR.total_recovered)
             latestDR.save()
 
             # update "date_updated" of Disease Case to date-time today

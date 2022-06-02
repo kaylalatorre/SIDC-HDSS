@@ -124,28 +124,22 @@ function EnableRejectSave(text) {
 */
 function EnableRecSave(text) {
     var row = text.parentNode.parentNode.parentNode;
-    var btnSave = row.getElementsByClassName("secondary-btn showDisInput")[0];
-    // console.log(row);
+    var btnSave = row.getElementsByClassName("btn-save-recovered")[0];
+    // console.log(parseInt(text.value.trim()) > 0);
     // console.log(btnSave);
 
-    if (text.value.trim() > 0)
+    if (parseInt(text.value.trim()) > 0)
         btnSave.disabled = false;
-    else btnSave.disabled = true;
 };
 
 function EnableIncidRem(text) {
     var row = text.parentNode.parentNode.parentNode;
-    var rowIndex = row.rowIndex - 1;
+    var btnSubmit = row.getElementsByClassName("symptomsSave")[0];
+    // console.log(btnSubmit);
 
-    var btnSubmit = document.getElementsByClassName("symptomsSave")[rowIndex];
-
-    if (text.value.trim() != "") {
+    if (text.value.trim() != "")
         //enable the TextBox when TextBox has value
         btnSubmit.disabled = false;
-    } else {
-        //disable the TextBox when TextBox is empty
-        btnSubmit.disabled = true;
-    }
 };
 
 /**
@@ -155,6 +149,8 @@ function EnableIncidRem(text) {
 function UpdateTotalRec(btnHTML){
 
     var row = btnHTML.parentNode.parentNode.parentNode;
+    // var btnSave = row.getElementsByClassName("btn-save-recovered")[0];
+    // btnSave.disabled = true;
 
     // console.log(row);
 
