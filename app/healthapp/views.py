@@ -1406,6 +1406,10 @@ def addMortality(request, farmID):
                         updateDC.date_updated =  datetime.now(timezone.utc)
                         updateDC.save()
 
+                        # setting variables for checking end of Disease Case
+                        total_rec = latestDR.total_recovered
+                        total_died = latestDR.total_died
+
                     else: # make new Disease Record for the Case if none exists today
                         # print("new record")
                         newDR = Disease_Record()
@@ -1421,12 +1425,24 @@ def addMortality(request, farmID):
                         newDR.ref_disease_case = updateDC
 
                         # update "date_updated" of Disease Case to date today
-                        updateDC.date_updated =  datetime.now(timezone.utc)
+                        updateDC.date_updated = datetime.now(timezone.utc)
                         updateDC.save()
 
                         # save new Disease record
                         newDR.save()
 
+                        # setting variables for checking end of Disease Case
+                        total_rec = newDR.total_recovered
+                        total_died = newDR.total_died
+
+                    # setting variables for checking end of Disease Case
+                    num_affect = updateDC.num_pigs_affect
+
+                    # check if Disease Case has ended (num_affect == total_rec + total_died)
+                    if updateDC.end_date is None and (num_affect == total_rec + total_died):
+                        updateDC.end_date = datetime.now(timezone.utc)
+                        updateDC.save()
+            
             # update last_updated of farm
             farmQuery.last_updated = datetime.now(timezone.utc)
             farmQuery.save()
