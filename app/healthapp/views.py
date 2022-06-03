@@ -94,7 +94,7 @@ def compute_MortRate(farmID, mortalityID):
         mortObj = Mortality.objects.filter(id=mortalityID).first()
 
         if mortObj is not None:
-            mortality_rate = (mortObj.num_toDate / mortObj.num_begInv) * 100
+            mortality_rate = (mortObj.num_today / mortObj.num_begInv) * 100
 
     return round(mortality_rate, 2)
 
@@ -873,12 +873,17 @@ def selectedHealthSymptoms(request, farmID):
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
 
+                # for setting max capacity in total recovered hogs
                 if case['total_recovered'] is not None and case['total_died'] is not None:
                     case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
                 else:
-                    case['max_recovered'] = 0
+                    case['max_recovered'] = 0                
 
                 cases.append(case)
+                
+                # for updating start & end date of Disease Case
+                update_diseaseCase(request, case['case_code'])
+
                 # debug(casesList)
                 # debug("case['max_recovered']: " + str(case['max_recovered']))
     # debug(cases)
@@ -1056,7 +1061,7 @@ def selectedHealthSymptomsVersion(request, farmID, farmVersion):
         for case in casesQry:
             if case['lab_ref_no'] not in casesList:
                 casesList.append(case['lab_ref_no'])
-
+                # for setting max capacity of total recovered hogs
                 if case['total_recovered'] is not None and case['total_died'] is not None:
                     case['max_recovered'] = int(case['num_pigs_affect']) - (int(case['total_recovered']) + int(case['total_died']))
                 else:
@@ -1285,20 +1290,20 @@ def addMortality(request, farmID):
 
     # get all active and pending incident cases for the farm
     incidQry = Hog_Symptoms.objects.filter(ref_farm_id=farmID).order_by('-id')
-    # print(incidQry)
+    # debug(incidQry)
     
     # get all disease cases for the farm
     disCases = []
     for incid in incidQry:
-        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).filter(end_date=None).values("id").order_by('-id')
+        disQry = Disease_Case.objects.filter(incid_case_id=incid.id).filter(end_date=None).values("id", "start_date").order_by('-id')
 
         if disQry:
             for dis in disQry:
-                disCases.append(dis['id'])
-        else: 
+                disCases.append([dis['start_date'], dis['id']])
+        else:
             disCases.append(None)
     
-    # print(disCases)
+    # debug(disCases)
 
     # get last mortality record
     mortQry = Mortality.objects.filter(ref_farm_id=farmID).filter(mortality_form__pigpen_grp_id=farmVersion.id).values("num_toDate").last()
@@ -1401,6 +1406,10 @@ def addMortality(request, farmID):
                         updateDC.date_updated =  datetime.now(timezone.utc)
                         updateDC.save()
 
+                        # setting variables for checking end of Disease Case
+                        total_rec = latestDR.total_recovered
+                        total_died = latestDR.total_died
+
                     else: # make new Disease Record for the Case if none exists today
                         # print("new record")
                         newDR = Disease_Record()
@@ -1416,12 +1425,24 @@ def addMortality(request, farmID):
                         newDR.ref_disease_case = updateDC
 
                         # update "date_updated" of Disease Case to date today
-                        updateDC.date_updated =  datetime.now(timezone.utc)
+                        updateDC.date_updated = datetime.now(timezone.utc)
                         updateDC.save()
 
                         # save new Disease record
                         newDR.save()
 
+                        # setting variables for checking end of Disease Case
+                        total_rec = newDR.total_recovered
+                        total_died = newDR.total_died
+
+                    # setting variables for checking end of Disease Case
+                    num_affect = updateDC.num_pigs_affect
+
+                    # check if Disease Case has ended (num_affect == total_rec + total_died)
+                    if updateDC.end_date is None and (num_affect == total_rec + total_died):
+                        updateDC.end_date = datetime.now(timezone.utc)
+                        updateDC.save()
+            
             # update last_updated of farm
             farmQuery.last_updated = datetime.now(timezone.utc)
             farmQuery.save()
@@ -1866,7 +1887,7 @@ def update_diseaseCase(request, dcID):
     :type dcID: string
     """
 
-    debug("in update_diseaseCase()/n")
+    # debug("in update_diseaseCase()/n")
 
     if request.method == 'POST':
         dateToday = datetime.now(timezone.utc)
@@ -1874,24 +1895,28 @@ def update_diseaseCase(request, dcID):
         # get input from Recovered field
         numRecovered = int(request.POST.get("num_rec"))
         
-        debug(numRecovered)
-        debug(dcID)
+        # debug(numRecovered)
+        # debug(dcID)
 
         # Qry latest Disease_Record under given (1) dcID
         latestDR = Disease_Record.objects.filter(ref_disease_case=dcID).order_by("-date_filed").first()
         updateDC = Disease_Case.objects.filter(id=dcID).first()
         
-        debug(latestDR.date_filed);
+        # debug(latestDR.date_filed)
 
         if (latestDR.date_filed == dateToday.date()):
 
             latestDR.num_recovered = numRecovered
-            latestDR.total_recovered += (numRecovered + latestDR.total_recovered)
+            latestDR.total_recovered = (numRecovered + latestDR.total_recovered)
             latestDR.save()
 
             # update "date_updated" of Disease Case to date-time today
             updateDC.date_updated = dateToday
             updateDC.save()
+
+            # setting variables for checking end of Disease Case
+            total_rec = latestDR.total_recovered
+            total_died = latestDR.total_died
 
         else: # make new Disease Record for the Case if none exists today
             newDR = Disease_Record()
@@ -1905,12 +1930,25 @@ def update_diseaseCase(request, dcID):
             # Qry disease case then FK whole object to disease record
             newDR.ref_disease_case = updateDC
 
-            # update "date_updated" of Disease Case to date today
+            # update date today of Disease Case fields (1) "date_updated", and (2) "start_date" 
             updateDC.date_updated = dateToday
+            updateDC.start_date = dateToday
             updateDC.save()
 
             # save new Disease record
             newDR.save()
+            
+            # setting variables for checking end of Disease Case
+            total_rec = newDR.total_recovered
+            total_died = newDR.total_died
+
+        # setting variables for checking end of Disease Case
+        num_affect = updateDC.num_pigs_affect
+
+        # check if Disease Case has ended (num_affect == total_rec + total_died)
+        if updateDC.end_date is None and (num_affect == total_rec + total_died):
+            updateDC.end_date = dateToday
+            updateDC.save()
 
         # (SUCCESS) Disease record created. Send to client side (js)
         return JsonResponse({"status_code":"200"}, status=200)

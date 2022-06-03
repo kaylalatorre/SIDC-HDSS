@@ -77,17 +77,17 @@
                                     <option hidden>- - -</option>
                                     <option disabled>- - -</option>
                                     {% for icase in incid_cases %}
-                                        {% if icase != None %}
-                                        <option class="incident-case">{{icase.id}}</option>
+                                        {% if icase != None and icase.report_status != 'Resolved' %}
+                                        <option class="incident-case" value="{{icase.id}}">{{icase.date_filed}} ({{icase.id}})</option>
                                         {% else %}
-                                        <option class="incident-case" hidden>{{icase.id}}</option>
+                                        <option class="incident-case" hidden>{{icase.date_filed}} ({{icase.id}})</option>
                                         {% endif %}
                                     {% endfor %}
                                     {% for dcase in dis_cases %}
                                         {% if dcase != None %}
-                                            <option class="disease-case">{{dcase}}</option>
+                                            <option class="disease-case" value="{{dcase.1}}">{{dcase.0}} ({{dcase.1}})</option>
                                         {% else %}
-                                            <option class="disease-case" hidden>{{dcase}}</option>
+                                            <option class="disease-case" hidden>{{dcase.0}} ({{dcase.1}})</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
