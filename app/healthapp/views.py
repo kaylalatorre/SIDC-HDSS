@@ -1506,7 +1506,7 @@ def addWeight(request, farmID):
             weight.save()
             messages.success(request, "Weight recorded.", extra_tags='weight')
             return redirect('/selected-health-symptoms/' + str(farmID))
-        
+         
         else:
             weight = Farm_Weight(
                 date_filed = now(),
