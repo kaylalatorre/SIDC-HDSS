@@ -170,7 +170,7 @@ def farms(request):
             "total_pigs",
             "num_pens",
             "last_update"
-            ).order_by('last_update','id')
+            ).order_by('total_pigs')
     # debug(qry)
     
     farmsData = []
@@ -188,6 +188,10 @@ def farms(request):
         }
         farmsData.append(farmObject)
 
+        sorted_FarmsList = sorted(farmsData, key = lambda i: i['pigs'], reverse=True)
+        # sorted_FarmsList = sorted(sorted(farmsData, key = lambda i: i['pigs'], reverse=True), key = lambda i: i['updated'], reverse=False)
+
+
     areaList = []
     for choice in Area.objects.distinct().order_by('area_name').values('area_name'):
             areaList.append({"area_name": choice['area_name']})
@@ -200,7 +204,7 @@ def farms(request):
     # debug(memList)
 
     # debug(farmsData)
-    return render(request, 'farmstemp/farms.html', {"farms":farmsData, "areaList":areaList, "memList":memList}) ## Farms table for all users except Technicians
+    return render(request, 'farmstemp/farms.html', {"farms":sorted_FarmsList, "areaList":areaList, "memList":memList}) ## Farms table for all users except Technicians
 
 def selectedFarm(request, farmID):
     """
@@ -568,7 +572,7 @@ def techFarms(request):
                             "contact", 
                             "farm_address",
                             "last_update", 
-                            "total_pigs").order_by('last_update','id')
+                            "total_pigs")
 
 
         # pass all data into an array
@@ -584,8 +588,9 @@ def techFarms(request):
                 "pigs" : farm["total_pigs"] }
 
             techFarmsList.append(farmObject)
-
-        sorted_techFarmsList = sorted(techFarmsList, key = lambda i: i['updated'], reverse=False)
+        
+        sorted_techFarmsList = sorted(techFarmsList, key = lambda i: i['pigs'], reverse=True)
+        # sorted_techFarmsList = sorted(sorted_byPigs, key = lambda i: i['updated'], reverse=False)
     
     if sorted_techFarmsList is not None:
         techData = {

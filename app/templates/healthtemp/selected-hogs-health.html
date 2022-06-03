@@ -18,7 +18,7 @@
             <label class="form-label" style="font-weight: 600;">Batch </label>
             <select class="form-select" name="hogs-health-version" id="hogs-health-version" style="margin-bottom: 0; width: 100px">
                 {% if latest.id == selectedPigpen.id %}
-                    {% if farm.total_pigs == 0 %}
+                    {% if farm.pigs == 0 %}
                     <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} - {{fattener.date_filed}}</option>
                     {% else %}
                     <option hidden value="{{farm.code|stringformat:'03d'}}-{{selectedPigpen.id}}">{{selectedPigpen.date_added}} (Current)</option>
@@ -29,7 +29,7 @@
 
                 {% for ver in version %}
                     {% if latest.id == ver.id %}
-                        {% if farm.total_pigs == 0 %}
+                        {% if farm.pigs == 0 %}
                         <option value="{{farm.code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} - {{ver.endDate}}</option>
                         {% else %}
                         <option value="{{farm.code|stringformat:'03d'}}-{{ver.id}}">{{ver.date_added}} (Current)</option>
