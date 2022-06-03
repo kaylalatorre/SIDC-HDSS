@@ -94,13 +94,12 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        # 'NAME': 'predemoDB',
-        'NAME': 'sidcDB',        
-        'USER': 'sidcdbuser',
-        'PASSWORD': 'sidcdb123',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'ENGINE': os.getenv("ENGINE"),
+        'NAME': os.getenv("DBNAME"),
+        'USER': os.getenv("DBUSER"),
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': os.getenv("HOST"),
+        'PORT': os.getenv("PORT")
     }
 }
 
