@@ -1,9 +1,11 @@
 # SIDC-HDSS
-SIDC-HDSS is a web application with features to help the cooperative with farm biosecurity management, hogs health tracking, disease tracking, and decision support. 
+
+SIDC-HDSS is a web application with features to help the cooperative with farm biosecurity management, hogs health tracking, disease tracking, and decision support.
 
 ## Setting Up the Project Locally
 
 ### Setup Linux Environment
+
 Linux username: tsongzzz
 
 Step 1: POWERSHELL >  initial wsl setup
@@ -57,9 +59,10 @@ Step 3: BASH > Open VS Code to make sure extensions are installed
 ```bash
 code .
 ```
-> GitHub Pull Requests and Issues https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github
+
+> GitHub Pull Requests and Issues <https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github>
 >
-> Remote - WSL https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl
+> Remote - WSL <https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl>
 
 Step 4: CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-HDSS.git>
 > Ctrl + Shift + P > Search Git: Clone > Clone from Github > Enter Repository URL
@@ -77,7 +80,7 @@ bash /location/of/Miniconda3-latest-Linux-x86_64.sh
 > Anaconda can also be used but Miniconda is smaller
 >
 > If conda is not activated:
-> 
+>
 > ```bash
 > eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"
 > ```
@@ -167,7 +170,6 @@ sudo cp /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-available/
 cat /etc/nginx/sites-available/src_nginx.conf
 ```
 
-
 Step 2: BASH > restart nginx
 
 ```bash
@@ -189,6 +191,7 @@ uwsgi --ini src_uwsgi.ini
 Step 12: Go to <http://localhost:8000> to test if working
 
 ## Setup Database
+
 See DB setup documentation [DBSETUP](/DBSETUP.md)
 
 ## Running the Project Locally
@@ -199,10 +202,12 @@ _If conda is not activated:_ ```eval "$(/home/tsongzzz/miniconda3/bin/conda shel
 2. Activate the conda environment `conda activate ./venv`
 3. Go to the app directory `cd app`
 4. **In a separate terminal:** Start the PosgreSQL service and Apache2 server (for pgAdmin)
-```
-sudo service postgresql start
-sudo service apache2 start
-```
+
+    ```bash
+    sudo service postgresql start
+    sudo service apache2 start
+    ```
+
 5. Start nginx `sudo /etc/init.d/nginx start`
 6. `uwsgi --ini src_uwsgi.ini`
 7. Go to <http://localhost:8000>
@@ -212,5 +217,4 @@ sudo service apache2 start
 Catahan, Anna Kumiko  
 Go, Kurt Patrick  
 Latorre, Kayla Dwynett  
-Manzano, Ninna Robyn  
- 
+Manzano, Ninna Robyn
