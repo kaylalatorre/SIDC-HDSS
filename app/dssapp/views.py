@@ -1422,7 +1422,8 @@ def getAxRBio(score, areaFarms):
 
             # recommendations
             aXr['recommendations'].append("- Inspect the following farms: [{}]. Send an announcement to raisers involved.".format(", ".join(needInspection)))
-            aXr['recommendations'].append("- View the biosecurity measures and latest biosecurity checklist of farms: [{}].".format(", ".join( sorted(list(set(lowestExt)-set(lowestInt))+list(set(lowestInt)-set(lowestExt))) )))
+            
+            aXr['recommendations'].append("- View the biosecurity measures and latest biosecurity checklist of farms: [{}].".format(", ".join( sorted(set(list(lowestInt)+list(lowestExt))) )))
 
     return aXr
 
@@ -1438,7 +1439,8 @@ def getAnalysisAndRecommend(intBioLvl, extBioLvl, mortRtLvl, mortThresh, areaFar
         bioItem:getAxRBio(bioscore, areaFarms) 
     }
     aXr[mortItem]['item'] = mortItem
-    aXr[bioItem]['item'] = bioItem
+    if bioscore > 0:
+        aXr[bioItem]['item'] = bioItem
     return aXr
 
 def getRecommendations(farmQry, threshVals):
@@ -1617,8 +1619,8 @@ def actionRecommendation(request):
         "total_active": total_active,
         "total_dcases": total_dcases,
     }
-
-    return render(request, 'dsstemp/action-rec.html', {"aStats": actionStats, "aRecs": recommendations, 'threshVals': threshVals})
+    
+    return render(request, 'dsstemp/action-rec.html', {"aStats": actionStats, "aRecs": recommendations, "threshVals": threshVals, "dateToday": now().now()})
 
 
 def derivSEIRD(y, t, N, beta, gamma, delta, alpha, rho):

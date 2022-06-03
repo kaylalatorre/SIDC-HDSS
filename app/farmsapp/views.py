@@ -2615,6 +2615,8 @@ def getNotifIDs(request):
             technician  = User.objects.filter(id = tech[0]).values("id", "first_name", "last_name").first()
             farmObj = Farm.objects.filter(area__tech_id = tech[0])
             totalCount = farmObj.count()
+            if totalCount == 0:
+                continue
             inspectCount = farmObj.exclude(last_updated__range=(now() - timedelta(days=7), now())).count()
             notifIDs.append(';'.join([
                 userTable, 
@@ -2998,6 +3000,8 @@ def getTechInspectNotifs(request, notifIDList):
         technician  = User.objects.filter(id = tech[0]).values("id", "first_name", "last_name").first()
         farmObj = Farm.objects.filter(area__tech_id = tech[0])
         totalCount = farmObj.count()
+        if totalCount == 0:
+                continue
         inspectCount = farmObj.exclude(last_updated__range=(now() - timedelta(days=7), now())).count()
 
         inspectPercent = inspectCount/totalCount

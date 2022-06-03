@@ -92,7 +92,10 @@ def home_view(request):
     print("TEST LOG: in Home view")
 
     if request.user.is_authenticated :
-        userGroup = request.user.groups.all()[0].name
+        try:
+            userGroup = request.user.groups.all()[0].name
+        except:
+            return redirect('logout')
 
         if userGroup == "Field Technician" :
             tech_farms = techFarms(request)

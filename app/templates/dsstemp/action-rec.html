@@ -55,7 +55,7 @@
     <div>
         <div class="print-header">
             <h1>SIDC | Hogs Disease Surveillance System</h1>
-            <p>Actions Recommended dated July 1, 2022</p>
+            <p>Actions Recommended dated {{dateToday}}</p>
         </div>
         <div class="flex subheading">
             <h3 class="flex-item">Analysis and Recommendations</h3>
@@ -79,6 +79,7 @@
                     <tbody>
                         {% if aRecs.values %}
                         {% for rec in aRecs.values %}
+                        {% if rec.item %}
                         <tr>
                             <td>{{rec.item}}</td>
                             <td>
@@ -143,6 +144,7 @@
                                 </ul>
                             </td>
                         </tr>
+                        {% endif %}
                         {% endfor %}
                         {% else %}
                         <div>No thresholds has been set</div>
