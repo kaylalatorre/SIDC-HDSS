@@ -96,7 +96,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         # 'NAME': 'db-UAT',
-        'NAME': 'sidcDB',        
+        # 'NAME': 'sidcDB',        
+        'NAME': 'pre-demoDB', 
         'USER': 'sidcdbuser',
         'PASSWORD': 'sidcdb123',
         'HOST': 'localhost',
