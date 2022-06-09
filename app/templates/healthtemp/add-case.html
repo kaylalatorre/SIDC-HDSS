@@ -169,6 +169,26 @@
                     </li>
                 </ul>
             </section>
+
+            <section>
+                <div class="mb-3">
+                    <label for="prev-case" class="form-label">Related Incident Case</label>
+                    <select class="form-select select-prev-case" id="prev-case-code" name="prev-case">
+                        <option hidden="">- - -</option>
+                        <option disabled="">- - -</option>
+
+                        {% for incid in incidList %}
+                            {% if incid != None %}
+                            <option class="prev-case" value="{{incid.id}}">{{incid.date_filed}} ({{incid.id}})</option>
+                            {% else %}
+                            <option class="prev-case" hidden>{{incid.date_filed}} ({{incid.id}})</option>
+                            {% endif %}
+                        {% endfor %}
+
+                    </select>
+                </div>
+            </section>
+
         </div>
         <p class="red">Please review the details of the form before submitting.</p>
         <div class="mobile-subheading"><button class="primary-btn" type="submit" id="mobile-addCase-btn" onclick="addCase('{{farmID}}')">Save</button></div>

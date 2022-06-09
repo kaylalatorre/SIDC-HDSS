@@ -1150,6 +1150,9 @@ function addCase(farmID) {
         symptomsArr.push($(this).prop('checked'));
     });
 
+    // get selected Previous incid case ref
+    var prevID = $(".select-prev-case option:selected").val();
+
     ajaxCSRF();
 
     $.ajax({
@@ -1157,7 +1160,8 @@ function addCase(farmID) {
         url: '/post-addCase/' + farmID,
         data: {
             "num_pigsAffected": num_pigs,
-            "symptomsArr": symptomsArr
+            "symptomsArr": symptomsArr,
+            "prevID": prevID
         },
         success: function (response) {
 

@@ -118,6 +118,8 @@ class Hog_Symptoms(models.Model):
     others              = models.JSONField(default=dict, null=True)
     remarks             = models.CharField(max_length=200, null=True, blank=True)
 
+    prev_case          = models.ForeignKey('Hog_Symptoms', on_delete=models.SET_NULL, related_name='+', null=True, blank=True)
+
 
 # DISEASE CASE Table
 class Disease_Case(models.Model):

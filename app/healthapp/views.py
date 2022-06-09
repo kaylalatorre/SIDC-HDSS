@@ -1132,10 +1132,14 @@ def addCase(request, farmID):
     :param farmID: PK of selected farm
     :type farmID: string
     """
+    
     # get current total_pigs in Farm for User input range in no. of pigs affected
     farmQry = Farm.objects.filter(pk=farmID).only("total_pigs").first()
 
-    return render(request, 'healthtemp/add-case.html', {"farmID": farmID, "total_pigs": farmQry.total_pigs})
+    incidQry = Hog_Symptoms.objects.filter(ref_farm=farmID).filter(~Q(report_status="Resolved")).only("id", "date_filed")
+
+    return render(request, 'healthtemp/add-case.html', {"farmID": farmID, "total_pigs": farmQry.total_pigs,
+                                                        "incidList": incidQry})
 
 # (POST) AJAX function for adding a Symptoms list under a Farm
 def post_addCase(request, farmID):
@@ -1158,6 +1162,9 @@ def post_addCase(request, farmID):
             
             # get num_pigs & symptoms Array from AJAX post 
             num_pigsAffected = request.POST.get("num_pigsAffected")
+
+            # get ref previous Incid Case
+            prev_incidID = request.POST.get("prevID")
 
             sList = request.POST.getlist("symptomsArr[]")
             symptomsArr = []
@@ -1218,6 +1225,13 @@ def post_addCase(request, farmID):
 
                     # save data to table
                     incidObj.save()
+
+                    # qry newly created Incid Case for fk
+                    if "- - -" not in prev_incidID:
+                        ref_incidObj = Hog_Symptoms.objects.filter(id=prev_incidID).first()
+                        incidObj.prev_case = ref_incidObj
+
+                    # save created date
                     incidObj.date_filed = incidObj.date_updated
                     incidObj.save()
 

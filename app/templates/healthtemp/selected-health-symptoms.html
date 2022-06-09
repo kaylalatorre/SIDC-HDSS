@@ -253,7 +253,8 @@
                                     <th>Incident Code</th>
                                     <th>Date Reported</th>
                                     <th style="width:15%">No. of Pigs Affected</th>
-                                    <th style="width: 35%">Symptoms Observed</th>
+                                    <th style="width:35%">Symptoms Observed</th>
+                                    <th style="width:15%">Related Incident Case</th>
                                     <th>Status</th>
                                     <th></th>
                                 </tr>
@@ -275,7 +276,13 @@
                                         </ul>
                                         {% endfor %}
                                     </td>
-            
+
+                                    {% if incident.prev_case.id %}
+                                    <td data-label="Related Incident Case"> {{ incident.prev_case.id }} </td>
+                                    {% else %}
+                                    <td data-label="Related Incident Case"> None </td>
+                                    {% endif %}
+
                                     <td data-label="Status">
                                         <p id="hidden-status-{{incident.id}}" class="incid-status status">{{incident.report_status}}</p>
             

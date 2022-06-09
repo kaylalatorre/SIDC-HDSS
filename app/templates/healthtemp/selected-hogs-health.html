@@ -195,6 +195,7 @@
                                 <th>Date Reported</th>
                                 <th>No. of Pigs Affected</th>
                                 <th>Symptoms Observed</th>
+                                <th>Related Incident Case</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -214,6 +215,13 @@
                                     </ul>
                                     {% endfor %}
                                 </td>
+
+                                {% if incident.prev_case.id %}
+                                <td data-label="Related Incident Case"> {{ incident.prev_case.id }} </td>
+                                {% else %}
+                                <td data-label="Related Incident Case"> None </td>
+                                {% endif %}
+
                                 <td data-label="Status">
                                     <p class="status"> {{ incident.report_status }} </p>
                                     {% if incident.report_status == 'Resolved' %}
