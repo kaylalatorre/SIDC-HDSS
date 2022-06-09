@@ -1128,12 +1128,13 @@ $('.symptomsSave').on('click', function () {
  * For debugging current URL location.
  */
 function showLoc() {
-    var oLocation = location, aLog = ["Property (Typeof): Value", "location (" + (typeof oLocation) + "): " + oLocation ];
-    for (var sProp in oLocation){
-    aLog.push(sProp + " (" + (typeof oLocation[sProp]) + "): " + (oLocation[sProp] || "n/a"));
+    var oLocation = location,
+        aLog = ["Property (Typeof): Value", "location (" + (typeof oLocation) + "): " + oLocation];
+    for (var sProp in oLocation) {
+        aLog.push(sProp + " (" + (typeof oLocation[sProp]) + "): " + (oLocation[sProp] || "n/a"));
     }
     console.log(aLog.join("\n"));
-  }
+}
 
 /** 
  * on-click POST AJAX function for adding an Incident Case.
@@ -1169,10 +1170,10 @@ function addCase(farmID) {
             window.location.replace(url);
 
         },
-        error: function (res){
+        error: function (res) {
             showLoc();
 
-            console.log("ERROR [" + res.responseJSON.status_code + "]: " +  res.responseJSON.error);
+            console.log("ERROR [" + res.responseJSON.status_code + "]: " + res.responseJSON.error);
             url = "/add-case/" + farmID;
             // location.href = url; 
             // window.location = url; 
@@ -1499,3 +1500,35 @@ $('#threshold-bioRate').on('click', function () {
     if (success)
         window.location.reload();
 });
+
+/**
+ * Append a warning when pigs are too much for pigpen 
+ */
+function warnPigAmount(elem) {
+    console.log(elem);
+    let var_length =  parseInt($(elem).children("td#pigpen-length").children("input").val() || 0); //parseInt sibling td#pigpen-length. If value is null set to 0
+    let var_width = parseInt($(elem).children("td#pigpen-width").children("input").val() || 0);
+    let num_pigs = parseInt($(elem).children("td#pigpen-num-heads").children('input').val()||0); //get value from child input since this function is in the parent element
+    let isWarned = Boolean($(elem).children("td:has(div.tltp)").length); //checks if warning icon is already in the tr
+    
+    if (var_length < 0) var_length = 0;
+    if (var_width < 0) var_width = 0;
+    if (num_pigs < 0) num_pigs = 0;
+
+    let var_sqrFt = var_length * var_width
+
+    if(isWarned){ //is user currently being warned
+        if (var_sqrFt/num_pigs > 50){ //does the number of pigs fit 
+            $(elem).children("td:has(div.tltp)").remove(); //remove warning
+        }    
+    }else if(var_sqrFt/num_pigs < 50 || var_length == 0 || var_width == 0  ){ //pigs do not fit
+        $(elem).append( //warn user
+            "<td> \
+                <div class='tltp'> \
+                    <i class='bx bx-error-alt' style='color:#ff0202'></i> \
+                    <span class='tltptxt'>This pigpen is too small</span> \
+                </div> \
+            </td>"
+        );
+    }
+}

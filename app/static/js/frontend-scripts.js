@@ -549,7 +549,7 @@ function addPigPenRow() {
     const width = document.getElementById('pigpen-width').innerHTML;
     const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
 
-    $("#pigpen-table").append("<tr> \
+    $("#pigpen-table").append("<tr onchange='warnPigAmount(this)'> \
         <td data-label='Length' id='pigpen-length'> " + length + " </td> \
         <td data-label='Width' id='pigpen-width'> " + width + " </td> \
         <td data-label='No. of Pigs' id='pigpen-num-heads'> " + num_heads + " </td> \
