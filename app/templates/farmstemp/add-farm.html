@@ -32,6 +32,16 @@
 
                 <h3>Raiser</h3>
 
+                <div class="mb-3">
+                    <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose here:</label>
+                    <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
+                        <option disabled selected value> - - Select Raiser - - </option>
+                        {% for raiser in raisers %}
+                        <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="mb-3" id="div-mem-code">
                     <label for="input-mem-code" class="form-label"> Member Code</label>
                     {{hogRaiserForm.mem_code}}
@@ -45,20 +55,10 @@
                     {{hogRaiserForm.lname}}
                 </div>
 
-                <div class="mb-3">
-                    <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose here:</label>
-                    <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
-                        <option disabled selected value> - - Select Raiser - - </option>
-                        {% for raiser in raisers %}
-                        <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
                 <div class="mb-3" id="div-raiser-contact">
                     <label for="input-contact" class="form-label">Contact No.</label>
                     <div class="flex">
-                        <p class="flex-item">+ 63 </p> {{hogRaiserForm.contact_no}}
+                        <p class="flex-item">+ 63</p>{{hogRaiserForm.contact_no}}
                     </div>
                 </div>
                 <div class="mb-3">
