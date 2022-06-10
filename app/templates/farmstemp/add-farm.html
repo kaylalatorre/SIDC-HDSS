@@ -3,7 +3,46 @@
 {% load static %}
 
 {% block page_title %}
-    <title>SIDC-HDSS | Add Farm Record</title>
+<title>SIDC-HDSS | Add Farm Record</title>
+<style>
+    /* https://www.w3schools.com/howto/howto_css_tooltip.asp */
+    .tltp {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tltp .tltptxt {
+        visibility: hidden;
+        width: 120px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        transition: opacity 0.3s;
+    }
+
+    .tltp .tltptxt::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    .tltp:hover .tltptxt {
+        visibility: visible;
+        opacity: 1;
+    }
+</style>
 {% endblock page_title %}
 
 {% block section %}
@@ -13,212 +52,226 @@
 <div class="main-div">
     <form action="" method="POST">
 
-    {% csrf_token %}
+        {% csrf_token %}
 
-    <h1 class="heading"><a href="/">Farms Assigned</a> >  Add Farm Record</h1>
-    <div class="flex subheading">
-        <p class="flex-item">Add a new farm record here. </p>
-        <div><button class="primary-btn" type="submit">Save farm</button></div>
-    </div>
+        <h1 class="heading"><a href="/">Farms Assigned</a> > Add Farm Record</h1>
+        <div class="flex subheading">
+            <p class="flex-item">Add a new farm record here. </p>
+            <div><button class="primary-btn" type="submit">Save farm</button></div>
+        </div>
 
-    <hr>
-    <div class="flex">
-        <section class="flex-item" id="farm-details">
-            <h2>Farm Details</h2>
-            <div class="box-style">
-                <div class="mb-3">
-                    <h3>Code: {{farmCode|stringformat:"03d"}}</h3>
-                </div> <br>
+        <hr>
+        <div class="flex">
+            <section class="flex-item" id="farm-details">
+                <h2>Farm Details</h2>
+                <div class="box-style">
+                    <div class="mb-3">
+                        <h3>Code: {{farmCode|stringformat:"03d"}}</h3>
+                    </div> <br>
 
-                <h3>Raiser</h3>
+                    <h3>Raiser</h3>
 
-                <div class="mb-3" id="div-mem-code">
-                    <label for="input-mem-code" class="form-label"> Member Code</label>
-                    {{hogRaiserForm.mem_code}}
-                </div>
+                    <div class="mb-3">
+                        <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose
+                            here:</label>
+                        <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
+                            <option disabled selected value> - - Select Raiser - - </option>
+                            {% for raiser in raisers %}
+                            <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <div class="mb-3" id="div-raiser-name">
-                    <label for="input-first-name" class="form-label"> First Name</label>
-                    {{hogRaiserForm.fname}}
+                    <div class="mb-3" id="div-mem-code">
+                        <label for="input-mem-code" class="form-label"> Member Code</label>
+                        {{hogRaiserForm.mem_code}}
+                    </div>
 
-                    <label for="input-last-name" class="form-label"> Last Name</label>
-                    {{hogRaiserForm.lname}}
-                </div>
+                    <div class="mb-3" id="div-raiser-name">
+                        <label for="input-first-name" class="form-label"> First Name</label>
+                        {{hogRaiserForm.fname}}
 
-                <div class="mb-3">
-                    <label for="input-exist-raiser" class="form-label bold-lbl">If raiser is existing, choose here:</label>
-                    <select class="form-select" id="input-exist-raiser" name="input-exist-raiser">
-                        <option disabled selected value> - - Select Raiser - - </option>
-                        {% for raiser in raisers %}
-                        <option value="{{raiser.id}}">{{raiser.lname}}, {{raiser.fname}} ({{raiser.contact_no}})</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                        <label for="input-last-name" class="form-label"> Last Name</label>
+                        {{hogRaiserForm.lname}}
+                    </div>
 
-                <div class="mb-3" id="div-raiser-contact">
-                    <label for="input-contact" class="form-label">Contact No.</label>
-                    <div class="flex">
-                        <p class="flex-item">+ 63 </p> {{hogRaiserForm.contact_no}}
+                    <div class="mb-3" id="div-raiser-contact">
+                        <label for="input-contact" class="form-label">Contact No.</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="font-size: 14px;">+ 63</span>
+                            </div>
+                            {{hogRaiserForm.contact_no}}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{farmForm.directly_manage}}
+                        <label class="form-check-label" for="cb-directly">Directly Managed</label>
+                    </div>
+                    <br>
+
+                    <h3>Farm</h3>
+                    <div class="mb-3">
+                        <label for="address-street" class="form-label">Street</label>
+                        <input type="text" class="form-control" id="address-street" name="address-street"
+                            placeholder="Street">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address-barangay" class="form-label">Barangay</label>
+                        <input type="text" class="form-control" id="address-barangay" name="address-barangay" required
+                            placeholder="Barangay (required)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address-city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="address-city" name="address-city" required
+                            placeholder="City (required)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address-province" class="form-label">Province</label>
+                        <input type="text" class="form-control" id="address-province" name="address-province" required
+                            placeholder="Province (required)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address-zipcode" class="form-label">Zip Code</label>
+                        <input type="text" class="form-control" id="address-zipcode" name="address-zipcode"
+                            placeholder="Zip Code">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="input-area" class="form-label">Area</label>
+                        <select class="form-select" id="input-area" name="input-area">
+                            {% for area in area %}
+                            <option>{{area.area_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="input-roof" class="form-label">Roof Height (in ft.)</label>
+                        {{farmForm.roof_height}}
+                    </div>
+                    <div class="mb-3">
+                        <label for="input-wharea" class="form-label">Warehouse Area (in ft.)</label>
+                        <div class="input-group" id="input-wharea">
+                            {{farmForm.wh_length}}
+                            {{farmForm.wh_width}}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="input-trough" class="form-label">Feeding Trough</label>
+                        {{farmForm.feed_trough}}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="input-roof" class="form-label">Building Capacity</label>
+                        {{farmForm.bldg_cap}}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="input-medic-tank" class="form-label">Medic Tank</label>
+                        {{farmForm.medic_tank}}
+                    </div>
+
+                    <div class="mb-3">
+                        {{farmForm.bldg_curtain}}
+                        <label class="form-check-label" for="cb-curtain">Building Curtain</label>
+                    </div>
+                    <div class="mb-3">
+                        {{farmForm.road_access}}
+                        <label class="form-check-label" for="cb-road">Road Access</label>
                     </div>
                 </div>
-                <div class="mb-3">
-                    {{farmForm.directly_manage}}
-                    <label class="form-check-label" for="cb-directly">Directly Managed</label>
-                </div>
-                <br>
+            </section>
+        </div>
 
-                <h3>Farm</h3>
-                <div class="mb-3">
-                    <label for="address-street" class="form-label">Street</label>
-                    <input type="text" class="form-control" id="address-street" name="address-street" placeholder="Street">
-                </div>
-                <div class="mb-3">
-                    <label for="address-barangay" class="form-label">Barangay</label>
-                    <input type="text" class="form-control" id="address-barangay" name="address-barangay" required placeholder="Barangay (required)">
-                </div>
-                <div class="mb-3">
-                    <label for="address-city" class="form-label">City</label>
-                    <input type="text" class="form-control" id="address-city" name="address-city" required placeholder="City (required)">
-                </div>
-                <div class="mb-3">
-                    <label for="address-province" class="form-label">Province</label>
-                    <input type="text" class="form-control" id="address-province" name="address-province" required placeholder="Province (required)">
-                </div>
-                <div class="mb-3">
-                    <label for="address-zipcode" class="form-label">Zip Code</label>
-                    <input type="text" class="form-control" id="address-zipcode" name="address-zipcode" placeholder="Zip Code">
-                </div>
-                
-                <div class="mb-3">
-                    <label for="input-area" class="form-label">Area</label>
-                    <select class="form-select" id="input-area" name="input-area">
-                        {% for area in area %}
-                        <option>{{area.area_name}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="input-roof" class="form-label">Roof Height (in ft.)</label>
-                    {{farmForm.roof_height}}
-                </div>
-                <div class="mb-3">
-                    <label for="input-wharea" class="form-label">Warehouse Area (in ft.)</label>
-                    <div class="input-group" id="input-wharea">
-                        {{farmForm.wh_length}}
-                        {{farmForm.wh_width}}
+        <div class="flex flex-form">
+            <section class="flex-item" id="pig-pens">
+                <h2 class="flex-item">Pig Pens</h2>
+                <div class="box-style">
+                    <div class="flex subheading">
+                        <p class="flex-item"></p>
+                        <div><button class="secondary-btn" type="button" onclick="addPigPenRow()"
+                                style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add
+                                    Pen</span></button> </div>
                     </div>
-                </div>
+                    <div class="mobile-subheading">
+                        <div><button class="secondary-btn" type="button" onclick="addPigPenRow()"
+                                style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add
+                                    Pen</span></button> </div>
+                    </div>
+                    <div class="input-group">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Length (in ft.)</th>
+                                    <th>Width (in ft.)</th>
+                                    <th>No. of Pigs</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="pigpen-table">
 
-                <div class="mb-3">
-                    <label for="input-trough" class="form-label">Feeding Trough</label>
-                    {{farmForm.feed_trough}}          
-                </div>
+                                <tr id="pigpen-row" onchange='warnPigAmount(this);'>
+                                    <td data-label="Length" id="pigpen-length"> {{pigpenRowForm.length}} </td>
+                                    <td data-label="Width" id="pigpen-width"> {{pigpenRowForm.width}} </td>
+                                    <td data-label="No. of Pigs" id="pigpen-num-heads">
+                                        {{pigpenRowForm.num_heads}} </td>
+                                </tr>
 
-                <div class="mb-3">
-                    <label for="input-roof" class="form-label">Building Capacity</label>
-                    {{farmForm.bldg_cap}}
-                </div>
-
-                <div class="mb-3">
-                    <label for="input-medic-tank" class="form-label">Medic Tank</label>
-                    {{farmForm.medic_tank}}
-                </div>
-
-                <div class="mb-3">
-                    {{farmForm.bldg_curtain}}
-                    <label class="form-check-label" for="cb-curtain">Building Curtain</label>
-                </div>
-                <div class="mb-3">
-                    {{farmForm.road_access}}
-                    <label class="form-check-label" for="cb-road">Road Access</label>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <div class="flex flex-form">
-        <section class="flex-item" id="pig-pens">
-            <h2 class="flex-item">Pig Pens</h2>
-            <div class="box-style">
-                <div class="flex subheading">
-                    <p class="flex-item"></p>
-                    <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
-                </div>
-                <div class="mobile-subheading">
-                    <div><button class="secondary-btn" type="button" onclick="addPigPenRow()" style="justify-content: flex-end;"><i class='bx bx-plus'></i><span class="text">Add Pen</span></button> </div>
-                </div>
-                <div class="input-group">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Length (in ft.)</th>
-                                <th>Width (in ft.)</th>
-                                <th>No. of Pigs</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody  id="pigpen-table">
-
-                            <tr id="pigpen-row">
-                                <td data-label="Length" id="pigpen-length"> {{pigpenRowForm.length}} </td>
-                                <td data-label="Width" id="pigpen-width"> {{pigpenRowForm.width}} </td>
-                                <td data-label="No. of Pigs" id="pigpen-num-heads"> {{pigpenRowForm.num_heads}} </td>
-                                <td></td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-                <!-- <div class="flex subheading">
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- <div class="flex subheading">
                     <label style="font-weight: 600;">Total No. of Pigs: </label>
                     <p> {{numTotalPigs}} pigs </p>
                 </div> -->
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section class="flex-item" id="biosec-measures">
-            <h2>Biosecurity Measures</h2>
-            <div class="box-style">
-                <p>Select all that apply.</p>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" name="cb-birdproof" id="cb-birdproof">
-                    <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" name="cb-fence" id="cb-fence">
-                    <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" name="cb-distance" id="cb-distance">
-                    <label class="form-check-label" for="cb-distance">500-meter Distance</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" name="cb-isolation" id="cb-isolation">
-                    <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input" name="cb-footdip" id="cb-birdproof">
-                    <label class="form-check-label" for="cb-footdip">Foot Dip</label>
-                </div>
-                <div class="mb-3">
-                    <label for="input-waste-mgt" class="form-label">Waste Management</label>
-                    <select class="form-select" id="waste-mgt" name="waste-mgt">
-                        <option value="Septic Tank">Septic Tank</option>
-                        <option value="Biogas">Biogas</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <!-- <div class="mb-3 option-other" id="option-other">
+            <section class="flex-item" id="biosec-measures">
+                <h2>Biosecurity Measures</h2>
+                <div class="box-style">
+                    <p>Select all that apply.</p>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" name="cb-birdproof" id="cb-birdproof">
+                        <label class="form-check-label" for="cb-birdproof">Bird Proof</label>
+                    </div>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" name="cb-fence" id="cb-fence">
+                        <label class="form-check-label" for="cb-fence">Perimeter Fence</label>
+                    </div>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" name="cb-distance" id="cb-distance">
+                        <label class="form-check-label" for="cb-distance">500-meter Distance</label>
+                    </div>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" name="cb-isolation" id="cb-isolation">
+                        <label class="form-check-label" for="cb-isolation">Isolation Pen</label>
+                    </div>
+                    <div class="mb-3">
+                        <input type="checkbox" class="form-check-input" name="cb-footdip" id="cb-birdproof">
+                        <label class="form-check-label" for="cb-footdip">Foot Dip</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="input-waste-mgt" class="form-label">Waste Management</label>
+                        <select class="form-select" id="waste-mgt" name="waste-mgt">
+                            <option value="Septic Tank">Septic Tank</option>
+                            <option value="Biogas">Biogas</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <!-- <div class="mb-3 option-other" id="option-other">
                     <label for="input-other" class="form-label">Indicate waste management.</label>
                     <input type="text" id="input-other" name="waste-mgt" class="form-control" placeholder="Other Waste Management">
                 </div> -->
-            </div>
-        </section>
-    </div>
+                </div>
+            </section>
+        </div>
 
-    <p class="red">Please review the details of the form before submitting.</p>
-    <div class="mobile-subheading"><button class="primary-btn" type="submit">Save farm</button></div>
+        <p class="red">Please review the details of the form before submitting.</p>
+        <div class="mobile-subheading"><button class="primary-btn" type="submit">Save farm</button></div>
     </form>
 </div>
 {% endblock section %}

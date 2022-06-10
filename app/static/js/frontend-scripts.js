@@ -549,7 +549,7 @@ function addPigPenRow() {
     const width = document.getElementById('pigpen-width').innerHTML;
     const num_heads = document.getElementById('pigpen-num-heads').innerHTML;
 
-    $("#pigpen-table").append("<tr> \
+    $("#pigpen-table").append("<tr onchange='warnPigAmount(this)'> \
         <td data-label='Length' id='pigpen-length'> " + length + " </td> \
         <td data-label='Width' id='pigpen-width'> " + width + " </td> \
         <td data-label='No. of Pigs' id='pigpen-num-heads'> " + num_heads + " </td> \
@@ -664,12 +664,12 @@ function addMortalityRow() {
     const remarks = document.getElementById('remarks').innerHTML;
 
     $("#mortality-table").append("<tr> \
-        <td data-label='Mortality Date'> " + mortality_date + " </td> \
+        <td data-label='Mortality Date' id='mortality_date'> " + mortality_date + " </td> \
         <td data-label='Beg. Inv.' id='begInv' class='num_begInv'> " + num_begInv + " </td> \
         <td data-label='Today' id='today' onchange='computeMortality(this)'> " + num_today + " </td> \
         <td data-label='To Date'> <p class='num_toDate'></p> </td> \
         <td data-label='Mortality Rate' style='text-align: right;'> <p class='mortality_rate'></p> </td> \
-        <td data-label='Source'> <div class='form-check form-check-inline'> \
+        <td data-label='Source' id='source'> <div class='form-check form-check-inline'> \
                 <input class='form-check-input' type='radio' required name='sourceOptions-"+rowNum+"' id='src-incident' value='Incident Case' onclick='switchMortCase(this)'> \
                 <label class='form-check-label' for='src-incident'>Incident Case</label> </div> \
             <div class='form-check form-check-inline'> \
@@ -678,7 +678,7 @@ function addMortalityRow() {
             <div class='form-check form-check-inline'> \
                 <input class='form-check-input' type='radio' required name='sourceOptions-"+rowNum+"' id='src-unknown' value='Unknown' onclick='switchMortCase(this)'> \
                 <label class='form-check-label' for='src-unknown'>Unknown</label> </div> </td> \
-        <td data-label='Case-No'> " + case_no + " </td> \
+        <td data-label='Case-No' onchange='autoFillMortRec(this)''> " + case_no + " </td> \
         <td data-label='Remarks'> " + remarks + " </td> \
         <td><button id='remove-mortality-row' type='button' onclick='removeMortalityRow(this)' class='secondary-btn-red'><i class='bx bx-minus'></i></button></td> \
         </tr>");
