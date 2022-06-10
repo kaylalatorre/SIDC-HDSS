@@ -1518,7 +1518,7 @@ function warnPigAmount(elem) {
     let var_sqrFt = var_length * var_width
 
     if(isWarned){ //is user currently being warned
-        if (var_sqrFt/num_pigs > 50){ //does the number of pigs fit 
+        if (var_sqrFt/num_pigs > 15){ //does the number of pigs fit 
             $(elem).children("td:has(div.tltp)").remove(); //remove warning
         }    
     }else if(var_sqrFt/num_pigs < 50 || var_length == 0 || var_width == 0  ){ //pigs do not fit
