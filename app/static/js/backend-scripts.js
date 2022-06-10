@@ -1532,3 +1532,35 @@ function warnPigAmount(elem) {
         );
     }
 }
+
+/**
+ * Autofill the mortality record with the case 
+ */
+async function autoFillMortRec(elem){
+    let var_case = $(elem).children("select#input-case").find(":selected").val();
+    let var_source = $(elem).siblings("td#source").find("input:checked").val();
+    let var_url = "/get-numPigs/";
+    switch(var_source){
+        case "Disease Case":
+            var_url = `${var_url}disease/${var_case}`
+            break;
+        case "Incident Case":
+            var_url = `${var_url}incident/${var_case}`
+            break;
+    };
+    let var_num_pigs = await $.ajax({
+        type: 'POST',
+        url: var_url,
+    });
+    let var_date = new Date();
+    let dd = `${var_date.getDate()}`.padStart(2,0);
+    let mm = `${var_date.getMonth()+1}`.padStart(2,0);
+
+    let yyyy = var_date.getFullYear();
+    var_date = `${yyyy}-${mm}-${dd}`;  
+
+    if(parseInt(var_num_pigs)){
+        $(elem).siblings("td#mortality_date").children("input").val(var_date);
+        $(elem).siblings("td#today").children("input").val(parseInt(var_num_pigs)).trigger("change");
+    }
+}

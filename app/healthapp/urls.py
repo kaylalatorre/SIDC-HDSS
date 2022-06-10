@@ -24,6 +24,8 @@ urlpatterns = [
     # technician - case and mortality record
     path('add-case/<str:farmID>', views.addCase, name="addCase"),
     path('post-addCase/<str:farmID>', views.post_addCase, name="post-addCase"),
+    path('get-numPigs/disease/<int:case>', views.getPigsDisease, name = "getPigsDisease"),
+    path('get-numPigs/incident/<int:case>', views.getPigsIncid, name = "getPigsIncid"),
     path('add-mortality/<str:farmID>', views.addMortality, name="addMortality"),
 
     path('update-disease-case/<str:dcID>', views.update_diseaseCase, name="update_diseaseCase"),

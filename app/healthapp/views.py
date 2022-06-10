@@ -1265,6 +1265,22 @@ def post_addCase(request, farmID):
         return JsonResponse({"error": "No selected input/s for Incident Case.", "status_code":"400"}, status=400)
 
 
+def getPigsIncid(request, case):
+    """
+    get number of pigs affected from an incident case
+    """
+    numPigs = Hog_Symptoms.objects.filter(id = case).values_list('num_pigs_affected').first()[0]
+    debug(numPigs)
+    return HttpResponse(numPigs, status = 200)
+
+def getPigsDisease(request, case):
+    """
+    get number of pigs affected from an disease case
+    """
+    numPigs = Disease_Case.objects.filter(id = case).values_list('num_pigs_affect').first()[0]
+    debug(numPigs)
+    return HttpResponse(str(numPigs), status = 200)
+
 def addMortality(request, farmID):
     """
     - Redirect to Add Mortality Page and render corresponding Django form
