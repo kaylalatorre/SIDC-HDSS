@@ -195,7 +195,7 @@
                                 <th>Date Reported</th>
                                 <th>No. of Pigs Affected</th>
                                 <th>Symptoms Observed</th>
-                                <th>Related Incident Case</th>
+                                <th>Linked Incident Case</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -217,9 +217,9 @@
                                 </td>
 
                                 {% if incident.prev_case.id %}
-                                <td data-label="Related Incident Case"> {{ incident.prev_case.id }} </td>
+                                <td data-label="Linked Incident Case"> {{ incident.prev_case.id }} </td>
                                 {% else %}
-                                <td data-label="Related Incident Case"> None </td>
+                                <td data-label="Linked Incident Case"> None </td>
                                 {% endif %}
 
                                 <td data-label="Status">
