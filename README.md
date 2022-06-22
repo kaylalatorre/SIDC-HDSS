@@ -31,4 +31,4 @@ Go, Kurt Patrick
 Latorre, Kayla Dwynett  
 Manzano, Ninna Robyn
 
-> This is a Capstone Project that is in partial fulfillment of the requirements for the degree of Bachelor of Science in Information Systems
+> This is a Capstone Project that is in partial fulfillment of the requirements for their degree of Bachelor of Science in Information Systems
