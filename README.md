@@ -1,216 +1,28 @@
 # SIDC-HDSS
 
-SIDC-HDSS is a web application with features to help the cooperative with farm biosecurity management, hogs health tracking, disease tracking, and decision support.
+SIDC-HDSS is a system application with features designed to aid Sorosoro Ibaba Development Cooperative with farm biosecurity management, hogs health monitoring, disease monitoring, and decision support for their farms in Batangas, Philippines. The system is intended to address the problem of SIDC in its decrease of shared profit with its members. This is due to one of their biggest threats today: hogs diseases such as African Swine Fever (ASF).
 
-## Setting Up the Project Locally
+## System Modules
 
-### Setup Linux Environment
+#### 1. Hog Farms Management
+Performs data collection and management of farm records. Important features include management of internal and external biosecurity (i.e. creation, editing, and display of biosecurity checklists), recording of farm activities (e.g. inspection, monthly inventory, etc.), and sending of member announcements as SMS to the hog raisers.
 
-Linux username: tsongzzz
+#### 2. Hogs Health Analysis
+Performs data collection and management of the hogs’ health records. Important features include symptoms monitoring wherein incident cases are recorded and monitored until there is a tentative diagnosis, and disease monitoring wherein confirmed cases are monitored and updated regularly. Diseases that are monitored through the system include frequent hog diseases that the organization encounters, which include: ASF, CSF, Swine Influenza, Pseudorabies, PRRS, and PED.
 
-Step 1: POWERSHELL >  initial wsl setup
+#### 3. Action Recommendation
+Performs analysis of all data collected and managed in the previous modules to produce data visualization and descriptive reports. It also generates a disease intervention plan that will oversee all disease prevention and control initiatives. Important features include predictive analytics which uses the SEIRD model, and action recommendation in which directed action plans are stated according to current mortality rates, biosecurity rates, and SEIRD outputs.
 
-```powershell
-wsl --install
-```
+> Throughout the three modules, the concepts of data management, disease triangle (environment, host, and agent), and disease surveillance are applied.
 
-Step 2: POWERSHELL > install Ubuntu
+## System Architecture
 
-```powershell
-wsl --install -d Ubuntu
-```
+| Web User Interface | Web Server | Web Application | Database |
+| ------------------ | ---------- | --------------- | -------- |
+| HTML 5, CSS 3, Javascript, Bootstrap, Highcharts | Nginx, uWSGI | Python, Django, OpenStreetMap, Geopandas | PostgreSQL, PostGIS |
 
-Step 3: BASH > add python repository
-
-```bash
-sudo add-apt-repository ppa:deadsnakes/ppa
-```
-
-Step 4: BASH > get things up to date
-
-```bash
-sudo apt update
-sudo apt upgrade
-```
-
-Step 5: BASH > get python3.9
-
-```bash
-sudo apt install python3.9 python3.9-venv python3.9-dev
-```
-
-### Setup Github on VS Code
-
-Step 1: BASH > check if Git is installed
-
-```bash
-git --version
-```
-
-Step 2: BASH > setup Git config file
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "yourEmail@example.com"
-```
-
-Step 3: BASH > Open VS Code to make sure extensions are installed
-
-```bash
-code .
-```
-
-> GitHub Pull Requests and Issues <https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github>
->
-> Remote - WSL <https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl>
-
-Step 4: CODE > Clone Repository: <https://github.com/kaylalatorre/SIDC-HDSS.git>
-> Ctrl + Shift + P > Search Git: Clone > Clone from Github > Enter Repository URL
-
-### Setup Conda Virtual Environment
-
-Step 1: BASH > Install Conda
-
-```bash
-bash /location/of/Miniconda3-latest-Linux-x86_64.sh
-```
-
-> Download Miniconda from <https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh>
->
-> Anaconda can also be used but Miniconda is smaller
->
-> If conda is not activated:
->
-> ```bash
-> eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"
-> ```
-
-Step 2: BASH > Add Conda Forge to channels
-
-```bash
-conda config --env --add channels conda-forge
-conda config --env --set channel_priority strict
-```
-
-Step 3: BASH > create virtual environment
-
-```bash
-conda create -p ~/SIDC-HDSS/venv uWSGI Python Django djangorestframework GeoPandas geopy PostGis psycopg2 twilio python-dotenv
-```
-
->Can also use:
->
->```bash
->conda create -p ~/SIDC-HDSS/venv --file venv.txt
->```
-
-Step 4.1: BASH > activate project environment
-
-```bash
-conda activate /home/tsongzzz/SIDC-HDSS/venv
-```
-
->Can also be activated by running
->
->```bash
->conda activate ./venv # inside the project directory
->```
-
-[OPTIONAL] Step 4.2: BASH > export project environment package list
-
-```bash
-conda list --explicit > venv.txt
-```
-
-### Setup Nginx
-
-Step 1: BASH > install then start nginx to make sure it works properly in <http://localhost:80>
-
-```bash
-sudo apt install nginx
-sudo /etc/init.d/nginx start
-```
-
-Step 2: BASH > add nginx to user group and vise versa
-
-```bash
-sudo usermod -a -G tsongzzz www-data
-sudo usermod -a -G www-data tsongzzz 
-```
-
-Step 3: BASH > restart nginx
-
-```bash
-sudo /etc/init.d/nginx restart
-```
-
-### Setup Django
-
-Step 1: BASH > symlink 'src_nginx.conf' to '/etc/nginx/sites-enabled/'
-
-```bash
-sudo ln -s /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-enabled/
-```
-
-> verify symlink
-
-```bash
-cat /etc/nginx/sites-enabled/src_nginx.conf
-```
-
-_OPTIONAL_ Step 1.1: BASH > copy 'src_nginx.conf' to '/etc/nginx/sites-available/'
-
-```bash
-sudo cp /home/tsongzzz/SIDC-HDSS/app/src_nginx.conf /etc/nginx/sites-available/
-```
-
-> verify copy
-
-```bash
-cat /etc/nginx/sites-available/src_nginx.conf
-```
-
-Step 2: BASH > restart nginx
-
-```bash
-sudo /etc/init.d/nginx restart
-```
-
-Step 3: BASH > Verify if Django + uWSGI + nginx is running
-
-```bash
-uwsgi --socket src.sock --module src.wsgi --chmod-socket=664
-```
-
-Step 4: BASH > run application through src_uwsgi.ini
-
-```bash
-uwsgi --ini src_uwsgi.ini
-```
-
-Step 12: Go to <http://localhost:8000> to test if working
-
-## Setup Database
-
-See DB setup documentation [DBSETUP](/DBSETUP.md)
-
-## Running the Project Locally
-
-_If conda is not activated:_ ```eval "$(/home/tsongzzz/miniconda3/bin/conda shell.bash hook)"```
-
-1. Go to the project directory `cd ~/SIDC-HDSS/`
-2. Activate the conda environment `conda activate ./venv`
-3. Go to the app directory `cd app`
-4. **In a separate terminal:** Start the PosgreSQL service and Apache2 server (for pgAdmin)
-
-    ```bash
-    sudo service postgresql start
-    sudo service apache2 start
-    ```
-
-5. Start nginx `sudo /etc/init.d/nginx start`
-6. `uwsgi --ini src_uwsgi.ini`
-7. Go to <http://localhost:8000>
+## Installation and Running of Project
+The Technical Manual and User Manual of this system are for client use only.
 
 ## Authors
 
@@ -218,3 +30,5 @@ Catahan, Anna Kumiko
 Go, Kurt Patrick  
 Latorre, Kayla Dwynett  
 Manzano, Ninna Robyn
+
+> This is a Capstone Project that is in partial fulfillment of the requirements for the degree of Bachelor of Science in Information Systems
