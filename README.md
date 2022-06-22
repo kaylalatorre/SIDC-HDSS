@@ -1,3 +1,5 @@
+![SIDC-HDSS](sidc-hdss-cover.png)
+
 # SIDC-HDSS
 
 SIDC-HDSS is a system application with features designed to aid Sorosoro Ibaba Development Cooperative with farm biosecurity management, hogs health monitoring, disease monitoring, and decision support for their farms in Batangas, Philippines. The system is intended to address the problem of SIDC in its decrease of shared profit with its members. This is due to one of their biggest threats today: hogs diseases such as African Swine Fever (ASF).
